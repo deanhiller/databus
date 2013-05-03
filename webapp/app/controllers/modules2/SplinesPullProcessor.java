@@ -95,11 +95,11 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			return startTime;
 		
 		long rangeFromOffsetToStart = startTime-epochOffset;
-		long offsetFromStart = rangeFromOffsetToStart % interval;
+		long offsetFromStart = -rangeFromOffsetToStart % interval;
 		if(startTime > 0) {
 			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
 		}
-		return startTime-offsetFromStart;
+		return startTime+offsetFromStart;
 	}
 
 	@Override
