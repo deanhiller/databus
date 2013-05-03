@@ -1,0 +1,6 @@
+The stddev module allows users to remove data points that have values outside of a given multiplier of the standard deviation. You must supply a rowCount and factor when using this mod, where rowCount is the window over which the standard deviation is caluclated over, with 0 meaning infinite, and factor is the multiple of the standard deviation to remove data outside of.
+usage: https://databus.nrel.gov/api/stddevV1/{rowCount}/{factor}/{nextmodule}
+example: https://databus.nrel.gov/api/stddevV1/0/.5/rawdata/RSF2MAIN/1354738000000/1354824663000
+example: https://databus.nrel.gov/api/stddevV1/200/1/rawdata/RSF2MAIN/1354738000000/1354824663000
+The first example removes any value outside half of a standard deviation of the entire dataset to that point (infinite window).
+The second example removes any value outside 1 standard deviation with a window of 200 values. 

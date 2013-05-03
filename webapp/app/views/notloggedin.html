@@ -1,0 +1,24 @@
+#{extends '_main.html' /}
+    
+<div class="row-fluid">
+    <div class="offset6 span6">
+        <div class="pull-right" style="padding: 20px 40px 20px 20px">
+            <a href="@{gui.auth.GuiSecure.login()}" class="btn btn-primary">Login</a>
+        </div>
+    </div>
+</div>
+
+        #{if flash.error}
+            <p class="error">
+                &{flash.error}
+            </p>
+        #{/if}
+        #{if flash.success}
+            <p class="success">
+                &{flash.success}
+            </p>
+        #{/if}
+        
+<div class="row-fluid">
+    #{doLayout /}
+</div>

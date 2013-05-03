@@ -1,0 +1,123 @@
+#{extends 'main.html' /}
+#{set title:'Add/Edit Group' /}
+#{set tab:'groups' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<div id="noputonstack"></div>
+
+#{if groupDbo?.id == null}
+	<h2>Add Group</h2>
+#{/if}
+#{else}
+	<h2>Edit Group</h2>
+#{/else}
+
+<div class="content clearfix">
+#{form @MyGroups.postGroup(), id:'editproject'}
+
+	<input type="hidden" name="groupDbo.id" value="${groupDbo?.id}">
+	<input type="hidden" name="oldGroupName" value="${groupDbo?.name}">
+
+	#{xfield objectId:'groupDbo.name',label:'Group Name', help:'Some help message'}
+		#{text field:field, length:50/}
+	#{/xfield}
+	
+	#{xfield objectId:'groupDbo.description',label:'Group Description', help:'Some help message'}
+		#{textarea field:field, rows:12, cols:100/}
+	#{/xfield}
+
+	<div style="clear:both;text-align:center;margin-left:auto;margin-right:auto;">
+		<input type="submit" name="submit" value="Save" class="button" />
+		<a href="javascript:history.back()" class="button">Cancel</a>
+	</div>
+#{/form}
+</div>
+
+*{
+	<div class="entry">
+ 		<div class="spacer"></div>
+ 		<span class="label">Fake Label:</span> 
+ 		<span class="input">
+			<input type="text" class="inputtext" >
+  		</span>
+
+			<span class="help" onmouseover="showTip('tip_d_ds1_1')" onmouseout="hideTip('tip_d_ds1_1')">[?]<div id="tip_d_ds1_1" class="tip tipright">Shite</div></span>
+ 			<br />
+ 			<span class="hasError"></span> 
+
+		<div style="clear: both;"></div>
+	</div>
+	
+	<div class="entry">
+ 		<div class="spacer"></div>
+ 		<span class="label">Fake Label:</span> 
+ 		<span class="input">
+			<input type="text" class="inputtext" >
+  		</span>
+
+			<span class="help" onmouseover="showTip('tip_d_ds1_1')" onmouseout="hideTip('tip_d_ds1_1')">[?]<div id="tip_d_ds1_2" class="tip tipright">Need some help</div></span>
+ 			<br />
+ 			<span class="hasError"></span> 
+
+		<div style="clear: both;"></div>
+	</div>
+}*
+	
+#{if groupDbo?.id != null}
+ <h2>Members</h2>
+    
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Role</th>
+	        <th>Robot Api Keys</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groupDbo.children, as:'mapping'}
+	        <tr>
+	            <td><a href="@{MyGroups.userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">${mapping.entity.name}</a></td>
+	            <td>${mapping.entity.typeString}</td>
+	            <td>${mapping.permission}</td>
+	            #{if mapping.entity.typeString == 'Robot' && mapping.ownRobot}
+		            <td>${mapping.entity.apiKey}</td>
+	            #{/if}
+	            #{else}
+	            	<td></td>
+	            #{/else}
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+
+    <a href="@{MyGroups.userAdd(groupDbo.name, 'user')}">Add user to this group</a><br/>
+    <a href="@{MyGroups.userAdd(groupDbo.name, 'robot')}">Create robot</a></br>
+    <a href="@{MyGroups.robotAdd(groupDbo.name)}">Add existing robot to this group</a>
+    
+<br><br>
+	
+<h2>Resources in this Group(first 50 shown)</h2>
+	
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list resources, as:'resource'}
+	        <tr>
+	            <td><a href="@{MySchemas.viewSchema(resource.resource.name)}">${resource.resource.name}</a></td>
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>	
+
+#{/if}	
+

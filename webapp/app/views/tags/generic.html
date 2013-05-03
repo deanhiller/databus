@@ -1,0 +1,9 @@
+<div class="control-group ${_arg.errorClass}">
+	<label class="control-label"><a href="#" rel="tooltip" title="${_arg.help}"><i class="icon-info-sign"></i></a> ${_arg.label}</label>
+	<div class="controls">
+		 #{doBody /}
+		 *{ It says help-block ONLY because that makes it go below the input area - use help-inline to be to the right }*
+		 <span class="help-block">${_arg.error}</span>
+	</div>
+</div>
+

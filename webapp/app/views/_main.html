@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<!-- wbpreview.com/previews/WB0663265 -->
+
+<html>
+    <head>
+        <title>Bootstrap Prototype 1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- JQuery -->
+        <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="/public/includes/jquery.hotkeys.js"></script>
+
+        <link href="/public/includes/prettify/sunburst.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="/public/includes/prettify/prettify.js"></script>
+        
+        <!-- Bootstrap -->
+        <link href="/public/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+        <link href="/public/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <script type="text/javascript" src="/public/bootstrap/js/bootstrap.js"></script>
+
+        <!-- Theme -->
+        <link href="/public/bootstrap/themes/proto2/proto2.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="/public/bootstrap/themes/proto2/proto2.js"></script>
+
+        <link href="/public/bootstrap/themes/proto2/help.css" rel="stylesheet" type="text/css">
+
+        <!-- JQPlot -->
+        <!-- <link rel="stylesheet" type="text/css" href="/public/includes/jqplot/jquery.jqplot.min.css" /> -->
+        
+        <!-- Highcarts Remote Load -->
+        <!-- IMPORTANT                                                                      -->
+        <!--    The HTTPS links work, and as far as I can tell do point to a server owned                   -->
+        <!--    by Highcharts, but they let their SSL certificate expire so browsers HATE                   -->
+        <!--    going there.                                                                    -->
+        <!--                                                                                -->
+        <!-- <script src="https://code.highcharts.com/highcharts.js" type="text/javascript"></script> -->
+        <!-- <script src="https://code.highcharts.com/stock/highstock.js" type="text/javascript"></script> -->
+        <!-- <script src="https://code.highcharts.com/stock/modules/exporting.js" type="text/javascript"></script> -->
+        <script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
+        <script type="text/javascript" src="/public/includes/highcharts/highstock.js"></script>
+        <script type="text/javascript" src="/public/includes/highcharts/exporting.js"></script>
+        
+        <!-- Ajax Solr -->
+        <!--<script type="text/javascript" src="/public/includes/ajax_solr/core/Core.js"></script>      
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractManager.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/managers/Manager.jquery.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/Parameter.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/ParameterStore.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractWidget.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/helpers/jquery/ajaxsolr.theme.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/widgets/jquery/PagerWidget.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractFacetWidget.js"></script>
+        <script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractTextWidget.js"></script>
+        <script type="text/javascript" src="/public/javascripts/jquery.livequery.js"></script>-->
+
+        <!-- GUISearch -->
+        <link href="/public/stylesheets/guisearch/guisearch.css" rel="stylesheet" type="text/css">  
+        <!--<script type="text/javascript" src="/public/javascripts/guisearch/guisearch.js"></script>       
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchwidget.js"></script>        
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchtheme.js"></script>
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchtagcloud.js"></script>
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchcurrentfilter.js"></script>
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchinput.js"></script>
+        <script type="text/javascript" src="/public/javascripts/guisearch/searchpager.js"></script>-->
+    </head>
+    
+    <body onload="prettyPrint()">
+        #{doLayout /}
+        
+		<script type="text/javascript">
+			$(function () {
+			    //$("[rel='tooltip']").tooltip();
+			});
+            
+			// Add global variable for which mode we're running.  This is important
+			// for callbacks to the server (such as our solr calls).  Prod requires
+			// all calls back to the server to be HTTPS whereas dev and qa only
+			// do HTTP
+			%{
+			   mode = play.Play.configuration.getProperty("application.mode");
+			   demomode = play.Play.configuration.getProperty("demo.mode");
+			   
+			   protocol = "http";
+			   if("prod".equals(mode) && !"true".equals(demomode)) {
+			   	protocol = "https";
+			   }
+			}%
+			var _mode = '${mode}';
+			var _demomode = '${demomode}';
+			var _solrProtocol = '${protocol}';
+        </script>
+    </body>
+  
+</html>
+
+
+
+
+
+
+

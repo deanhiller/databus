@@ -1,0 +1,7 @@
+
+//To make opening the master build file easier, we put it in the
+//master project BUT do NOT name it build.gradle or gradle will think
+//it is the build file for the master subproject when it is really the
+//build file for the WHOLE project(all subprojects)
+
+apply from: 'master/masterbuild.gradle'

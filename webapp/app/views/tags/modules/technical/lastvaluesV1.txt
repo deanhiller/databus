@@ -1,0 +1,3 @@
+[] "The lastvalues module retrieves the last N values of any stream you provide where you tell it the number N. You do not need to provide the ending {Start} and {end} times when using this module.
+usage: https://databus.nrel.gov/api/lastvaluesV1/{N}//{nextmodule}
+example: https://databus.nrel.gov/api/lastvaluesV1/7/rawdata/RSF2MAIN

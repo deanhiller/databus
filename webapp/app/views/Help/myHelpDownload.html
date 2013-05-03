@@ -1,0 +1,86 @@
+#{extends './helpTemplate.html' /}
+#{set title:'Download Data' /}
+#{set subtab:'helpdownload' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<h1>Download Data</h1>
+
+Downloading data is even simpler than uploading data. The rules for downloading data are:
+<br /><br />
+<ol>
+   <li>Set http header of GET message of "Content-Type" as "application/json"</li>
+   <li>Set the basic authentication username to the username(which may start with robot if using a robot)</li>
+   <li>Set the basic authentication password from a users key(for old users, key may be prefixed with register:)</li>
+   <li>Send the GET http request to https://databus.nrel.gov/api/getdataV1/{sqlquery}</li>
+   <li>Let us know if you want to download a VERY large dataset(ie. greater than 10 minute download)</li>
+</ol>
+
+<br /><br />
+Here are some scalable sql examples (and we do check security on the tables you are querying even if you do a join).  The SQL query
+follows more of an object query language so you use c.owner knowing owner is a foreign key.  Also, for every space you would normally
+use in SQL, you need to use a + instead.
+<div class="apikey">
+	<div class="key">
+		https://databus.nrel.gov/api/getdataV1/select+c+from+DboColumnMeta+as+c+left+join+c.owner+as+table+where+table.name='pinkblob'
+		https://databus.nrel.gov/api/getdataV1/select+t+from+TimeSeriesTable+as+t+where+t.time>1234234324343+and+t.time<=12343123243243
+	</div>
+</div>	
+
+<br/><br/>
+If you have a very large result set you want to download, you should code the client to download in chunks and download subset ranges of the data
+as our load balancer can do the retries for you if there is a failure when we do our rolling upgrade so that you get all your data.
+
+You can create robot users or your personal key for gets is below
+
+<br /><br />
+<div class="apikey">
+	<div class="key">
+	<br/>
+	Your key(remove the quotes)="${user.apiKey}"
+	<br/><br/>
+	You have the following robot keys
+<table border="0" class="data" cellpadding="15" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Robot Username</th>
+	        <th>Api Key</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list user.robots, as:'robot'}
+	        <tr>
+	            <td>${robot.name}</td>
+	            <td>${robot.apiKey}</td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+	
+	</div>
+</div>
+<br />
+
+The json response is STREAMED back to you such that very large datasets can be sent back without running out of memory.  The result
+format will look like as follows depending on your table's meta data
+<br /><br />
+
+<div class="apikey">
+	<div class="key">
+<pre>
+{ "data": [
+    {"time":"0", "color":"grey","volume":"23.2"},
+    {"time":"10","color":"grey","volume":"23.2"},
+    {"time":"11","color":"grey","volume":"23.2"},
+    {"time":"30","color":"pink","volume":"34.5"},
+    {"time":"51","color":"grey","volume":"23.2"},
+    {"time":"53","color":"grey","volume":"23.2"}
+          ] 
+}
+</pre>
+	</div>
+</div>		
+

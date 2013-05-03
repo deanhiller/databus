@@ -1,0 +1,297 @@
+/*-------------- GENERAL --------------*/
+#inputs {
+position:relative;
+}
+.load, .saved {
+display:none;
+position:absolute;
+top:-6px;
+}
+.saved {
+display:block;
+}
+#load1, #saved1 {
+top:-2px;
+left:250px;
+}
+#load2, #saved2 {
+left:130px;
+}
+#load3, #saved3 {
+left:380px;
+}
+#load4, #saved4 {
+left:134px;
+}
+.changed {
+padding-top:15px;
+font-size:11px;
+}
+
+/*-------------- UPLOAD --------------*/
+#dltemp {
+float:right;
+width:200px;
+padding:15px 10px 15px 10px;
+margin:10px;
+margin-bottom:0px;
+background-color:#fff;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+border-radius:8px;
+behavior: url(css/PIE.php);
+}
+#dltemp h2 {
+color:#0091E4;
+}
+
+/*-------------- PDD --------------*/
+#pdd {
+width:930px;
+padding:15px 10px 15px 10px;
+margin-bottom:20px;
+background:url(../images/bg_projectdata_thin.jpg) repeat-y;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+border-radius:8px;
+behavior: url(css/PIE.php);
+}
+#pdd h2 {
+color:#01355e;
+font-size:16px;
+font-weight:normal;
+padding-left:10px;
+margin-bottom:15px;
+}
+#pdd h2.current {
+color:#01355e;
+font-size:14px;
+padding:10px 10px;
+margin-bottom:10px;
+-webkit-border-radius:5px;
+-moz-border-radius:5px;
+border-radius:5px;
+behavior: url(css/PIE.php);
+background-color:#f1f1f1;
+}
+#pdd h2 #unsaved {
+font-style:italic;
+color:#999;
+}
+#pdd h2 a {
+color:#00a4e4;
+text-decoration:none;
+}
+#pdd h2 a:hover {
+color:#01355e;
+}
+#pdd label {
+display:block;
+width:575px;
+line-height:29px;
+padding:0px 10px;
+border-bottom:1px solid #e0e0e0;
+border-right:1px solid #e0e0e0;
+}
+#pdd #addinextras label {
+color:#004e8c;
+padding-left:35px;
+width:550px;
+}
+#pdd label input, #pdd label select {
+float:right;
+font-size:12px;
+width:200px;
+margin-top:3px;
+border:1px solid #0090e4;
+}
+#pdd label input {
+padding:3px;
+}
+#pdd label select {
+width:208px;
+padding:2px;
+}
+#pdd label input.readonly {
+color:#666;
+background-color:#e1e1e1;
+}
+#pdd input.highlight, #pdd select.highlight {
+background-color:#f3ecc6;
+}
+#pdd #results {
+width:288px;
+height:320px;
+padding:5px 0px;
+margin-right:10px;
+border-left:1px solid #e0e0e0;
+}
+#pdd #results h2 {
+color:#01355e;
+font-size:16px;
+font-weight:normal;
+line-height:20px;
+padding:0px 15px;
+margin-bottom:15px;
+}
+#pdd #results select {
+font-size:12px;
+width:70px;
+padding:3px;
+margin-top:3px;
+border:1px solid #0090e4;
+}
+#pdd p {
+color:#333;
+font-size:12px;
+padding:5px 15px;
+}
+#pdd #viewresults {
+position:relative;
+width:288px;
+height:80px;
+padding-top:30px;
+padding-left:40px;
+background:url(../images/results_gradient.png) no-repeat;
+}
+#pdd #viewresults img {
+position:absolute;
+top:-14px;
+left:-35px;
+}
+#pdd #viewresults a {
+display:block;
+width:230px;
+height:46px;
+background:url(../images/sprite.png) no-repeat 0px -111px;
+}
+#pdd #viewresults a:hover {
+background-position:-230px -111px;
+}
+#pdd #results select {
+margin-left:15px;
+}
+#reset {
+display:block;
+width:150px;
+height:32px;
+background:url(../images/sprite.png) no-repeat 0px -249px;
+}
+#reset:hover {
+background-position:-153px -249px;
+}
+
+/*-------------- PCD & ADDIN --------------*/
+#pcd {
+padding:15px;
+margin-bottom:20px;
+-webkit-border-radius:8px;
+-moz-border-radius:8px;
+border-radius:8px;
+background-color:#e2e2e2;
+behavior: url(css/PIE.php);
+}
+#pcd table {
+width:920px;
+margin-bottom:20px;
+}
+#pcd tr {
+border-bottom:1px solid #71b9e3;
+}
+#pcd th {
+background-color:#d5d5d5;
+}
+#pcd th, #pcd td {
+text-align:left;
+font-size:12px;
+padding:5px 10px;
+}
+#pcd td.highlight {
+background-color:#eee;
+}
+#pcd h2 {
+position:relative;
+color:#01355e;
+font-size:16px;
+font-weight:normal;
+line-height:20px;
+padding-bottom:15px;
+border-bottom:3px solid #01355e;
+}
+
+#pcd h3 {
+position:relative;
+color:#01355e;
+font-size:14px;
+font-weight:normal;
+line-height:20px;
+
+}
+
+/* #pcd button {
+font-size:12px;
+width:80px;
+margin-top:3px;
+border:1px solid #0090e4;
+} */
+
+#pcd input.highlight, #pcd select.highlight {
+background-color:#f3ecc6;
+}
+#pcd p, #addin p {
+font-size:12px;
+color:#333;
+margin-bottom:15px;
+}
+
+/*-------------- BTMBUTTON --------------*/
+#btmbutton {
+text-align:center;
+}
+#btmbutton a {
+display:block;
+width:230px;
+height:46px;
+margin:20px auto;
+background:url(../images/sprite.png) no-repeat 0px -111px;
+}
+#btmbutton a:hover {
+background-position:-230px -111px;
+}
+
+/* ---------- Forms ----------*/
+
+
+.input, .select {
+    float: left;
+    font-size: 12px;
+    font-weight: bold;
+    padding-right: 84px;
+    text-align: left;
+    width: 120px;
+}
+
+.entry {
+    clear: both;
+    margin-left: auto;
+    margin-right: auto;
+/*    text-align: center; */
+    width: 1000px;
+}
+
+
+.label {
+    float: left;
+    font-size: 13px;
+    font-weight: bold;
+    padding-right: 10px;
+    text-align: right;
+    width: 160px;
+}
+
+/* End text formatting for form */
+
+
+
+
+

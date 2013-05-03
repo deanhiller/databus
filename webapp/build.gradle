@@ -1,0 +1,329 @@
+
+apply plugin: 'java'
+
+import groovy.util.AntBuilder
+
+sourceSets.main{
+  java.srcDirs = ['app', 'test']
+  resources.srcDirs = ['app']
+}
+
+// ######################################################################
+//													GRADLE UNIT TESTS
+// ######################################################################
+
+dependencies {
+	compile fileTree(dir: 'play-1.2.5/framework/lib', include: '*.jar')
+	compile fileTree(dir: 'play-1.2.5/framework', include: 'play-*.jar')
+
+	testCompile fileTree(dir: 'play-1.2.5/framework/lib', include: '*.jar')
+
+	compile fileTree(dir: 'lib', includes: ['*.jar'])
+}
+
+// Globals
+def playPort = "9000"
+
+
+/**
+ * *******************************************************************************************
+ * METHODS (or what Groovy calls CLOSURES :rolleyes:)
+ * *******************************************************************************************
+ */
+
+def isPlayServerRunning = { port ->
+	def serverRunning = true
+	
+	new ByteArrayOutputStream().withStream { os ->
+		def result = exec {
+			/**
+			 * The following uses curl but its actually pretty slow so we limit it to 1 second since
+			 * a successful response is always faster than a second (and thats all we need to know)
+			 */
+			ignoreExitValue = true
+			executable = 'curl'
+			args = ['localhost:' + port , '-m', '1']
+			errorOutput = os
+			standardOutput = os
+		}
+		def output = os.toString()
+		
+		if(output.contains("couldn't connect to host")) {
+			serverRunning = false
+			
+			//println "The server is not running"
+		} else {
+			//println  "The server is running"
+		}
+	}
+	
+	return serverRunning
+}
+
+/**
+* *******************************************************************************************
+*		MAIN TASKS
+* *******************************************************************************************
+* testSDI
+* --------------------------------
+*		This is the manual launch of the JUnit tests
+*/
+task testSDI (type: Test, dependsOn:'setupTests') << {	
+	outputs.upToDateWhen { false }
+	
+	scanForTestClasses = true
+	//enableAssertions = true
+	
+	//makes the standard streams (err and out) visible at console when running tests
+	testLogging.showStandardStreams = true
+	
+	//listening to test execution events
+	beforeTest { descriptor ->
+	   logger.lifecycle("Running test: " + descriptor)
+	}
+	onOutput { descriptor, event ->
+	   logger.lifecycle("Test: " + descriptor + " produced standard out/err: " + event.message )
+	}
+
+	new File('lib').list().each {
+			classpath += files(it)
+	}
+
+	testClassesDir = file("${buildDir}/classes/main/robot")
+	testSrcDirs = ["test/robot"]
+	testResultsDir = file("${buildDir}/results")
+	testReportDir = file("${buildDir}/reports/tests")
+}
+
+testSDI {
+    beforeTest{ descr ->
+        logger.warn("Starting Test ${descr.className} : ${descr.name}")    
+    }
+}
+
+
+// setupTests Task
+// --------------------------------
+//		This task makes sure the play server is running before we attempt to run junit
+task setupTests (dependsOn: 'startPlayServer') << {
+	println "***** COMPILING TESTS *****\n\n"
+	
+	/**
+	 * ISSUE WITH "SCANNING" FOR CLASSES TO TEST
+	 *
+	 * 	http://issues.gradle.org/browse/GRADLE-863
+	 *
+	 * Gradle will ONLY scan for test classes in src/test/java and our tests are in ./test
+	 *
+	 * So we have to explicitly tell Gradle where the source files are for the unit tests
+	 */
+	// Compile all the tests and place our special directory in Gradle's test search path
+	compileTestJava {
+		FileTree tree = fileTree(dir: 'test')
+		tree.exclude '**/ApplicationTest*'		// Excluded because it attempts to start the Play server
+		tree.exclude '**/BasicTest*'				// Excluded because it attempts to start the Play server
+		source += tree
+	  }
+}
+
+// startPlayServer
+// --------------------------------
+//		This task is the one that kicks off the play server
+task startPlayServer (dependsOn: [':master:copyJars','writePlayWrapper']) << {	
+	// Delete Play's temp directory just in case
+	def playTmp = new File( 'webapp/tmp')
+	if(playTmp.exists()) {
+		playTmp.deleteDir()
+	}
+	
+	def serverRunning = isPlayServerRunning(playPort)
+	if(serverRunning) {
+		println "\n\n****** PLAY SERVER CURRENTLY RUNNING ON PORT $playPort ******\n"
+	} else {
+		def error = false
+		def retries = 0
+		while(!serverRunning) {
+			if(retries > 3) {
+				error = true
+				break
+			}
+			
+			// We must check to see if the server was started in the background (with a pid file)
+			// and then killed or stopped later.  If we dont remove the old pid we'll fail out
+			def serverPID = new File( 'webapp/server.pid')
+			if(serverPID.exists()) {
+				serverPID.delete()
+			}
+			
+			def result = exec {
+				executable = './playWrapper'
+			}
+			
+			// Give the server time to start up before we throw tests at it (higher time for load issues)
+			sleep 5000
+			retries++
+			
+			serverRunning = isPlayServerRunning(playPort)
+		}
+		
+		if(error) {
+			println "\n\nERROR - Could not start Play server after 3 tries...\n****** PLAY SERVER NOT STARTED ON PORT $playPort ******\n"
+			throw new GradleException('ERROR - Could not start Play server after 3 tries...')
+		} else {
+			println "\n\n****** PLAY SERVER LAUNCHED ON PORT $playPort ******\n"
+		}
+	}
+}
+
+
+task writePlayWrapper << {
+	// Due to the weird way Gradle snags environment variables, we have to jump through a 
+	// couple if hoops in order to make sure the port is set if the env variable just isnt there
+	// or empty
+	def tempPort =  System.getenv("SDIBUILD_PLAY_PORT")
+	if(tempPort) {
+		playPort = tempPort
+	}	
+		
+	println "\nWRITING PLAY WRAPPER\n"
+	
+	/**
+	 * Its important to set the environment variable SDIBUILD_PLAY_PORT to whatever port
+	 * we kick the play server off as.  Since the builds are completely controlled by Jenkins
+	 * we will need to snag this variable from the environment running this build script
+	 * and insert it into the play start script.
+	 * 
+	 * It is also important to note that the Play server has 2 settings for the client connection
+	 * port.  The http.port option that configures the server to listen for http requests and
+	 * then an application.baseUrl configuration port that the Play server uses when dealing
+	 * with load balancing.
+	 * 
+	 * In order to get all unit tests working, we need to set both ports to the same value but
+	 * only the http.port option can be explicitly set in the Play command line call.  The other
+	 * one (application.baseUrl) needs to be set in the webapp/conf/application.conf file.
+	 * 
+	 * So what we have to do here is open that webapp/conf/application.conf file and change
+	 * this configuration setting to whatever port we start the Play server as and then put it
+	 * back the way it was when we are finished.
+	 */
+	// First copy the exiting conf file to a backup
+	new AntBuilder().copy(file:'webapp/conf/application.conf', tofile:'webapp/conf/application.conf.bak')
+	
+	// Now modify the existing one w/ our new port
+	File confFile = new File('webapp/conf/application.conf')
+	def confText = confFile.text
+	def newContent = confText.replaceAll("application.requestUrl=http://localhost:.*", "application.requestUrl=http://localhost:" + playPort)
+	confFile.write(newContent)
+	
+	/**
+	 * Now write the Play server wrapper so we can launch it in the background and
+	 * gradle can continue on its merry way.
+	 * 
+	 * We pipe the output of Play into a file called playWrapper.log.  We will delete this file
+	 * on every successful build but it will stick around after a failed build so that we can see
+	 * what Play's state was during the failure.
+	 */
+	def playExec = new File( 'webapp/playWrapper')	
+	if(playExec.exists()) {
+		playExec.delete()
+	}	
+	playExec << ('#!/bin/bash\n\n' +
+						 //'./play run --http.port=9000 > playWrapper.log 2>&1 &')
+						 './play run --http.port=' + playPort + ' > playWrapper.log 2>&1 &')
+	playExec.setExecutable(true)
+}
+
+//task runSDITests (dependsOn: [':webapp:clean', 'build', 'clean', 'testSDI']) << {
+task runSDITests (dependsOn: [':master:copyJars', 'testSDI']) << {
+	/**
+	 *  All this task is is a gateway to the unit tests.  In order for Gradle to play correctly
+	 *  w/ regards to ORDERING, we have this task to kick off other dependent tasks
+	 *
+	 */
+}
+
+gradle.taskGraph.afterTask { task, TaskState state ->
+	/**
+	 * If we are running in "run" mode, we need to shut down the Play server (but I cannot get 
+	 * normal piped shell commands to work in gradle by just kicking them off, they must be
+	 * in a bash file)
+	 */
+	if (task == testSDI) {
+		/**
+		 * 	Play server status
+		 * 
+		 * 				TO SEE IF RUNNING
+		 * 		 		ps -ef | grep project_main_class | grep http.port=PORT | grep -v grep | awk '{print $2}'
+		 * 
+		 * 				TO KILL
+		 * 					ps -ef | grep project_main_class | grep http.port=PORT | grep -v grep | awk '{print $2}' | xargs kill
+		 */
+		
+		def killPlay = new File( 'webapp/killPlay')
+		if(killPlay.exists()) {
+			killPlay.delete()
+		}
+		killPlay << ('#!/bin/bash\n\n' +
+							 'ps -ef | grep play.server.Server | grep http.port=' + playPort + ' | grep -v grep | awk \'{print $2}\' | xargs kill')
+		killPlay.setExecutable(true)
+		
+		println "\n\n****** KILLING PLAY SERVER ON PORT $playPort ******"
+		def result = exec {
+			ignoreExitValue = true
+			executable = './killPlay'
+		}
+		killPlay.delete()
+		
+		println "****** PLAY SERVER KILLED ******\n\n"
+	
+		/**
+		 * Now we have some cleanup we need to do for all Test runs
+		 */
+		def playExec = new File( 'webapp/playWrapper')
+		if(playExec.exists()) {
+			playExec.delete()
+		}
+		
+		def playExecLog = new File( 'webapp/playWrapper.log')
+		if(playExecLog.exists()) {
+			playExecLog.delete()
+		}
+		
+		def playTmp = new File( 'webapp/tmp')
+		if(playTmp.exists()) {
+			playTmp.deleteDir()
+		}
+		
+		// now lets move the original conf file back to its normal place
+		// We MUST do this here or this file could be moved at any time due to gradle kicking things
+		// off in any order it chooses
+		println "Moving application.conf file back to original form"
+		def confFile = new File('webapp/conf/application.conf')
+		confFile.delete()
+		new AntBuilder().copy(file:'webapp/conf/application.conf.bak', tofile:'webapp/conf/application.conf')
+		def tempConfFile = new File('webapp/conf/application.conf.bak')
+		tempConfFile.delete()
+		
+		
+		println "\n\n----------------------------------------------------------------------------\n" +
+				   "************ $task COMPLETED ************\n" +
+				   "----------------------------------------------------------------------------"
+	}
+ }
+
+/**
+ * ********************************************************************************************
+ *                                           ***** IMPORTANT *****
+ * ********************************************************************************************
+ * 
+ * We do NOT want the main test (from the normal JavaExec build process) to run any
+ * of our tests because they require the Play Server to be up.
+test {
+	dependsOn 'testSDI'
+}
+*/
+
+
+
+
+

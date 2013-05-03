@@ -1,0 +1,18 @@
+#{extends '_main.html' /}
+
+#{form @postData(table), enctype:'multipart/form-data', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <legend>Upload Data</legend>
+    
+    <div class="control-group">
+        <label class="control-label">File:</label>
+        <div class="controls">
+            <input type="file" id="file" name="file" />
+        </div>
+    </div>
+    
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" value="Send it..." class="btn btn-primary"/>
+        </div>
+    </div>
+#{/}

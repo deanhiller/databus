@@ -1,0 +1,3 @@
+{ "modulename" : "rawdata",
+  "description" : "Returns all the raw data for the stream"
+}

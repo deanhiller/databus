@@ -1,0 +1,3 @@
+{ "modulename" : "invert",
+  "description" : "Negates every value in the stream"
+}

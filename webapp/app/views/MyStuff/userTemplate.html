@@ -1,0 +1,30 @@
+#{extends 'main.html' /}
+#{set title:'My Data' /}
+#{set tab:'groups' /}
+
+
+
+<div id="rightside">
+<h2>More Options</h2>
+<ul id="subnav">
+	<li class="subtab"><a href="@{MyGroups.myGroups()}" id="subtab_groups">Groups</a></li>
+	<li class="subtab"><a href="@{MySchemas.mySchemas()}" id="subtab_schemas">Schemas</a></li>
+	<li class="subtab"><a href="@{MyStuff.myTables()}" id="subtab_tables">Tables</a></li>
+</ul>
+
+</div>
+
+
+
+
+<script type="text/javascript" language="JavaScript">
+	function setClass(id, className) {
+		var obj = document.getElementById(id);
+   		if (obj != null) {
+    		obj.className = className;
+    	}
+	}
+	setClass("subtab_" + "#{get 'subtab' /}", "selected");
+</script>
+  		
+#{doLayout /}

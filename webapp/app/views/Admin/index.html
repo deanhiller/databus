@@ -1,0 +1,44 @@
+#{extends './adminTemplate.html' /}
+#{set subtab:'groups' /}
+
+<h2>Groups</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groups, as:'group'}
+	        <tr>
+	            <td><a href="@{MyGroups.editGroup(group.name)}">${group.name}</a></td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+
+*{
+<h2>Schemas</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Creator</th>
+	        <th>Owning Groups</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list schemas, as:'schema'}
+	        <tr>
+	            <td>
+	                <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
+	                	<a href="@{MyStuff.tableEdit(table.tableName)}">${schema.tableName}</a>
+		            	<div class="tip tipright">${schema.description}</div>
+		            </span>
+	            </td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table> }*

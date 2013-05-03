@@ -1,0 +1,3 @@
+{ "modulename" : "lastvalues",
+  "description" : "Takes the last few values of a stream(most recent values)"
+}

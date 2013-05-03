@@ -1,0 +1,27 @@
+#{extends 'main.html' /}
+#{set title:'Meta Search' /}
+#{set tab:'metasearch' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+	#mainbody ul {margin-bottom: 0px !important;}
+	#pcd tr {border-bottom: 0px !important;}
+</style>
+
+<!-- GUISearch -->
+<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+<link href="/public/stylesheets/guisearch/legacyguisearch.css" rel="stylesheet" type="text/css">
+<link href="/public/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/public/bootstrap/js/bootstrap.min.js"></script>
+
+<div id="page_content" style="background-color: #efefef;">
+	<div id="content" class="content"></div>
+</div>
+
+<script type="text/javascript">	  				
+	$("#content").empty();
+	$.get("@{gui.GUISearch.metaSearch()}", function(data) {
+		$('#content').html(data);
+	});
+</script>	  

@@ -1,0 +1,3 @@
+{ "modulename" : "rangeclean",
+  "description" : "Cleans all data where the value is outside the specified range"
+}

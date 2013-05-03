@@ -1,0 +1,19 @@
+#{extends './adminTemplate.html' /}
+#{set subtab:'meta' /}
+
+<h2>Tables</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list tables, as:'table'}
+	        <tr>
+	            <td><a href="@{Admin.metaTable(table.columnFamily)}">${table.columnFamily}</a></td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>

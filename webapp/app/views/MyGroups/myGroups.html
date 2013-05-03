@@ -1,0 +1,37 @@
+#{extends 'MyStuff/userTemplate.html' /}
+#{set title:'My Groups' /}
+#{set tab:'groups' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<h1>My Groups</h1>
+
+<p>These are the groups you have access to.  Each group may have access to multiple schemas or tables.</p>
+     
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list user.parentGroups, as:'mapping'}
+	        <tr>
+	            <td><a href="@{MyGroups.editGroup(mapping.group.name)}">${mapping.group.name}</a></td>
+	        </tr>
+	    #{/list}
+	    #{else}
+	    <tr>
+			<td colspan=2>You do not belong to any groups yet.  <a href="@{MyGroups.editGroup(null)}">Add a Group Now!!!</a></td>
+		</tr>
+	    #{/else}
+	</tbody>
+</table>
+  
+<p>
+  	<a href="@{MyGroups.editGroup(null)}">Add Group</a>
+</p>
+  

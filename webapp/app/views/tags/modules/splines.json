@@ -1,0 +1,3 @@
+{ "modulename" : "splines",
+  "description" : "Does interpolation on the data using a basic spline or derivative spline"
+}

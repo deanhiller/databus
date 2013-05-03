@@ -1,0 +1,29 @@
+#{extends 'main.html' /}
+#{set title:'Add/Edit User' /}
+#{set tab:'mydata' /}
+
+<div id="noputonstack"></div>
+
+	<h2>Edit Group</h2>
+
+<div class="content clearfix">
+#{form @MyStuff.postUser(group, false), id:'edituser'}
+
+	<input type="text" class="inputtext" name="targetUser.username" value="${targetUser.username}" readonly="readonly">
+
+	#{xfield objectId:'groupDbo.name',label:'Group Name', help:'Some help message', length:'50'}
+		#{generic field}
+			<select>
+			  <option value="admin">Admin</option>
+			  <option value="Writer/Reader">Writer/Reader</option>
+			  <option value="Reader">Reader</option>
+			</select>
+		#{/generic}
+	#{/xfield}
+
+	<div style="clear:both;text-align:center;margin-left:auto;margin-right:auto;">
+		<input type="submit" name="submit" value="Save" class="button" />
+		<a href="javascript:history.back()" class="button">Cancel</a>
+	</div>
+#{/form}
+</div>

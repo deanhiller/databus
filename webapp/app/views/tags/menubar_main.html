@@ -1,0 +1,89 @@
+<div class="row-fluid">
+	<div class="span12">
+		<div class="navbar db_main_nav" style="margin-bottom: 0px">
+			<div class="navbar-inner db_main_nav"
+				style="background-image: none; padding: 0px 0px 0px 0px; border-width: 0px 0px 0px 0px">
+				<!-- This is the button on the right WHEN on mobile phone or small screen device -->
+				<a class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse"> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+				</a>
+				<div class="nav-collapse collapse">
+					<ul class="nav" style="width: 100%">
+						#{if session.get('username') == null}
+							<li id="tab_dashboard" class="db_main_nav_item"
+								style="margin-left: 25px;"><a
+								href="@{gui.auth.GuiSecure.login()}"
+								class="brand db_main_nav_bar_item"><i
+									class="icon-home icon-white"
+									style="position: relative; top: 1px;"></i> Databus</a></li>
+						#{/if} 
+						#{else}
+							<li id="tab_dashboard" class="db_main_nav_item"
+								style="margin-left: 25px;"><a
+								href="@{gui.Search.dashboardSide()}"
+								class="brand db_main_nav_bar_item"><i
+									class="icon-tasks icon-white"
+									style="position: relative; top: 1px;"></i> Dashboard</a></li>
+							<li id="tab_home"
+								class="dropdown dropdown-toggle db_main_nav_item"><a
+								class="db_main_nav_bar_item" data-toggle="dropdown" href="#"><i
+									class="icon-home icon-white"
+									style="position: relative; top: 1px;"></i> My Databus <b
+									class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="@{gui.MySummary.mySummary()}">Summary</a></li>
+									<li class="divider"></li>
+									<li><a href="@{gui.MyDatabases.myDatabases()}">Databases</a></li>
+									<li><a href="@{gui.MyGroups.myGroups()}">Groups</a></li>
+									<li><a href="@{gui.MyStuff.myTables()}">Tables</a></li>
+								</ul>
+							</li>
+
+							<li id="tab_search" class="db_main_nav_item"><a
+								href="@{gui.GUISearch.metaSearch()}" class="db_main_nav_bar_item">
+								<i class="icon-search icon-white"
+									style="position: relative; top: 1px;"></i> Meta Search</a></li>
+							<li id="tab_upload" class="db_main_nav_item"><a
+								href="@{gui.DataUpload.dataUploadMain()}" class="db_main_nav_bar_item">
+								<i class="icon-upload icon-white"
+									style="position: relative; top: 1px;"></i> Data Upload</a>
+							</li>
+						#{/else} 								
+								
+						<span class="nav pull-right" style="margin-right: 5px;">
+							<li style="margin-top: 2px; margin-right: 10px;">
+								<div id="global_search" class="navbar-search">
+									<input type="text" id="global_search_bar" name="searchString"
+										class="search_input search-query bd_search_form"
+										placeholder="Search">
+								</div>
+						</li>
+							<li class="dropdown dropdown-toggle db_main_nav_item"
+							style="border: 0px"><a class="db_main_nav_bar_item_help"
+								data-toggle="dropdown" href="#"> Help <b class="caret"></b></a>
+								<ul class="dropdown-menu">
+									#{if session.get('username') == null}
+										<li><a href="@{gui.Application.myHelpUnAuth()}">Databus</a></li>
+									#{/if} 
+									#{else}
+										<li><a href="@{gui.Help.myHelp()}">Databus</a></li>
+										<li><a href="@{gui.Help.myHelpAccess()}">System Access</a></li>
+										<li><a href="@{gui.Help.myHelpGroups()}">User Groups</a></li>
+										<li><a href="@{gui.Help.myHelpRobots()}">Robots</a></li>
+										<li><a href="@{gui.Help.myHelpProvisioning()}">Provisioning
+												Databus</a></li>
+										<li><a href="@{gui.Help.myHelpUpload()}">Uploading
+												Data</a></li>
+										<li><a href="@{gui.Help.myHelpDownload()}">Downloading
+												Data</a></li>
+										<li><a href="@{gui.Help.myHelpModules()}">Modules</a></li>
+									#{/else} 
+								</ul></li>
+						</span>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

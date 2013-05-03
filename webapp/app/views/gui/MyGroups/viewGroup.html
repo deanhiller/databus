@@ -1,0 +1,56 @@
+#{extends '/main_body_container.html' /}
+#{set tab:'home' /}
+#{set title:'Add/Edit Group' /}
+
+<form class="form-horizontal" style="min-width:500px;max-width:800px;margin: 0 auto">
+    <legend>Group Properties</legend>
+    
+	#{xfield objectId:'groupDbo.name',label:'Group Name', help:'Some help message'}
+		#{text field:field, length:51, readonly:'true', class:'input-xlarge'/}
+	#{/xfield}
+	
+	#{xfield objectId:'groupDbo.description',label:'Group Description', help:'Some help message'}
+		#{textarea field:field, rows:12, cols:100, readonly:'true', class:'input-xxlarge'/}
+	#{/xfield}
+
+</form>
+
+ <h2>Members</h2>
+*{    
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Role</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groupDbo.users, as:'mapping'}
+	        <tr>
+	            <td>${mapping.entity.name}</td>
+	            <td>${mapping.permission}</td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+}*
+<br><br>
+	
+<h2>Resources/Databases in this Group(first 50 shown)</h2>
+	
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list resources, as:'resource'}
+	        <tr>
+	            <td><a href="@{gui.MyDatabases.viewDatabase(resource.resource.name)}">${resource.resource.name}</a></td>
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>	
+
+

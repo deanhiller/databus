@@ -1,0 +1,164 @@
+#{extends './homeTemplate.html' /}
+#{set tab:'home' /}
+#{set title:'Add/Edit Database' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<a href="#" rel="tooltip" title="A nice tooltip">test</a>
+#{form @postDatabase(), id:'editproject', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <legend>Database Properties</legend>
+   <input type="hidden" name="schema.id" value="${schema?.id}">
+   <input type="hidden" name="oldSchemaName" value="${schema?.schemaName}">
+
+	#{xfield objectId:'schema.schemaName',label:'Name', help:'Some help message for schema name'}
+		#{text field:field, length:50, class:'input-xlarge'/}
+	#{/xfield}
+	
+	#{xfield objectId:'schema.description',label:'Description', help:'Some help message'}
+		#{textarea field:field, rows:12, cols:100, class:'input-xxlarge'/}
+	#{/xfield}
+
+    <div class="control-group">
+        <div class="controls">
+            <input type="submit" name="submit" value="Save" class="btn btn-primary" />
+            <a href="javascript:history.back()" class="btn">Cancel</a>
+	   </div>
+	</div>
+#{/form}
+
+#{if schema?.id != null}
+ <h2>Users</h2>
+    
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Role</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list schema.entitiesWithAccess, as:'xref'}
+	        <tr>
+	        	#{if xref.userOrGroup.classType == "group"}
+		            	<td><a href="@{gui.MyGroups.editGroup(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a></td>
+		            	<td>Group</td> 
+	            #{/if}
+	            #{if xref.userOrGroup.classType == "userImpl"}
+		            	<td>${xref.userOrGroup.name}</td> 
+		            	<td>User</td>
+	            #{/if}
+	            
+	            <td>${xref.permission}</td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+
+
+#{form @postAddUserToDatabase(), id:'addusertoschema', class:'form-horizontal', style:'min-width:400px;max-width:500px;margin: 0 auto'}
+    <legend>Add a user</legend>
+	<input type="hidden" name="schema.id" value="${schema?.id}">
+	#{xfield objectId:'targetUser.username',label:'User Name', help:'Some help message'}
+		#{text field:field, length:50/}
+	#{/xfield}
+	
+	#{xfield objectId:'permission',label:'Membership Type', help:'IF the user is an Admin he can add/remove users and groups', length:'50'}
+		#{generic field}
+			#{select 'permission', value:"read", id:'select1'}
+				#{option "admin"}Admin#{/option}
+				#{option "readwrite"}Writer/Reader#{/option}
+				#{option "read"}Reader#{/option}
+				
+			#{/select}
+		#{/generic}
+	#{/xfield}
+	<div class="control-group">
+        <div class="controls">
+            <input type="submit" name="submit" value="Add User" class="btn btn-primary" />
+        </div>
+	</div>
+#{/form}
+
+#{form @postAddGroupToDatabase(), id:'addgrouptoschema', class:'form-horizontal', style:'min-width:400px;max-width:500px;margin: 0 auto'}
+	<legend>Add a group</legend>
+	<input type="hidden" name="schema.id" value="${schema?.id}">
+	#{xfield objectId:'targetGroup.name',label:'Group Name', help:'Some help message'}
+		#{text field:field, length:50/}
+	#{/xfield}
+	#{xfield objectId:'permission',label:'Membership Type', help:'IF the group is an Admin anyone in that group can add/remove users and groups', length:'50'}
+		#{generic field}
+			#{select 'permission', value:"read", id:'select1'}
+				#{option "admin"}Admin#{/option}
+				#{option "readwrite"}Writer/Reader#{/option}
+				#{option "read"}Reader#{/option}
+				
+			#{/select}
+		#{/generic}
+	#{/xfield}
+
+    <div class="control-group">
+        <div class="controls">
+		      <input type="submit" name="submit" value="Add Group" class="btn btn-primary" />
+		</div>
+	</div>
+#{/form}
+
+<h2>Tables in this Schema(first 50 shown)</h2>
+	
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list tables, as:'table'}
+	        <tr>
+		        #{if table?.typeOfData == timeseries}
+					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+					<td><a href="@{gui.MyStuff.tableData(table.tableName)}">View Data</a></td>
+				#{/if}
+				#{else}
+					<!-- once we have a relational data view page, put the link here! -->
+				#{/else}
+	            
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>	
+	
+  	*{ <a href="@{tableAdd(schema.schemaName)}">Add Table</a> }*
+  	
+<h2>Table Monitors</h2>
+
+If you have a program that constantly updates a table, then you can add a monitor and we will notify you if that table stops seeing updates such that you know to go
+check on your client to see if it crashed or what issue has occurred.  We check every 5 minutes and if we have any failures, the worst case is another server takes over
+and checks in 10 minutes.
+
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Table</th>
+   	        <th>Poll Time(Minutes)</th>
+	        <th>Emails</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list monitors, as:'monitor'}
+	        <tr>
+	            <td><a href="@{monitorEdit(schema.schemaName,monitor.tableName)}"">${monitor.tableName}</a></td>
+           	    <td>${monitor.updatePeriod}</td>
+	            <td>${monitor.emails}</td>
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>
+
+<a href="@{monitorAdd(schema.schemaName)}" class="btn btn-primary">Add Monitor</a><br/>
+
+#{/if}	
+

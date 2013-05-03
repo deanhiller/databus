@@ -1,0 +1,3 @@
+The timeaverage module allows users to average intervals of points in a stream. Users specify the interval in milliseconds and the intervals line up with the start time. Output time point is the start of the interval being averaged.
+usage: https://databus.nrel.gov/api/timeaverageV1/{INTERVAL}/{nextmodule} 
+example: https://databus.nrel.gov/api/timeaverageV1/60000/rawdata/RSF2MAIN/1354738000000/1354824663000

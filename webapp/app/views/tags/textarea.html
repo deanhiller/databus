@@ -1,0 +1,8 @@
+	#{generic _field}
+	   #{if _readonly}
+	   <textarea name="${_field?.name}" rows="${_rows}" cols="${_cols}" class="${_class}" readonly>${_field?.value}</textarea>
+	   #{/if}
+	   #{else}
+	   <textarea name="${_field?.name}" rows="${_rows}" cols="${_cols}" class="${_class}">${_field?.value}</textarea>
+	   #{/else}
+	#{/generic}

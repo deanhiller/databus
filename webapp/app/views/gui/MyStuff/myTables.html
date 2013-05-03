@@ -1,0 +1,30 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Tables' /}
+#{set tab:'home' /}
+
+<h1 class="db_page_title">Tables</h1>
+
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Table Name</th>
+	        <th>Groups</th>
+	        <th>Highest Role</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list infos, as:'info'}
+	        <tr>
+	            <td>${info.table.tableName}</a></td>
+	            <td>${info.groupNames}
+	            <td>${info.mapping.permission}</td>
+	        </tr>
+	    #{/list}
+	    #{else}
+	    <tr>
+			<td colspan="3">You do not belong to any groups that have tables yet.  Add some groups, then tables!!!</td>
+		</tr>
+	    #{/else}
+	</tbody>
+</table>
+

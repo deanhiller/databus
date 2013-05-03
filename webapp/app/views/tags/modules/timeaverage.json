@@ -1,0 +1,3 @@
+{ "modulename" : "timeaverage",
+  "description" : "Averages windows of data(like the average every hour)"
+}

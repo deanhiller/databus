@@ -1,0 +1,38 @@
+<!-- DOCTYPE html -->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"> 
+
+<html>
+    <head>
+        <title>Ping Test</title>
+        <meta charset="${_response_encoding}">
+        <link rel="stylesheet" media="screen" href="@{'/public/stylesheets/main.css'}">
+        #{get 'moreStyles' /}
+        <link rel="shortcut icon" type="image/png" href="@{'/public/images/favicon.png'}">
+        <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+        #{get 'moreScripts' /}
+		<!-- Jim's stuff -->
+		<link rel="stylesheet" type="text/css" href="/public/includes/topstyle.css" />
+		<link rel="stylesheet" type="text/css" href="/public/includes/model.css" />
+		<script type="text/javascript" src="/public/includes/jquery_1.4.2.js"></script> 
+		<script type="text/javascript" src="/public/includes/jquery.livequery.js"></script>
+		<script type="text/javascript" src="/public/includes/script.js"></script> 
+		<script type="text/javascript" src="/public/includes/retrofits.css"></script> 
+</head>
+
+
+<body>
+
+Your pingtest was successful.  We connected to the database and gave you a response so no need to notify operations at this time.
+
+<div id="footer">
+	<img alt="NREL is a national laboratory of the U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, operated by the Alliance for Sustainable Energy, LLC." src="http://www.nrel.gov/images/foot_nrelis.gif" usemap="#footer_map" />
+	<p>
+		<a href="http://www.nrel.gov/webmaster">Need Help?</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://www.nrel.gov/security.html">Security &amp; Privacy</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://www.nrel.gov/disclaimer.html">Disclaimer</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="http://www.nrel.gov" style="color:#cc6600;">NREL Home</a>
+	</p>
+	<p class="poweredby">
+		This Web site is <a href="http://www.nrel.gov/poweredbyrenewables.html">powered by renewable energy</a>.
+	</p>
+</div><!-- END: footer -->
+</body>
+</html>
+

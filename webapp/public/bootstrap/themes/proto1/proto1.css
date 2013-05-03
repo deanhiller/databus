@@ -1,0 +1,411 @@
+body {
+	background-color: #efefef;
+}
+
+.nrel_header {
+	width: 1000px;
+	background:url(/public/images/header1.gif) no-repeat;
+	margin: auto;
+	padding-bottom: 64px;
+}
+
+.db_header {
+	width: 1000px;
+	background:url(/public/images/header_databus_t2.jpg) no-repeat;
+	margin: auto;
+	padding-bottom: 112px;
+}
+
+.db_login_header {
+	padding: 0 0 0 0;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	margin-right: 10px !important;
+	-webkit-padding-start: 0px;
+}
+
+.db_navbar_header {
+	width: 1000px;
+	margin: auto;
+	/* background-color: 	#004d81; */
+	background-color: 	#001429;
+}
+
+.navbar-inner .db_navbar-inner {
+	-webkit-box-shadow: 0 0px 0px rgba(0,0,0,0);
+	-moz-box-shadow: 0 0px 0px rgba(0,0,0,0);
+	box-shadow: 0 0px 0px rgba(0,0,0,0);
+}
+
+.db_navbar .db_brand {
+	display: block;
+	float: left;
+	padding: 10px 27px 10px;
+	margin-left: -20px;
+	font-size: 20px;
+	font-weight: 200;
+	color: #ffffff;
+	text-shadow: 0 1px 0 #aaaaaa;
+}
+
+.db_nav_sep {
+	height: 30px;
+  	margin-top: 5px;
+	border-right: 1px solid #ffffff;
+}
+
+
+.navbar .nav > li > a {
+	font-size: 14px;
+	color: #ffffff !important;
+	text-shadow: 0 0 0 #aaaaaa;
+	padding: 5px 5px 5px 5px;
+	margin: 5px; 5px; 5px; 5px;
+}
+
+.bd_search {
+	margin-right: 10px;
+}
+
+.bd_search_form {
+	padding-left: 10px !important;
+	padding-right: 10px !important;
+	padding-top: 0px !important;
+	padding-bottom: 0px !important;
+}
+
+.db_navbar {
+	font-size: 14px;
+	color: #ffffff;
+	text-shadow: 0 0 0 #aaaaaa;
+}
+
+.db_version {
+	font-weight: 500;
+	font-size: 14px;
+	color: #ffffff;
+	margin-top: 10px;
+	margin-right: 15px;
+}
+
+.db_dropdown {
+	margin: 0px;
+	padding: 0px;
+	font-size: 14px;
+	color: #ffffff;
+	text-shadow: 0 0 0 #aaaaaa;
+}
+
+.db_navbar.open .db_dropdown.open {
+	font-size: 14px;
+	color: #000000;
+	text-shadow: 0 0 0 #aaaaaa;
+}
+
+.db_dropdown_menu {
+	/* background-color: 	#004d81; */
+	background-color: 	#efefef;
+}
+
+.dropdown.open .dropdown-toggle {
+  	background-color: 	#017fbf !important;
+  	
+  	/*
+  	-webkit-border-top-left-radius: 6px;
+  	-webkit-border-top-right-radius: 6px;
+	-moz-border-top-left-radius: 6px;
+	-moz-border-top-right-radius: 6px;
+	border-top-left-radius: 6px;
+	border-top-right-radius: 6px;
+	*/
+	-webkit-border-radius: 6px;
+	-moz-border-radius: 6px;
+	border-radius: 6px;
+}
+
+.db_dropdown_menu_item {
+	font-size: 14px;
+	font-weight: lighter !important;
+	color: #000000 !important;
+	text-shadow: 0 0 0 #aaaaaa;
+	background-color: 	#efefef !important;
+}
+
+.db_subnav {
+	background-color: 	#001429;
+	
+	margin-top:		10px;
+	margin-bottom:		10px;
+	
+	/*
+	padding-top:		10px;
+	padding-bottom:	0px;
+	padding-left:		30px;
+	padding-right: 	30px;
+	*/
+	/* border-top: 1px solid #14202C; */
+}
+
+.nav {
+	margin-bottom: 10px;
+}
+
+.db_nav_menu_item {
+	padding-top:		5px;
+	padding-bottom:	0px;
+	padding-right: 5px;
+	padding-left: 5px;
+	background-color: #25313C;
+}
+
+.navbar .nav > .active > a, .navbar .nav > .active > a:hover, .navbar .nav > .active > a:focus {
+	background-color: #001429 !important;
+	box-shadow: inset 0 0px 0px rgba(0,0,0,0);
+}
+
+.db_nav_menu_item.active {
+	background-color: #001429;
+}
+
+.db_nav_menu_item:hover {
+	padding-right: 5px;
+	padding-left: 5px;
+	background-color: #001429;
+}
+
+.navbar .nav .db_nav_menu_item > li {
+	float: right;
+}
+
+/*
+.db_menu_item_toggle:hover {
+	background-color: 	#017fbf !important;
+	color: #ffffff !important;
+}
+*/
+
+.db_menu_item_link:hover {
+	color: #aaaaaa !important;
+}
+
+
+
+/**
+	SNAGGED FROM: http://wbpreview.com/previews/WB072S837/index.html#
+*/
+
+/* CSS Over-rides for twitter bootstrap*/
+
+
+thead{
+	background:#373737;
+}
+
+.navbar .brand{
+	color:#fff;
+}
+
+.subnav .nav-pills{
+	border-left:1px solid #000;
+}
+
+a.vr{
+	height:15px;
+}
+
+div.navbar{
+	border-bottom:0px solid #000;
+}
+.subnav{
+	position:fixed;
+	top:71px;
+	left:0px;
+	z-index:1029;
+	border-top:1px solid #333;
+	border-bottom:1px solid #060606;
+}
+
+.nav-list .divider{
+	border-top:1px solid #000;
+	border-bottom:1px solid #666;
+	height:0px;
+}
+.page-header{
+	border-bottom:1px solid #666;
+	margin-top:30px;
+}
+
+
+.breadcrumb, .progress{
+	background-color: #1f1f1f;
+	background-image: -moz-linear-gradient(top, #1f1f1f, #1f1f1f);
+	background-image: -ms-linear-gradient(top, #1f1f1f, #1f1f1f);
+	background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#1f1f1f), to(#1f1f1f));
+	background-image: -webkit-linear-gradient(top, #1f1f1f, #1f1f1f);
+	background-image: -o-linear-gradient(top, #1f1f1f, #1f1f1f);
+	background-image: linear-gradient(top, #1f1f1f, #1f1f1f);
+	background-repeat: repeat-x;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#1f1f1f', endColorstr='#1f1f1f', GradientType=0);
+}
+.control-group.error > label, .control-group.error .help-block, .control-group.error .help-inline {
+	color: #f22;
+}
+
+.control-group.error .checkbox:focus, .control-group.error .radio:focus, .control-group.error input:focus, .control-group.error select:focus, .control-group.error textarea:focus {
+	border-color: #f22;
+	box-shadow: 0px 0px 6px #f22;
+}
+
+.control-group.success > label, .control-group.success .help-block, .control-group.success .help-inline {
+	color: #2f2;
+}
+
+.control-group.success .checkbox:focus, .control-group.success .radio:focus, .control-group.success input:focus, .control-group.success select:focus, .control-group.success textarea:focus {
+	border-color:#2f2;
+	box-shadow: 0px 0px 6px #2f2;
+}
+
+.control-group.warning > label, .control-group.warning .help-block, .control-group.warning .help-inline {
+	color: #bbb;
+}
+
+.control-group.warning .checkbox:focus, .control-group.warning .radio:focus, .control-group.warning input:focus, .control-group.warning select:focus, .control-group.warning textarea:focus {
+	border-color: #bbb;
+	box-shadow: 0px 0px 6px #bbb;
+}
+
+.btn-main{
+	padding-top:5px;
+	padding-bottom:4px;
+	margin-top:-1px;
+}
+
+/* Custom CSS for Theme*/
+
+.content-area{
+	min-height:400px;
+	padding-top:20px;
+	padding-bottom:10px;
+	padding-left:5px;
+}
+
+.footer{
+	padding-bottom:10px;
+}
+
+.login_box{
+	margin-left:auto;
+	margin-right:auto;
+	margin-top:50px;
+	width:400px;
+	padding:25px;
+}
+.login_box p{
+	margin-bottom:20px;
+}
+
+.login_box hr{
+	margin-top:10px;
+}
+.login_box input{
+	padding:10px;
+	width:342px;
+	border-radius: 0px 3px 3px 0px;
+	box-shadow:none;
+	margin-bottom:10px;
+}
+
+.login_box .add-on{
+	padding:10px;
+	background:#1f1f1f;
+	margin-bottom:10px;
+}
+
+.widgetHead{
+	padding:5px;
+	background:#262626;
+	font-size:14px;
+	color:#fff;
+	border:1px solid #1f1f1f;
+	padding-left:20px;
+}
+.widgetBody{
+	padding:10px;
+	color:#000000;
+	border:1px solid #1f1f1f;
+	padding-left:20px;
+	padding-right:20px;
+	background-color: #e1e1e1;
+}
+
+
+/* CSS Overrides for jqPlot */
+
+
+.jqplot-target{ /*Styles for the plot target div.  These will be cascaded down to all plot elements according to css rules.*/
+	color:#000000;
+}
+.jqplot-axis{				/*Styles for all axes*/
+
+}
+.jqplot-xaxis{				/*Styles applied to the primary x axis only.*/
+	color:#000000;
+}
+.jqplot-yaxis{				/*Styles applied to the primary y axis only.*/
+	color:#000000;
+}
+.jqplot-x2axis, .jqplot-x3axis{ 	/*Styles applied to the 2nd, 3rd, etc. x axis only.*/
+
+
+}
+.jqplot-y2axis, .jqplot-y3axis{ 	/*Styles applied to the 2nd, 3rd, etc.y axis only.*/
+
+
+}
+.jqplot-axis-tick{			/*Styles applied to all axis ticks*/
+
+
+}
+.jqplot-xaxis-tick{ 			/*Styles applied to primary x axis ticks only.*/
+
+
+}
+.jqplot-x2axis-tick{			/*Styles applied to secondary x axis ticks only.*/
+
+
+
+}
+.jqplot-yaxis-tick{			/*Styles applied to primary y axis ticks only.*/
+
+
+}
+.jqplot-y2axis-tick{			/*Styles applied to secondary y axis ticks only.*/
+
+
+}
+table.jqplot-table-legend{		/*Styles applied to the legend box table.*/
+	background:#414141;
+	font-size:14px;
+	border:0px;
+	color:#ffffff;
+	padding-left:10px;
+	margin-right:10px;
+}
+.jqplot-title{				/*Styles applied to the title.*/
+	color:#000000;
+}
+.jqplot-cursor-tooltip{			/*Styles applied to the cursor tooltip*/
+
+
+}
+.jqplot-highlighter-tooltip{		/*Styles applied to the highlighter tooltip.*/
+	background:#4bb2c5;
+	border:1px solid #fff;
+	color:#ffffff;
+	padding:3px;
+	font-size:12px;
+}
+div.jqplot-table-legend-swatch{		/*the div element used for the colored swatch on the legend.*/
+
+
+}

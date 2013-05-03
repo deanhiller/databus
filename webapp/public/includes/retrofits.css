@@ -1,0 +1,55 @@
+/*  I erased this to test it
+
+
+@charset "utf-8";
+/* CSS Document * /
+
+h2 {font-size: 105%;}
+h3 {font-size: 90%;}
+
+
+div#content {width:1000px;}
+div#column-center {width:780px;}
+div.hpcontent {padding-top:18px;}
+h4.comments {width:100%; font-size:85%; text-align:right; padding-top:6px;}
+img#retrofitsheader {display:block;}
+p#version { 
+	margin:24px auto 0 auto;
+	padding:0;
+	clear:both;
+	text-align:center;
+	color:#555;
+	}
+
+div.column {
+	float:left;
+	width:242px;
+	}
+	
+div.column ul ul {
+	margin-left:0;
+	padding-left:15px;
+	}
+	
+div.submit {
+	text-align:left;
+	margin:12px 0 24px 0;
+	clear:both;
+	padding-top:12px;
+}
+
+.error {
+	padding-left:15px;
+	color : #cc0000;
+	}
+
+p#footer {
+	text-align:center;
+	margin-top:3px; 
+	padding:0;}
+
+.red {
+	color : #cc0000;
+}
+
+ */

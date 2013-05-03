@@ -1,0 +1,98 @@
+#{extends 'main.html' /} #{set title:'My Data' /} #{set tab:'help' /}
+
+<script type="text/javascript" language="JavaScript">
+	function maintainSubNavs() {	
+	
+		var groups = document.getElementById("subnav_groups");
+		groups.style.display = "none";
+		
+		var robots = document.getElementById("subnav_robots");
+		robots.style.display = "none";
+		
+		var provision = document.getElementById("subnav_provision");
+		provision.style.display = "none";
+		
+		var uploads = document.getElementById("subnav_upload");
+		uploads.style.display = "none";
+		
+		if(window.location.pathname.indexOf("helpgroups") != -1) {
+			groups.style.display = "";
+		}
+		
+		if(window.location.pathname.indexOf("helprobots") != -1) {
+			robots.style.display = "";
+		}
+		
+		if(window.location.pathname.indexOf("helpprovisioning") != -1) {
+			provision.style.display = "";
+		}
+		
+		if(window.location.pathname.indexOf("helpupload") != -1) {
+			uploads.style.display = "";
+		}
+	}
+	
+	function setClass(id, className) {
+		var obj = document.getElementById(id);
+   		if (obj != null) {
+    			obj.className = className;
+    		}
+	}
+	setClass("subtab_" + "#{get 'subtab' /}", "selected");
+</script>
+
+<div id="rightside">
+	<h2 style="margin-bottom: 5px; padding-bottom: 2px;">More Options</h2>
+	<ul id="subnav" style="margin-top: 5px; padding-top: 2px;">
+		<li class="subtab"><a href="@{Help.myHelp()}" id="subtab_upload" onclick="maintainSubNavs('')">Databus
+				Help</a></li>
+		<li class="subtab"><a href="@{Help.myHelpAccess()}"
+			id="subtab_access" onclick="maintainSubNavs('')">System Access</a></li>
+		<li class="subtab"><a href="@{Help.myHelpGroups()}"
+			id="subtab_groups" onclick="maintainSubNavs('subtab_groups')">User Groups</a>
+			<ul id="subnav_groups" style="margin-bottom: 0px; padding-bottom: 0px; display: none;">
+				<li><b style="font-size: 85%;">&gt;</b><a
+					href="@{Help.myHelpGroups()}#createusergroup" id="subtab_provision"
+					style="font-size: 85%;">
+						Creating a User Group</a></li>
+			</ul></li>
+		<li class="subtab"><a href="@{Help.myHelpRobots()}"
+			id="subtab_robots" onclick="maintainSubNavs('subtab_robots')">Robots</a>
+			<ul id="subnav_robots" style="margin-bottom: 0px; padding-bottom: 0px; display: none;">
+				<li><b style="font-size: 85%;">&gt;</b><a href="@{Help.myHelpRobots()}#createrobot"
+					id="subtab_provision" style="font-size: 85%;"> Creating a Robot</a></li>
+			</ul></li>
+		<li class="subtab"><a href="@{Help.myHelpProvisioning()}"
+			id="subtab_provision" onclick="maintainSubNavs('subtab_provision')">Provisioning Databus</a>
+			<ul id="subnav_provision" style="margin-bottom: 0px; padding-bottom: 0px; display: none;">
+				<li><b style="font-size: 85%;">&gt;</b><a
+					href="@{Help.myHelpProvisioning()}#createdb" id="subtab_provision"
+					style="font-size: 85%;">
+						Creating a Database</a></li>
+				<li><b style="font-size: 85%;">&gt;</b><a
+					href="@{Help.myHelpProvisioning()}#createtable"
+					id="subtab_provision" style="font-size: 85%;"> Creating a Table</a></li>
+				<li><b style="font-size: 85%;">&gt;</b><a
+					href="@{Help.myHelpProvisioning()}#examples" id="subtab_provision"
+					style="font-size: 85%;"> Table
+						Examples</a></li>
+			</ul></li>
+		<li class="subtab"><a href="@{Help.myHelpUpload()}"
+			id="subtab_upload" onclick="maintainSubNavs('')">Uploading Data</a>
+			<ul id="subnav_upload" style="margin-bottom: 0px; padding-bottom: 0px; display: none;">
+				<li><b style="font-size: 85%;">&gt;</b><a href="@{Help.myHelpUpload()}#examples"
+					id="subtab_provision" style="font-size: 85%;"> Uploading Examples</a></li>
+			</ul></li>
+		<li class="subtab"><a href="@{Help.myHelpDownload()}"
+			id="subtab_download" onclick="maintainSubNavs('')">Downloading Data</a></li>
+		<li class="subtab"><a href="@{Help.myHelpModules()}"
+			id="subtab_modules" onclick="maintainSubNavs('')">Modules</a></li>
+	</ul>
+
+</div>
+
+<script type="text/javascript">
+   		maintainSubNavs();
+</script>
+
+#{doLayout /}

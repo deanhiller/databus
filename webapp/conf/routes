@@ -1,0 +1,240 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# OLD GUI
+# ******************************************************************************
+# ******************************************************************************
+GET  /old/Old                                Application.indexOld
+GET  /old/groupsOld                          MyStuff.myGroupsOld
+GET  /old/groupsOld/{group}		 		MyStuff.editGroupOld
+GET  /old/addgroupOld       				MyStuff.editGroupOld
+POST /old/savegroupOld          			MyStuff.postGroupOld
+GET  /old                                    Application.index
+GET  /old/viewtables/{tableName}             Application.viewTable
+GET	/old/login						auth.Secure.login
+POST /old/login          				auth.Secure.authenticate
+GET  /old/logout         				auth.Secure.logout
+GET  /old/admin						Admin.index
+GET  /old/admin/sanity					Admin.sanity
+GET  /old/admin/users                       	Admin.users
+GET  /old/admin/user/{username}             	Admin.becomeUser
+GET  /old/admin/meta 					Admin.meta
+GET  /old/admin/meta/{tableName}            	Admin.metaTable
+GET  /old/admin/meta/{tableName}/{colName}  	Admin.viewIndex
+GET  /old/admin/logs                        	admins.Logging.latestLogs
+GET  /old/admin/logs/{rowNum}/{size}        	admins.Logging.allLogs
+GET  /old/admin/logs/{sessionId}            	admins.Logging.sessionLogs
+GET  /old/admin/search/reindex			Admin.reindex
+GET  /pingtest                          	Application.pingTest
+GET  /pingtest2                          	Application.pingTest2
+GET  /old/numrequests                       	Application.numrequests
+GET  /old/tables                            	MyStuff.myTables
+GET  /old/tableData/{table}                 	MyStuff.tableData
+GET  /old/aggData/{aggregationName}        	MyStuff.aggData
+GET  /old/groups                            	MyGroups.myGroups
+GET  /old/groups/{group}		 			MyGroups.viewGroup
+GET  /old/groups/edit/{group}	 			MyGroups.editGroup
+GET  /old/addgroup       				MyGroups.editGroup
+POST /old/savegroup          			 	MyGroups.postGroup
+GET  /old/groups/{group}/{type}/adduser     	MyGroups.userAdd
+GET  /old/groups/{group}/{type}/{username}  	MyGroups.userEdit
+POST /old/groups/{group}/{type}/saveuser    	MyGroups.postUser
+GET  /old/groups/{group}/addrobot           	MyGroups.robotAdd
+GET  /old/schemas                           	MySchemas.mySchemas
+GET  /old/schemas/{schemaName}	 		MySchemas.viewSchema
+GET  /old/schemas/edit/{schemaName}		MySchemas.editSchema
+GET  /old/addschema 					MySchemas.editSchema
+POST /old/saveschema          			MySchemas.postSchema
+GET  /old/schemas/{schema}/addmonitor		MySchemas.monitorAdd
+GET  /old/schemas/{schema}/monitor/{table}  	MySchemas.monitorEdit
+POST /old/schemas/{schema}/savemonitor      	MySchemas.postMonitor
+GET  /old/schemas/{schema}/addtable         	MySchemas.tableAdd
+GET  /old/addusertoschema       			MySchemas.userAddToSchema
+POST /old/addtabletoschema      			MySchemas.postAddTableToSchema
+POST /old/addgrouptoschema      			MySchemas.postAddGroupToSchema
+POST /old/addusertoschema      			MySchemas.postAddUserToSchema
+GET  /old/groups/{group}/addtable           	MyStuff.tableAdd
+GET  /old/tables/{table}      			MyStuff.tableEdit
+POST /old/groups/{group}/savetable          	MyStuff.postTable
+GET  /old/help                            	Help.myHelp
+GET  /old/helpaccess                         Help.myHelpAccess
+GET  /old/helpgroups                         Help.myHelpGroups
+GET  /old/helprobots                         Help.myHelpRobots
+GET  /old/helpprovisioning               	Help.myHelpProvisioning
+GET  /old/helpupload                   		Help.myHelpUpload
+GET  /old/helpdownload                		Help.myHelpDownload
+GET  /old/helpmodules              		Help.myHelpModules
+
+# Legacy (old UI)
+GET /search/legacyMetaSearch				gui.GUISearch.legacyMetaSearch
+
+
+# GUI MAIN
+# ******************************************************************************
+# ******************************************************************************
+GET 	/                					gui.auth.GuiSecure.login
+GET	/helpunauth						gui.Application.myHelpUnAuth
+GET	/searchunauth						gui.Application.nonAuthSearch
+GET  /dashboard      					gui.Search.dashboardSide
+POST /login          					gui.auth.GuiSecure.authenticate
+GET  /logout         					gui.auth.GuiSecure.logout
+
+
+# GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
+# ******************************************************************************
+# ******************************************************************************
+GET  /tables                            	gui.MyStuff.myTables
+GET  /tableData/{table}                 	gui.MyStuff.tableData
+GET  /aggData/{aggregationName}     		gui.MyStuff.aggData
+GET  /groups/{group}/addtable           	gui.MyStuff.tableAdd
+GET  /tables/{table}                    	gui.MyStuff.tableEdit
+POST /groups/{group}/savetable          	gui.MyStuff.postTable
+GET  /tables/{table}/upload             	gui.Tables.uploadForm
+POST /tables/{table}/upload             	gui.Tables.postData
+GET  /tables/{table}/uploadsuccess      	gui.Tables.uploadSuccess
+
+
+# GUI User/UserGroup UIs
+# ******************************************************************************
+# ******************************************************************************
+GET  /groups                            	gui.MyGroups.myGroups
+GET  /groups/{group}                    	gui.MyGroups.viewGroup
+GET  /groups/edit/{group}               	gui.MyGroups.editGroup
+GET  /addgroup                          	gui.MyGroups.editGroup
+POST /savegroup                         	gui.MyGroups.postGroup
+GET  /groups/{group}/{type}/adduser     	gui.MyGroups.userAdd
+GET  /groups/{group}/{type}/{username}  	gui.MyGroups.userEdit
+POST /groups/{group}/{type}/saveuser    	gui.MyGroups.postUser
+GET  /groups/{group}/addrobot           	gui.MyGroups.robotAdd
+
+
+# GUI Database UIs
+# ******************************************************************************
+# ******************************************************************************
+GET  /databases                         	gui.MyDatabases.myDatabases
+GET  /databases2/{schemaName}             	gui.MyDatabases.viewDatabase
+GET  /databases/{schemaName}              	gui.MyDatabases.viewDatabaseImpl
+GET  /databases/edit/{schemaName}         	gui.MyDatabases.editDatabase
+GET  /adddatabase                         	gui.MyDatabases.editDatabase
+POST /savedatabase                       	gui.MyDatabases.postDatabase
+GET  /databases/{schema}/addmonitor       	gui.MyDatabases.monitorAdd
+GET  /databases/{schema}/monitor/{table}  	gui.MyDatabases.monitorEdit
+POST /databases/{schema}/savemonitor      	gui.MyDatabases.postMonitor
+GET  /databases/{schema}/addtable         	gui.MyDatabases.tableAdd
+GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase
+POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabase
+POST /addgrouptodb						gui.MyDatabases.postAddGroupToDatabase
+POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
+
+
+# GUI Summary Pages
+# ******************************************************************************
+# ******************************************************************************
+GET	/summary							gui.MySummary.mySummary
+
+
+# GUI Data Pages (Upload/Download)
+# ******************************************************************************
+# ******************************************************************************
+GET /dataupload						gui.DataUpload.dataUploadMain
+
+# GUI Help Pages
+# ******************************************************************************
+# ******************************************************************************
+GET  /help							gui.Help.myHelp
+GET  /helpaccess						gui.Help.myHelpAccess
+GET  /helpgroups						gui.Help.myHelpGroups
+GET  /helprobots						gui.Help.myHelpRobots
+GET  /helpprovisioning					gui.Help.myHelpProvisioning
+GET  /helpupload						gui.Help.myHelpUpload
+GET  /helpdownload						gui.Help.myHelpDownload
+GET  /helpmodules						gui.Help.myHelpModules
+
+
+# GUISearch
+# ******************************************************************************
+# ******************************************************************************
+GET /search/metaSearch					gui.GUISearch.metaSearch
+GET /search/detailSearch					gui.GUISearch.detailSearch
+GET /search/globalSearch					gui.GUISearch.globalSearch
+GET /search/searchBar					gui.GUISearch.searchBar
+
+
+# PROTOTYPE UIs
+# ******************************************************************************
+# ******************************************************************************
+GET	/prototype1					    	Help.myHelpBootstrapProto1
+GET  /prototype2					    	gui.Search.dashboardSide
+GET	/myHelpBootstrapProto_Summary			gui.Search.myHelpBootstrapProto_Summary
+GET  /dashboard      					gui.Search.dashboardSide
+GET  /search         					gui.GUISearch.metaSearch
+GET  /detailsearch   					gui.GUISearch.detailSearch
+
+
+# Databus API calls
+# ******************************************************************************
+# ******************************************************************************
+POST    /api/registerV1                 ApiRegistration.postRegisterTableNew
+POST    /api/postdataV1                 ApiPostDataPoints.postData
+GET     /api/getdataV1/meta/{table}     ApiMetaRequest.getMeta
+#GET     /api/getdataV2/{sql}            ApiSqlRequest.sqlRequest
+GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
+
+#We need to remove this AFTER buildings group converts to the new urls...
+POST    /register                       ApiRegistration.postRegisterTableNew
+POST    /register/{registerKey}         ApiRegistration.postRegisterTable
+POST    /postdata                       ApiPostDataPoints.postData
+GET     /getdata/meta/{table}           ApiMetaRequest.getMeta
+GET     /getdata/{sql}                  ApiSqlRequest.sqlRequest
+#NOTE: stuff above this needs to be removed once buildings group as ported their stuff
+
+GET		/api/search							Search.searchAll
+GET		/api/search/searchableItems			Search.searchableItems
+GET		/api/search/{table}					Search.searchTable
+POST    /api/triggerV1/add                  api.TriggersController.postAdd
+POST    /api/triggerV1/delete/{triggerId}   api.TriggersController.postDelete
+GET     /api/triggerV1/list/{database}      api.TriggersController.list
+
+GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path} modules.StdDevMod.runStdDev
+GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData
+GET     /api/rawdataGeneratorV1/{table}/{start}/{end}      DataGenerator.generateData
+
+GET     /api/nullV1/{<.*>path}                     modules.NullMod.go
+#GET     /api/cacheV1/{<.*>path}                    modules.CacheMod.go
+#GET     /api/rangecleanV1/{min}/{max}/{<.*>path}   modules.CleanerMod.go
+#GET     /api/rangecleanV1/{<.*>path}               modules.CleanerMod.error
+GET     /api/timeaverageV1/{type}/{<.*>path}       modules.TimeAverageMod.timeAggregation
+GET     /api/timeaverageV1/{type}/{adjustment}/{<.*>path} modules.TimeAverageMod.timeAggregation
+GET     /api/timeaverageV1/{<.*>path}              modules.TimeAverageMod.error
+GET     /api/splineV1/{interval}/{windowSize}/{<.*>path} modules.SplinesMod.runSplinesDepricated
+GET     /api/splineV1/{<.*>path}                   modules.SplinesMod.error2
+GET     /api/splinesV1/{splineType}/{interval}/{<.*>path} modules.SplinesMod.runSplines
+GET     /api/splinesV1/{<.*>path}                  modules.SplinesMod.error
+
+#GET     /api/sumstreamsV1/{name}/{start}/{end}     modules.SumStreamsMod.go
+#GET     /api/sumstreamsV1/useraggregations/{name}  modules.SumStreamsMod.getAllAggregationsByUser
+GET     /api/sumstreamsV1/aggregation/{name}       modules.SumStreamsMod.getAggregation
+GET     /api/sumstreamsV1/listaggregations/      modules.SumStreamsMod.getAllAggregations
+POST    /api/sumstreamsV1/register                 modules.SumStreamsMod.postAggregation
+POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDelete
+
+#GET     /api/sumstreamsV1/{<.*>path}               modules.SumStreamsMod.error
+GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
+GET     /api/lastvaluesV1/{<.*>path}               modules.lastValuesMod.error
+GET     /api/{<.*>path}                              modules2.framework.ModuleController.startModules
+#GET     /api/{name}/{<.*>path}                     modules.SdiCore.remoteModule
+
+# Search
+GET /search/results Search.results
+GET /search/result/{id} Search.result
+
+# Ignore favicon requests
+GET     /favicon.ico                            404
+
+# Map static resources from the /app/public folder to the /public path
+GET     /public/                                staticDir:public
+
+# Catch all
+#disable this thing, not really needed and confusing for newbs...
+#*       /{controller}/{action}                  {controller}.{action}

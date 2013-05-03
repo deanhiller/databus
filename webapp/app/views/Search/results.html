@@ -1,0 +1,132 @@
+#{extends 'main.html' /}
+
+<style type="text/css">
+	.search-facets {
+		float: left;
+		width: 20%;
+		font-size: 13px;
+	}
+
+	.search-facets h4 {
+		margin: 0px;
+	}
+
+	.search-facets ul {
+		list-style-type: none !important;
+		margin: 0px 0px 1.5em 0px !important;
+	}
+
+	.facet-item a {
+		background-repeat: no-repeat;
+		background-position: left center;
+		padding-left: 18px;
+	}
+	.facet-item-inactive a {
+		background-image: url(/public/images/ui-check-box-uncheck.png);
+	}
+
+	.facet-item-active a {
+		background-image: url(/public/images/ui-check-box.png);
+	}
+
+	.search-results {
+		float: left;
+		width: 78%;
+		margin-left: 2%;
+	}
+
+	.search-results h3 {
+		margin: 0px 0px 1em 0px;
+	}
+
+	.search-result h3 {
+		font-weight: normal;
+		font-size: 16px;
+		margin: 0px;
+	}
+
+	.search-result p {
+		text-indent: 0px;
+		font-size: 13px !important;
+	}
+
+	.pagination {
+		list-style-type: none !important;
+		margin: 0px 0px 1.5em 0px !important;
+		text-align: center;
+	}
+
+	.pagination li {
+		display: inline-block;
+		font-size: 16px;
+	}
+
+	.pagination li a,
+	.pagination li strong {
+		display: inline-block;
+		padding: 4px 10px;
+	}
+</style>
+
+<!-- div class="search-facets">
+	#{list [endUse_sms:"End Use", building_sms:"Building", protocol_sms:"Protocol", site_sms:"Site", owner_sms:"Owner"], as:"facetGroup"}
+		<h4>${facetGroup.value}</h4>
+		<ul>
+			#{list response.getFacetField(facetGroup.key).getValues(), as:"facet"}
+				#{if request.url.contains("f=" + facet.getAsFilterQuery())}
+					<li class="facet-item facet-item-active"><a href="${request.url.replace("&f=" + facet.getAsFilterQuery(), "")}">${facet}</a></li>
+				#{/if}
+				#{else}
+					<li class="facet-item facet-item-inactive"><a href="${request.url}&f=${facet.getAsFilterQuery()}">${facet}</a></li>
+				#{/else}
+			#{/list}
+		</ul>
+	#{/list}
+</div>
+
+<div class="search-results">
+	<h3>${results.numFound} total result${results.pluralize()} for "${params.get("q")}"</h3>
+
+	#{list results, as:"result"}
+		#{set highlight:response.getHighlighting() /}
+		#{set id:result.getFirstValue("id") /}
+
+		#{set highlightTitle:result.getFirstValue("id") /}
+		#{set highlightDescription:result.getFirstValue("description_texts") /}
+
+		#{if (highlight && highlight.get(id))}
+			#{if highlight.get(id).get("id")}
+				#{set highlightTitle:highlight.get(id).get("id").get(0).raw() /}
+			#{/if}
+			#{if highlight.get(id).get("description_texts")}
+				#{set highlightDescription:highlight.get(id).get("description_texts").get(0).raw() /}
+			#{/if}
+		#{/if}
+
+		<div class="search-result">
+			<h3>#{a @Search.result(id)}${highlightTitle.raw()}#{/a}</h3>
+			<p class="summary">${highlightDescription.raw()}</p>
+		</div>
+	#{/list}
+
+	<ul class="pagination">
+		#{if (pages.size() > 0 && currentPage > pages.get(0))}
+			<li class="pagination-previous"><a href="${request.url.replaceAll("([?&]page=)[0-9]+", "\$1" + ((String) currentPage - 1))}">&laquo; Previous</a></li>
+		#{/if}
+
+		#{list pages, as:"page"}
+			#{if currentPage == page}
+				<li class="pagination-active"><strong>${page}</strong></li>
+			#{/if}
+			#{else}
+				<li><a href="${request.url.replaceAll("([?&]page=)[0-9]+", "\$1" + ((String) page))}">${page}</a></li>
+			#{/else}
+		#{/list}
+
+		#{if (pages.size() > 0 && currentPage < pages.get(pages.size() - 1))}
+			<li class="pagination-next"><a href="${request.url.replaceAll("([?&]page=)[0-9]+", "\$1" + ((String) currentPage + 1))}">Next &raquo;</a></li>
+		#{/if}
+	</ul>
+</div>
+
+<div class="clear"></div-->

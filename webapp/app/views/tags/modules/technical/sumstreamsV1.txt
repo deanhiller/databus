@@ -1,0 +1,22 @@
+Allows users to take all values at time1 and add them up from multiple streams and similarly, it adds up time2 values, time3 values, etc. etc. The first step is to create a new aggregation as follows
+Creating/Modifying an aggregation:
+usage: POST to https://databus.nrel.gov/api/sumstreamsV1/register 
+body: {"name":"{AggregationID}","group":"{GroupID}","urls":["{URL1}","{URL2}"] } 
+example: {"name":"RSF_DATACENTER","group":"modbus","urls":["timeaverage/60000/rangeclean/-2000000/2000000/rawdata/D73937833phaseRealPower"]}
+
+The next step is to use the aggregation. You can do that by getting data from the aggregation 
+
+Getting data from an aggregation:
+usage: https://databus.nrel.gov/api/sumstreamsV1/{AggregationID}/{start}/{end} 
+example: https://databus.nrel.gov/api/sumstreamsV1/RSF_PV/1354738000000/1354824663000
+
+
+If you would like to view an aggregation you already created, just use view an aggregation 
+Viewing an existing aggregation:
+usage:GET https://databus.nrel.gov/api/sumstreamsV1/aggregation/{AggregationID} 
+example:GET https://databus.nrel.gov/api/sumstreamsV1/aggregation/RSF_DATACENTER
+
+
+On deleting an aggregation, MAKE sure you do a POST not a GET. No body is required, just POST as in the below example supplying the aggregation id in the url Deleting aggregation:
+usage:POST to https://databus.nrel.gov/api/sumstreamsV1/deleteagg/{AggregationID} 
+example:POST to https://databus.nrel.gov/api/sumstreamsV1/deleteagg/RSF_DATACENTER

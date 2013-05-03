@@ -1,0 +1,137 @@
+#{extends './helpTemplate.html' /}
+#{set title:'Databus Access' /}
+#{set subtab:'helpaccess' /}
+
+<style>
+	.apikey 	{ margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    	{ margin: auto; padding: 5px; background-color:#00ff00; }
+	.defines 	{ margin: auto; margin-left: 20px; }
+	.subdefine { margin: auto; margin-left: 60px; margin-top: 5px;}
+	
+	.info, .success, .warning, .error {
+	    width: 50%;
+	    border: 1px solid;
+	    margin: 10px 0px;
+	    padding:15px 10px 15px 50px;
+	    background-repeat: no-repeat;
+	    background-position: 10px center;
+	}
+	.info {
+	    margin: auto;
+	    color: #00529B;
+	    background-color: #BDE5F8;
+	    background-image: url('public/images/Info.png');
+	}
+	.success {
+	    margin: auto;
+	    color: #4F8A10;
+	    background-color: #DFF2BF;
+	    background-image:url('public/images/Success.png');
+	}
+	.warning {
+	    margin: auto;
+	    color: #9F6000;
+	    background-color: #FEEFB3;
+	    background-image: url('public/images/Warning.png');
+	}
+	.error {
+	    margin: auto;
+	    color: #D8000C;
+	    background-color: #FFBABA;
+	    background-image: url('public/images/Error.png');
+	}
+	
+</style>
+
+<h1>
+  System Access
+</h1>
+<br>
+Databus provides two distinct ways of accessing its functionality: the Databus User Interface and
+the Databus API.
+<br/><br/>
+<div class="defines">
+  <b>
+    The Databus User Interface
+  </b>
+  is a web interface that is mainly used for administering the Databus system components.
+</div>
+<br/>
+<div class="defines">
+  <b>
+    The Databus API
+  </b>
+  privides a direct HTTP connection to the underlying Databus system.
+</div>
+<br/>
+While both interfaces provide overlapping functionality, the Databus User Interface should be
+kept to administration uses whereas the API interface should be used for lower level functionality
+such as provisioning, uploading and downloading data.
+<br/><br/>
+<div class="info" style="margin-left: 80px;">
+The major difference between accessing the two interfaces is that the Databus User Interface requires
+full NREL User Authentication (username + password) while the Databus API requires Databus Authentication
+(username + API Key).
+</div>
+<br/>
+<h2 style="padding-bottom: 5px; padding-top: 15px; margin-bottom: 10px;">
+  Accessing the Databus User Interface
+</h2>
+In order to use the User Interface, all you need is an NREL Exchange account.  Using your
+Exchange credentials, just <a href="@{auth.Secure.login()}">Log in</a> and you will have 
+access to create your own <b>Databases</b>, <b>Tables</b> and <b>User Groups</b>.
+<br/><br/>
+If you wish to see existing data, you will need to be added as a user to that data's associated
+<b>Database</b> or as a user in a <b>User Group</b> that can see the data.  Please contact
+the owner of the <b>Database</b> (or <b>User Group</b>) to be allowed access to the required data.
+<br/>
+<h2 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  Accessing the Databus API
+</h2>
+The Databus API can be accessed with your NREL username and your Databus generated API Key.  The
+Databus generated API Key is created the first time a user logs into the Databus system.  The API Key
+is used as a password of sorts so that your NREL credentials cannot be compromised.
+<br/><br/>
+The generated API Key for the current user:
+<br/><br/>
+<div style="margin-left: 20%;">
+<table style="width:75%;">
+	<tr style="background-color:#d5d5d5; font-weight: bold;">
+        <td>Username</td>
+        <td>API Key</td>
+     </tr>
+     <tr>
+        <td>${user.name}</td>
+        <td>${user.apiKey}</td>
+    </tr>
+ </table>
+</div>
+This API Key should be used everywhere a password is requested when accessing the Databus API.
+<br/><br/>
+An alternative to accessing the Databus API with your <b>User</b> account is to use a <b>Robot</b> account.
+These are accounts that have been created by a group administrator for the specific purpose of accessing
+restricted data but without exposing <b>User</b> credentials.  The <b>Robot</b> name and
+API Key must be known in order to access Databus as a <b>Robot</b>.
+<br/><br/>
+The current list of <b>Robots</b> that are available to you are:
+<div style="margin-left: 20%;">
+<br/>
+<table style="width:75%;">
+	<tr style="background-color:#d5d5d5; font-weight: bold;">
+        <td>Robot Username</td>
+        <td>API Key</td>
+     </tr>
+    #{list user.robots, as:'robot'}
+    <tr>
+        <td>${robot.name}</td>
+        <td>${robot.apiKey}</td>
+    </tr>
+    #{/list}
+</table>
+</div>
+<br/>
+<div class="warning">
+One limitation of the <b>Robot</b> account is that it cannot log directly into the User Interface nor
+can it create <b>User Groups</b> or other <b>Robots</b>.  In order to perform these actions, you must 
+log in with your <b>User</b> account.
+</div>

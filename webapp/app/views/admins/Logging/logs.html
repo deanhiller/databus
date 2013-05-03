@@ -1,0 +1,67 @@
+<html>
+<head>
+</head>
+<body>
+
+
+#{set subtab:'groups' /}
+
+<h2>Logs</h2>
+
+<table border="1" class="data" style="width: 2000px">
+    <col/>
+    <col/>
+    <col/>
+    <col/>
+    <col/>
+    <col/>
+    <col/>
+    <col/>
+    <col width="600px"/>
+    <col/>
+	<thead>
+	    <tr>
+	        <th>Time</th>
+	        <th>Server</th>
+	        <th>Index</th>
+	        <th>Level</th>
+	        <th>Thread</th>
+	        <th>Session</th>
+	        <th>User</th>
+	        <th>Logger</th>
+	        <th style="width: 600px">Message</th>
+	       	<th>stacktrace</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list logs, as:'log'}
+	        <tr>
+	            #{if log != null}
+		        	<td style="white-space: nowrap">${log.time}</td>
+		        	<td style="white-space: nowrap">${log.serverName}</td>
+		        	<td style="white-space: nowrap">${log.index}</td>
+		        	<td style="white-space: nowrap">${log.level}</td>
+		        	<td style="white-space: nowrap">${log.threadName}</td>
+		        	<td style="white-space: nowrap">
+		        	    #{if log.sessionId != null}
+		        		<a href="@{sessionLogs(log.sessionId)}">${log.sessionId}</a>
+		        		#{/if}
+		        		#{else}
+		        		${log.sessionId}
+		        		#{/else}
+		        	</td>
+		        	<td style="white-space: nowrap">${log.user}</td>
+		        	<td style="white-space: nowrap">${log.logger}</td>
+		        	<td style="width: 600px">${log.message}</td>
+		        	<td>${log.stackTrace}</td>
+	        	#{/if}
+	        	#{else}
+	        	<td colspan="10">Null row</td>
+	        	#{/else}
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+
+</body>
+</html>

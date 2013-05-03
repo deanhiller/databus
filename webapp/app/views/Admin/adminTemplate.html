@@ -1,0 +1,21 @@
+#{extends 'main.html' /}
+#{set title:'Admin' /}
+#{set tab:'admin' /}
+
+<ul id="subnav">
+	<li><a href="@{Admin.index()}" id="subtab_groups">Groups</a></li>
+	<li><a href="@{Admin.meta()}" id="subtab_meta">Meta Info</a></li>
+	<li><a href="@{Admin.users()}" id="subtab_users">Users</a></li>
+</ul>
+
+<script type="text/javascript" language="JavaScript">
+	function setClass(id, className) {
+		var obj = document.getElementById(id);
+   		if (obj != null) {
+    		obj.className = className;
+    	}
+	}
+	setClass("subtab_" + "#{get 'subtab' /}", "selected");
+</script>
+  		
+#{doLayout /}

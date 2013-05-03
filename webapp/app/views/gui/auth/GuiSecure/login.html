@@ -1,0 +1,71 @@
+#{extends '_main.html' /}
+
+#{banner_main /}
+
+#{menubar_main /}
+
+#{if flash.error}
+<div class="row-fluid">
+    <div
+        style="font-size: small; font-weight: bold; text-align: center; color: red">
+        <!-- portable - top & bottom to report -->
+        ${flash.error}
+    </div>
+</div>
+#{/if} #{if flash.success}
+<div class="row-fluid">
+    <div
+        style="font-size: small; font-weight: bold; text-align: center; color: red">
+        <!-- portable - top & bottom to report -->
+
+        ${flash.success}
+    </div>
+</div>
+#{/if}
+
+#{form @authenticate(), enctype:'application/x-www-form-urlencoded'}
+
+	<div class="login_container">
+	  <div class="login_modal well">
+	    <div class="content">
+	      <div class="row">
+	        <div class="login-form">
+	          <h2 class="login_h2">Login</h2>
+	            <fieldset>
+	              <div class="clearfix">
+	                <input type="text" placeholder="username" name="username">
+	              </div>
+	              <div class="clearfix">
+	                <input type="password" placeholder="password" name="password">
+	              </div>
+	              <button class="btn btn-primary" type="submit" style="float: right; margin-top: 5px; margin-right: 25px;">Sign in</button>
+	            </fieldset>
+	
+	        </div>
+	      </div>
+	    </div>
+	    
+	      <div id="alert" class="hide" style="text-align: center;">
+	        <span class="label label-important" style="margin-bottom: 15px;"></span>
+	      </div>
+	    
+	  </div>
+	  <div style="text-align: center;">Use your NREL network username and password to login to the system.</div>
+	 </div>
+ #{/form}
+ 
+<script type="text/javascript">
+$(document).ready(function(){
+	$('#global_search_bar').bind('keydown', function(e) {
+		if (e.which == 13) {				// if enter key
+			var searchURL = "@{gui.Application.nonAuthSearch()}";
+			var searchString =  searchURL + "?searchString=" + encodeURIComponent($('#global_search_bar').val());
+
+			
+			window.location = searchString;
+		}
+	});
+});
+</script>
+ 
+ #{nrel_footer /}

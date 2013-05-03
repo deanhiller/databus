@@ -1,0 +1,162 @@
+#{extends './helpTemplate.html' /}
+#{set title:'Using Modules' /}
+#{set subtab:'helpmodules' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<h1>Download Data Using Modules</h1>
+
+Databus modules allow users to pre-process raw data before download.<br>
+<br /><br />
+<ol>
+<li>Databus modules are accessed at: https://databus.nrel.gov/api/{modulesName}<br>
+<li>Modules can be layered on top of one another: api/mod1/mod2/mod3/...<br>
+<li>The module for linking to raw data is called "rawdata": api/rawdataV1/{stream ID}/{start}/{end}<br>
+<li>The following examples leave out the base URL and start with "api/".
+</ol>
+<br/>
+
+<b>Versioning of modules</b> is done as a postfix operator so you will notice V1, V2 on modules.  To access changes we made for a specific version,
+you can go to the url https://databus.nrel.gov/api/{modulename}V{versionNumber} so for version 2 of raw data that does not exist yet, you could go
+to https://databus.nrel.gov/api/rawdataV2 and there will be documentation on that page.  These pages will be created as new versions of the module
+come out.
+<br/><br/>
+
+<b>The raw module</b> allows users to get raw data.  This module is always last in a chain of modules when you put a URL together.
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/rawdataV1/{startTime}/{endTime}<br>
+		<b>example:</b> https://databus.nrel.gov/api/rawdataV1/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>
+</div>	
+<br><br>
+
+<b>The invert module</b> allows users to negate all data points in a stream turning -5 into 5 and turning 6 into -6
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/invertV1/{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/invertV1/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>
+</div>	
+<br><br>
+
+<b>The null module</b> allows users to null out datapoints that were in error.  In the database, we need some more fixes to store
+when datapoints where in error so currently an error is stored as java's Integer.MAX_INT value.  This module converts that value 
+back to null.  If your stream "happened" to record a datapoint with that exact value, this module would return null in it's place since
+it can't tell the difference.  This will be fixed in the future so we store flags in the database.
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/nullV1/{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/nullV1/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>
+</div>	
+<br><br>
+
+<b>The splines module</b> allows users to interpolate data. You choose the interval such that as in the
+example below, the spline will return a datapoint every 60 seconds since the interval is in milliseconds.  NOTE: Currently,
+there is no code in the splines mod such that if there is missing data for say 10 intervals, it would return nulls.  Instead it
+interpolates all data so always gives back data when you may not exactly want it (we plan on adding more in the future for this
+so you can specify when to not interpolate).
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/splinesV1/{interval}/{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/splinesV1/60000/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>
+</div>	
+<br><br>
+
+<b>The rangeclean module</b> allows users to remove data points that
+have values outside of a given range.
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/rangecleanV1/{MIN}/{MAX}/{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/rangecleanV1/-200/200/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>
+</div>	
+<br><br>
+<b>The stddev module</b> allows users to remove data points that
+have values outside of a given multiplier of the standard deviation.
+You must supply a rowCount and factor when using this mod, where rowCount is the window over which the standard 
+deviation is caluclated over, with 0 meaning infinite, 
+and factor is the multiple of the standard deviation to remove data outside of.<br>
+<div class="apikey">
+	<div class="key"> 
+		<b>usage:</b> https://databus.nrel.gov/api/stddevV1/{rowCount}/{factor}/{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/stddevV1/0/.5/rawdata/RSF2MAIN/1354738000000/1354824663000<br>
+		<b>example:</b> https://databus.nrel.gov/api/stddevV1/200/1/rawdata/RSF2MAIN/1354738000000/1354824663000
+	</div>	
+</div>	
+The first example removes any value outside half of a standard deviation of the entire dataset to that point (infinite window).<br>
+The second example removes any value outside 1 standard deviation with a window of 200 values.
+<br><br>
+<b>The lastvalues module</b> retrieves the last N values of any stream you provide where you tell it the number N.  You do not need
+to provide the ending {Start} and {end} times when using this module.
+<div class="apikey">
+	<div class="key">
+		<b>usage:</b> https://databus.nrel.gov/api/lastvaluesV1/{N}//{nextmodule}<br>
+		<b>example:</b> https://databus.nrel.gov/api/lastvaluesV1/7/rawdata/RSF2MAIN
+	</div>
+</div>	
+<br><br>
+<b>The timeaverage module</b> allows users to average intervals of points in a stream.
+Users specify the interval in milliseconds and the intervals line up with the start time.
+Output time point is the start of the interval being averaged.
+<div class="apikey">
+	<div class="key">
+	<b>usage:</b> https://databus.nrel.gov/api/timeaverageV1/{INTERVAL}/{nextmodule}
+<br><b>example:</b> https://databus.nrel.gov/api/timeaverageV1/60000/rawdata/RSF2MAIN/1354738000000/1354824663000
+</div>
+</div>	
+<br><br>
+<h2>The sumstreams module</h2>
+Allows users to take all values at time1 and add them up from multiple streams and similarly, it adds up time2 values, 
+time3 values, etc. etc.  The first step is to create a new aggregation as follows<br/>
+
+<b>Creating/Modifying an aggregation:</b>
+<div class="apikey">
+	<div class="key">
+	<b>usage:</b> POST to https://databus.nrel.gov/api/sumstreamsV1/register
+<br><b>body:</b> {"name":"{AggregationID}","group":"{GroupID}","urls":["{URL1}","{URL2}"] }
+<br><b>example:</b> {"name":"RSF_DATACENTER","group":"modbus","urls":["timeaverage/60000/rangeclean/-2000000/2000000/rawdata/D73937833phaseRealPower"]}
+</div>
+</div>
+<br>
+
+The next step is to use the aggregation.  You can do that by getting data from the aggregation
+
+<br><br>
+<b>Getting data from an aggregation:</b>
+<div class="apikey">
+	<div class="key">
+	<b>usage:</b> https://databus.nrel.gov/api/sumstreamsV1/{AggregationID}/{start}/{end}
+<br><b>example:</b> https://databus.nrel.gov/api/sumstreamsV1/RSF_PV/1354738000000/1354824663000
+</div>
+</div>
+<br><br>
+
+If you would like to view an aggregation you already created, just use view an aggregation
+<br/>
+<b>Viewing an existing aggregation:</b>
+<div class="apikey">
+	<div class="key">
+	<b>usage:</b>GET https://databus.nrel.gov/api/sumstreamsV1/aggregation/{AggregationID}
+<br><b>example:</b>GET https://databus.nrel.gov/api/sumstreamsV1/aggregation/RSF_DATACENTER
+</div>
+</div>
+<br><br>
+
+On deleting an aggregation, MAKE sure you do a POST not a GET.  No body is required, just POST
+as in the below example supplying the aggregation id in the url
+
+<b>Deleting aggregation:</b>
+<div class="apikey">
+	<div class="key">
+	<b>usage:</b>POST to https://databus.nrel.gov/api/sumstreamsV1/deleteagg/{AggregationID}
+<br><b>example:</b>POST to https://databus.nrel.gov/api/sumstreamsV1/deleteagg/RSF_DATACENTER
+</div>
+</div>
+<br><br>
+

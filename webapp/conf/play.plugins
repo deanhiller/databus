@@ -1,0 +1,3 @@
+2000:plugins.AddLogContextPlugin
+3000:gov.nrel.util.StartupConfig
+5000:com.alvazan.play.NoSqlPlugin

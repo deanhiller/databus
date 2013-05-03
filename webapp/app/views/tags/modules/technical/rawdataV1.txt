@@ -1,0 +1,3 @@
+The raw module allows users to get raw data. This module is always last in a chain of modules when you put a URL together.
+usage: https://databus.nrel.gov/api/rawdataV1/{startTime}/{endTime}
+example: https://databus.nrel.gov/api/rawdataV1/rawdata/RSF2MAIN/1354738000000/1354824663000

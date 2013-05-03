@@ -1,0 +1,78 @@
+#{extends './../MyDatabases/homeTemplate.html' /}
+#{set tab:'home' /}
+#{set title:'Add/Edit Group' /}
+
+#{form @postGroup(), id:'editproject', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <legend>Group Properties</legend>
+	<input type="hidden" name="groupDbo.id" value="${groupDbo?.id}">
+	<input type="hidden" name="oldGroupName" value="${groupDbo?.name}">
+
+	#{xfield objectId:'groupDbo.name',label:'Group Name', help:'Some help message'}
+		#{text field:field, length:50, class:'input-xlarge'/}
+	#{/xfield}
+	
+	#{xfield objectId:'groupDbo.description',label:'Group Description', help:'Some help message'}
+		#{textarea field:field, rows:12, cols:100, class:'input-xxlarge'/}
+	#{/xfield}
+
+    <div class="control-group">
+        <div class="controls">
+    		<input type="submit" name="submit" value="Save" class="btn btn-primary" />
+    		<a href="javascript:history.back()" class="btn">Cancel</a>
+    	</div>
+	</div>
+#{/form}
+	
+#{if groupDbo?.id != null}
+ <h2>Members</h2>
+    
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Role</th>
+	        <th>Robot Api Keys</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groupDbo.children, as:'mapping'}
+	        <tr>
+	            <td><a href="@{userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">${mapping.entity.name}</a></td>
+	            <td>${mapping.entity.typeString}</td>
+	            <td>${mapping.permission}</td>
+	            #{if mapping.entity.typeString == 'Robot' && mapping.ownRobot}
+		            <td>${mapping.entity.apiKey}</td>
+	            #{/if}
+	            #{else}
+	            	<td></td>
+	            #{/else}
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+
+    <a href="@{userAdd(groupDbo.name, 'user')}" class="btn btn-primary">Add user</a>
+    <a href="@{userAdd(groupDbo.name, 'robot')}" class="btn btn-primary">Create robot</a>
+
+<br><br>
+	
+<h2>Resources in this Group(first 50 shown)</h2>
+	
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list resources, as:'resource'}
+	        <tr>
+	            <td><a href="@{gui.MyDatabases.viewDatabase(resource.resource.name)}">${resource.resource.name}</a></td>
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>	
+
+#{/if}	
+

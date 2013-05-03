@@ -1,0 +1,3 @@
+{ "modulename" : "stddev",
+  "description" : "Takes the standard deviation of each window of data in the stream"
+}

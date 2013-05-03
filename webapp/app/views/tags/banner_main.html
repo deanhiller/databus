@@ -1,0 +1,44 @@
+<div class="row-fluid db_header" style="padding-bottom: 0px">
+	<div class="span7">
+		<img src="/public/images/Databus_Name_Logo.png" class="db_name_logo" />
+	</div>
+	<div class="span5 company_header">
+		<div class="row-fluid">
+			<div class="span12">
+				<img class="pull-right" style="padding: 10px 45px 15px 10px"
+					src="/public/images/COMPANY_logo.png">
+			</div>
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<div class="navbar">
+					<ul class="nav pull-right">
+						#{if session.get('username') == null}
+							<li class="db_version" style="padding-bottom: 10px; margin-right: 45px;">Version 1.0 beta</li>
+							<!--<li><a href="@{gui.auth.GuiSecure.login()}" class="db_user">Login</a></li> -->
+						#{/if} 
+						#{else}
+							<li class="db_version">Version 1.0 beta</li>
+							<li class="db_login_sep"></li>
+							<li class="dropdown">
+								<a href="#" class="dropdown-toggle db_user" data-toggle="dropdown">
+									 <i class="icon-user"></i> ${session.get('username')}
+									 <b class="caret"></b>
+								</a>
+								<ul class="dropdown-menu">
+									<li><a href="#" class=""><i class="icon-user"></i>
+											Profile</a></li>
+									<li><a href="#" class=""><i class="icon-cog"></i>
+											Settings</a></li>
+									<li class="divider"></li>
+									<li><a href="@{gui.auth.GuiSecure.logout()}" class=""><i
+											class="icon-off"></i> Logout</a></li>
+								</ul>
+							</li>
+						#{/else}
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

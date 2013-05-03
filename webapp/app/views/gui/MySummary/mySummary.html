@@ -1,0 +1,72 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Summary' /}
+#{set tab:'home' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<h1 class="db_page_title">System Summary</h1>
+<p class="db_content_blurb">
+There are a total of <span style="color: #001429; font-weight: bold;">${groups.size}</span> User Groups currently in this Databus installation.  To be added to an existing group, 
+contact the group Admin for access.
+</p>
+<p class="db_content_blurb">
+There are a total of <span style="color: #001429; font-weight: bold;">${databases.size}</span> Databases currently in this Databus installation.  For access to specific database,
+contact the Admin for that Database.
+</p>
+<h2 class="db_context_header">User Groups</h2>
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Group Admins</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groups, as:'group'}
+	        <tr>
+	            <td>
+		            <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
+		            	<a href="@{gui.MyGroups.editGroup(group.name)}">${group.name}</a>
+		            	<div id="tip_d_ds1_1" class="tip tipright">${group.description}</div>
+		            </span>
+	            </td>
+	            <td>
+	            #{list group.children, as:'mapping'}
+	            	#{if mapping.groupAdmin}
+		            	${mapping.entity.name} 
+	            	#{/if}
+	            #{/list}
+	            </td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
+<h2 class="db_context_header">Databases</h2>
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Admins</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list databases, as:'db'}
+	        <tr>
+	            <td>
+	          	    <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
+	                	<a href="@{gui.MyDatabases.editDatabase(db.schemaName)}">${db.schemaName}</a>
+		            	<div class="tip tipright">${db.description}</div>
+		            </span>
+	            </td>
+	            <td>
+	            #{list db.entitiesWithAccess, as:'user'}
+					${user.userOrGroup.name}  
+	            #{/list}
+	            </td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>

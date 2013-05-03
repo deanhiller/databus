@@ -1,0 +1,8 @@
+	#{generic _field}
+	    #{if _readonly}
+		<input type="text" name="${_field?.name}" value="${_field?.value}" maxlength="${_length}" class="${_class}" readonly="readonly">
+		#{/if}
+		#{else}
+		<input type="text" name="${_field?.name}" value="${_field?.value}" maxlength="${_length}" class="${_class}">
+		#{/else}
+	#{/generic}

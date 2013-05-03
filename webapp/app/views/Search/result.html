@@ -1,0 +1,65 @@
+#{extends 'main.html' /}
+
+<style type="text/css">
+	.result-description {
+		font-size: 14px;
+		margin-bottom: 3em;
+	}
+
+	.result-details tbody th {
+		text-align: right !important;
+		background-color: transparent !important;
+		width: 15%;
+	}
+
+	.result-streams tbody th {
+		background-color: transparent !important;
+	}
+</style>
+
+<!-- h1>${device.getFirstValue("id")}</h1>
+<div class="result-description">${device.getFirstValue("description_texts").nl2br()}</div>
+
+<table class="result-details">
+	<tbody>
+		<tr>
+			<th scope="row">End Use:</th>
+			<td>${device.getFirstValue("endUse_texts")}</td>
+		</tr>
+		<tr>
+			<th scope="row">Building:</th>
+			<td>${device.getFirstValue("building_texts")}</td>
+		</tr>
+		<tr>
+			<th scope="row">Protocol:</th>
+			<td>${device.getFirstValue("protocol_texts")}</td>
+		</tr>
+		<tr>
+			<th scope="row">Site:</th>
+			<td>${device.getFirstValue("site_texts")}</td>
+		</tr>
+		<tr>
+			<th scope="row">Owner:</th>
+			<td>${device.getFirstValue("owner_texts")}</td>
+		</tr>
+	</tbody>
+</table>
+
+<h2>Streams</h2>
+<table class="result-streams">
+	<thead>
+		<th scope="col" style="width: 30%">Stream Name</th>
+		<th scope="col" style="width: 10%">Units</th>
+		<th scope="col" style="width: 60%">Description</th>
+	</thead>
+	<tbody>
+		#{list streams, as:"stream"}
+			<tr>
+				<th scope="row">#{a @Application.viewTable(stream.getFirstValue("id"))}${stream.getFirstValue("id")}#{/a}</th>
+				<td>${stream.getFirstValue("units_texts")}</td>
+				<td>${stream.getFirstValue("description_texts")}</td>
+			</tr>
+		#{/list}
+	</tbody>
+</table-->
+

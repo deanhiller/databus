@@ -1,0 +1,39 @@
+#{extends 'main.html' /}
+
+<div id="login">
+	
+	<h1 class="db_page_title">SDI Login</h1>
+		
+	#{form @authenticate()}
+		
+		#{if flash.error}
+			<p class="error">
+				&{flash.error}
+			</p>
+		#{/if}
+		#{if flash.success}
+			<p class="success">
+				&{flash.success}
+			</p>
+		#{/if}
+	
+
+		<p id="username-field" class="entry">
+			<input type="text" name="username" id="username" value="${flash.username}" />
+			<label for="username">NREL Username</label>
+		</p>
+		<p id="password-field" class="entry">
+			<input type="password" name="password" id="password" value="" />
+			<label for="password">Password</label>
+		</p>
+		<p id="signin-field" class="entry">
+			<input type="submit" id="signin" value="Sign in" />
+		</p>
+		<div id="remember-field" class="entry">
+			<input type="checkbox" name="remember" id="remember" value="true" ${flash.remember ? 'checked="true"' : ''} />
+			<label for="remember">Remember me?</label>
+		</div>
+
+
+		#{/form}
+</div>

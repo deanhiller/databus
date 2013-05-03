@@ -1,0 +1,133 @@
+#{extends './helpTemplate.html' /}
+#{set title:'Databus Robots' /}
+#{set subtab:'helprobots' /}
+
+<style>
+	.apikey 	{ margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    	{ margin: auto; padding: 5px; background-color:#00ff00; }
+	.defines 	{ margin: auto; margin-left: 20px; }
+	.subdefine { margin: auto; margin-left: 60px; margin-top: 5px;}
+	
+	.info-box, .success-box, .warning-box, .error-box {
+	    width: 50%;
+	    border: 1px solid;
+	    margin: 10px 0px;
+	    padding:15px 10px 15px 50px;
+	    background-repeat: no-repeat;
+	    background-position: 10px center;
+	}
+	.info-box {
+	    margin: auto;
+	    color: #00529B;
+	    background-color: #BDE5F8;
+	    background-image: url('/public/images/Info.png');
+	}
+	.success-box {
+	    margin: auto;
+	    color: #4F8A10;
+	    background-color: #DFF2BF;
+	    background-image:url('/public/images/Success.png');
+	}
+	.warning-box {
+	    margin: auto;
+	    color: #9F6000;
+	    background-color: #FEEFB3;
+	    background-image: url('/public/images/Warning.png');
+	}
+	.error-box {
+	    margin: auto;
+	    color: #D8000C;
+	    background-color: #FFBABA;
+	    background-image: url('/public/images/Error.png');
+	}
+</style>
+
+<h1>
+  Robots
+</h1>
+<br>
+
+<b>Robots</b> are user accounts that can perform most Databus functions, just like a normal
+<b>User</b> and are considered an Advanced Feature of the Databus System.
+<br/><br/>
+The main use for <b>Robot</b> accounts are to interface with the Databus system in an automated way.
+Since all Databus functionality requires authentication, there needed to be a way to perform
+routine and automated interactions with the system in which <b>User</b> account credentials
+were not stored.
+<br/><br/>Functions that are available to <b>Robots</b>:
+<ul class="subdefine" style="margin-left: 80px;">
+  <li>
+  Can create Databases.
+</li>
+<li>
+Can create Tables.
+</li>
+<li>
+Can insert data into Tables.
+</li>
+<li>
+Can update existing Table data.
+</li>
+<li>
+Can read existing Table data.
+</li>
+</ul>
+
+How <b>Robots</b> differ from a normal <b>User</b>:
+<ul class="subdefine" style="margin-left: 80px;">
+  <li>
+  <b>Robots</b> only exist as part of a group.
+</li>
+<li>
+<b>Robot</b> access is available to everyone in the group the <b>Robot</b> belongs to.
+</li>
+<li>
+<b>Robot</b> accounts cannot be used to log into the Databus User Interface.
+</li>
+<li>
+<b>Robots</b> cannot create other <b>Robots</b> or <b>User Groups</b>.
+</li>
+</ul>
+<h2 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  <a name="createrobot">Creating a Robot</a>
+</h2>
+To create a <b>Robot</b>, log into your <a href="@{MyGroups.myGroups()}" id="subtab_groups">Groups</a> page
+and click one of the <b>User Groups</b> that you have either created or are associated with.  Under the
+"Members" section, click the "Create robot" link.  Enter in the "User Name" of your <b>Robot</b> and make
+sure that "Member" is the chosen "Membership Type".
+<br/><br/>
+Once the <b>Robot</b> is created, you will see it listed in the "Members" section for this particular 
+<b>User Group</b> along with its associated "API Key".  When interacting with the Databus System as a Robot,
+the <i>Username</i> will be the "<b>Robot</b> Name" and the <i>Password</i> will be the <b>Robot</b> "API Key".
+<br/><br/>
+The current list of <b>Robots</b> that are available to you are:
+<div style="margin-left: 20%">
+<br/>
+<table style="width:75%;">
+	<tr style="background-color:#d5d5d5; font-weight: bold;">
+        <td>Robot Username</td>
+        <td>API Key</td>
+        <td>User Group</td>
+     </tr>
+    #{list user.robots, as:'robot'}
+    <tr>
+        <td>${robot.name}</td>
+        <td>${robot.apiKey}</td>
+        <td>${robot.robotGroupName}</td>
+    </tr>
+    #{/list}
+</table>
+</div>
+<div class="warning-box" style="width: 80%; padding-top: 0px;">
+<h4 style="margin-bottom:0px; padding-bottom:5px">SECURITY NOTE:</h4>
+<b>Robots</b> only have access to what you give them access to.  If a <b>Robot</b> is in a <b>User Group</b> that
+has full access, the <b>Robot</b> has full access. <b>Robots</b> can be added to other groups via the "Add existing robot to
+this group" link within a specific <b>User Group</b> page. The owner of the <b>Robot</b> is the <b>User Group</b> selected
+during <b>Robot</b> creation and is managed by all Admins within that group.
+<br/><br/>
+<b>Robots</b> can only be deleted by the Admins
+of the group the <b>Robot</b> belongs to.  Deleting a <b>Robot</b> from a group that the <b>Robot</b> does not belong to, 
+only removes the <b>Robots'</b> membership to that group.
+</div>
+
+

@@ -1,0 +1,91 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+buildDir = 'output'
+project.ext.fixedLibDir = file('lib')
+project.ext.stagingDir = file('staging')
+project.ext.toStagingDir = file(new File(buildDir, project.name))
+project.ext.toStagingLibsDir = file(new File(toStagingDir, 'lib'))
+
+project.ext.libDeploy = file(new File(buildDir, 'lib-deploy'))
+
+project.ext.mainclasses = file(new File(new File(buildDir, 'classes'),'main'))
+project.ext.mainresources = file(new File(new File(buildDir, 'resources'),'main'))
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	compile 'org.acegisecurity:acegi-security:1.0.7'
+	
+	compile 'org.slf4j:slf4j-api:1.7.2'
+	compile 'org.slf4j:log4j-over-slf4j:1.7.2'
+	compile 'org.slf4j:jcl-over-slf4j:1.7.2'
+	compile 'ch.qos.logback:logback-core:1.0.9'
+	compile 'ch.qos.logback:logback-classic:1.0.9'
+	
+	compile 'joda-time:joda-time:2.1'
+	
+	compile 'org.apache.httpcomponents:httpclient:4.2.3'
+	compile 'org.apache.httpcomponents:httpmime:4.2.3'
+	
+    compile 'org.codehaus.jackson:jackson-mapper-asl:1.9.8'
+    
+    compile 'commons-io:commons-io:2.4'
+    
+    testCompile 'junit:junit:4.+'
+}
+
+
+task staging(type: Sync) {
+    from(stagingDir) {}
+    into toStagingDir
+}
+
+task syncJars(type: Sync) {
+    from(configurations.compile) {}
+    from(fixedLibDir) {}
+    into toStagingLibsDir
+}
+
+task copyMainJar(type: Copy) {
+    from(libsDir) {}
+    into toStagingLibsDir
+}
+
+task myZip(type: Tar) {
+    archiveName project.name+'.tar.gz'
+    from(buildDir) {
+        include project.name+'/**'
+    }
+}
+
+
+//fat jar
+// http://www.gradle.org/docs/current/dsl/org.gradle.api.tasks.bundling.Jar.html
+// http://www.gradle.org/docs/current/userguide/java_plugin.html
+task fatJar(type: Jar) {
+  baseName = project.name + '-deploy'
+  destinationDir = libDeploy
+  
+  dependsOn configurations.runtime
+  from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+  
+  //from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  
+  from(mainclasses) {}
+  from(mainresources) {}
+  
+  from(fixedLibDir) {}
+  
+//  manifest {
+//    attributes 'Main-Class': 'temp.TempMain'
+//  }
+}
+
+syncJars.dependsOn('staging')
+copyMainJar.dependsOn('syncJars')
+myZip.dependsOn('copyMainJar')
+assemble.dependsOn('myZip')
+fatJar.dependsOn('build')

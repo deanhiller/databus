@@ -1,0 +1,274 @@
+subprojects {
+	apply plugin: 'java'
+	apply plugin: 'eclipse'
+	
+	buildDir = 'output'
+	
+	repositories {
+	     mavenCentral()
+	}
+
+    //Running hello runs this in all subprojects unless overridden	
+	task hello << { task -> println "I'm $task.project.name" }
+
+	build << { task -> println "MASTER: I'm building now=$task.project.name" } //"building with classpath=$sourceSets.main.compileClasspath.files"
+	
+	gradle.taskGraph.afterTask { task, TaskState state ->
+		if (task == build) {
+			println "\n\n----------------------------------------------------------------------------\n" +
+			"************ $task COMPLETED ************\n" +
+			"----------------------------------------------------------------------------\n\n"
+		}
+	}
+
+    //NOTE: need to test REMOVING this as I think this is the default!!!!
+    eclipse {
+        classpath {
+           downloadSources=true
+        }
+    }
+
+    version = System.properties['version']
+}
+
+project(':webapp') {
+	project.ext.genLibDir = file('lib')
+	project.ext.fixedLibDir = file('../master/libother')
+	
+	dependencies {    
+	    compile project(':master')
+			    
+	    compile fileTree(dir: '../webapp/play-1.2.5/framework/lib', include: '*.jar')
+	    										//, excludes: ['*log4j*','slf4j*'])
+	    compile fileTree(dir: '../webapp/play-1.2.5/framework', include: 'play-*.jar')	
+	}
+
+	task myZip(type: Zip) {
+	    archiveName "databus.zip"
+	    from('..') {
+                exclude 'webapp/conf/logback.xml'
+	        include 'webapp/play'
+	        include 'webapp/*.sh'
+	        include 'webapp/lib/**'
+	        include 'webapp/app/**'
+	        include 'webapp/conf/**'
+	        include 'webapp/play-1.2.5/**'
+	        include 'webapp/public/**'
+	    }
+        rename '(.*)prod.(.*)', '$1$2'
+	}
+
+    myZip.dependsOn('jar', ':master:copyJars')
+	assemble.dependsOn('myZip')
+
+    //playframework has it's own generation of .classpath and .project fils so do not 
+    //overwrite their versions.  NEED to call "play.bat eclipsify" here...
+	task eclipse(overwrite: true) << {
+		// Put the play eclipsify command here
+		// First, look to see if eclipsify was already run (i.e. the gradle command to run this
+		// task was done by a developer).
+		// If the eclipsify stuff ISNT there, then we just exit
+		/**
+		 * Following is a list of items that are only available AFTER "./play eclipsify" has been run
+		 *
+		 * 		webapp/eclipse - directory
+		 * 		webapp/.classpath
+		 * 		webapp/.project
+		 */
+		/**
+		 * Now write the Play server wrapper so we can launch it in the background and
+		 * gradle can continue on its merry way.
+		 */
+		def playExec = new File( 'webapp/playEclipsifyWrapper')
+		if(playExec.exists()) {
+			playExec.delete()
+		}
+		playExec << ('#!/bin/bash\n\n' +
+							 'cd ../webapp;' +
+							 './play eclipsify &')
+		playExec.setExecutable(true)
+		
+		def result = exec {
+			executable = '../webapp/playEclipsifyWrapper'
+		}
+		
+		if(playExec.exists()) {
+			playExec.delete()
+		}
+	} dependsOn(':master:copyJars')
+    
+	 task clean(overwrite: true) << {
+		 def libTmp = new File( 'webapp/lib')
+		 if(libTmp.exists()) {
+			 libTmp.deleteDir()
+		 }
+		 
+		 def playTmp = new File( 'webapp/tmp')
+		 if(playTmp.exists()) {
+			 playTmp.deleteDir()
+		 }
+		 
+		 def outTmp = new File( 'webapp/output')
+		 if(outTmp.exists()) {
+			 outTmp.deleteDir()
+		 }
+	 }
+}
+
+project(':master') {
+	project.ext.genLibDir = file('../webapp/lib')
+	project.ext.fixedLibDir = file('libother')
+
+	configurations {
+	    compile.exclude module: 'commons'
+    	all*.exclude group: 'org.springframework'
+    	all*.exclude module: 'log4j'
+        all*.exclude module: 'slf4j-log4j12'
+    	all*.exclude module: 'junit'
+    	all*.exclude module: 'antlr'
+    	all*.exclude module: 'snakeyaml'
+    	all*.exclude module: 'slf4j-jdk14'
+        all*.exclude module: 'netty'
+	}
+
+	dependencies {
+		compile group: 'org.acegisecurity',  name: 'acegi-security',          version: '1.0.7'
+			
+		//compile group: 'org.hibernate',    name: 'hibernate-entitymanager', version: '4.1.4.Final'
+		//compile group: 'org.slf4j',          name: 'slf4j-api',               version: '1.6.6'
+	compile 'org.slf4j:log4j-over-slf4j:1.6.6'
+        compile 'org.slf4j:jcl-over-slf4j:1.6.6'
+        compile 'com.ning:async-http-client:1.7.12'
+        //ERASE this one as this client seems to suck usability-wise!!!
+        compile 'org.apache.httpcomponents:httpasyncclient:4.0-beta3'
+
+        compile 'javax.mail:mail:1.4.5'
+        compile group: 'ch.qos.logback',     name: 'logback-core',            version: '1.0.6'
+        compile group: 'ch.qos.logback',     name: 'logback-classic',         version: '1.0.6'
+		compile group: 'joda-time',         name: 'joda-time',               version: '2.1'
+		compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl',    version: '1.9.8'
+		compile group: 'org.apache.httpcomponents', name: 'httpclient',       version: '4.1.3'
+		compile group: 'org.apache.httpcomponents', name: 'httpmime',         version: '4.1.3'		
+		
+		//Libraries needed for playOrm...need to be moved into playOrm dependency list 
+            compile 'com.google.inject:guice:3.0'
+            compile 'com.google.inject.extensions:guice-multibindings:3.0'
+		compile group: 'com.netflix.astyanax', name: 'astyanax',              version: '1.56.26'
+	    compile group: 'org.javassist',      name: 'javassist',               version: '3.16.1-GA'
+	    compile group: 'org.antlr',          name: 'antlr',                   version: '3.4'
+	    compile group: 'org.antlr',          name: 'antlr-runtime',           version: '3.4'
+	    
+	    compile group: "org.apache.solr", name: "solr-core", version: "4.1.0"
+	    compile group: "org.apache.solr", name: "solr-solrj", version: "4.1.0"
+       	    compile group: "org.apache.commons", name: "commons-math", version: "2.0"
+
+	    
+    	//If it is not in a maven repo, we can drop it here
+	    compile fileTree(dir: project.ext.fixedLibDir, include: '*.jar')
+	}
+
+	task deleteJars(type: Delete) {
+		ext.collection = files { genLibDir.listFiles() }
+        delete ext.collection
+    }
+    
+	task copyJars(type: Copy) { 
+		from(configurations.compile) {}
+		from(fixedLibDir) {}
+		into genLibDir
+	}
+	
+	copyJars.dependsOn('deleteJars')
+	
+	assemble.dependsOn('copyJars')
+
+}
+
+gradle.taskGraph.afterTask { task, TaskState state ->
+	if (task.getName().equals('eclipse')) {
+		if(state.getFailure() != null) {
+			println "\n\n******* ECLIPSE PATHING ERROR *******\n" +
+					   "You must run the eclipse task from the main build directory (i.e. SDI)" + 
+					   "\n****************************************\n\n"
+		}
+	}
+}
+
+task release << { println "putting together release" }
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release) && version == 'Developer-Build') {
+    	throw new StopExecutionException("You must specify -Dversion=<some version> to run the release task")
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+}
+
+//TODO: have a release task AND if version is null when running the release task
+//throw an exception telling the user to pass in a version with "./build -Dversion=xxxx"
+//The automated build will call the release task with a version number like that
+/*gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release) && version == 'Developer-Build') {
+    	throw new StopExecutionException("You must specify -Dversion=<some version> to run the release task")
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+}*/
+
+task echoMainBuildCompleted << { task ->
+	println "\n\n\n########################################################################\n" +
+"                       MAIN BUILD COMPLETED\n" +
+"              =====================================\n" +
+"                        RUNNING UNIT TESTS\n" +
+"########################################################################\n\n\n"
+}
+
+/**
+ * This task will completely clean out EVERYTHING including eclipse, play and build generated
+ * files.
+ */
+task clobber(dependsOn: [':master:clean', ':webapp:clean']) << {
+	
+	/*
+	new ByteArrayOutputStream().withStream { os ->
+		def result = exec {
+			ignoreExitValue = true
+			executable = 'pwd'
+			errorOutput = os
+			standardOutput = os
+		}
+		def output = os.toString()
+		println "CURRENT DIR: $output"
+	}
+	*/
+	
+	/**
+	 * Maybe we shouldnt delete this? lol
+	 *
+	def gradleTmp = new File( '.gradle')
+	if(gradleTmp.exists()) {
+		gradleTmp.deleteDir()
+	}
+	*/	
+	
+	def classpathTmp = new File( 'webapp/.classpath')
+	if(classpathTmp.exists()) {
+		classpathTmp.delete()
+	}
+	
+	def projectTmp = new File( 'webapp/.project')
+	if(projectTmp.exists()) {
+		projectTmp.delete()
+	}
+	
+	def settingsTmp = new File( 'webapp/.settings')
+	if(settingsTmp.exists()) {
+		settingsTmp.deleteDir()
+	}
+	
+	def eclipseTmp = new File( 'webapp/eclipse')
+	if(eclipseTmp.exists()) {
+		eclipseTmp.deleteDir()
+	}
+}
+

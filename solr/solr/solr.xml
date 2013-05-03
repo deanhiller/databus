@@ -1,0 +1,6 @@
+<solr persistent="true">
+<cores adminPath="/admin/cores" hostPort="8983">
+<core loadOnStartup="true" instanceDir="core1/" transient="false" name="core1"/>
+<core loadOnStartup="true" instanceDir="core0/" transient="false" name="core0"/>
+</cores>
+</solr>

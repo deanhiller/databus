@@ -1,0 +1,163 @@
+#{extends '_main.html' /}
+
+#{banner_main /}
+
+#{menubar_main /}
+
+
+<!-- ======================================================================= -->
+<!-- Framework variables saved in global scope for JavaScript libraries -->
+<script> 
+	var _results = '${searchResultStatus}';
+	var _resultType = '${searchType}';
+	var _resultCount = '${searchResultCount}';
+	var _globalSearchID = '${searchID}';
+	var _globalSearchItem = '${searchString}';
+	var _globalSearchTooltip = '${searchToolTip}';
+</script>
+<!-- ======================================================================= -->
+
+<!-- JQuery -->
+<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/public/javascripts/jquery.livequery.js"></script>
+
+<!-- Ajax Solr -->
+<script type="text/javascript" src="/public/includes/ajax_solr/core/Core.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractManager.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/managers/Manager.jquery.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/Parameter.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/ParameterStore.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/helpers/jquery/ajaxsolr.theme.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/widgets/jquery/PagerWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractFacetWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractTextWidget.js"></script>
+
+<!-- GUISearch -->
+<script type="text/javascript" src="/public/javascripts/guisearch/global/guiGlobalSearch.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/global/globalsearchwidget.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/global/globalsearchtheme.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/global/globalsearchtagcloud.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/searchcurrentfilter.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/searchinput.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/global/globalsearchpager.js"></script>
+
+
+<!-- Bootstrap -->
+<script type="text/javascript" src="/public/bootstrap/js/bootstrap.js"></script>
+
+
+<!-- DEBUG -->
+<!-- ======================================================================= -->
+		<!-- JQuery -->
+		 <!-- <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>  -->
+		 <!-- <script type="text/javascript" src="/public/includes/jquery.hotkeys.js"></script>  -->
+
+		<!-- Bootstrap -->
+		 <!-- <link href="/public/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">  -->
+		 <!-- <script type="text/javascript" src="/public/bootstrap/js/bootstrap.min.js"></script>  -->
+		
+		<!-- Theme -->
+		 <!-- <link href="/public/bootstrap/themes/proto2/proto2.css" rel="stylesheet" type="text/css">  -->
+		 <!-- <script type="text/javascript" src="/public/bootstrap/themes/proto2/proto2.js"></script>  -->
+
+		<!-- GUISearch -->
+ 		<!-- <link href="/public/stylesheets/guisearch/guisearch.css" rel="stylesheet" type="text/css">  -->
+ <!-- </head>  -->
+ <!-- <body>  -->
+<!-- ======================================================================= -->
+<!-- DEBUG -->
+<div id="main_search_div">
+	<div class="search_left">		
+		<h2 class="search_nav_title" style="font-size: 18px !important;">
+			<span id="global_search_title">Global Search</span>
+			<!--<a href="#" id="title_icon_info" data-toggle="popover" data-placement="bottom" title="${searchToolTip}">-->
+			<a href="#" id="search_result_popover" rel="tooltip">
+				<i class="icon-info-sign" style="position: relative; margin-top: 3px; margin-left: 10px;"></i>
+			</a>
+		</h2>
+		<div id="additional_search_results"></div>
+		
+		<!--<ul id="global_search" style="margin-left: 20px; margin-bottom: 0px !important; padding-bottom: 0px !important;">
+			<input type="text" id="global_search_field" name="query" class="search_input" placeholder="${searchString}">
+		</ul>-->
+		
+		<h2 class="search_nav_title"><i class="icon-list" style="margin: 2px 0px 0px 0px;"></i> Current Filter</h2>
+		<ul id="selection" style="list-style: circle;"></ul>
+		
+		<p class="nav_divider" style="margin-bottom: 0px !important; padding-bottom: 0px !important;"></p>
+	
+		<div class="search_nav_facet">			
+			<div class="accordion" id="dynamic_facets">
+			</div>
+		</div>
+		
+	</div>
+	
+	<div class="search_right">
+		<div id="navigation" class="pager_top_nav pagination">
+			<div id="pager_top_header"></div>
+			<ul id="pager_top"></ul>
+			<div id="pager_top_footer"></div>
+			<div id="table_name_id" style="clear: both; color: #1a67ad; font-weight: 700; font-size: 20px; margin-bottom: 5px;"></div>
+		</div>
+		<div id="result" class="result">
+			<div id="docs"></div>
+		</div>
+		<div id="navigation" class="pager_bottom_nav pagination">
+			<div id="pager_bottom_header"></div>
+			<ul id="pager_bottom"></ul>
+			<div id="pager_bottom_footer"></div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		// Since global search has no main menu "tab", clear all the others out
+		$('.db_main_nav_item').removeClass("active");
+		
+		if(_results === 'true') {
+			if(_resultType === 'table') {
+				$('#global_search_title').html("Detail Search Result");
+				$('#global_search_title').attr('style', 'font-size: 18px !important; color: #009900 !important;');
+				$('#table_name_id').html("Global results for <span style=\"color: #009900 !important;\">" + _globalSearchID + "</span>.");
+				
+				$("#search_result_popover").tooltip({
+    					delay: { show: 100, hide: 0 },
+			     	placement : 'bottom',
+				     html: true,
+				     trigger: "click",
+				     //title: 'Detail Search Result',
+				     title : '${searchToolTip}'
+				});			
+			} else {
+				$('#global_search_title').html("Meta Search Result");
+				$('#global_search_title').attr('style', 'font-size: 18px !important; color: #1a67ad !important;');
+				$('#table_name_id').html("Global results for <span style=\"color: #333 !important;\">" + _globalSearchID + "</span>.");
+				
+				$("#search_result_popover").tooltip({
+    					delay: { show: 100, hide: 0 },
+			     	placement : 'bottom',
+				     html: true,
+				     trigger: "click",
+				     //title: 'Detail Search Result',
+				     title : '${searchToolTip}'
+				});
+			}
+		} else {
+			$('#table_name_id').html("There are no search results for <span style=\"color: #333 !important;\">\"" + _globalSearchItem + "\"</span>.");
+			
+			$("#search_result_popover").tooltip({
+				delay: { show: 100, hide: 0 },
+		     	placement : 'bottom',
+			     html: true,
+			     trigger: "click",
+			     //title: 'Detail Search Result',
+			     title : 'There are no results for the requested search term.'
+			});
+		}
+	});
+</script>
+
+#{nrel_footer /}

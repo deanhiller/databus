@@ -1,0 +1,35 @@
+#{extends './adminTemplate.html' /}
+#{set subtab:'meta' /}
+
+<h2>Table ${idMeta.owner.columnFamily}</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Indexed?</th>
+	    </tr>
+	</thead>
+	<tbody>
+		<tr>
+	       	#{if idMeta.isIndexed}
+	        	<td><a href="@{Admin.viewIndex(idMeta.owner.columnFamily, idMeta.columnName)}">${idMeta.columnName}</a></td>
+	        #{/if}
+	        #{else}
+	        	<td>${idMeta.columnName}</td>
+	        #{/else}
+			<td>(Row Key)${idMeta.isIndexed}</td>
+		</tr>
+		#{list columns, as:'col'}
+	        <tr>
+	        	#{if col.isIndexed}
+	        		<td><a href="@{Admin.viewIndex(col.owner.columnFamily, col.columnName)}">${col.columnName}</a></td>
+	        	#{/if}
+	        	#{else}
+	            	<td>${col.columnName}</td>
+	            #{/else}
+	            <td>${col.isIndexed}</td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>

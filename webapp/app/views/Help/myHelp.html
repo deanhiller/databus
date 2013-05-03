@@ -1,0 +1,173 @@
+#{extends './helpTemplate.html' /}
+#{set title:'Databus Help' /}
+#{set subtab:'help' /}
+
+<style>
+	.apikey 	{ margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    	{ margin: auto; padding: 5px; background-color:#00ff00; }
+	.defines 	{ margin: auto; margin-left: 20px; }
+	.subdefine { margin: auto; margin-left: 60px; margin-top: 5px;}
+</style>
+
+#{databus_help /}
+
+<h2 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  Accessing Databus
+</h2>
+There are three distinct
+<i>
+  end user
+</i>
+roles for accessing Databus: Users, Robots and Groups.
+<br/>
+<br/>
+<div class="defines">
+  <b>
+    Users
+  </b>
+  are NREL system accounts that are allowed access to the Databus system. A
+  <b>
+    user
+  </b>
+  will be responsible for the creation and maintenance of system components such as <b>Databases</b>,
+  <b>Tables</b>, <b>Robots</b>, <b>User Groups</b> and other <b>Users</b>.
+</div>
+<br/>
+<div class="defines">
+  <b>
+    Robots
+  </b>
+  are Databus system accounts that "act" like <b>Users</b> when running certain Databus functions. <b>Robots</b>
+  are used to allow access to the system in an automated way without exposing <b>User</b> Credentials for
+  authentication.  They should mainly be used for automated services and are considered an Advanced feature
+  of the Databus system.
+</div>
+<br/>
+<div class="defines">
+  <b>User Groups</b>
+  are combinations of <b>Users</b> and <b>Robots</b> that make it easy to give common system privilages to many end user roles at
+  once.
+</div>
+<br/>
+<h2 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  Databus Components
+</h2>
+Within Databus there are three main components that define how the data is structured, stored and accessed: Databases,
+Tables and Modules.
+<br/>
+<br/>
+<div class="defines">
+  <b>
+    Databases
+  </b>
+  are top level components that define a set of data in relation to <b>Users</b>, <b>User Groups</b> and <b>Tables</b>. Basically, a database would
+  be the highest level container for a customer to store and access data (although a customer is not limited to just one
+  Database). An example of a Database could be:
+  <br/>
+  <div class="subdefine">
+    <table width="50%" cellspacing="0">
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            Database Name:
+          </b>
+        </td>
+        <td>
+          Western_United_States_Wind_Data
+        </td>
+      </tr>
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            Users:
+          </b>
+        </td>
+        <td>
+          JSmith, BMiller
+        </td>
+      </tr>
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            User Groups:
+          </b>
+        </td>
+        <td>
+          Wind_Research_Group, Statistical_Analysis
+        </td>
+      </tr>
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            Tables:
+          </b>
+        </td>
+        <td>
+          wind103WUV, wind103WTWC500nm, wind103WDirTotal
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+<div class="defines">
+  <b>
+    Tables
+  </b>
+  describe the data coming from a source of user defined values.  A table can be
+  any combination of values that are important to the user defining the table but
+  must fall within two main table types that Databus offers: STREAM and RELATIONAL_TABLE.
+  <br/>
+  <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+  <b style="color:#01355e;">
+    STREAM
+  </b>
+  tables are for time series data.  These tables consist of a single TIME column and a single VALUE column.
+  </div>
+  <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+  <b style="color:#01355e;">
+    RELATIONAL_TABLE
+  </b>
+  tables are for relational data.  These tables can consist of any number of columns describing the data you want to store.
+  </div>
+</div>
+<br/>
+<div class="defines">
+  <b>
+    Modules 
+  </b>
+  are advanced components that allow you to translate data into many different forms when requesting that data
+  from Databus.   Most Modules are specific to a single <b>Table</b> type and cannot be used for data that is
+  stored in a table not of that type.  An exception would be the SQL Module which provides SQL-like queries
+  on a table whose structure is known by the one using the module.  One powerful feature of the <b>Modules</b> 
+  component is that they can be chained together to provide multiple translations on a single request.  Some 
+  examples of modules are:
+  <div class="subdefine">
+    <table width="50%" cellspacing="0">
+      <tr style="border-bottom:0;">
+        <td width="25%" style="color:#01355e;">
+          Standard Deviation (StdDevMod)
+        </td>
+        <td>
+          Type: <b style="color:#01355e;">STREAM</b>
+        </td>
+      </tr>
+      <tr style="border-bottom:0;">
+        <td width="25%" style="color:#01355e;">
+            Splines (SplinesMod)
+        </td>
+        <td>
+          Type: <b style="color:#01355e;">STREAM</b>
+        </td>
+      </tr>
+      <tr style="border-bottom:0;">
+        <td width="25%" style="color:#01355e;">
+            SQL Module (SQL)
+        </td>
+        <td>
+          Type: <b style="color:#01355e;">RELATIONAL_TABLE, STREAM</b>
+        </td>
+      </tr>
+   </table>
+ </div>
+</div>
+

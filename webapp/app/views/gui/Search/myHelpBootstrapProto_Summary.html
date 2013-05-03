@@ -1,0 +1,248 @@
+<div class="row-fluid">
+    <div class="span6">
+        <div id="db_summary_1" class="db_summary_chart table-bordered"></div>
+    </div>
+    <div class="span6" style="padding-right: 10px">
+		<div id="db_summary_2" class="db_summary_chart">
+			<table class="table table-bordered db_chart_table">
+				<tr>
+					 <td style="width:40%">Total Tables</td>
+					<td>59,955</td>
+				</tr>
+				<tr>
+					<td>% Streams Reporting</td>
+					<td>82.30%</td>
+				</tr>
+				<tr>
+					<td>Total Databases</td>
+					<td>53</td>
+				</tr>
+				<tr>
+					<td>User Groups</td>
+					<td>14</td>
+				</tr>
+				<tr>
+					<td>Robots</td>
+					<td>185</td>
+				</tr>
+				<tr>
+					<td>Total Aggregations</td>
+					<td>635</td>
+				</tr>									
+			</table>
+		</div>
+	</div>
+</div>
+
+<div class="row-fluid">
+    <div class="span6">
+        <div id="db_summary_3" class="db_summary_chart">
+			<table class="table table-bordered db_chart_table">
+				<thead>
+					<tr style="color: #001429">
+						<td style="width:50%">Name</td>
+						<td>Members</td>
+						<td>Databases</td>
+						<td>Streams</td>
+						<td>% Active</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>BuildingAgent</td>
+						<td>49</td>
+						<td>26</td>
+						<td>39,755</td>
+						<td>92.23%</td>			
+					</tr>
+					<tr>
+						<td>TARDEC_IAG</td>
+						<td>32</td>
+						<td>22</td>
+						<td>1,985</td>
+						<td>98.78%</td>	
+					</tr>
+					<tr>
+						<td>EFM</td>
+						<td>23</td>
+						<td>17</td>
+						<td>1,543</td>
+						<td>95.01%</td>			
+					</tr>
+					<tr>
+						<td>EVgroup</td>
+						<td>20</td>
+						<td>16</td>
+						<td>923</td>
+						<td>52.65%</td>	
+					</tr>
+					<tr>
+						<td>highSecurity</td>
+						<td>12</td>
+						<td>11</td>
+						<td>249</td>
+						<td>78.26%</td>	
+					</tr>					
+				</tbody>
+			</table>			
+		</div>
+	</div>
+    <div class="span6"  style="padding-right: 10px">
+        <div id="db_summary_4" class="db_summary_chart table-bordered"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+	function createSummaryData () {	
+			$(function () {
+			    var chart;
+			    $(document).ready(function() {
+			        chart = new Highcharts.Chart({
+			            chart: {
+			                renderTo: 'db_summary_1',
+			                plotBackgroundColor: null,
+			                plotBorderWidth: null,
+			                plotShadow: false
+			            },
+			            title: {
+			                text: '<b>Streams Online</b>'
+			            },
+			            tooltip: {
+			        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+			            	percentageDecimals: 1
+			            },
+			            plotOptions: {
+			                pie: {
+			                    allowPointSelect: true,
+			                    cursor: 'pointer',
+			                    dataLabels: {
+			                        enabled: true,
+			                        color: '#000000',
+			                        connectorColor: '#000000',
+			                        formatter: function() {
+			                            return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+			                        }
+			                    }
+			                }
+			            },
+			            series: [{
+			                type: 'pie',
+			                name: 'Streams Online',
+			                data: [
+			                    ['RSF',   45.0],
+			                    ['ESIF',       26.8],
+			                    {
+			                        name: 'DataCenter',
+			                        y: 12.8,
+			                        sliced: true,
+			                        selected: true
+			                    },
+			                    ['Lab 1',    8.5],
+			                    ['Lab 2',     6.2],
+			                    ['Others',   0.7]
+			                ]
+			            }]
+			        });
+			    });
+			    
+			});
+			
+			$(function () {
+			    var chart;
+			    $(document).ready(function() {
+			        chart = new Highcharts.Chart({
+			            chart: {
+			                renderTo: 'db_summary_4',
+			                zoomType: 'x',
+			                spacingRight: 20
+			            },
+			            title: {
+			                text: 'Stream Sources'
+			            },
+			            subtitle: {
+			                text: document.ontouchstart === undefined ?
+			                    'Click and drag in the plot area to zoom in' :
+			                    'Drag your finger over the plot to zoom in'
+			            },
+			            xAxis: {
+			                type: 'datetime',
+			                maxZoom: 14 * 24 * 3600000, // fourteen days
+			                title: {
+			                    text: null
+			                }
+			            },
+			            yAxis: {
+			                title: {
+			                    text: 'Streams'
+			                },
+			                showFirstLabel: false
+			            },
+			            tooltip: {
+			                shared: true
+			            },
+			            legend: {
+			                enabled: false
+			            },
+			            plotOptions: {
+			                area: {
+			                    fillColor: {
+			                        linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+			                        stops: [
+			                            [0, Highcharts.getOptions().colors[0]],
+			                            [1, 'rgba(2,0,0,0)']
+			                        ]
+			                    },
+			                    lineWidth: 1,
+			                    marker: {
+			                        enabled: false,
+			                        states: {
+			                            hover: {
+			                                enabled: true,
+			                                radius: 5
+			                            }
+			                        }
+			                    },
+			                    shadow: false,
+			                    states: {
+			                        hover: {
+			                            lineWidth: 1
+			                        }
+			                    },
+			                    threshold: null
+			                }
+			            },
+			    
+			            series: [{
+			                type: 'area',
+			                name: '# of Streams',
+			                pointInterval: 3600 * 5000,
+			                pointStart: Date.UTC(2012, 0, 01),
+			                data: [
+			                    30047, 30511, 30539, 30606, 30642, 30948, 31014, 31022, 31023,
+			                    31043, 31240, 31408, 31453, 31636, 32034, 32040, 32110, 32240, 32254, 32305, 32352,
+			                    32368, 32403, 32594, 33393, 33412, 33416, 33423, 33470, 33520, 33803, 33806, 33865, 33965, 
+			                    34040, 34082, 34152, 34534, 34564, 34687, 34817, 34847, 34852, 34990, 35052, 35057, 35086, 
+			                    35215, 35755, 35861, 35949, 36307, 36331, 36527, 36672, 36800, 36801, 36832, 36895, 36932, 
+			                    37142, 37301, 37340, 37368, 37423, 37565, 37590, 37723, 37781, 37870, 37889, 37891, 38001, 
+			                    38109, 38125, 38310, 38324, 38380, 38386, 38400, 38432, 38512, 38549, 38612, 38648, 38666, 
+			                    38704, 38747, 38784, 38931, 38982, 39159, 39251, 39277, 39353, 39475, 39529, 39545, 39821, 39937,
+			                    38172, 38178, 38373, 38375, 38397, 38592, 38665, 38993, 39093, 39098, 39334, 39338, 39452, 39495, 
+			                    39636, 39737, 40103, 40326, 40652, 40701, 41522, 41935, 42160, 42210, 42224, 42269, 42327, 42394, 
+			                    42410, 42642, 42846, 42919, 43197, 43404, 43699, 43990, 43996, 44044, 44076, 44517, 44616, 44657, 
+			                    44912, 44915, 44957, 40817, 41004, 41736, 41851, 41902, 45717, 45824, 45980, 46052, 46092, 46208, 
+			                    46309, 46314, 46391, 46489, 46523, 46530, 46596, 46607, 46632, 46657, 46709, 46803, 47077, 47640, 
+			                    47851, 47913, 48094, 48212, 48293, 48508, 48549, 48791, 48941, 48984
+			                ]
+			            }]
+			        });
+			    });			    
+			});
+		}
+</script>
+
+<script type="text/javascript">
+	$('#db_summary_4').ready(function() {
+		createSummaryData();
+	});
+</script>

@@ -1,0 +1,218 @@
+#{extends '_index.html' /}
+#{set title:'Dashboard' /}
+#{set tab:'dashboard' /}
+
+<script>
+	var _charts_enabled = '${charts_enabled}';
+	var _charts_library = '${charts_library}';
+</script>
+
+<!-- Our HighCharts code -->
+<script src="/public/javascripts/charts.js" type="text/javascript"></script>
+<link href="/public/stylesheets/charts.css" rel="stylesheet" type="text/css">
+
+        <div class="row-fluid">
+
+        <div class="span3" style="padding-top: 20px;border-right: 1px solid #aaa !important; min-width:200px">
+		<!-- Need to add a left nav bar now so we can choose between all the different charts -->
+			<ul id="dashboard-menu" class="nav nav-list">            
+				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item"><i class="icon-th "></i> Summary</a></li> 
+				<li class="divider"></li>
+				<li class="db_left_nav_item"><a id="_RSF_BUILDING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_BUILDING</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_PV_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_PV</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_DATACENTER_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_DATACENTER</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_ELEVATOR_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_ELEVATOR</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_LIGHTING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_LIGHTING</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_MECHANICAL_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_MECHANICAL</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_PLUG_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_PLUG</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_MISC_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_MISC</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_HEATING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_HEATING</a></li>
+				<li class="db_left_nav_item"><a id="_RSF_COOLING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_COOLING</a></li>
+				<li class="db_left_nav_item"><a id="_GARAGE_BUILDING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> GARAGE_BUILDING</a></li>
+				<li class="db_left_nav_item"><a id="_GARAGE_EVCS_" class="db_left_nav_menu_item"><i class="icon-signal "></i> GARAGE_EVCS</a></li>
+				<li class="db_left_nav_item"><a id="_wind103W_GloCM22_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind103W_GloCM22</a></li>
+				<li class="db_left_nav_item"><a id="_wind103W_DirCH1_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind103W_DirCH1</a></li>
+				<li class="db_left_nav_item"><a id="_wind303W_Temp_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_Temp</a></li>
+				<li class="db_left_nav_item"><a id="_wind303W_WS_AT_6_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_WS_AT_6</a></li>
+				<li class="db_left_nav_item"><a id="_wind303W_RainSum_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_RainSum</a></li>
+				<li class="db_left_nav_item"><a id="_wind303W_EFM_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_EFM</a></li>
+			</ul>
+	   </div>
+	   <div id="charts_alert" class="span9 charts_alert" style="display: none;">
+	   	 #{messages/charts_alert /}
+	   </div>
+	   <div id="db_chart_area" class="span9">
+        </div>
+    </div>
+<script type="text/javascript">
+	$('li > a').click(function() {
+		$( "li" ).each(function() {
+			if($(this).hasClass("db_left_nav_item")) {
+				$(this).removeClass("active");
+			}
+		});
+		
+		$(this).parent().addClass('active');
+	});
+
+	$.ajaxSetup({
+	    username: '${username}',
+	    password: '${password}'
+	  });
+		
+	$(document).ready(function(){
+		$("#SUMMARY").click(function(){
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			$("#db_chart_area").css("background-color","#efefef");
+			$.get("@{gui.Search.myHelpBootstrapProto_Summary()}", function(data) {
+				$('#db_chart_area').html(data);
+			});
+		});
+			
+		$("#_RSF_BUILDING_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_BUILDING", "#db_chart_area");
+		});	
+			
+		$("#_RSF_PV_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			$("#db_chart_area").append($('<div class="alert alert-info chart_alert">This chart is not available at this time.</div>'));
+			//addChart("RSF_PV", "#db_chart_area", true);
+		});		
+			
+		$("#_RSF_DATACENTER_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_DATACENTER", "#db_chart_area");
+		});		
+			
+		$("#_RSF_ELEVATOR_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_ELEVATOR", "#db_chart_area");
+		});		
+			
+		$("#_RSF_LIGHTING_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_LIGHTING", "#db_chart_area");
+		});		
+			
+		$("#_RSF_MECHANICAL_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_MECHANICAL", "#db_chart_area");
+		});		
+			
+		$("#_RSF_PLUG_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_PLUG", "#db_chart_area");
+		});		
+			
+		$("#_RSF_MISC_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_MISC", "#db_chart_area");
+		});		
+			
+		$("#_RSF_HEATING_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_HEATING", "#db_chart_area");
+		});		
+			
+		$("#_RSF_COOLING_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("RSF_COOLING", "#db_chart_area");
+		});		
+			
+		$("#_GARAGE_BUILDING_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("GARAGE_BUILDING", "#db_chart_area");
+		});		
+			
+		$("#_GARAGE_EVCS_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			$("#db_chart_area").append($('<div class="alert alert-info chart_alert">This chart is not available at this time.</div>'));
+			//addChart("GARAGE_EVCS", "#db_chart_area");
+		});		
+			
+		$("#_wind103W_GloCM22_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind103W_GloCM22", "#db_chart_area", false, true, "Global Irradiance - Global CM22 Vent [W/m^2]");
+		});		
+			
+		$("#_wind103W_DirCH1_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind103W_DirCH1", "#db_chart_area", false, true, "Avg Direct Irradiance - Direct CH1 [W/m^2]");
+		});		
+			
+		$("#_wind303W_Temp_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind303W_Temp", "#db_chart_area", false, true, "Deck Dry Bulb Temp [deg C]");
+		});		
+			
+		$("#_wind303W_WS_AT_6_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind303W_WS_AT_6", "#db_chart_area", false, true, "RH [%]");
+		});		
+			
+		$("#_wind303W_RainSum_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind303W_RainSum", "#db_chart_area", false, true, "Precipitation [mm]");
+		});		
+			
+		$("#_wind303W_EFM_").click(function(){
+			$("#db_chart_area").css("background-color","#efefef");
+			$("#db_chart_area").show();
+			$("#db_chart_area").empty();
+			addChart("wind303W_EFM", "#db_chart_area", false, true, "Precipitation [mm]");
+		});	
+	});
+</script>
+
+	
+<script type="text/javascript">
+	$(document).ready(function() {
+		if(_charts_enabled === 'true') {
+			if(_charts_library.indexOf('_licensed') >= 0) {
+				$('#charts_alert').hide();
+			} else {
+				$('#charts_alert').show();
+			}
+		} else {
+			$('#charts_alert').hide();
+		}
+	
+		$('#SUMMARY').click();
+	});
+</script>

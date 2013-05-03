@@ -1,0 +1,89 @@
+
+.db_border_bottom td {
+	border-top: none;
+    border-bottom:1px solid #71b9e3;
+}
+
+.db_box {
+    width: 50%;
+    border: 1px solid;
+    margin: 10px 0px;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+
+}
+    
+/*NOTE: This is a nice re-usable css where you can just add
+   table-no-border to your table and your table then has no borders...(it overrides twitter bootstrap)*/
+.table-no-border th, .table-no-border td {
+	border: none;
+}
+
+.db_border {
+    border: 1px solid;
+}
+
+/**************************
+TWITTER BOOTSTRAP OVERRIDES
+*****************************/
+
+h2 {
+color:#01355e;
+font-size:16px;
+font-weight:normal;
+line-height:20px;
+padding-bottom:15px;
+/*border-bottom:3px solid #01355e;*/
+}
+
+h3 {
+    color:#01355e;
+    font-size:16px;
+    font-weight:normal;
+    line-height:20px;
+}
+
+.alert-warning {
+    margin: auto;
+    color: #9F6000;
+    background-color: #FEEFB3;
+    background-image: url('/public/images/Warning.png');
+    background-position: 10px center;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+}
+
+.alert h4 {
+	color: inherit;
+}
+
+.alert-info {
+    margin: auto;
+    color: #00529B;
+    background-color: #BDE5F8;
+    background-image: url('/public/images/Info.png');
+    background-position: 10px center;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+}
+
+ 
+.alert-success {
+    margin: auto;
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    background-image:url('/public/images/Success.png');
+    background-position: 10px center;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+}
+
+.alert-error {
+    margin: auto;
+    color: #D8000C;
+    background-color: #FFBABA;
+    background-image: url('/public/images/Error.png');
+    background-position: 10px center;
+    padding:15px 10px 15px 50px;
+    background-repeat: no-repeat;
+}

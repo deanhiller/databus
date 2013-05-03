@@ -1,0 +1,38 @@
+#{extends 'MyStuff/userTemplate.html' /}
+#{set title:'My Schemas' /}
+#{set tab:'schemas' /}
+
+<style>
+	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
+	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
+</style>
+
+<h1>My Schemas</h1>
+
+<p>These are the schemas you have access to.  Each schema may contain multiple tables</p>
+
+     
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list user.schemas, as:'schema'}
+	        <tr>
+	            <td><a href="@{MySchemas.viewSchema(schema.resource.schemaName)}">${schema.getResource().getSchemaName()}</a></td>
+	        </tr>
+	    #{/list}
+	    #{else}
+	    <tr>
+			<td colspan=2>You do not own to any Schemas yet.  <a href="@{MySchemas.editSchema(null)}">Add a Schema Now!!!</a></td>
+		</tr>
+	    #{/else}
+	</tbody>
+</table>
+  
+<p>
+  	<a href="@{MySchemas.editSchema(null)}">Add Schema</a>
+</p>
+  

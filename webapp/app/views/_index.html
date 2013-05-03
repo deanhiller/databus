@@ -1,0 +1,68 @@
+#{extends '_main.html' /}
+
+#{banner_main /}
+
+#{menubar_main /}
+
+#{if flash.error}
+<div class="row-fluid">
+	<div
+		style="font-size: small; font-weight: bold; text-align: center; color: red">
+		<!-- portable - top & bottom to report -->
+		${flash.error}
+	</div>
+</div>
+#{/if} #{if flash.success}
+<div class="row-fluid">
+	<div
+		style="font-size: small; font-weight: bold; text-align: center; color: red">
+		<!-- portable - top & bottom to report -->
+
+		${flash.success}
+	</div>
+</div>
+#{/if}
+
+<div class="row-fluid">#{doLayout /}</div>
+
+<script type="text/javascript">
+  
+      *{ NOTE: the tab passes us a name so we lookup component tab_{name} and add active to the class styling }*
+      $("#tab_"+"#{get 'tab' /}").addClass("active")
+	
+      *{ TODO: This below can probably go away as well and we can just post now since we don't need the ajax
+      	stuff }*
+
+$(document).ready(function(){
+	$('#global_search_bar').bind('keydown', function(e) {
+		if (e.which == 13) {				// if enter key
+			var searchURL = "@{gui.GUISearch.globalSearch()}";
+			var searchString =  searchURL + "?searchString=" + encodeURIComponent($('#global_search_bar').val());
+			
+			// Clear the menu items
+			/*
+			$( "li" ).each(function() {
+				if($(this).hasClass("db_main_nav_item")) {
+					$(this).removeClass("active");
+				}
+			});
+			
+			// Send the query
+			$("#content").empty();
+			$.get(searchString, function(data) {
+				$('#content').html(data);
+			});
+			*/
+			
+			window.location = searchString;
+		}
+	});
+});
+
+$("#content").empty();
+$.get("@{gui.Search.dashboardSide()}", function(data) {
+	$('#content').html(data);
+});
+</script>
+
+ #{nrel_footer /}

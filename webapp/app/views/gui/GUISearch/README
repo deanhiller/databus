@@ -1,0 +1,79 @@
+Ok, should be very simple to get the search stuff going:
+1.  update code to get everything new
+2.  open a prompt, go to <SDI>/solr
+3.  run 
+java -jar start.jar
+
+That should be it.  You'll find the solr console at 
+http://localhost:8983/solr/
+and you can query like so (once there is data to search):
+http://localhost:8983/solr/<tablename>/select?q=*:*&wt=json
+or the one off
+http://localhost:8983/solr/databusmeta/select?q=*:*&wt=json
+
+(all that is just solr, not related to databus at all)
+
+
+Once you've created some searchable tables (look at 
+RunSolrPost.java for the table register format for searchable 
+tables) you can now use databus to search:
+
+http://localhost:9000/api/search/<tablename>?q=*whatever*&wt=json&facet=true
+or of course
+http://localhost:9000/api/search/databusmeta?q=*somethingtosearchfor*&wt=json&facet=true
+
+If you specify 'facet=true' but don't specify facets you want it will default to the 
+facets specified in your table registration (columns that specify isFacet=true).
+Other than that one case facets behave exactly like they always do in solr 
+(i.e. you have to specify facet=true AND facet.field=blah&facet.field=blah2 
+to get back any specific facets)
+
+The only other change is that if 'df=blah' is NOT specified, I default to a 
+composite field 'allTerms_texts' which contains all of the terms in all of the 
+searchable fields.  If 'df=blah' IS specified, normal solr behavior takes over.
+This behaves exactly like:
+if (df=something) is not specified, add on "df=allTerms_texts".
+
+
+I think that's it.  The results you get back will be *exactly* like solrs usual 
+results.  Check out the solr docs for query params and output specifications. 
+Specify wt=json for usable results (you can use wt=xml if you really 
+want...).
+
+Keep in mind that until you register a searchable table nothing will be in the index 
+so you won't be able to search (obviously).  The only exception is databusmeta 
+which will be populated as soon as you register any table (not just a searchable one) 
+with the tables meta information (table name basically right now).
+
+Yikes, that got long.
+
+Let me know if you have questions...
+
+J
+
+
+// To populate Solr:
+check out 'RunSolrPost.java' for an example registration request
+
+haven't registered any searchable tables yet
+10:15
+if you want some garbage data to search, change line 60 of RunSolrPost to
+10:15
+private static final boolean SEARCHABLE = true;
+10:15
+that'll give you meta and some randomly named searchable tables
+10:16
+(they'll be named 'solrsPinkBlobXXXXXXXXDeviceMeta' and '...StreamMeta')
+
+
+
+// MEETING
+
+3 search pages
+	Meta				- current
+	Detail 			- Detail of type (db, table... facet on schema for type)
+	Global (Default)	- combined (meta + document)
+
+
+Icons for types
+

@@ -1,0 +1,19 @@
+#{extends './adminTemplate.html' /}
+#{set subtab:'meta' /}
+
+<h2>Groups</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Value.RowKey</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list values, as:'val'}
+	        <tr>
+	            <td>${val.value}.${val.key}</td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>

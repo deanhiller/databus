@@ -1,0 +1,3 @@
+The rangeclean module allows users to remove data points that have values outside of a given range.
+usage: https://databus.nrel.gov/api/rangecleanV1/{MIN}/{MAX}/{nextmodule}
+example: https://databus.nrel.gov/api/rangecleanV1/-200/200/rawdata/RSF2MAIN/1354738000000/1354824663000
