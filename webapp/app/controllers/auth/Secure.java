@@ -16,6 +16,8 @@ import play.mvc.Http;
 import play.mvc.Scope.Session;
 import play.utils.Java;
 import controllers.Application;
+import controllers.SecurityUtil;
+import controllers.gui.auth.GuiSecure;
 
 public class Secure extends Controller {
 
@@ -24,7 +26,7 @@ public class Secure extends Controller {
     @Before(unless={"login", "authenticate", "logout"})
     static void checkAccess() throws Throwable {
         // Authent
-        if(!session.contains("username")) {
+        if(!session.contains(GuiSecure.KEY)) {
             flash.put("url", "GET".equals(request.method) ? request.url : Play.ctxPath + "/"); // seems a good default
             login();
         }
@@ -40,7 +42,7 @@ public class Secure extends Controller {
             check(check);
         }
 
-    	String username = session.get("username");
+    	String username = session.get(GuiSecure.KEY);
         controllers.Security.createUserIfNotExist(username);
     }
 
@@ -73,7 +75,7 @@ public class Secure extends Controller {
                     logout();
                 }
                 if(Crypto.sign(restOfCookie).equals(sign)) {
-                    session.put("username", username);
+                	SecurityUtil.putUser(username);
                     redirectToOriginalURL();
                 }
             }
@@ -107,7 +109,7 @@ public class Secure extends Controller {
         Session temp = session;
         
         // Mark user as connected
-        session.put("username", username);
+        SecurityUtil.putUser(username);
         // Remember if needed
         if(remember) {
             Date expiration = new Date();
@@ -186,7 +188,7 @@ public class Secure extends Controller {
          * @return
          */
         static String connected() {
-            return session.get("username");
+        	return SecurityUtil.getUser();
         }
 
         /**
@@ -194,7 +196,7 @@ public class Secure extends Controller {
          * @return  true if the user is connected
          */
         static boolean isConnected() {
-            return session.contains("username");
+            return session.contains(GuiSecure.KEY);
         }
 
         /**

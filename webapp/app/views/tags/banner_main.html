@@ -13,7 +13,7 @@
 			<div class="span12">
 				<div class="navbar">
 					<ul class="nav pull-right">
-						#{if session.get('username') == null}
+						#{if session.get('key') == null}
 							<li class="db_version" style="padding-bottom: 10px; margin-right: 45px;">Version 1.0 beta</li>
 							<!--<li><a href="@{gui.auth.GuiSecure.login()}" class="db_user">Login</a></li> -->
 						#{/if} 
@@ -22,7 +22,11 @@
 							<li class="db_login_sep"></li>
 							<li class="dropdown">
 								<a href="#" class="dropdown-toggle db_user" data-toggle="dropdown">
-									 <i class="icon-user"></i> ${session.get('username')}
+									 <i class="icon-user"></i> 
+									 %{
+									   String user = controllers.SecurityUtil.getUser();
+									   out.print(user);
+									 }%
 									 <b class="caret"></b>
 								</a>
 								<ul class="dropdown-menu">

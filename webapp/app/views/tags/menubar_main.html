@@ -10,7 +10,7 @@
 				</a>
 				<div class="nav-collapse collapse">
 					<ul class="nav" style="width: 100%">
-						#{if session.get('username') == null}
+						#{if session.get('key') == null}
 							<li id="tab_dashboard" class="db_main_nav_item"
 								style="margin-left: 25px;"><a
 								href="@{gui.auth.GuiSecure.login()}"
@@ -63,7 +63,7 @@
 							style="border: 0px"><a class="db_main_nav_bar_item_help"
 								data-toggle="dropdown" href="#"> Help <b class="caret"></b></a>
 								<ul class="dropdown-menu">
-									#{if session.get('username') == null}
+									#{if session.get('key') == null}
 										<li><a href="@{gui.Application.myHelpUnAuth()}">Databus</a></li>
 									#{/if} 
 									#{else}

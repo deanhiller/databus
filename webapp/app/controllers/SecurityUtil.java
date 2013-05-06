@@ -30,9 +30,11 @@ import models.SecureTable;
 import models.SecurityGroup;
 import models.EntityUser;
 
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.play.NoSql;
 
 import controllers.auth.ActiveDirAuthentication;
+import controllers.gui.auth.GuiSecure;
 
 public class SecurityUtil {
 
@@ -276,4 +278,44 @@ public class SecurityUtil {
 		return false;
 	}
 	
+	public static void putUser(String user) {
+		Session session = Session.current();
+		String val = hashUser(user);
+		session.put(GuiSecure.KEY, val);
+	}
+
+	public static String getUser() {
+		Session session = Session.current();
+		String user = session.get(GuiSecure.KEY);
+		return unhashUser(user);
+	}
+
+	private static String hashUser(String user) {
+		byte[] data = user.getBytes();
+		byte[] newData = new byte[data.length];
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] == Byte.MIN_VALUE)
+				newData[i] = Byte.MAX_VALUE;
+			else
+				newData[i] = (byte) (data[i]-1);
+		}
+		String value = StandardConverters.convertToString(newData);
+		return value;
+	}
+	private static String unhashUser(String value) {
+		if(value == null)
+			return null;
+
+		byte[] data = StandardConverters.convertFromString(byte[].class, value);
+		byte[] newData = new byte[data.length];
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] == Byte.MAX_VALUE)
+				newData[i] = Byte.MIN_VALUE;
+			else
+				newData[i] = (byte) (data[i]+1);
+		}
+		String user = new String(newData);
+		return user;
+	}
+
 }

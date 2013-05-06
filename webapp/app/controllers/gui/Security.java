@@ -6,6 +6,7 @@ import play.Play;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.play.NoSql;
 
+import controllers.SecurityUtil;
 import controllers.auth.ActiveDirAuthentication;
 import controllers.auth.Secure;
 import controllers.gui.auth.GuiSecure;
@@ -41,9 +42,9 @@ public class Security extends GuiSecure.Security {
 	}
 
 	private static void addToSession(String username, EntityUser user) {
-		session.put("username", username);
+		SecurityUtil.putUser(username);
 		if(user.isAdmin())
-			session.put("admin", "true");
+			session.put(GuiSecure.ADMIN_KEY, "true");
 	}
 
 	private static EntityUser findExistingUser(String username) {

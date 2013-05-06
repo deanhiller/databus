@@ -34,6 +34,8 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
+import controllers.gui.auth.GuiSecure;
+
 public class Admin extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(Admin.class);
@@ -83,11 +85,11 @@ public class Admin extends Controller {
 		authCheck(user);
 
 		EntityUser newUser = NoSql.em().find(EntityUser.class, username);
-		session.put("username", username);
+		SecurityUtil.putUser(username);
 		if(user.isAdmin())
-			session.put("admin", "true");
+			session.put(GuiSecure.ADMIN_KEY, "true");
 		else
-			session.remove("admin");
+			session.remove(GuiSecure.ADMIN_KEY);
 		
 		session.put("override", "true");
 		
