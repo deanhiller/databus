@@ -183,11 +183,11 @@ public class SecurityUtil {
 		String key = request.password;
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" does not exist or is not in meta.  user="+username+" key="+key);
+				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} else if(schemaIds.get(sdiTable.getSchema().getId()) == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" is not accessible from this user="+username+" key="+key);
+				log.info("table="+cf+" is not accessible from this user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return sdiTable;
@@ -206,14 +206,14 @@ public class SecurityUtil {
 		String key = request.password;
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" does not exist or is not in meta.  user="+username+" key="+key);
+				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} 
 		
 		SecureResourceGroupXref xref = schemaIds.get(sdiTable.getSchema().getId());
 		if(xref == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" is not accessible from this user="+username+" key="+key);
+				log.info("table="+cf+" is not accessible from this user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return xref.getPermission();
@@ -238,7 +238,7 @@ public class SecurityUtil {
 			throw new Unauthorized("User="+username+" is not authorized");
 		} else if(!user.getApiKey().equals(apiKey)) {
 			if (log.isInfoEnabled())
-				log.info("user or key is invalid for user="+username+" key="+apiKey);
+				log.info("user or key is invalid for user="+username);
 			throw new Unauthorized("user or key is invalid for user="+username);
 		}
 		
