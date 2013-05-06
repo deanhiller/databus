@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import gov.nrel.util.TimeValue;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.mvc.results.BadRequest;
 import controllers.modules.SplinesBigDec;
@@ -20,6 +22,7 @@ import controllers.modules2.framework.procs.PullProcessorAbstract;
 
 public class SplinesPullProcessor extends PullProcessorAbstract {
 
+	private static final Logger log = LoggerFactory.getLogger(SplinesPullProcessor.class);
 	private String splineType;
 	private long interval;
 	private SplinesBigDec spline;
@@ -99,7 +102,11 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		if(startTime > 0) {
 			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
 		}
-		return startTime+offsetFromStart;
+
+		long result = startTime+offsetFromStart; 
+		if(log.isInfoEnabled())
+			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
+		return result;
 	}
 
 	@Override
