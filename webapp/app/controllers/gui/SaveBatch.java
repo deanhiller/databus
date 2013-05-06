@@ -56,7 +56,11 @@ public class SaveBatch implements Runnable {
 			
 			synchronized(request) {
 				Integer count = (Integer) request.args.get("count");
-				request.args.put("count", count+batchsize);
+				int newCount = count+batchsize;
+				Integer total = (Integer) request.args.get("total");
+				request.args.put("count", newCount);
+				if(log.isDebugEnabled())
+					log.debug("notify chunk complete.  count completed="+newCount+" of total="+total);
 				request.notifyAll();
 			}
 

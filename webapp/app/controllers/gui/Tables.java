@@ -90,6 +90,8 @@ public class Tables extends Controller {
 		synchronized(request) {
 			while(!isComplete(request)) {
 				try {
+					if(log.isDebugEnabled())
+						log.debug("waiting for csv upload to complete");
 					request.wait();
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -105,8 +107,8 @@ public class Tables extends Controller {
 				flash.error("Errors on some lines(numErrors="+errors.size()+") "+errors);
 			flash.keep();
 		}
-		
-		//uploadSuccess(table);
+
+		uploadSuccess(table);
 	}
 
 	private static void fireIntoListener(Request request) {
@@ -125,6 +127,8 @@ public class Tables extends Controller {
 	private static boolean isComplete(Request request) {
 		Integer count = (Integer) request.args.get("count");
 		Integer total = (Integer) request.args.get("total");
+		if(log.isDebugEnabled())
+			log.debug("waiting for completion. total="+total+" count="+count);
 		if (count == null || total == null)
 			return false;
 		if(count >= total)
@@ -133,6 +137,8 @@ public class Tables extends Controller {
 	}
 
 	private static void reportError(Request request, String msg) {
+		if(log.isWarnEnabled())
+			log.warn(msg);
 		Map<String, Object> map = request.args;
 		Object obj = map.get("errorsList");
 		List<String> errors = (List<String>) obj;
