@@ -45,6 +45,8 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor) {
+		if(log.isInfoEnabled())
+			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor);
 		// param 1: Type: String
 		splineType = params.getParams().get(0);
@@ -85,7 +87,10 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			String msg = "splinesV1BetaBigDec must have a start and end (if you want it to work, request it)";
 			throw new BadRequest(msg);
 		}
+		
 		Long startTime = params.getStart();
+		if(log.isInfoEnabled())
+			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
 		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
 		
 		// setup buffer
