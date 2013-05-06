@@ -2,38 +2,31 @@ package controllers;
 
 import gov.nrel.util.Utility;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import models.EntityGroup;
+import models.EntityGroupXref;
+import models.EntityUser;
+import models.PermissionType;
+import models.SecureResource;
+import models.SecureResourceGroupXref;
+import models.SecureSchema;
+import models.SecureTable;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
-import play.mvc.Http.Response;
 import play.mvc.Scope.Session;
-import play.mvc.Http;
 import play.mvc.Util;
 import play.mvc.results.Unauthorized;
-
-import models.Entity;
-import models.EntityGroup;
-import models.EntityGroupXref;
-import models.PermissionType;
-import models.RoleMapping;
-import models.SecureResource;
-import models.SecureResourceGroupXref;
-import models.SecureSchema;
-import models.SecureTable;
-import models.SecurityGroup;
-import models.EntityUser;
 
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.play.NoSql;
 
-import controllers.auth.ActiveDirAuthentication;
 import controllers.gui.auth.GuiSecure;
 
 public class SecurityUtil {

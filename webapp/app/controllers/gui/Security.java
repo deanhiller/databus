@@ -7,8 +7,7 @@ import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
-import controllers.auth.ActiveDirAuthentication;
-import controllers.auth.Secure;
+import controllers.gui.auth.ActiveDirAuthentication;
 import controllers.gui.auth.GuiSecure;
 
 public class Security extends GuiSecure.Security {
@@ -21,11 +20,14 @@ public class Security extends GuiSecure.Security {
 		
 		//We have some of our own users not in ldap for development only so check entity manager first
 		String prop = Play.configuration.getProperty("security.mode");
-		if("dev".equals(prop)) {
+		String demomode = Play.configuration.getProperty("demo.mode");
+		if("dev".equals(prop) || "true".equals(demomode)) {
 			EntityUser u = findExistingUser(username);
 			if(u != null) {
 				addToSession(username, u);
 				return true;
+			} else {
+				return false;
 			}
 		}
 
