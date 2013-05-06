@@ -93,7 +93,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	public static long calculateStartTime(long startTime, long interval, Long epochOffset) {
 		if(epochOffset == null)
 			return startTime;
-		
 
 		long rangeFromOffsetToStart = startTime-epochOffset;
 		long offsetFromStart = -rangeFromOffsetToStart % interval;
