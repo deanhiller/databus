@@ -48,6 +48,8 @@ public class EntityUser extends Entity {
 	//NOTE: This is here as a work around OR create user/create robot throw an exception that doesn't affect behavior but is really
 	//annoying.  We should change the webpage to perhaps pass in the username itself instead of using the EntityUser???
 	private transient String username;
+
+	private String password;
 	
 	public String getUsername() {
 		return id;
@@ -208,6 +210,14 @@ public class EntityUser extends Entity {
 		}
 		
 		return "";
+	}
+
+	public void setPassword(String pw) {
+		this.password = pw;
+	}
+
+	public String getPassword() {
+		return password;
 	}
 	
 } // User

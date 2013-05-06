@@ -23,7 +23,7 @@ public class Security extends GuiSecure.Security {
 		String demomode = Play.configuration.getProperty("demo.mode");
 		if("dev".equals(prop) || "true".equals(demomode)) {
 			EntityUser u = findExistingUser(username);
-			if(u != null) {
+			if(u != null && password.equals(u.getPassword())) {
 				addToSession(username, u);
 				return true;
 			} else {
