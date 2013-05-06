@@ -47,7 +47,7 @@ public class GuiSecure extends Controller {
             check(check);
         }
 
-    	String username = session.get(KEY);
+    	String username = SecurityUtil.getUser();
         controllers.Security.createUserIfNotExist(username);
     }
 
