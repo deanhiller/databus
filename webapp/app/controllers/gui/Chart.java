@@ -2,40 +2,55 @@ package controllers.gui;
 
 public class Chart {
 
-	private String url1;
-	private String url2;
-	private String url3;
-	private String url4;
-	private String url5;
-	public String getUrl1() {
-		return url1;
+	private String url;
+	private String timeColumn;
+	private String column1;
+	private String column2;
+	private String column3;
+	private String column4;
+	private String column5;
+	public String getUrl() {
+		return url;
 	}
-	public void setUrl1(String url1) {
-		this.url1 = url1;
+	public void setUrl(String url) {
+		this.url = url;
 	}
-	public String getUrl2() {
-		return url2;
+	public String getTimeColumn() {
+		return timeColumn;
 	}
-	public void setUrl2(String url2) {
-		this.url2 = url2;
+	public void setTimeColumn(String timeColumn) {
+		this.timeColumn = timeColumn;
 	}
-	public String getUrl3() {
-		return url3;
+	public String getColumn1() {
+		return column1;
 	}
-	public void setUrl3(String url3) {
-		this.url3 = url3;
+	public void setColumn1(String column1) {
+		this.column1 = column1;
 	}
-	public String getUrl4() {
-		return url4;
+	public String getColumn2() {
+		return column2;
 	}
-	public void setUrl4(String url4) {
-		this.url4 = url4;
+	public void setColumn2(String column2) {
+		this.column2 = column2;
 	}
-	public String getUrl5() {
-		return url5;
+	public String getColumn3() {
+		return column3;
 	}
-	public void setUrl5(String url5) {
-		this.url5 = url5;
+	public void setColumn3(String column3) {
+		this.column3 = column3;
 	}
+	public String getColumn4() {
+		return column4;
+	}
+	public void setColumn4(String column4) {
+		this.column4 = column4;
+	}
+	public String getColumn5() {
+		return column5;
+	}
+	public void setColumn5(String column5) {
+		this.column5 = column5;
+	}
+	
 	
 }

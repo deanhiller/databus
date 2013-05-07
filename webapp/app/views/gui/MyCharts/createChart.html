@@ -2,36 +2,38 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
-This is the main create Chart page
-
-*{
-#{form @postMonitor(schemaDbo.schemaName), id:'editmonitor', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+#{form @postCreateChart(), id:'editmonitor', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
     <legend>Create Chart</legend>
 
 	<input type="hidden" name="monitor.id" value="${monitor?.id}">
 
-	#{xfield objectId:'chart.url1',label:'Url 1', help:'The first line we will draw'}
+	#{xfield objectId:'chart.url',label:'Url', help:'The url which streams back a wide table with many columns or maybe just 2 columns'}
 		#{text field:field/}
 	#{/xfield}
-    #{xfield objectId:'chart.url2',label:'Url 1', help:'The second line we will draw'}
+	#{xfield objectId:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'}
         #{text field:field/}
     #{/xfield}
-    #{xfield objectId:'chart.url3',label:'Url 1', help:'The third line we will draw'}
+    #{xfield objectId:'chart.column1',label:'Column 1', help:'The name of the first column we will draw with respect to time'}
         #{text field:field/}
     #{/xfield}
-    #{xfield objectId:'chart.url4',label:'Url 1', help:'The fourth line we will draw'}
+    #{xfield objectId:'chart.column2',label:'Column 2', help:'The name of the first column we will draw with respect to time'}
         #{text field:field/}
     #{/xfield}
-    #{xfield objectId:'chart.url5',label:'Url 1', help:'The fifth line we will draw'}
+    #{xfield objectId:'chart.column3',label:'Column 3', help:'The name of the first column we will draw with respect to time'}
         #{text field:field/}
     #{/xfield}
-
+    #{xfield objectId:'chart.column4',label:'Column 4', help:'The name of the first column we will draw with respect to time'}
+        #{text field:field/}
+    #{/xfield}
+    #{xfield objectId:'chart.column5',label:'Column 5', help:'The name of the first column we will draw with respect to time'}
+        #{text field:field/}
+    #{/xfield}
+    
 	<div class="control-group">
 	   <div class="controls">
-		  <input type="submit" name="submit" value="Save" class="btn btn-primary" />
-		  <a href="javascript:history.back()" class="btn">Cancel</a>
+		  <input type="submit" name="submit" value="Create Chart" class="btn btn-primary" />
+		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
 		</div>
 	</div>
 #{/form}
-}*

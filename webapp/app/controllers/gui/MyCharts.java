@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import play.mvc.Controller;
 import play.mvc.With;
+import play.mvc.results.NotFound;
 import controllers.gui.auth.GuiSecure;
 
 @With(GuiSecure.class)
@@ -20,16 +21,11 @@ public class MyCharts extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(MyCharts.class);
 
 	public static void createChart() {
-		
 		render();
 	}
 	
 	public static void postCreateChart(Chart chart) throws UnsupportedEncodingException {
-
-		Map<String, String[]> all = params.all();
-
-		Map<String, String> props = new HashMap<String, String>();
-		String myMap = convert(props);
+		String myMap = convert(chart);
 		// Encode a String into bytes
 		byte[] input = myMap.getBytes("UTF-8");
 
@@ -42,13 +38,26 @@ public class MyCharts extends Controller {
 
 		byte[] compressed2 = Arrays.copyOfRange(output1, 0, compressedDataLength);
 		String encodedChart = Base64.encodeBase64URLSafeString(compressed2);
-		System.out.println("length="+encodedChart.length()+" result="+encodedChart);
-		 
-		drawChart(encodedChart, input.length);
+		if(log.isInfoEnabled())
+			log.info("length="+encodedChart.length()+" result="+encodedChart);
+		
+		int length = input.length;
+		drawChart(encodedChart, length);
 	}
 
-	private static String convert(Map<String, String> props) {
-		return "";
+	private static String convert(Chart chart) {
+		String url = chart.getUrl();
+		String timeCol = chart.getTimeColumn();
+		String col1 = chart.getColumn1();
+		String col2 = chart.getColumn2();
+		String col3 = chart.getColumn3();
+		String col4 = chart.getColumn4();
+		String col5 = chart.getColumn5();
+		
+		String version = "V01";
+		String all = version;
+		all += timeCol+"|"+col1+"|"+col2+"|"+col3+"|"+col4+"|"+col5+"|"+url;
+		return all;
 	}
 
 	public static void drawChart(String encodedChart, int length) {
@@ -74,12 +83,32 @@ public class MyCharts extends Controller {
 			notFound("This chart does not seem to exist");
 		}
 
-		Map<String, String> props = convert(outputString);
-		
-		render(props);
+		Chart chart = convert(outputString);
+
+		long startTime = 0;
+		long endTime = 500000;
+		render(chart, startTime, endTime);
 	}
 
-	private static Map<String, String> convert(String outputString) {
-		return new HashMap<String, String>();
+	private static Chart convert(String outputString) {
+		if(outputString.startsWith("V01")) {
+			String leftOver = outputString.substring(3);
+			String[] split = leftOver.split("\\|");
+			if(7 != split.length)
+				badRequest("Your graph is not found, url is misformed");
+			
+			Chart c = new Chart();
+			c.setTimeColumn(split[0]);
+			c.setColumn1(split[1]);
+			c.setColumn2(split[2]);
+			c.setColumn3(split[3]);
+			c.setColumn4(split[4]);
+			c.setColumn5(split[5]);
+			c.setUrl(split[6]);
+			return c;
+		} else {
+			badRequest("Your graph is not found since this is the wrong version");
+		}
+		return null;
 	}
 }
