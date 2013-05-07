@@ -89,14 +89,13 @@ public class SaveBatch implements Runnable {
 		long preLoop = System.currentTimeMillis();
 		NoSqlTypedSession session = mgr.getTypedSession();
 		for(Line line : batch) {
-			try {
-				processLine(mgr, line, session);
-				count++;
-			} catch(Exception e) {
-				if (log.isWarnEnabled())
-	        		log.warn("csv upload - Exception on line num="+line.getLineNumber(), e);
-				reportError(request, "Exception processing line number="+line.getLineNumber()+" exc="+e.getMessage());
+			if(request.args.get("error") != null) {
+				if(log.isInfoEnabled())
+					log.info("csv upload - Exiting since another thread had an error");
+				return; //exit out since somoene errored
 			}
+			processLine(mgr, line, session);
+			count++;
 		}
 		if (log.isDebugEnabled())
 			log.debug("time to run full loop : "+(System.currentTimeMillis()-preLoop));
@@ -106,20 +105,26 @@ public class SaveBatch implements Runnable {
 	}
 
 	private void processLine(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
-		TypedRow row = session.createTypedRow(tableColumnFamily);
-		for(int i = 0; i < headersize; i++) {
-			String col = line.getColumns()[i];
-			DboColumnMeta meta = headers.get(i);
-			Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
-			if(meta instanceof DboColumnIdMeta)
-				row.setRowKey(val);
-			else
-				row.addColumn(meta.getColumnName(), val);
+		try {
+			TypedRow row = session.createTypedRow(tableColumnFamily);
+			for(int i = 0; i < headersize; i++) {
+				String col = line.getColumns()[i];
+				DboColumnMeta meta = headers.get(i);
+				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
+				if(meta instanceof DboColumnIdMeta)
+					row.setRowKey(val);
+				else
+					row.addColumn(meta.getColumnName(), val);
+			}
+	
+			session.put(tableColumnFamily, row);
+
+		} catch(Exception e) {
+			if (log.isWarnEnabled())
+        		log.warn("csv upload - Exception on line num="+line.getLineNumber(), e);
+			reportError(request, "Exception processing line number="+line.getLineNumber()+" exc="+e.getMessage());
 		}
-
-		session.put(tableColumnFamily, row);
-
-
+		
 		if(count >= FLUSH_SIZE) {
 			flushCount++;
 			long preFlush = System.currentTimeMillis();
