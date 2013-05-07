@@ -18,6 +18,8 @@ import controllers.modules.mocks.MockProcessor;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.PullProcessor;
+import controllers.modules2.framework.procs.PullProcessorAbstract;
 import controllers.modules2.framework.procs.PushProcessor;
 
 import robot.Utility;
@@ -65,8 +67,8 @@ public class TestSpline {
 		Assert.assertEquals(22, ts2.getTime());
 	}
 
-	private List<TSRelational> runPullProcessor(List<TSRelational> rows,
-			SplinesPullProcessor processor, String path) {
+	static List<TSRelational> runPullProcessor(List<TSRelational> rows,
+			PullProcessorAbstract processor, String path) {
 		MockProcessor mock = new MockProcessor();
 		mock.setRows(rows);
 		processor.setChild(mock);

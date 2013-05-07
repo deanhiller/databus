@@ -246,10 +246,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		spline.setRawDataPoints(times, values);
 	}
 
-	public void setChild(ProcessorSetup mock) {
-		this.child = mock;
-	}
-
 	// TSRelational row = new TSRelational();
 	// setValue(row, val);
 	// setTime(row, val);
