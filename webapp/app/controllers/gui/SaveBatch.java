@@ -60,13 +60,13 @@ public class SaveBatch implements Runnable {
 				Integer total = (Integer) request.args.get("total");
 				request.args.put("count", newCount);
 				if(log.isDebugEnabled())
-					log.debug("notify chunk complete.  count completed="+newCount+" of total="+total);
+					log.debug("csv upload - notify chunk complete.  count completed="+newCount+" of total="+total);
 				request.notifyAll();
 			}
 
 		} catch(Exception e) {
 			if (log.isWarnEnabled())
-        		log.warn("Exception processing batch.", e);
+        		log.warn("csv upload - Exception processing batch.", e);
 			reportError(request, "Error processing batch="+e);
 		}
 		
@@ -93,7 +93,7 @@ public class SaveBatch implements Runnable {
 				count++;
 			} catch(Exception e) {
 				if (log.isWarnEnabled())
-	        		log.warn("Exception on line num="+line.getLineNumber(), e);
+	        		log.warn("csv upload - Exception on line num="+line.getLineNumber(), e);
 				reportError(request, "Exception processing line number="+line.getLineNumber()+" exc="+e.getMessage());
 			}
 		}

@@ -91,7 +91,7 @@ public class Tables extends Controller {
 			while(!isComplete(request)) {
 				try {
 					if(log.isDebugEnabled())
-						log.debug("waiting for csv upload to complete");
+						log.debug("csv upload - waiting to complete");
 					request.wait();
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
@@ -128,7 +128,7 @@ public class Tables extends Controller {
 		Integer count = (Integer) request.args.get("count");
 		Integer total = (Integer) request.args.get("total");
 		if(log.isDebugEnabled())
-			log.debug("waiting for completion. total="+total+" count="+count);
+			log.debug("csv upload - waiting for completion. total="+total+" count="+count);
 		if (count == null || total == null)
 			return false;
 		if(count >= total)
