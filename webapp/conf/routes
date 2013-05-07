@@ -127,6 +127,8 @@ POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabas
 POST /addgrouptodb						gui.MyDatabases.postAddGroupToDatabase
 POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
 
+GET  /charts/createchart                    gui.MyCharts.createChart
+
 
 # GUI Summary Pages
 # ******************************************************************************

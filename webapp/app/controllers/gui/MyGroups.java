@@ -13,6 +13,7 @@ import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
 import controllers.auth.Secure;
+import controllers.gui.auth.GuiSecure;
 
 import play.mvc.Controller;
 import play.mvc.With;
@@ -32,7 +33,7 @@ import models.SecureTable;
 import models.SecurityGroup;
 import models.UserType;
 
-@With(Secure.class)
+@With(GuiSecure.class)
 public class MyGroups extends Controller {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyGroups.class);

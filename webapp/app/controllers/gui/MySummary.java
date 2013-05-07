@@ -7,7 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import com.alvazan.play.NoSql;
 
+import controllers.gui.auth.GuiSecure;
+
 import play.mvc.Controller;
+import play.mvc.With;
 import gov.nrel.util.Utility;
 import models.Entity;
 import models.EntityGroup;
@@ -15,6 +18,7 @@ import models.EntityUser;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
 
+@With(GuiSecure.class)
 public class MySummary extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(MySummary.class);
 

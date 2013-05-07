@@ -29,13 +29,16 @@ import models.PermissionType;
 import models.SecureResourceGroupXref;
 import models.SecureTable;
 import controllers.SecurityUtil;
+import controllers.gui.auth.GuiSecure;
 import play.mvc.Controller;
+import play.mvc.With;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 import play.mvc.results.Unauthorized;
 import play.server.ChunkListener;
 import play.server.ProcessStream;
 
+@With(GuiSecure.class)
 public class Tables extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(Tables.class);

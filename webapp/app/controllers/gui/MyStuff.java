@@ -23,9 +23,12 @@ import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.play.NoSql;
 
 import controllers.TableInfo;
+import controllers.gui.auth.GuiSecure;
 import play.mvc.Controller;
+import play.mvc.With;
 import play.mvc.Http.Request;
 
+@With(GuiSecure.class)
 public class MyStuff extends Controller {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyStuff.class);
