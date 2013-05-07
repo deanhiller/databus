@@ -98,7 +98,10 @@ public class Tables extends Controller {
 				}
 			}
 		}
-		
+		Throwable t = (Throwable) request.args.get("error");
+		if(t != null)
+			throw new RuntimeException("failure saving all data", t);
+
 		List<String> errors = (List<String>) request.args.get("errorsList");
 		if(errors.size() > 0) {
 			if(errors.size() >= ERROR_LIMIT)
@@ -129,9 +132,12 @@ public class Tables extends Controller {
 		Integer total = (Integer) request.args.get("total");
 		if(log.isDebugEnabled())
 			log.debug("csv upload - waiting for completion. total="+total+" count="+count);
-		if (count == null || total == null)
+		Throwable t = (Throwable) request.args.get("error");
+		if(t != null)
+			return true;
+		else if (count == null || total == null)
 			return false;
-		if(count >= total)
+		else if(count >= total)
 			return true;
 		return false;
 	}
@@ -172,10 +178,14 @@ public class Tables extends Controller {
 			try {
 				
 				if(readingFile) {
+					if(request.args.get("error") != null)
+						return; //we are done, there was an error
+					
 					//jsc comment this whole block for 10x
 					processFile(in, request, response);
 				}
 			} catch(Exception e) {
+				request.args.put("error", e);
 				throw new RuntimeException(e);
 			}
 		}
