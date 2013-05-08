@@ -7,8 +7,6 @@ We are rendering the chart for dataset url=${chart.url} below
 <div id="theChart"></div>
 
     <script type="text/javascript">
-var days = 2;
-
 $(function () {
 
   var endTime = ${chart.endTime},
@@ -16,12 +14,13 @@ $(function () {
     maximized = false,
     maximizedStream,
     height = 700,
-    width = 951;
+    width = 951,
+    chart;
 
   $(window).resize(function () {
     console.log('resized window heigth:'+$(window).height());
     if (maximized) {
-      chart.setSize($(window).width(), $(window).height(), false);
+    	chart.setSize($(window).width()-80, $(window).height(), false);
     }
   });
 
@@ -223,7 +222,7 @@ $(function () {
     $.getJSON(url, function (data) {
         
         console.log('window2222 heigth:'+$(window).height());
-      var chart = new Highcharts.StockChart({
+      chart = new Highcharts.StockChart({
         chart: {
           renderTo: mychart,
           height: 500
@@ -232,9 +231,9 @@ $(function () {
           buttons: {
             zoomButton: {
               onclick: function () {
-                $('#' + this.options.chart.renderTo).toggleClass('overlay');
+                $('#mychart').toggleClass('overlay');
                 if (!maximized) {
-                  this.setSize($(window).width(), $(window).height(), false);
+                  this.setSize($(window).width()-60, $(window).height(), false);
                   maximized = true;
                   maximizedStream = mychart;
                 } else {
@@ -260,7 +259,7 @@ $(function () {
         series: [
                  
           ${chart.generatedJavascript}                 
-      /* The above ${chart.generatedJavascript} generates the below code for each column...  
+      /* The above chart.generatedJavascript generates the below code for each column...  
          {
           name: 'Aggregation',
           data: collapseData(data, (singleStream!==true ? true : false))
@@ -269,7 +268,7 @@ $(function () {
         
         ],
         title: {
-          text: (title!==false ? title : '${chart.url}') + ' - ' + days + ' Days'
+          text: (title!==false ? title : '${chart.url}') 
         },
         subtitle: {
             text: (data.data.length!=0 ? 
@@ -307,6 +306,7 @@ $(function () {
   });
 
   addChart(false, true);
+  console.log('returned chart='+chart);
 });
     </script>
 
