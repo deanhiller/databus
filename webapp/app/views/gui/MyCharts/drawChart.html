@@ -11,8 +11,8 @@ var days = 2;
 
 $(function () {
 
-  var endTime = ${endTime},
-    startTime = ${startTime},
+  var endTime = ${chart.endTime},
+    startTime = ${chart.startTime},
     maximized = false,
     maximizedStream,
     height = 700,
@@ -190,7 +190,7 @@ $(function () {
   function collapseData(data, columnName) {
     var collapsedData = [];
     $.each(data.data, function (index, value) {
-      collapsedData.push([value.time, (value == "NaN") ? null : value.value ]);
+      collapsedData.push([value.${chart.timeColumn}, (value == "NaN") ? null : value[columnName] ]);
     });
     return collapsedData;
   }

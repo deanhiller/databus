@@ -89,10 +89,12 @@ public class MyCharts extends Controller {
 		String col3 = chart.getColumn3();
 		String col4 = chart.getColumn4();
 		String col5 = chart.getColumn5();
+		String start = chart.getStartTime()+"";
+		String end = chart.getEndTime()+"";
 		
 		String version = "V01";
 		String all = version;
-		all += timeCol+"|"+col1+"|"+col2+"|"+col3+"|"+col4+"|"+col5+"|"+url;
+		all += start+"|"+end+"|"+timeCol+"|"+col1+"|"+col2+"|"+col3+"|"+col4+"|"+col5+"|"+url;
 		return all;
 	}
 
@@ -133,17 +135,19 @@ public class MyCharts extends Controller {
 		if(outputString.startsWith("V01")) {
 			String leftOver = outputString.substring(3);
 			String[] split = leftOver.split("\\|");
-			if(7 != split.length)
+			if(9 != split.length)
 				badRequest("Your graph is not found, url is misformed");
 			
 			Chart c = new Chart();
-			c.setTimeColumn(split[0]);
-			c.setColumn1(split[1]);
-			c.setColumn2(split[2]);
-			c.setColumn3(split[3]);
-			c.setColumn4(split[4]);
-			c.setColumn5(split[5]);
-			c.setUrl(split[6]);
+			c.setStartTime(convertLong(split[0]));
+			c.setEndTime(convertLong(split[1]));
+			c.setTimeColumn(split[2]);
+			c.setColumn1(split[3]);
+			c.setColumn2(split[4]);
+			c.setColumn3(split[5]);
+			c.setColumn4(split[6]);
+			c.setColumn5(split[7]);
+			c.setUrl(split[8]);
 			return c;
 		} else {
 			badRequest("Your graph is not found since this is the wrong version");
