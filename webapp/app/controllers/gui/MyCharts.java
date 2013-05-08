@@ -10,6 +10,8 @@ import org.apache.commons.codec.binary.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.alvazan.play.NoSql;
+
 import play.mvc.Controller;
 import play.mvc.With;
 import play.mvc.results.NotFound;
@@ -27,15 +29,20 @@ public class MyCharts extends Controller {
 	public static void postCreateChart(Chart chart) throws UnsupportedEncodingException {
 		String url = chart.getUrl();
 		int index = url.lastIndexOf("/");
-		String endTimeStr = url.substring(index+1);
-		String left = url.substring(0, index);
-		int startIndex = left.lastIndexOf("/");
-		String startTimeStr = left.substring(startIndex+1);
-
-		long endTime = convertLong(endTimeStr);
-		long startTime = convertLong(startTimeStr);
-		chart.setStartTime(startTime);
-		chart.setEndTime(endTime);
+		if(index < 0) {
+			validation.addError("chart.url", "The url supplied must end with {startTime}/{endTime}");
+			flash.error("The url supplied must end with {startTime}/{endTime} and does not");
+		} else {
+			String endTimeStr = url.substring(index+1);
+			String left = url.substring(0, index);
+			int startIndex = left.lastIndexOf("/");
+			String startTimeStr = left.substring(startIndex+1);
+	
+			long endTime = convertLong(endTimeStr);
+			long startTime = convertLong(startTimeStr);
+			chart.setStartTime(startTime);
+			chart.setEndTime(endTime);
+		}
 
 		if(validation.hasErrors()) {
 			validation.keep();

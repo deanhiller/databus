@@ -8,9 +8,8 @@
 
 	<input type="hidden" name="monitor.id" value="${monitor?.id}">
 
-	#{xfield objectId:'chart.url',label:'Url', help:'The url which streams back a wide table with many columns or maybe just 2 columns'}
-		#{text field:field/}
-	#{/xfield}
+    #{text2 id:'chart.url', label:'Url', help:'The url which streams back a wide table with more than one column'/}
+
 	#{xfield objectId:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'}
         #{text field:field/}
     #{/xfield}

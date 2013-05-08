@@ -27,11 +27,12 @@ public class TagHelp extends FastTags {
 	public static void _xfield(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
         Map<String,Object> field = new HashMap<String,Object>();
         Object objId = args.get("objectId");
-        if(objId == null || !(objId instanceof String))
-        	throw new IllegalArgumentException("'objectId' param must be supplied to tag xfield as a String");
+        if(objId == null || !(objId instanceof String)) {
+        	objId = args.get("arg");
+        	if(objId == null || !(objId instanceof String))
+        		throw new IllegalArgumentException("'objectId' param must be supplied to tag xfield as a String");
+        }
         Object label = args.get("label");
-        if(label == null || !(label instanceof String))
-        	throw new IllegalArgumentException("'label' param must be supplied to tag xfield as a String");
         Object length = args.get("length");
         Object help = args.get("help");
         if("".equals(help))
