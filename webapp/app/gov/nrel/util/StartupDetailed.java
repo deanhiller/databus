@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import play.Play;
 
@@ -25,6 +26,7 @@ public class StartupDetailed {
 	public static final String GROUP1 = "supa";
 	public static final String GROUP2 = "tempDean";
 	
+	private static final String TS_RELATIONAL = "wideTable";
 	private static final String FAKE_TIME_SERIES = "fakeTimeSeries";
 	private static final String FAKE_TIME_SERIES2 = "fakeTimeSeries2";
 	private static final String FAKE_TIME_SERIES_WITH_NULL = "fakeTimeSeriesWithNull";
@@ -74,6 +76,8 @@ public class StartupDetailed {
 		}
 		
 
+		createTsRelational(TS_RELATIONAL, StartupDetailed.GROUP1, DEAN);
+		
 		//do time series AFTER the flush above so security will check out ok
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES, 25, 30, StartupDetailed.GROUP1, DEAN);
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES2, 55, 60, StartupDetailed.GROUP1, DEAN);
@@ -130,7 +134,6 @@ public class StartupDetailed {
 
 	}
 	
-	
 	static void createSeriesImplWithUnitTestData(String name, int startInterval, int endInterval, String schemaName, EntityUser user) {
 		createSeriesImpl(name, schemaName, user);
 		insertUnitTestData(name, startInterval, endInterval, user);
@@ -178,4 +181,53 @@ public class StartupDetailed {
 		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey());
 	}
 
+	static void createTsRelational(String name, String schemaName, EntityUser user) {
+		createWideTable(name, schemaName, user);
+		insertWideData(name, user);
+	}
+	
+	static void createWideTable(String name, String schemaName, EntityUser user) {
+		RegisterMessage msg = new RegisterMessage();
+		msg.setDatasetType(DatasetType.RELATIONAL_TABLE);
+		msg.setSchema(schemaName);
+		msg.setModelName(name);
+		
+		List<DatasetColumnModel> cols = new ArrayList<DatasetColumnModel>();
+		StartupUtils.createColumn(cols, "timeStart", "BigInteger", "oei:timestamp", true, true);
+		StartupUtils.createColumn(cols, "temp", "BigDecimal", "oei:temparaturecolor", false, false);
+		StartupUtils.createColumn(cols, "volume", "BigDecimal", "oei:temparaturecolor", false, false);
+		StartupUtils.createColumn(cols, "energy", "BigDecimal", "oei:temparaturecolor", false, false);
+		StartupUtils.createColumn(cols, "number", "BigDecimal", "oei:temparaturecolor", false, false);
+		msg.setColumns(cols);	
+
+		//register the time series table we will use
+		RegisterResponseMessage resp = ApiRegistrationImpl.registerImpl(msg, user.getUsername(), user.getApiKey());
+	}
+	
+	static void insertWideData(String name, EntityUser user) {
+		int totalPoints = 100;
+		long start = 1367846618000L;
+		long hourInMillis = TimeUnit.MILLISECONDS.convert(1, TimeUnit.HOURS);
+		long end = totalPoints*hourInMillis+start;
+
+		for(long time = start,n = 0; time < end; time+=hourInMillis, n++) {
+			String temp = n+"";
+			String volume = (totalPoints-n) +"";
+			//here, let's shift the power graph over to center it...
+			String energy = Math.pow(n-(totalPoints/2), 2)+"";
+			String number = totalPoints/2+"";
+			putWideData(name, user, time+"", temp, volume, energy, number);
+		}
+	}
+	
+	static void putWideData(String tableName, EntityUser user, String time, String temp, String volume, String energy, String number) {
+		Map<String, Object> json = new HashMap<String, Object>();
+		json.put("_tableName", tableName);
+		json.put("timeStart", time);
+		json.put("temp", temp);
+		json.put("volume", volume);
+		json.put("energy", energy);
+		json.put("number", number);
+		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey());
+	}
 }

@@ -25,6 +25,25 @@ public class MyCharts extends Controller {
 	}
 	
 	public static void postCreateChart(Chart chart) throws UnsupportedEncodingException {
+		String url = chart.getUrl();
+		int index = url.lastIndexOf("/");
+		String endTimeStr = url.substring(index+1);
+		String left = url.substring(0, index);
+		int startIndex = left.lastIndexOf("/");
+		String startTimeStr = left.substring(startIndex+1);
+
+		long endTime = convertLong(endTimeStr);
+		long startTime = convertLong(startTimeStr);
+		chart.setStartTime(startTime);
+		chart.setEndTime(endTime);
+
+		if(validation.hasErrors()) {
+			validation.keep();
+			flash.keep();
+			params.flash();
+			createChart();
+		}
+		
 		String myMap = convert(chart);
 		// Encode a String into bytes
 		byte[] input = myMap.getBytes("UTF-8");
@@ -43,6 +62,16 @@ public class MyCharts extends Controller {
 		
 		int length = input.length;
 		drawChart(encodedChart, length);
+	}
+
+	private static long convertLong(String str) {
+		try {
+			return Long.parseLong(str);
+		} catch(NumberFormatException e) {
+			validation.addError("chart.url", "The url supplied must end with {startTime}/{endTime}");
+			flash.error("The url supplied must end with {startTime}/{endTime} and does not");
+		}
+		return 0;
 	}
 
 	private static String convert(Chart chart) {
@@ -84,6 +113,9 @@ public class MyCharts extends Controller {
 		}
 
 		Chart chart = convert(outputString);
+
+		String url = chart.getUrl();
+		
 
 		long startTime = 0;
 		long endTime = 500000;
