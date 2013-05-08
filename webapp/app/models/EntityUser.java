@@ -12,6 +12,7 @@ import org.joda.time.LocalDateTime;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.Query;
 import com.alvazan.orm.api.base.anno.NoSqlDiscriminatorColumn;
+import com.alvazan.orm.api.base.anno.NoSqlEmbedded;
 import com.alvazan.orm.api.base.anno.NoSqlIndexed;
 import com.alvazan.orm.api.base.anno.NoSqlOneToMany;
 import com.alvazan.orm.api.base.anno.NoSqlQueries;
@@ -31,6 +32,9 @@ public class EntityUser extends Entity {
 	private String apiKey;
 	
 	private String classType = "userImpl";
+	
+	@NoSqlEmbedded
+	private UserSettings userSettings = new UserSettings();
 	
 	private boolean isAdmin;
 	
@@ -219,5 +223,15 @@ public class EntityUser extends Entity {
 	public String getPassword() {
 		return password;
 	}
+
+	public UserSettings getUserSettings() {
+		return userSettings;
+	}
+
+	public void setUserSettings(UserSettings userSettings) {
+		this.userSettings = userSettings;
+	}
+	
+	
 	
 } // User
