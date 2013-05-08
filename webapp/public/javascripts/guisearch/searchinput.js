@@ -5,6 +5,11 @@
 			$(this.target).find('input').bind('keydown', function(e) {
 				if (e.which == 13) {
 					var value = $(this).val();
+					
+					if(value.indexOf("*") == -1) {
+						value = "*" + value + "*";
+					}
+					
 					if (value && self.set(value)) {
 						self.doRequest();					
 					}
