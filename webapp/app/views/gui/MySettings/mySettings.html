@@ -1,0 +1,35 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Account' /}
+#{set tab:'' /}
+
+<div class="container db_container">
+	<h1 class="db_page_title">My Settings</h1>
+	<br />
+	<form>
+	  <fieldset>
+	    <legend>
+	      Dashboard
+	    </legend>
+	    <label class="checkbox">
+	    		#{if dashboard_enabled}
+	      		<input type="checkbox" checked>
+	      		Disable Dashboard
+	      	#{/if}
+			#{else}
+			    <input type="checkbox">
+	      		Enable Dashboard
+			#{/else}
+	    </label>
+	    <br />
+	    	#{if dashboard_enabled}
+			
+		#{/if}
+	    <button type="submit" class="btn">
+	      Submit
+	    </button>
+	  </fieldset>
+	</form>
+	
+</div>
+
+
