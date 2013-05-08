@@ -23,6 +23,72 @@ import play.templates.JavaExtensions;
 public class TagHelp extends FastTags {
 	
 	private static final Logger log = LoggerFactory.getLogger(TagHelp.class);
+
+	public static void _formfield(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
+        Map<String,Object> field = new HashMap<String,Object>();
+        Object objId = args.get("objectId");
+        if(objId == null || !(objId instanceof String)) {
+        	objId = args.get("arg");
+        	if(objId == null || !(objId instanceof String))
+        		throw new IllegalArgumentException("'objectId' param must be supplied to tag xfield as a String");
+        }
+        Object label = args.get("label");
+        Object length = args.get("length");
+        Object help = args.get("help");
+        if("".equals(help))
+        	help = null;
+        String _arg = objId.toString();
+        Object id = _arg.replace('.','_');
+        Object flashObj = Flash.current().get(_arg);
+        Object flashArray = new String[0]; 
+        if(flashObj != null && !StringUtils.isEmpty(flashObj.toString())) {
+        	Object object = flashObj;
+        	String s = object.toString();
+        	flashArray = s.split(",");
+        }
+        Object error = Validation.error(_arg);
+        Object errorClass = error != null ? "error" : "";
+        field.put("name", _arg);
+        field.put("label", label);
+        field.put("length", length);
+        field.put("help", help);
+        field.put("id", id);
+        field.put("flash", flashObj);
+        field.put("flashArray", flashArray);
+        field.put("error", error);
+        field.put("errorClass", errorClass);
+        String[] pieces = _arg.split("\\.");
+        Object obj = body.getProperty(pieces[0]);
+        if(obj != null){
+            if(pieces.length > 1){
+                for(int i = 1; i < pieces.length; i++){
+                    try{
+                    	Field f = getDeclaredField(obj.getClass(), obj, pieces[i]);
+                        f.setAccessible(true);
+                        if(i == (pieces.length-1)){
+                            try{
+                                Method getter = obj.getClass().getMethod("get"+JavaExtensions.capFirst(f.getName()));
+                                field.put("value", getter.invoke(obj, new Object[0]));
+                            }catch(NoSuchMethodException e){
+                                field.put("value",f.get(obj).toString());
+                            }
+                        }else{
+                            obj = f.get(obj);
+                        }
+                    }catch(Exception e){
+                    	if (log.isWarnEnabled())
+                    		log.warn("Exception processing tag on object type="+obj.getClass().getName(), e);
+                    }
+                }
+            }else{
+                field.put("value", obj);
+            }
+        } else if(flashObj != null)
+        	field.put("value", flashObj);
+        
+        body.setProperty("field", field);
+        body.call();
+    }
 	
 	public static void _xfield(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
         Map<String,Object> field = new HashMap<String,Object>();
