@@ -19,6 +19,8 @@ import org.acegisecurity.GrantedAuthorityImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
+
 import com.sun.jndi.ldap.LdapCtxFactory;
 
 
@@ -28,6 +30,10 @@ public class ActiveDirAuthentication {
 	
 	public boolean isUserValid(String username, String password, String domainName) {
 		try {
+			String demomode = Play.configuration.getProperty("demo.mode");
+			if("true".equals(demomode))
+				return false;
+			
 			retrieveUser(username, password, domainName);
 			return true;
 		} catch(InvalidCredentialsException e) {

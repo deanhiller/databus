@@ -29,13 +29,16 @@ import models.PermissionType;
 import models.SecureResourceGroupXref;
 import models.SecureTable;
 import controllers.SecurityUtil;
+import controllers.gui.auth.GuiSecure;
 import play.mvc.Controller;
+import play.mvc.With;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 import play.mvc.results.Unauthorized;
 import play.server.ChunkListener;
 import play.server.ProcessStream;
 
+@With(GuiSecure.class)
 public class Tables extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(Tables.class);
@@ -90,13 +93,18 @@ public class Tables extends Controller {
 		synchronized(request) {
 			while(!isComplete(request)) {
 				try {
+					if(log.isDebugEnabled())
+						log.debug("csv upload - waiting to complete");
 					request.wait();
 				} catch (InterruptedException e) {
 					throw new RuntimeException(e);
 				}
 			}
 		}
-		
+		Throwable t = (Throwable) request.args.get("error");
+		if(t != null)
+			throw new RuntimeException("failure saving all data", t);
+
 		List<String> errors = (List<String>) request.args.get("errorsList");
 		if(errors.size() > 0) {
 			if(errors.size() >= ERROR_LIMIT)
@@ -105,8 +113,8 @@ public class Tables extends Controller {
 				flash.error("Errors on some lines(numErrors="+errors.size()+") "+errors);
 			flash.keep();
 		}
-		
-		//uploadSuccess(table);
+
+		uploadSuccess(table);
 	}
 
 	private static void fireIntoListener(Request request) {
@@ -125,14 +133,21 @@ public class Tables extends Controller {
 	private static boolean isComplete(Request request) {
 		Integer count = (Integer) request.args.get("count");
 		Integer total = (Integer) request.args.get("total");
-		if (count == null || total == null)
+		if(log.isDebugEnabled())
+			log.debug("csv upload - waiting for completion. total="+total+" count="+count);
+		Throwable t = (Throwable) request.args.get("error");
+		if(t != null)
+			return true;
+		else if (count == null || total == null)
 			return false;
-		if(count >= total)
+		else if(count >= total)
 			return true;
 		return false;
 	}
 
 	private static void reportError(Request request, String msg) {
+		if(log.isWarnEnabled())
+			log.warn(msg);
 		Map<String, Object> map = request.args;
 		Object obj = map.get("errorsList");
 		List<String> errors = (List<String>) obj;
@@ -166,10 +181,14 @@ public class Tables extends Controller {
 			try {
 				
 				if(readingFile) {
+					if(request.args.get("error") != null)
+						return; //we are done, there was an error
+					
 					//jsc comment this whole block for 10x
 					processFile(in, request, response);
 				}
 			} catch(Exception e) {
+				request.args.put("error", e);
 				throw new RuntimeException(e);
 			}
 		}

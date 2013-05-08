@@ -19,7 +19,6 @@ import controllers.modules2.RangeCleanProcessor;
 import controllers.modules2.RawProcessor;
 import controllers.modules2.SplinesPullProcessor;
 import controllers.modules2.SqlPullProcessor;
-import controllers.modules2.StdDevCleanProcessor;
 import controllers.modules2.SumStreamProcessor;
 import controllers.modules2.TimeAverageProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
@@ -37,7 +36,6 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	private Injector injector;
 
 	public RawProcessorFactory() {
-		nameToClazz.put("stddevV1Beta", StdDevCleanProcessor.class);
 		nameToClazz.put("getdataV1", SqlPullProcessor.class);
 		nameToClazz.put("logV1", LogProcessor.class);
 		nameToClazz.put("splinesV2", SplinesPullProcessor.class);

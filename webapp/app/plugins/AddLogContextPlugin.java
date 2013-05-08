@@ -5,6 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import controllers.SecurityUtil;
+import controllers.gui.auth.GuiSecure;
+
 import play.Play;
 import play.PlayPlugin;
 import play.mvc.Http.Request;
@@ -63,7 +66,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 	private void overrideMDC(Session session, Request request) {
 		if(session == null)
 			return;
-		String username = session.get("username");
+		String username = SecurityUtil.getUser();
 		String user = request.user;
 		if(username != null) //a user is logged in so use the session user in the logs
 			return;
@@ -81,7 +84,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 		}
 		
 		String sid = session.get("sid");
-		String username = session.get("username");
+		String username = SecurityUtil.getUser();
 		MDC.put("sessionid", sid);
 		MDC.put("user", ""+username);
 	}

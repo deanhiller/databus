@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import gov.nrel.util.TimeValue;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.mvc.results.BadRequest;
 import controllers.modules.SplinesBigDec;
@@ -20,6 +22,7 @@ import controllers.modules2.framework.procs.PullProcessorAbstract;
 
 public class SplinesPullProcessor extends PullProcessorAbstract {
 
+	private static final Logger log = LoggerFactory.getLogger(SplinesPullProcessor.class);
 	private String splineType;
 	private long interval;
 	private SplinesBigDec spline;
@@ -42,6 +45,8 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor) {
+		if(log.isInfoEnabled())
+			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor);
 		// param 1: Type: String
 		splineType = params.getParams().get(0);
@@ -82,7 +87,10 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			String msg = "splinesV1BetaBigDec must have a start and end (if you want it to work, request it)";
 			throw new BadRequest(msg);
 		}
+		
 		Long startTime = params.getStart();
+		if(log.isInfoEnabled())
+			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
 		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
 		
 		// setup buffer
@@ -93,13 +101,17 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	public static long calculateStartTime(long startTime, long interval, Long epochOffset) {
 		if(epochOffset == null)
 			return startTime;
-		
+
 		long rangeFromOffsetToStart = startTime-epochOffset;
-		long offsetFromStart = rangeFromOffsetToStart % interval;
+		long offsetFromStart = -rangeFromOffsetToStart % interval;
 		if(startTime > 0) {
 			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
 		}
-		return startTime-offsetFromStart;
+
+		long result = startTime+offsetFromStart; 
+		if(log.isInfoEnabled())
+			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
+		return result;
 	}
 
 	@Override
@@ -232,10 +244,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 					.getValue();
 		}
 		spline.setRawDataPoints(times, values);
-	}
-
-	public void setChild(ProcessorSetup mock) {
-		this.child = mock;
 	}
 
 	// TSRelational row = new TSRelational();

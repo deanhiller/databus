@@ -32,8 +32,9 @@ import com.alvazan.play.NoSql;
 
 import controllers.TableMonitor;
 import controllers.auth.Secure;
+import controllers.gui.auth.GuiSecure;
 
-@With(Secure.class)
+@With(GuiSecure.class)
 public class MyDatabases extends Controller {
 	
 	static final Logger log = LoggerFactory.getLogger(MyDatabases.class);

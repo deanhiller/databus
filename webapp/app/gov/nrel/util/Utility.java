@@ -46,6 +46,8 @@ import com.alvazan.orm.layer3.typed.IterableReverseProxy;
 import com.alvazan.play.NoSql;
 
 import controllers.Security;
+import controllers.SecurityUtil;
+import controllers.gui.auth.GuiSecure;
 
 public class Utility {
 
@@ -87,7 +89,7 @@ public class Utility {
 				return user;
 			throw new Unauthorized("User or password is incorrect");
 		} else {
-			String username = session.get("username");
+			String username = SecurityUtil.getUser();
 			if(username == null)
 				throw new Unauthorized("You did not supply basic auth credentials nor are you logged into the web application");
 		
@@ -98,7 +100,7 @@ public class Utility {
 	} // getCurrentUser
 	
 	public static EntityUser getCurrentUser(Session session) {
-		String username = session.get("username");
+		String username = SecurityUtil.getUser();
 		if(username == null)
 			return null;
 		

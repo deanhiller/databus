@@ -23,11 +23,12 @@ import com.alvazan.play.NoSql;
 
 import controllers.Search;
 import controllers.auth.Secure;
+import controllers.gui.auth.GuiSecure;
 import controllers.gui.solrsearch.SearchItem;
 import controllers.gui.solrsearch.SearchableItems;
 import controllers.gui.solrsearch.SolrSearchResult;
 
-@With(Secure.class)
+@With(GuiSecure.class)
 public class GUISearch extends Controller {
 	public static void legacyMetaSearch() {
 		EntityUser user = Utility.getCurrentUser(session);

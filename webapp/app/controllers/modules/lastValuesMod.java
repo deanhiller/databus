@@ -17,6 +17,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.gui.auth.GuiSecure;
 import controllers.modules.util.Info;
 import controllers.modules.util.JsonRow;
 import controllers.modules.util.ModuleStreamer;
@@ -45,7 +46,7 @@ public class lastValuesMod extends Controller {
 		boolean firstTime = true;		
 		ProcessorImpl p = null;
 		boolean errorOccurred = false;
-		String currentSessionUser = Session.current().get("username");
+		String currentSessionUser = Session.current().get(GuiSecure.KEY);
 		
 		while (p == null || p.numLastVals() < number) {
 			urls = new ArrayList<String>();
@@ -107,8 +108,8 @@ public class lastValuesMod extends Controller {
 				request.args.put("processor", p);
 			} else {
 				p = (ProcessorImpl) request.args.get("processor");
-				if (StringUtils.isBlank(Session.current().get("username")))
-					Session.current().put("username", currentSessionUser);
+				if (StringUtils.isBlank(Session.current().get(GuiSecure.KEY)))
+					Session.current().put(GuiSecure.KEY, currentSessionUser);
 			}
 
 			//Request.current().isNew = true;

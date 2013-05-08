@@ -28,4 +28,7 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 		return Direction.PULL;
 	}
 
+	public void setChild(ProcessorSetup mock) {
+		this.child = mock;
+	}
 }

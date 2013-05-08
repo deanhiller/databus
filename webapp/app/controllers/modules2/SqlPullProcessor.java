@@ -129,9 +129,6 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 			tv.put(colName, val);
 		}
 	}
-	public void setChild(ProcessorSetup mock) {
-		this.child = mock;
-	}
 
 	// TSRelational row = new TSRelational();
 	// setValue(row, val);

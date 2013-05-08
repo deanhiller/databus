@@ -6,6 +6,7 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.SecurityUtil;
 import controllers.gui.Application;
 import controllers.gui.Search;
 
@@ -21,12 +22,16 @@ import play.utils.Java;
 
 public class GuiSecure extends Controller {
 
+	//for security, we do not use the key "admin" as security won't like that!!!!
+	public static String ADMIN_KEY = "age";
+	public static String KEY = "key";
+	
 	private static final Logger log = LoggerFactory.getLogger(GuiSecure.class);
 	
     @Before(unless={"login", "authenticate", "logout"})
     static void checkAccess() throws Throwable {
         // Authent
-        if(!session.contains("username")) {
+        if(!session.contains(KEY)) {
             flash.put("url", "GET".equals(request.method) ? request.url : Play.ctxPath + "/"); // seems a good default
             login();
         }
@@ -42,7 +47,7 @@ public class GuiSecure extends Controller {
             check(check);
         }
 
-    	String username = session.get("username");
+    	String username = SecurityUtil.getUser();
         controllers.Security.createUserIfNotExist(username);
     }
 
@@ -75,7 +80,7 @@ public class GuiSecure extends Controller {
                     logout();
                 }
                 if(Crypto.sign(restOfCookie).equals(sign)) {
-                    session.put("username", username);
+                	SecurityUtil.putUser(username);
                     redirectToOriginalURL();
                 }
             }
@@ -85,7 +90,7 @@ public class GuiSecure extends Controller {
 			log.info("hitting login page");
         flash.keep("url");
         
-        if(session.get("username") != null) {
+        if(session.get(KEY) != null) {
         	Search.dashboardSide();
         }
         render();
@@ -113,7 +118,7 @@ public class GuiSecure extends Controller {
         Session temp = session;
         
         // Mark user as connected
-        session.put("username", username);
+        SecurityUtil.putUser(username);
         // Remember if needed
         if(remember) {
             Date expiration = new Date();
@@ -192,7 +197,7 @@ public class GuiSecure extends Controller {
          * @return
          */
         static String connected() {
-            return session.get("username");
+        	return SecurityUtil.getUser();
         }
 
         /**
@@ -200,7 +205,7 @@ public class GuiSecure extends Controller {
          * @return  true if the user is connected
          */
         static boolean isConnected() {
-            return session.contains("username");
+            return session.contains(KEY);
         }
 
         /**

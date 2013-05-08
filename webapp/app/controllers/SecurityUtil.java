@@ -2,37 +2,32 @@ package controllers;
 
 import gov.nrel.util.Utility;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import models.EntityGroup;
+import models.EntityGroupXref;
+import models.EntityUser;
+import models.PermissionType;
+import models.SecureResource;
+import models.SecureResourceGroupXref;
+import models.SecureSchema;
+import models.SecureTable;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
-import play.mvc.Http.Response;
 import play.mvc.Scope.Session;
-import play.mvc.Http;
 import play.mvc.Util;
 import play.mvc.results.Unauthorized;
 
-import models.Entity;
-import models.EntityGroup;
-import models.EntityGroupXref;
-import models.PermissionType;
-import models.RoleMapping;
-import models.SecureResource;
-import models.SecureResourceGroupXref;
-import models.SecureSchema;
-import models.SecureTable;
-import models.SecurityGroup;
-import models.EntityUser;
-
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.play.NoSql;
 
-import controllers.auth.ActiveDirAuthentication;
+import controllers.gui.auth.GuiSecure;
 
 public class SecurityUtil {
 
@@ -188,11 +183,11 @@ public class SecurityUtil {
 		String key = request.password;
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" does not exist or is not in meta.  user="+username+" key="+key);
+				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} else if(schemaIds.get(sdiTable.getSchema().getId()) == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" is not accessible from this user="+username+" key="+key);
+				log.info("table="+cf+" is not accessible from this user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return sdiTable;
@@ -211,14 +206,14 @@ public class SecurityUtil {
 		String key = request.password;
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" does not exist or is not in meta.  user="+username+" key="+key);
+				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} 
 		
 		SecureResourceGroupXref xref = schemaIds.get(sdiTable.getSchema().getId());
 		if(xref == null) {
 			if (log.isInfoEnabled())
-				log.info("table="+cf+" is not accessible from this user="+username+" key="+key);
+				log.info("table="+cf+" is not accessible from this user="+username);
 			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return xref.getPermission();
@@ -243,7 +238,7 @@ public class SecurityUtil {
 			throw new Unauthorized("User="+username+" is not authorized");
 		} else if(!user.getApiKey().equals(apiKey)) {
 			if (log.isInfoEnabled())
-				log.info("user or key is invalid for user="+username+" key="+apiKey);
+				log.info("user or key is invalid for user="+username);
 			throw new Unauthorized("user or key is invalid for user="+username);
 		}
 		
@@ -276,4 +271,44 @@ public class SecurityUtil {
 		return false;
 	}
 	
+	public static void putUser(String user) {
+		Session session = Session.current();
+		String val = hashUser(user);
+		session.put(GuiSecure.KEY, val);
+	}
+
+	public static String getUser() {
+		Session session = Session.current();
+		String user = session.get(GuiSecure.KEY);
+		return unhashUser(user);
+	}
+
+	private static String hashUser(String user) {
+		byte[] data = user.getBytes();
+		byte[] newData = new byte[data.length];
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] == Byte.MIN_VALUE)
+				newData[i] = Byte.MAX_VALUE;
+			else
+				newData[i] = (byte) (data[i]-1);
+		}
+		String value = StandardConverters.convertToString(newData);
+		return value;
+	}
+	private static String unhashUser(String value) {
+		if(value == null)
+			return null;
+
+		byte[] data = StandardConverters.convertFromString(byte[].class, value);
+		byte[] newData = new byte[data.length];
+		for(int i = 0; i < data.length; i++) {
+			if(data[i] == Byte.MAX_VALUE)
+				newData[i] = Byte.MIN_VALUE;
+			else
+				newData[i] = (byte) (data[i]+1);
+		}
+		String user = new String(newData);
+		return user;
+	}
+
 }
