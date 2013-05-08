@@ -221,6 +221,11 @@ $(function () {
     $('#theChart').append($('<div class="chart" />').attr('id', 'mychart'));
     $.getJSON(url, function (data) {
         
+    	var msg = "No data available in the specified time period."
+    	if(data.data.length != 0) {
+    		msg = "Last value was "+data.data[data.data.length-1].${chart.column1}+" at "+new Date(data.data[data.data.length-1].${chart.timeColumn}).toUTCString()
+    	}
+                
         console.log('window2222 heigth:'+$(window).height());
       chart = new Highcharts.StockChart({
         chart: {
@@ -271,10 +276,7 @@ $(function () {
           text: (title!==false ? title : '${chart.url}') 
         },
         subtitle: {
-            text: (data.data.length!=0 ? 
-                  "Last value was "+data.data[data.data.length-1].value+" at "+new Date(data.data[data.data.length-1].time).toUTCString() 
-                  : "No data available in the specified time period."),
-            
+            text: msg
           },
         xAxis: {
           ordinal: false
