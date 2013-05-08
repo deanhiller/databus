@@ -15,7 +15,6 @@ $(function () {
     startTime = ${startTime},
     maximized = false,
     maximizedStream,
-    chartMap = {},
     height = 700,
     width = 951;
 
@@ -188,10 +187,10 @@ $(function () {
     return arr;
   }
 
-  function collapseData(data, reduce) {
+  function collapseData(data, columnName) {
     var collapsedData = [];
     $.each(data.data, function (index, value) {
-      collapsedData.push([value.time, (value == "NaN") ? null : value.value / (reduce===true ? 1000 : 1)]);
+      collapsedData.push([value.time, (value == "NaN") ? null : value.value ]);
     });
     return collapsedData;
   }
@@ -258,10 +257,17 @@ $(function () {
             reversed: reverseAxis
           }
         },
-        series: [{
+        series: [
+                 
+          ${chart.generatedJavascript}                 
+      /* The above ${chart.generatedJavascript} generates the below code for each column...  
+         {
           name: 'Aggregation',
           data: collapseData(data, (singleStream!==true ? true : false))
-        }],
+        }*/
+        
+        
+        ],
         title: {
           text: (title!==false ? title : '${chart.url}') + ' - ' + days + ' Days'
         },
@@ -286,82 +292,15 @@ $(function () {
           reversed: reverseAxis
         }
       });
-      chartMap[stream] = chart;
       chart.showLoading();
 
-      if (!singleStream) {
-        $.getJSON('${baseurl}/api/sumstreamsV1/aggregation/' + stream + '?singlenode=true&callback=?', function (data) {
-          var urls = data.urls,
-            responses = [],
-            aggregation = [];
-          //urls = ['splinesV1/limitderivative/60000/rangecleanV1/-2000000/2000000/rawdataV1/D73937763phaseRealPower', 'rangecleanV1/-2000000/2000000/rawdataV1/D73937763phaseRealPower'];
-          //if (urls.length > 1) {
-          $.each(urls, function (urlIndex, value) {
-            var name = value.substring(value.lastIndexOf('/') + 1);
-            chart.addSeries({
-              name: name,
-              data: null
-            }, true, false);
-            // Raw Data:
-            var url = '${baseurl}/api/' + (value.indexOf('invertV1/') === 0 ? 'invertV1/' : '') + value.substring(value.indexOf('rangecleanV1/-2000000/2000000/rawdataV1/')) + '/' + startTime + '/' + endTime + '?singlenode=true&callback=?';
-            // Splined Data:
-            //var url = '${baseurl}/api/' + value + '/' + startTime + '/' + endTime + '?singlenode=true&callback=?';
-            $.getJSON(url).then(
-
-            function (data) {
-              data = collapseData(data, true);
-              responses.push(data);
-              chart.series[urlIndex + 2].setData(data);
-              /*if (urlIndex === 0) {
-                chart.addSeries({
-                  name: 'Custom Spline',
-                  data: data,
-                  type: 'spline'
-                }, true, false);
-              }*/
-              if (responses.length == urls.length) {
-                window.responses = responses;
-                var i, j, sum, lengths = [],
-                  minLength;
-                $.each(responses, function (i) {
-                  lengths.push(responses[i].length);
-                });
-                minLength = Math.min.apply(null, lengths);
-                for (i = 0; i < minLength; i++) {
-                  sum = 0;
-                  for (j = 0; j < responses.length; j++) {
-                    sum += responses[j][i][1];
-                  }
-                  aggregation.push([responses[0][i][0], sum]);
-                }
-                /*chart.addSeries({
-              name: 'Sum',
-              data: aggregation
-            }, true, false);*/
-                chart.hideLoading();
-              }
-            },
-
-            function () {
-              console.log("ERROR fetching " + name);
-            });
-            console.log(stream + ': ' + url);
-          });
-          /*}
-          else {
-            chart.hideLoading();
-          }*/
-        });
-      }
-      else {
-        chart.hideLoading();
-      }
+      chart.hideLoading();
+      
     });
   }
 
   $(document).bind('keyup', 'esc', function () {
     if (maximized) {
-      chartMap[maximizedStream].setSize(width, height, false);
       maximized = false;
       $('.overlay').toggleClass('overlay');
     }

@@ -40,8 +40,11 @@ public class TagHelp extends FastTags {
         Object id = _arg.replace('.','_');
         Object flashObj = Flash.current().get(_arg);
         Object flashArray = new String[0]; 
-        if(flashObj != null && !StringUtils.isEmpty(flashObj.toString()))
-        	flashArray = field.get("flash").toString().split(",");
+        if(flashObj != null && !StringUtils.isEmpty(flashObj.toString())) {
+        	Object object = flashObj;
+        	String s = object.toString();
+        	flashArray = s.split(",");
+        }
         Object error = Validation.error(_arg);
         Object errorClass = error != null ? "error" : "";
         field.put("name", _arg);
@@ -79,7 +82,9 @@ public class TagHelp extends FastTags {
             }else{
                 field.put("value", obj);
             }
-        }
+        } else if(flashObj != null)
+        	field.put("value", flashObj);
+        
         body.setProperty("field", field);
         body.call();
     }
