@@ -4,21 +4,32 @@ import com.alvazan.orm.api.base.anno.NoSqlEmbeddable;
 
 @NoSqlEmbeddable
 public class UserSettings {
-	private boolean dashboardEnabled;
+	private String dashboardEnabled;
+	private String dashboardChartCount;
 	
 	public UserSettings() {
-		this.dashboardEnabled = true;
+		this.dashboardEnabled = "true";
+		this.dashboardChartCount = "0";
 	}
 	
-	public UserSettings(boolean dashboard) {
+	public UserSettings(String dashboard, String chartCount) {
 		this.dashboardEnabled = dashboard;
+		this.dashboardChartCount = chartCount;
 	}
 
-	public boolean isDashboardEnabled() {
+	public String getDashboardEnabled() {
 		return dashboardEnabled;
 	}
 
-	public void setDashboardEnabled(boolean dashboardEnabled) {
+	public void setDashboardEnabled(String dashboardEnabled) {
 		this.dashboardEnabled = dashboardEnabled;
+	}
+
+	public String getDashboardChartCount() {
+		return dashboardChartCount;
+	}
+
+	public void setDashboardChartCount(String dashboardChartCount) {
+		this.dashboardChartCount = dashboardChartCount;
 	}
 }

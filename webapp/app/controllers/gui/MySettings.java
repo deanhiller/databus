@@ -26,7 +26,7 @@ public class MySettings extends Controller {
 	public static void mySettings() {
 		EntityUser user = Utility.getCurrentUser(session);
 		
-		renderArgs.put("dashboard_enabled", user.getUserSettings().isDashboardEnabled());
+		renderArgs.put("dashboard_enabled", user.getUserSettings().getDashboardEnabled());
 		
 		/**
 		 * To Save:
