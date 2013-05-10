@@ -40,18 +40,18 @@ public class StartupDetailed {
 		DEAN = new EntityUser();
 		DEAN.setApiKey("someuniquekeyforregistration");
 		DEAN.setUsername("dhiller2");
-		DEAN.setPassword("dhiller2");
+		DEAN.setPassword("nreliscool");
 		
 		JUSTIN = new EntityUser();
 		JUSTIN.setApiKey("justinsunhackablekey");
 		JUSTIN.setUsername("jcollins");
-		JUSTIN.setPassword("jcollins");
+		JUSTIN.setPassword("nreliscool");
 		
 		ADMIN = new EntityUser();
 		ADMIN.setAdmin(true);
 		ADMIN.setApiKey("adminregkey");
 		ADMIN.setUsername("admin");
-		ADMIN.setPassword("admin");
+		ADMIN.setPassword("nreliscool");
 	}
 	
 	public static void createStuff() {
