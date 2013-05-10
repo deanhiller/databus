@@ -140,7 +140,7 @@ public class GuiSecure extends Controller {
         session.put("sid", sid); //we only want the sid leftover
         response.removeCookie("rememberme");
         Security.invoke("onDisconnected");
-        flash.success("Next time, you can stay logged in pretty much forever and just lock your computer instead ;)");
+        flash.success("You are now logged out");
         login();
     }
 
