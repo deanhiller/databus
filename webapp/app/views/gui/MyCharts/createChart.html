@@ -8,27 +8,13 @@
 
 	<input type="hidden" name="monitor.id" value="${monitor?.id}">
 
-	#{xfield objectId:'chart.url',label:'Url', help:'The url which streams back a wide table with many columns or maybe just 2 columns'}
-		#{text field:field/}
-	#{/xfield}
-	#{xfield objectId:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'}
-        #{text field:field/}
-    #{/xfield}
-    #{xfield objectId:'chart.column1',label:'Column 1', help:'The name of the first column we will draw with respect to time'}
-        #{text field:field/}
-    #{/xfield}
-    #{xfield objectId:'chart.column2',label:'Column 2', help:'The name of the first column we will draw with respect to time'}
-        #{text field:field/}
-    #{/xfield}
-    #{xfield objectId:'chart.column3',label:'Column 3', help:'The name of the first column we will draw with respect to time'}
-        #{text field:field/}
-    #{/xfield}
-    #{xfield objectId:'chart.column4',label:'Column 4', help:'The name of the first column we will draw with respect to time'}
-        #{text field:field/}
-    #{/xfield}
-    #{xfield objectId:'chart.column5',label:'Column 5', help:'The name of the first column we will draw with respect to time'}
-        #{text field:field/}
-    #{/xfield}
+    #{text2 id:'chart.url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
+	#{text2 id:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'/}
+    #{text2 id:'chart.column1',   label:'Column 1',    help:'The name of the first column we will draw with respect to time'/}
+    #{text2 id:'chart.column2',   label:'Column 2', help:'The name of the first column we will draw with respect to time'/}
+    #{text2 id:'chart.column3',   label:'Column 3', help:'The name of the first column we will draw with respect to time'/}
+    #{text2 id:'chart.column4',   label:'Column 4', help:'The name of the first column we will draw with respect to time'/}
+    #{text2 id:'chart.column5',   label:'Column 5', help:'The name of the first column we will draw with respect to time'/}
     
 	<div class="control-group">
 	   <div class="controls">

@@ -214,7 +214,8 @@ public class StartupDetailed {
 			String temp = n+"";
 			String volume = (totalPoints-n) +"";
 			//here, let's shift the power graph over to center it...
-			String energy = Math.pow(n-(totalPoints/2), 2)+"";
+			double divisor = Math.pow(totalPoints/2, 2)/totalPoints;
+			String energy = (Math.pow(n-(totalPoints/2), 2) / divisor)+"";
 			String number = totalPoints/2+"";
 			putWideData(name, user, time+"", temp, volume, energy, number);
 		}

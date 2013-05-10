@@ -1,0 +1,18 @@
+#{formfield _id}
+
+    <div class="control-group ${field.errorClass}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a> ${_label}</label>
+        <div class="controls">
+	       #{if _readonly}
+	       <textarea name="${_field?.name}" rows="${_rows}" cols="${_cols}" class="${_class}" readonly>${_field?.value}</textarea>
+	       #{/if}
+	       #{else}
+	       <textarea name="${_field?.name}" rows="${_rows}" cols="${_cols}" class="${_class}">${_field?.value}</textarea>
+	       #{/else}
+
+           *{ It says help-block ONLY because that makes it go below the input area - use help-inline to be to the right }*
+           <span class="help-block">${field.error}</span>
+        </div>
+    </div>
+
+#{/formfield}
