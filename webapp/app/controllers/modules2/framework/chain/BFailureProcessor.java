@@ -112,9 +112,13 @@ public abstract class BFailureProcessor implements HttpListener {
 		String url = httpExc.getUrl();
 		Throwable exc = httpExc.getException();
 		String msg = exc.getMessage();
+		log.info("onthrowable. started="+started);
 		if(!started) {
-			processor.onStart(url, new HttpStatus(url, 500, "Failure="+msg));
+			started = true;
+			this.status = new HttpStatus(url, 500, "Failure="+msg);
+			processor.onStart(url, status);
 		}
+		log.info("running failure code. started="+started+" status="+status);
 		if(status.isFailed())
 			fireFailureBody();
 		else {
