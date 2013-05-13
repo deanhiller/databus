@@ -225,6 +225,9 @@ public class EntityUser extends Entity {
 	}
 
 	public UserSettings getUserSettings() {
+		//avoid null pointer exceptions
+		if(userSettings == null)
+			userSettings = new UserSettings();
 		return userSettings;
 	}
 
