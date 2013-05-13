@@ -10,6 +10,12 @@ public class ReadResult {
 	private boolean missingData;
 	private Throwable exception;
 
+	
+	@Override
+	public String toString() {
+		return "RES["+row+"]";
+	}
+
 	public ReadResult(String url2, Throwable exception, String errorMsg2) {
 		this.exception = exception;
 	}

@@ -26,7 +26,7 @@ public class Security extends GuiSecure.Security {
 			if(u != null && password.equals(u.getPassword())) {
 				addToSession(username, u);
 				return true;
-			} else {
+			} else if("true".equals(demomode)) {
 				return false;
 			}
 		}

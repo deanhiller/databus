@@ -128,7 +128,7 @@ public class EngineProcessor extends ProcessorSetupAbstract {
 				return result;
 			} catch(Exception e) {
 				if (log.isInfoEnabled())
-					log.info(EngineProcessor.this+"first row failure");
+					log.info(EngineProcessor.this+"first row failure", e);
 				firstRowFailure = true;
 				throw e;
 			}
