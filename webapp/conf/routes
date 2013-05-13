@@ -129,7 +129,7 @@ POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
 
 GET  /charts/createchart                       gui.MyCharts.createChart
 POST /charts/createchart                       gui.MyCharts.postCreateChart
-GET  /charts/drawchart/{length}/{encodedChart} gui.MyCharts.drawChart
+GET  /charts/drawchart/{length}/{version}/{encodedChart} gui.MyCharts.drawChart
 
 # GUI Summary Pages
 # ******************************************************************************

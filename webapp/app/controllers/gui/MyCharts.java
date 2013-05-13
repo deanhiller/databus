@@ -1,5 +1,7 @@
 package controllers.gui;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.Map;
 import java.util.zip.Deflater;
 
 import org.apache.commons.codec.binary.Base64;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,6 +19,7 @@ import play.mvc.Controller;
 import play.mvc.With;
 import play.mvc.results.NotFound;
 import controllers.gui.auth.GuiSecure;
+import de.undercouch.bson4jackson.BsonFactory;
 
 @With(GuiSecure.class)
 public class MyCharts extends Controller {
@@ -51,9 +55,7 @@ public class MyCharts extends Controller {
 			createChart();
 		}
 		
-		String myMap = convert(chart);
-		// Encode a String into bytes
-		byte[] input = myMap.getBytes("UTF-8");
+		byte[] input = convert(chart);
 
 		// Compress the bytes
 		byte[] output1 = new byte[input.length];
@@ -68,7 +70,7 @@ public class MyCharts extends Controller {
 			log.info("length="+encodedChart.length()+" result="+encodedChart);
 		
 		int length = input.length;
-		drawChart(encodedChart, length);
+		drawChart(encodedChart, 1, length);
 	}
 
 	private static long convertLong(String str) {
@@ -81,24 +83,18 @@ public class MyCharts extends Controller {
 		return 0;
 	}
 
-	private static String convert(Chart chart) {
-		String url = chart.getUrl();
-		String timeCol = chart.getTimeColumn();
-		String col1 = chart.getColumn1();
-		String col2 = chart.getColumn2();
-		String col3 = chart.getColumn3();
-		String col4 = chart.getColumn4();
-		String col5 = chart.getColumn5();
-		String start = chart.getStartTime()+"";
-		String end = chart.getEndTime()+"";
-		
-		String version = "V01";
-		String all = version;
-		all += start+"|"+end+"|"+timeCol+"|"+col1+"|"+col2+"|"+col3+"|"+col4+"|"+col5+"|"+url;
-		return all;
+	private static byte[] convert(Chart chart) {
+		try {
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+			mapper.writeValue(baos, chart);
+			return baos.toByteArray();
+		} catch(Exception e) {
+			throw new RuntimeException(e);
+		}
 	}
 
-	public static void drawChart(String encodedChart, int length) {
+	public static void drawChart(String encodedChart, int version, int length) {
 		byte[] afterBase64 = null;
 		try {
 		  afterBase64 = Base64.decodeBase64(encodedChart);
@@ -106,22 +102,18 @@ public class MyCharts extends Controller {
 			notFound("This chart does not seem to exist");
 		}
 
-		String outputString = null;
+		byte[] result = new byte[length];
 		try {
-			byte[] result = new byte[length];
 			// Decompress the bytes
 			java.util.zip.Inflater decompresser = new java.util.zip.Inflater();
 			decompresser.setInput(afterBase64, 0, afterBase64.length);
 			int resultLength = decompresser.inflate(result);
 			decompresser.end();
-
-			// Decode the bytes into a String
-			outputString = new String(result, 0, resultLength, "UTF-8");
 		} catch(Exception e) {
 			notFound("This chart does not seem to exist");
 		}
 
-		Chart chart = convert(outputString);
+		Chart chart = convert(version, result);
 
 		String url = chart.getUrl();
 		
@@ -131,26 +123,18 @@ public class MyCharts extends Controller {
 		render(chart, startTime, endTime);
 	}
 
-	private static Chart convert(String outputString) {
-		if(outputString.startsWith("V01")) {
-			String leftOver = outputString.substring(3);
-			String[] split = leftOver.split("\\|");
-			if(9 != split.length)
-				badRequest("Your graph is not found, url is misformed");
-			
-			Chart c = new Chart();
-			c.setStartTime(convertLong(split[0]));
-			c.setEndTime(convertLong(split[1]));
-			c.setTimeColumn(split[2]);
-			c.setColumn1(split[3]);
-			c.setColumn2(split[4]);
-			c.setColumn3(split[5]);
-			c.setColumn4(split[6]);
-			c.setColumn5(split[7]);
-			c.setUrl(split[8]);
-			return c;
-		} else {
-			badRequest("Your graph is not found since this is the wrong version");
+	private static Chart convert(int version, byte[] data) {
+		try {
+			if(version == 1) {
+				ObjectMapper mapper = new ObjectMapper(new BsonFactory());
+				ByteArrayInputStream bais = new ByteArrayInputStream(data);
+				Chart chart2 = mapper.readValue(bais, Chart.class);
+				return chart2;
+			} else {
+				badRequest("Your graph is not found since this is the wrong version");
+			}
+		} catch(Exception e) {
+			throw new RuntimeException(e);
 		}
 		return null;
 	}
