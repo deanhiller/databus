@@ -10,14 +10,14 @@
     		<div id="chart_3_area" class="db_summary_chart table-bordered"></div>
     </div>
 </div>
-<legend style="padding-top:50px;">
+<legend style="padding-top:50px;" id="choose_charts_legend_option2">
 		Choose your Charts
 	</legend>
-<div class="row-fluid">
+<div class="row-fluid" id="choose_charts_option2">
 	<div class="span12" style="clear: both; margin-left: 25px;">
 		<span class="span6">
 			Dashboard Chart #1: &nbsp;
-			<select id="dashboard_chart1_select">
+			<select id="dashboard_chart2_select">
 				<option>BLANK</option>
 				<option>RSF_BUILDING</option>
 				<option>RSF_PV</option>
@@ -41,7 +41,7 @@
 		</span>
 		<span class="span6">
 			Dashboard Chart #2: &nbsp;
-			<select id="dashboard_chart2_select">
+			<select id="dashboard_chart3_select">
 				<option>BLANK</option>
 				<option>RSF_BUILDING</option>
 				<option>RSF_PV</option>
@@ -67,28 +67,30 @@
 </div>
 
 <script type="text/javascript">
-	$('#dashboard_chart1_select').change(function() {
+	$('#dashboard_chart2_select').change(function() {
 		$("#chart_2_area").show();
 		$("#chart_2_area").empty();
 		$("#chart_2_area").css("background-color","#efefef");
 		
-		var chart = $("#dashboard_chart1_select :selected").text();
+		var chart = $("#dashboard_chart2_select :selected").text();
 		
 		if(chart == 'BLANK') {
+			chart_area_div = 'chart_2_area';
 			showBlankChart_Option2();
 		} else {
 			addChart(chart, "#chart_2_area");
 		}
 	});
 	
-	$('#dashboard_chart2_select').change(function() {
+	$('#dashboard_chart3_select').change(function() {
 		$("#chart_3_area").show();
 		$("#chart_3_area").empty();
 		$("#chart_3_area").css("background-color","#efefef");
 		
-		var chart = $("#dashboard_chart2_select :selected").text();
+		var chart = $("#dashboard_chart3_select :selected").text();
 		
 		if(chart == 'BLANK') {
+			chart_area_div = 'chart_3_area';
 			showBlankChart_Option2();
 		} else {
 			addChart(chart, "#chart_3_area");

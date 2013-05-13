@@ -53,10 +53,10 @@
 		    			#{dashboardCharts/dualchart /}
 		    		</div>
 		    		<div id="triple_chart" style="display: none;">
-		    			Three Charts
+		    			#{dashboardCharts/threecharts /}
 		    		</div>
 		    		<div id="quadruple_chart" style="display: none;">
-		    			Four Charts
+		    			#{dashboardCharts/fourcharts /}
 		    		</div>
 		</div>
 	</form>
@@ -136,6 +136,14 @@
 					$('#dual_chart').hide();
 					$('#triple_chart').show();
 					$('#quadruple_chart').hide();
+					
+					// Now launch the charts
+					chart_area_div = 'chart_4_area';
+					showBlankChart_Option3();					
+					chart_area_div = 'chart_5_area';
+					showBlankChart_Option3();					
+					chart_area_div = 'chart_6_area';
+					showBlankChart_Option3();
 					break;
 				}
 				case 4: {
@@ -144,6 +152,16 @@
 					$('#dual_chart').hide();
 					$('#triple_chart').hide();
 					$('#quadruple_chart').show();
+		
+					// Now launch the charts
+					chart_area_div = 'chart_7_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_8_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_9_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_10_area';
+					showBlankChart_Option4();
 					break;
 				}
 			}

@@ -11,10 +11,10 @@
     <div class="span12">
     		<div id="chart_1_area" class="db_summary_chart table-bordered"></div>
     </div>
-    <legend style="padding-top:50px;">
+    <legend style="padding-top:50px;"  id="choose_charts_legend_option1">
 		Choose a Chart
 	</legend>
-    <div style="clear: both; margin-left: 250px;">
+    <div style="clear: both; margin-left: 250px;" id="choose_charts_option1">
 			Dashboard Chart #1: &nbsp;
 			<select id="dashboard_chart1_select">
 				<option>BLANK</option>
@@ -49,6 +49,7 @@
 		var chart = $("#dashboard_chart1_select :selected").text();
 		
 		if(chart == 'BLANK') {
+			chart_area_div = 'chart_1_area';
 			showBlankChart_Option1();
 		} else {
 			addChart(chart, "#chart_1_area");
