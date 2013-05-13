@@ -264,6 +264,8 @@ public class SecurityUtil {
 			return true;
 		if (StringUtils.isNotBlank(Request.current().user)) {
 			EntityUser newUser = NoSql.em().find(EntityUser.class, Request.current().user);
+			if (newUser == null)
+				return false;
 			if(newUser.isAdmin())
 				return true;
 		}
