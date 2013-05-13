@@ -9,7 +9,7 @@ public class UserSettings {
 	
 	public UserSettings() {
 		this.dashboardEnabled = "true";
-		this.dashboardChartCount = "0";
+		this.dashboardChartCount = "1";
 	}
 	
 	public UserSettings(String dashboard, String chartCount) {

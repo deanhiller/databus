@@ -2,10 +2,6 @@
 #{set title:'My Account' /}
 #{set tab:'' /}
 
-<!-- Our HighCharts code -->
-<script src="/public/javascripts/charts.js" type="text/javascript"></script>
-<link href="/public/stylesheets/charts.css" rel="stylesheet" type="text/css">
-
 <script type="text/javascript">
 	%{
 		showDashboard = false;
@@ -15,8 +11,9 @@
 	}%
 			
 	var _dashboard_enabled = '${showDashboard}';
+	var _option_enabled = '${dashboard_chart_count}';
 </script>
-        
+
 <div class="container db_container">
 	<h1 class="db_page_title">My Settings</h1>
 	<br />
@@ -49,11 +46,11 @@
 			</fieldset>
 		</div>
 	  	<div class="span9" id="dashboard_chart_area">
-		    		<div id="single_chart" style="display: none;">
+	  			<div id="single_chart" style="display: none;">
 		    			#{dashboardCharts/singlechart /}
 		    		</div>
 		    		<div id="dual_chart" style="display: none;">
-		    			Dual Charts
+		    			#{dashboardCharts/dualchart /}
 		    		</div>
 		    		<div id="triple_chart" style="display: none;">
 		    			Three Charts
@@ -109,20 +106,32 @@
 		function showChartSelection(count) {
 			switch(count) {
 				case 1: {
+					_option_enabled = 1;
 					$('#single_chart').show();
 					$('#dual_chart').hide();
 					$('#triple_chart').hide();
 					$('#quadruple_chart').hide();
+					
+					// Now launch the chart
+					showBlankChart_Option1();
 					break;
 				}
 				case 2: {
+					_option_enabled = 2;
 					$('#single_chart').hide();
 					$('#dual_chart').show();
 					$('#triple_chart').hide();
 					$('#quadruple_chart').hide();
+					
+					// Now launch the charts
+					chart_area_div = 'chart_2_area';
+					showBlankChart_Option2();					
+					chart_area_div = 'chart_3_area';
+					showBlankChart_Option2();
 					break;
 				}
 				case 3: {
+					_option_enabled = 3;
 					$('#single_chart').hide();
 					$('#dual_chart').hide();
 					$('#triple_chart').show();
@@ -130,6 +139,7 @@
 					break;
 				}
 				case 4: {
+					_option_enabled = 4;
 					$('#single_chart').hide();
 					$('#dual_chart').hide();
 					$('#triple_chart').hide();

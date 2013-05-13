@@ -1,11 +1,21 @@
+
 <script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/public/includes/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/public/includes/highcharts/exporting.js"></script>
+
+<!-- Our HighCharts code -->
+<script src="/public/javascripts/charts.js" type="text/javascript"></script>
+<link href="/public/stylesheets/charts.css" rel="stylesheet" type="text/css">
 
 <div class="row-fluid">
     <div class="span12">
     		<div id="chart_1_area" class="db_summary_chart table-bordered"></div>
     </div>
-    <div style="clear: both; margin-left: 250px; padding-top: 30px;">
-			Show Chart: &nbsp;
+    <legend style="padding-top:50px;">
+		Choose a Chart
+	</legend>
+    <div style="clear: both; margin-left: 250px;">
+			Dashboard Chart #1: &nbsp;
 			<select id="dashboard_chart1_select">
 				<option>BLANK</option>
 				<option>RSF_BUILDING</option>
@@ -39,17 +49,19 @@
 		var chart = $("#dashboard_chart1_select :selected").text();
 		
 		if(chart == 'BLANK') {
-			showBlankChart();
+			showBlankChart_Option1();
 		} else {
 			addChart(chart, "#chart_1_area");
 		}
 	});
 	
 	$('#chart_1_area').ready(function() {
-		showBlankChart();
+		if(_option_enabled === '1') {		
+			showBlankChart_Option1();
+		}
 	});
 	
-	function showBlankChart() {
+	function showBlankChart_Option1() {
 		$(function () {
 			var blankChart_alphabetLabel = ['', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 	

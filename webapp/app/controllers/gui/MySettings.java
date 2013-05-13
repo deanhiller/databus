@@ -28,6 +28,9 @@ public class MySettings extends Controller {
 		
 		renderArgs.put("dashboard_enabled", user.getUserSettings().getDashboardEnabled());
 		
+		// Get the current options
+		renderArgs.put("dashboard_chart_count", user.getUserSettings().getDashboardChartCount());
+		
 		/**
 		 * To Save:
 		 * 		
