@@ -84,6 +84,7 @@ GET  /logout         					gui.auth.GuiSecure.logout
 # ******************************************************************************
 # ******************************************************************************
 GET	/accountsSettings					gui.MySettings.mySettings
+POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
