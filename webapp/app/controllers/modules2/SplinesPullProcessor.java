@@ -24,7 +24,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	private static final Logger log = LoggerFactory.getLogger(SplinesPullProcessor.class);
 	private String splineType;
-	private long interval;
+	protected long interval;
 	private SplinesBigDec spline;
 	private boolean isSplineCreated = false;
 
@@ -60,7 +60,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			spline = new SplinesBigDecLimitDerivative();
 		} else {
 			// fix this bad request line
-			String msg = "/splinesV1BetaBigDec/{type}/{interval}/{epochOffset} ; type must be basic or limitderivative";
+			String msg = "/splinesV2/{type}/{interval}/{epochOffset} ; type must be basic or limitderivative";
 			throw new BadRequest(msg);
 		}
 
@@ -68,23 +68,18 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		try {
 			interval = Long.parseLong(params.getParams().get(1));
 			if (interval < 1) {
-				String msg = "/splinesV1BetaBigDec/{type}/{interval}/{epochOffset} ; interval must be > 0 ";
+				String msg = "/splinesV2/{type}/{interval}/{epochOffset} ; interval must be > 0 ";
 				throw new BadRequest(msg);
 			}
 		} catch (NumberFormatException e) {
-			String msg = "/splinesV1BetaBigDec/{type}/{interval}/{epochOffset} ; interval is not a long ";
+			String msg = "/splinesV2/{type}/{interval}/{epochOffset} ; interval is not a long ";
 			throw new BadRequest(msg);
 		}
 
-		try {
-			epochOffset = Long.parseLong(params.getParams().get(2));
-		} catch (NumberFormatException e) {
-			String msg = "/splinesV1BetaBigDec/{type}/{interval}/{epochOffset} ; epochOffset is not a long";
-			throw new BadRequest(msg);
-		}
+		epochOffset = calculateOffset();
 
 		if(params.getStart() == null || params.getEnd() == null) {
-			String msg = "splinesV1BetaBigDec must have a start and end (if you want it to work, request it)";
+			String msg = "splinesV2 must have a start and end (if you want it to work, request it)";
 			throw new BadRequest(msg);
 		}
 		
@@ -96,6 +91,15 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		// setup buffer
 		this.buffer = new CircularFifoBuffer(4);
 		return newPath;
+	}
+
+	protected long calculateOffset() {
+		try {
+			return Long.parseLong(params.getParams().get(2));
+		} catch (NumberFormatException e) {
+			String msg = "/splinesV1BetaBigDec/{type}/{interval}/{epochOffset} ; epochOffset is not a long";
+			throw new BadRequest(msg);
+		}
 	}
 
 	public static long calculateStartTime(long startTime, long interval, Long epochOffset) {

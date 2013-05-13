@@ -86,7 +86,7 @@ public class ProductionModule implements Module {
 			//ExecutorService execService = Executors.newFixedThreadPool(20);
 			builder.setCompressionEnabled(true).setAllowPoolingConnection(true)
 					.setAllowSslConnectionPool(true)
-					.setRequestTimeoutInMs(899999999)
+					.setRequestTimeoutInMs(121000)
 					.setMaxRequestRetry(0)
 					.setMaximumConnectionsPerHost(1000).setSSLContext(ctx)
 					.build();

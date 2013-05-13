@@ -1,5 +1,8 @@
 package controllers.gui;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+import org.junit.Ignore;
+
 public class Chart {
 
 	private String url;
@@ -8,6 +11,7 @@ public class Chart {
 	private long startTime;
 	private long endTime;
 	
+	@JsonIgnore
 	public String getGeneratedJavascript() {
 		String javascript = "";
 		for(int i = 0; i < columns.length; i++) {
