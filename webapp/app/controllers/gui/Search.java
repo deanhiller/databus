@@ -25,6 +25,18 @@ public class Search extends Controller{
 		renderArgs.put("charts_library", chartsLibrary);
 		
 		EntityUser user = Utility.getCurrentUser(session);
+		
+		// See if the dashboard is enabled
+		renderArgs.put("dashboard_enabled", user.getUserSettings().getDashboardEnabled());
+		
+		// Get the current options
+		renderArgs.put("dashboard_chart_count", user.getUserSettings().getDashboardChartCount());
+		
+		renderArgs.put("user_chart_1", user.getUserSettings().getDashboardChart_1());
+		renderArgs.put("user_chart_2", user.getUserSettings().getDashboardChart_2());
+		renderArgs.put("user_chart_3", user.getUserSettings().getDashboardChart_3());
+		renderArgs.put("user_chart_4", user.getUserSettings().getDashboardChart_4());
+		
 		render(user);
 	}
 	
