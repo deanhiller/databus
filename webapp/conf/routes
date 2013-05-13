@@ -80,6 +80,11 @@ GET  /dashboard      					gui.Search.dashboardSide
 POST /login          					gui.auth.GuiSecure.authenticate
 GET  /logout         					gui.auth.GuiSecure.logout
 
+# GUI User Account Pages
+# ******************************************************************************
+# ******************************************************************************
+GET	/accountsSettings					gui.MySettings.mySettings
+
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************

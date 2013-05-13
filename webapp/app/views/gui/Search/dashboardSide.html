@@ -7,6 +7,19 @@
 	var _charts_library = '${charts_library}';
 </script>
 
+<!-- Highcarts Remote Load -->
+<!-- IMPORTANT                                                                      -->
+<!--    The HTTPS links work, and as far as I can tell do point to a server owned                   -->
+<!--    by Highcharts, but they let their SSL certificate expire so browsers HATE                   -->
+<!--    going there.                                                                    -->
+<!--                                                                                -->
+<!-- <script src="https://code.highcharts.com/highcharts.js" type="text/javascript"></script> -->
+<!-- <script src="https://code.highcharts.com/stock/highstock.js" type="text/javascript"></script> -->
+<!-- <script src="https://code.highcharts.com/stock/modules/exporting.js" type="text/javascript"></script> -->
+<script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
+<script type="text/javascript" src="/public/includes/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/public/includes/highcharts/exporting.js"></script>
+
 <!-- Our HighCharts code -->
 <script src="/public/javascripts/charts.js" type="text/javascript"></script>
 <link href="/public/stylesheets/charts.css" rel="stylesheet" type="text/css">

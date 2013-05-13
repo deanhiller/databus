@@ -1,0 +1,173 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Account' /}
+#{set tab:'' /}
+
+<script type="text/javascript">
+	%{
+		showDashboard = false;
+		if(dashboard_enabled.equals("true")) {
+			showDashboard = true;
+		}
+	}%
+			
+	var _dashboard_enabled = '${showDashboard}';
+	var _option_enabled = '${dashboard_chart_count}';
+</script>
+
+<div class="container db_container">
+	<h1 class="db_page_title">My Settings</h1>
+	<br />
+	<form>
+	<legend>
+		Dashboard
+	</legend>
+	<div class="row-fluid">
+    		<div class="span3">
+			<fieldset>
+				<label class="checkbox">
+					<input type="checkbox" id="dashboard_enabled" checked>
+					<span id="dashboard_enabled_text">Dashboard Enabled</span>
+				</label>
+				<br />
+				<div id="dashboard_controls">
+			    		<label>
+			    			Number of Dashboard Charts &nbsp;
+						<select id="dashboard_chart_count" class="span3">
+							<option>1</option>
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+						</select>
+					</label>
+				</div>
+				<button type="submit" class="btn">
+				Save
+				</button>
+			</fieldset>
+		</div>
+	  	<div class="span9" id="dashboard_chart_area">
+	  			<div id="single_chart" style="display: none;">
+		    			#{dashboardCharts/singlechart /}
+		    		</div>
+		    		<div id="dual_chart" style="display: none;">
+		    			#{dashboardCharts/dualchart /}
+		    		</div>
+		    		<div id="triple_chart" style="display: none;">
+		    			#{dashboardCharts/threecharts /}
+		    		</div>
+		    		<div id="quadruple_chart" style="display: none;">
+		    			#{dashboardCharts/fourcharts /}
+		    		</div>
+		</div>
+	</form>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			if(_dashboard_enabled === 'true') {
+				$('#dashboard_enabled').prop('checked', true);
+				$('#dashboard_enabled_text').text("Dashboard Enabled");
+				
+				$('#dashboard_controls').show();
+				$('#dashboard_chart_area').show();
+				
+				var chart_count = parseInt($("#dashboard_chart_count :selected").text());
+				showChartSelection(chart_count);   
+			} else {
+				$('#dashboard_enabled').prop('checked', false);
+				$('#dashboard_enabled_text').text("Dashboard Disabled");
+				
+				$('#dashboard_controls').hide();
+				$('#dashboard_chart_area').hide();
+			}
+		});
+		
+		$('#dashboard_enabled').click(function () {
+			if ($(this).is(':checked')) {
+				$('#dashboard_enabled_text').text("Dashboard Enabled");
+				
+				$('#dashboard_controls').show();
+				$('#dashboard_chart_area').show();
+				
+				var chart_count = parseInt($("#dashboard_chart_count :selected").text());
+				showChartSelection(chart_count); 
+			} else {
+				$('#dashboard_enabled_text').text("Dashboard Disabled");
+				
+				$('#dashboard_controls').hide();
+				$('#dashboard_chart_area').hide();
+			}
+		});
+		
+		$('#dashboard_chart_count').change(function() {
+			var chart_count = parseInt($("#dashboard_chart_count :selected").text());
+			showChartSelection(chart_count);
+		});
+		
+		function showChartSelection(count) {
+			switch(count) {
+				case 1: {
+					_option_enabled = 1;
+					$('#single_chart').show();
+					$('#dual_chart').hide();
+					$('#triple_chart').hide();
+					$('#quadruple_chart').hide();
+					
+					// Now launch the chart
+					showBlankChart_Option1();
+					break;
+				}
+				case 2: {
+					_option_enabled = 2;
+					$('#single_chart').hide();
+					$('#dual_chart').show();
+					$('#triple_chart').hide();
+					$('#quadruple_chart').hide();
+					
+					// Now launch the charts
+					chart_area_div = 'chart_2_area';
+					showBlankChart_Option2();					
+					chart_area_div = 'chart_3_area';
+					showBlankChart_Option2();
+					break;
+				}
+				case 3: {
+					_option_enabled = 3;
+					$('#single_chart').hide();
+					$('#dual_chart').hide();
+					$('#triple_chart').show();
+					$('#quadruple_chart').hide();
+					
+					// Now launch the charts
+					chart_area_div = 'chart_4_area';
+					showBlankChart_Option3();					
+					chart_area_div = 'chart_5_area';
+					showBlankChart_Option3();					
+					chart_area_div = 'chart_6_area';
+					showBlankChart_Option3();
+					break;
+				}
+				case 4: {
+					_option_enabled = 4;
+					$('#single_chart').hide();
+					$('#dual_chart').hide();
+					$('#triple_chart').hide();
+					$('#quadruple_chart').show();
+		
+					// Now launch the charts
+					chart_area_div = 'chart_7_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_8_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_9_area';
+					showBlankChart_Option4();					
+					chart_area_div = 'chart_10_area';
+					showBlankChart_Option4();
+					break;
+				}
+			}
+		}
+	</script>
+	
+</div>
+
+
