@@ -218,12 +218,9 @@ public class MyDatabases extends Controller {
 		EntityUser user = Utility.getCurrentUser(session);
 		EntityGroupXref usermapping = null;
 		if (group == null) {
-			group = targetGroup;
-			String id = UniqueKeyGenerator.generateKey();
-			group.setId(id);
-			usermapping = new EntityGroupXref(group, user, true, false);
-			NoSql.em().put(usermapping);
-			NoSql.em().put(user);
+			flash.error("This group="+targetGroup.getName()+" does not exist");
+			flash.keep();
+			MyDatabases.editDatabase(schema.getSchemaName());
 		}
 
 		MySchemaLogic.createXref(schema, permission, group);
