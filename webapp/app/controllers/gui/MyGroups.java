@@ -219,7 +219,22 @@ public class MyGroups extends Controller {
 		else
 			isAdmin = xref.isGroupAdmin();
 		
-		render(group, type, targetUser, isAdmin);
+		List<SecureResourceGroupXref> direct = targetUser.getResources();
+		List<AccessInfo> infos = new ArrayList<AccessInfo>();
+		for(SecureResourceGroupXref ref : direct) {
+			infos.add(new AccessInfo("direct", ref));
+		}
+		
+		List<EntityGroupXref> groupXRefs = targetUser.getParentGroups();
+		for(EntityGroupXref m : groupXRefs) {
+			EntityGroup g = m.getGroup();
+			List<SecureResourceGroupXref> resources = g.getResources();
+			for(SecureResourceGroupXref r : resources) {
+				infos.add(new AccessInfo(g.getName(), r));
+			}
+		}
+		
+		render(group, type, targetUser, isAdmin, infos, groupXRefs);
 	}
 
 	private static EntityGroupXref findUsersXref(EntityUser targetUser,

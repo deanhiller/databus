@@ -28,3 +28,49 @@
 	   </div>
 	</div>
 #{/form}
+
+<h2>Accessible Resources</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Access is through</th>
+            <th>Schema Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        #{list infos, as:'info'}
+            <tr>
+               <td>${info.resourceName}</td>
+               <td>${info.accessMethod}</td>
+               <td>${info.permission}</td>
+            </tr>
+        #{/list}
+    </tbody>
+</table>
+
+<h2>Members of Groups</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Group Role</th>
+        </tr>
+    </thead>
+    <tbody>
+        #{list groupXRefs, as:'ref'}
+            <tr>
+               <td>${ref.group.name}</td>
+               #{if ref.isGroupAdmin()}
+                   <td>ADMIN</td>
+               #{/if}
+               #{else}
+                   <td>MEMBER</td>
+               #{/else}
+            </tr>
+        #{/list}
+    </tbody>
+</table>
+
