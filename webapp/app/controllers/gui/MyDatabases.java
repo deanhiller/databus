@@ -229,7 +229,12 @@ public class MyDatabases extends Controller {
 	
 	public static void postAddUserToDatabase(SecureSchema schema, EntityUser targetUser, String permission) {
 		EntityUser user = EntityUser.findByName(NoSql.em(), targetUser.getName());
-		if (user == null) {
+		if(user == null) {
+			if(targetUser.getName().startsWith("robot")) {
+				flash.error("The user="+targetUser.getName()+" does not exist");
+				flash.keep();
+				MyDatabases.editDatabase(schema.getSchemaName());
+			} //TODO: validate with AD that this user exists already before proceeding!!!!
 			targetUser.setApiKey(Utility.getUniqueKey());
 			user = targetUser;
 		}
