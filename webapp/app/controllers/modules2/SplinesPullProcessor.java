@@ -185,7 +185,12 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
-		buffer.add(toTimeValue(row));
+		long time = getTime(row);
+		BigDecimal val = getValueEvenIfNull(row);
+		if(val == null)
+			return;
+		
+		buffer.add(toTimeValue(time, val));
 		if (buffer.size() == buffer.maxSize()) {
 			isSplineCreated = false;
 
@@ -220,20 +225,22 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	// all code past here should be exactly the same as the SplinesProcessor
 	// code
-	private void initialize(TSRelational row) {
-		TimeValue first = toTimeValue(row);
-		TimeValue veryFirst = new TimeValue(currentTimePointer,
-				first.getValue());
-		buffer.add(veryFirst);
-		// double up the first point if the first point in rows is not the same
-		// as the currentTimePointer
-		if (currentTimePointer != first.getTime()) {
-			buffer.add(veryFirst);
-		}
-	}
+//	private void initialize(TSRelational row) {
+//		long time = getTime(row);
+//		BigDecimal value = getValueEvenIfNull(row);
+//		TimeValue first = toTimeValue(time, value);
+//		TimeValue veryFirst = new TimeValue(currentTimePointer,
+//				first.getValue());
+//		buffer.add(veryFirst);
+//		// double up the first point if the first point in rows is not the same
+//		// as the currentTimePointer
+//		if (currentTimePointer != first.getTime()) {
+//			buffer.add(veryFirst);
+//		}
+//	}
 
-	private TimeValue toTimeValue(TSRelational row) {
-		TimeValue rowTimeValue = new TimeValue(getTime(row), getValue(row));
+	private TimeValue toTimeValue(long time, BigDecimal val) {
+		TimeValue rowTimeValue = new TimeValue(time, val);
 		return (rowTimeValue);
 	}
 

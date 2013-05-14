@@ -1,6 +1,7 @@
 package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import play.mvc.results.NotFound;
@@ -10,16 +11,18 @@ import models.StreamAggregation;
 import com.alvazan.play.NoSql;
 
 import controllers.modules2.framework.ReadResult;
+import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 
 
 public abstract class StreamsProcessor extends PullProcessorAbstract {
 
+	protected Long currentTimePointer;
 	protected List<PullProcessor> children = new ArrayList<PullProcessor>();
+	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
 	private List<String> urls;
-	private List<ReadResult> results =new ArrayList<ReadResult>();
-	
-	
+	private List<ReadResult> results = new ArrayList<ReadResult>();
+
 	@Override
 	public String toString() {
 		String msg = getClass().getSimpleName()+":"+children;
@@ -38,7 +41,6 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		}
 	}
 
-	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
 			VisitorInfo visitor) {
@@ -64,6 +66,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);
 			children.add((PullProcessor) child);
+			processors.add(new ProxyProcessor((PullProcessor)child));
 		}
 		return null;
 	}
@@ -74,31 +77,64 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 	@Override
 	public ReadResult read() {
-		List<ReadResult> results = readAllNextRows();
-		if(results == null)
+		List<ReadResult> rows = readAllRows();
+		if(rows == null)
 			return null;
 		
-		ReadResult res = process(results);
-		//reset the results now
-		results.clear();
-		return res;
-	}
-
-	protected abstract ReadResult process(List<ReadResult> results);
-
-	private List<ReadResult> readAllNextRows() {
-		int numChildrenRead = results.size();
+		long min = calculate(rows);
 		
-		//This will pick up where we left off the first time....
-		for(int i = numChildrenRead; i < children.size(); i++) {
-			PullProcessor proc = children.get(i);
-			ReadResult result = proc.read();
-			if(result == null)
-				return null;
-			results.add(result);
-		}
-
-		return results;
+		List<TSRelational> toProcess = find(rows, min);
+		results.clear();
+		return process(toProcess);
 	}
+
+	private List<TSRelational> find(List<ReadResult> rows, long min) {
+		List<TSRelational> toProcess = new ArrayList<TSRelational>();
+		for(int i = 0; i < rows.size(); i++) {
+			ProxyProcessor proxy = processors.get(i);
+			ReadResult res = rows.get(i);
+			if(res.getRow() != null) {
+				long time = getTime(res.getRow());
+				if(min == time) {
+					proxy.read(); //make sure we read and discard the value we are about to process
+					toProcess.add(res.getRow());
+				} else
+					toProcess.add(null);
+			} else
+				toProcess.add(null);
+		}
+		return toProcess;
+	}
+
+	private long calculate(List<ReadResult> rows) {
+		long min = Long.MAX_VALUE;
+		for(ReadResult res : rows) {
+			if(res.getRow() != null) {
+				long time = getTime(res.getRow());
+				min = Math.min(time, min);
+			}
+		}
+		return min;
+	}
+
+	private List<ReadResult> readAllRows() {
+        int numChildrenRead = results.size();
+
+       //This will pick up where we left off the first time....
+       for(int i = numChildrenRead; i < children.size(); i++) {
+    	   ProxyProcessor proc = processors.get(i);
+    	   ReadResult result = proc.peek();
+    	   if(result == null)
+    		   return null;
+    	   results.add(result);
+       }
+       return results;
+	}
+
+
+
+	protected abstract ReadResult process(List<TSRelational> results);
+
+
 
 }

@@ -12,6 +12,7 @@ import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
 import controllers.modules2.framework.Path;
 import controllers.modules2.framework.RawProcessorFactory;
+import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.SuccessfulAbort;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -158,19 +159,6 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		timeColumn = "time";
 		valueColumn = "value";
 		return pathInfo.getLeftOverPath();
-	}
-
-	/**
-	 * NOTE: Feel free to override that if you want to process nulls otherwise this helps us
-	 * immediately cut out of processing a null row in this module
-	 * @param row
-	 * @return
-	 */
-	protected BigDecimal getValue(TSRelational row) {
-		BigDecimal strVal = getValueEvenIfNull(row);
-		if(strVal == null)
-			throw new SuccessfulAbort("value is null, most modules can't handle that");
-		return strVal;
 	}
 
 	protected BigDecimal getValueEvenIfNull(TSRelational row) {

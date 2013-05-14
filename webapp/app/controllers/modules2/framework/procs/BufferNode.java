@@ -117,5 +117,4 @@ public class BufferNode extends ProcessorSetupAbstract implements PullProcessor,
 		throw new UnsupportedOperationException("bug, should never be called");
 	}
 
-	
 }

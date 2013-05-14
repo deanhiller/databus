@@ -11,16 +11,13 @@ import controllers.modules2.framework.procs.StreamsProcessor;
 public class SumStreamProcessor extends StreamsProcessor {
 
 	@Override
-	protected ReadResult process(List<ReadResult> results) {
+	protected ReadResult process(List<TSRelational> rows) {
 		Long timeCompare = null;
 		BigDecimal total = BigDecimal.ZERO;
-		for(ReadResult res : results) {
-			if(res.isMissingData())
-				return res;
-			else if(res.isEndOfStream())
+		for(TSRelational row : rows) {
+			if(row == null)
 				continue;
 
-			TSRelational row = res.getRow();
 			Long time = getTime(row);
 			if(timeCompare == null) {
 				timeCompare = time;
