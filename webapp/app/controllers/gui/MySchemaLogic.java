@@ -44,6 +44,8 @@ public class MySchemaLogic {
 		SecureResourceGroupXref mapping = new SecureResourceGroupXref(entity, schema, perm);
 	
 		NoSql.em().fillInWithKey(mapping);
+		if(log.isInfoEnabled())
+			log.info("adding entity="+entity.getName()+" to resource="+schema.getName()+" mapping id="+mapping.getId());
 		NoSql.em().put(schema);
 		NoSql.em().put(entity);
 		NoSql.em().put(mapping);
