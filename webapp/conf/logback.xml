@@ -43,7 +43,7 @@
     <!--  com.alvazan.orm.logging is particularly brutal for performance, always set to at least WARN except in dev env -->
     
     <!-- this config will be the least verbose: -->
-    <!--logger name="com.alvazan.orm" level="WARN"/-->
+    <logger name="com.alvazan.orm" level="WARN"/>
     <!--logger name="controllers" level="WARN"/-->
     <!--logger name="org.playorm.cron" level="WARN"/-->
     
