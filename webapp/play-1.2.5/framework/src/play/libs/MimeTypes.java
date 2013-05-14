@@ -115,7 +115,7 @@ public class MimeTypes {
             mimetypes = new Properties();
             mimetypes.load(is);
         } catch (Exception ex) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn(ex.getMessage());
         }
         // Load mimetypes from plugins

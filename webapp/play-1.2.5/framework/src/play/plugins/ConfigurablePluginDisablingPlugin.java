@@ -31,7 +31,7 @@ public class ConfigurablePluginDisablingPlugin extends PlayPlugin {
 
     @Override
     public void onConfigurationRead() {
-    	Logger.isTraceEnabled()
+    	if (Logger.isTraceEnabled())
     		Logger.trace("Looking for plugins to disable");
 
 
@@ -58,8 +58,7 @@ public class ConfigurablePluginDisablingPlugin extends PlayPlugin {
                             	Logger.info("Plugin disabled: " + clazz);
 
                         }else{
-                        	if (Logger.isWarnEnabled())
-                        		Logger.warn("Could not disable Plugin: " + clazz + ". Already disabled?");
+                    		Logger.warn("Could not disable Plugin: " + clazz + ". Already disabled?");
                         }
                     }else{
                         Logger.error("Cannot disable plugin " + clazz + ". No loaded plugin of that type");
@@ -82,8 +81,7 @@ public class ConfigurablePluginDisablingPlugin extends PlayPlugin {
                     	if (Logger.isEnabledFor("INFO"))
                         	Logger.info("Plugin reenabled: " + clazz);
                     }else{
-                    	if (Logger.isWarnEnabled())
-                    		Logger.warn("Could not reenable Plugin: " + clazz);
+                		Logger.warn("Could not reenable Plugin: " + clazz);
                     }
                 }
             }

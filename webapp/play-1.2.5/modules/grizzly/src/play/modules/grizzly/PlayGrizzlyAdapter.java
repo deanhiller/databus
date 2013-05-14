@@ -230,7 +230,7 @@ public class PlayGrizzlyAdapter extends GrizzlyAdapter {
     }
 
     public void serve404(GrizzlyRequest request, GrizzlyResponse response, NotFound e) {
-    	if (Logger.isWarnEnabled())
+    	if (Logger.isEnabledFor("WARN"))
     		Logger.warn("404 -> %s %s (%s)", request.getMethod(), request.getRequestURI(), e.getMessage());
         response.setStatus(404);
         response.setContentType("text/html");

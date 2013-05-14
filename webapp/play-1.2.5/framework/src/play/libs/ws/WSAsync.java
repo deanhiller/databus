@@ -97,7 +97,7 @@ public class WSAsync implements WSImpl {
     }
 
     public void stop() {
-    	Logger.isTraceEnabled()
+    	if (Logger.isTraceEnabled())
     		Logger.trace("Releasing http client connections...");
         httpClient.close();
     }

@@ -1025,8 +1025,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                         return false;
                     }
                 } catch (ParseException ex) {
-                	if (Logger.isWarnEnabled())
-                		Logger.warn("Can't parse HTTP date", ex);
+            		Logger.warn("Can't parse HTTP date", ex);
                 }
                 return true;
             }
@@ -1279,7 +1278,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 futureClose();
             }
         };
-        Logger.isTraceEnabled()
+        if (Logger.isTraceEnabled())
     		Logger.trace("invoking");
 
         Invoker.invoke(new WebSocketInvocation(route, request, inbound, outbound, ctx, messageEvent));

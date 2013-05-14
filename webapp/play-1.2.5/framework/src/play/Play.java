@@ -238,7 +238,7 @@ public class Play {
                     tmpDir.mkdirs();
                 } catch (Throwable e) {
                     tmpDir = null;
-                    if (Logger.isWarnEnabled())
+                    if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("No tmp folder will be used (cannot create the tmp dir)");
                 }
             }
@@ -307,7 +307,7 @@ public class Play {
                 return;
             }
         } else {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("You're running Play! in DEV mode");
         }
 
@@ -419,7 +419,7 @@ public class Play {
                         r = System.getenv(jp);
                     }
                     if (r == null) {
-                    	if (Logger.isWarnEnabled())
+                    	if (Logger.isEnabledFor("WARN"))
                     		Logger.warn("Cannot replace %s in configuration (%s=%s)", jp, key, value);
                         continue;
                     }
@@ -437,7 +437,7 @@ public class Play {
                     String filenameToInclude = propsFromFile.getProperty(key.toString());
                     toInclude.putAll( readOneConfigurationFile(filenameToInclude) );
                 } catch (Exception ex) {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("Missing include: %s", key);
                 }
             }
@@ -503,7 +503,7 @@ public class Play {
             // SecretKey
             secretKey = configuration.getProperty("application.secret", "").trim();
             if (secretKey.length() == 0) {
-            	if (Logger.isWarnEnabled())
+            	if (Logger.isEnabledFor("WARN"))
             		Logger.warn("No secret key defined. Sessions will not be encrypted");
             }
 
@@ -682,7 +682,7 @@ public class Play {
                     try {
                         Class.forName(line);
                     } catch (Exception e) {
-                    	if (Logger.isWarnEnabled())
+                    	if (Logger.isEnabledFor("WARN"))
                     		Logger.warn("! Cannot init static: " + line);
                     }
                 }
@@ -717,7 +717,7 @@ public class Play {
         for (Object key : configuration.keySet()) {
             String pName = key.toString();
             if (pName.startsWith("module.")) {
-            	if (Logger.isWarnEnabled())
+            	if (Logger.isEnabledFor("WARN"))
             		Logger.warn("Declaring modules in application.conf is deprecated. Use dependencies.yml instead (%s)", pName);
                 String moduleName = pName.substring(7);
                 File modulePath = new File(configuration.getProperty(pName));

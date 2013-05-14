@@ -202,7 +202,7 @@ public class DBPlugin extends PlayPlugin {
 
     private static void check(Properties p, String mode, String property) {
         if (!StringUtils.isEmpty(p.getProperty(property))) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Ignoring " + property + " because running the in " + mode + " db.");
         }
     }
@@ -357,7 +357,7 @@ public class DBPlugin extends PlayPlugin {
             Integer isolation = getIsolationLevel();
             if (isolation != null) {
                 try {
-                	Logger.isTraceEnabled()
+                	if (Logger.isTraceEnabled())
                 		Logger.trace("Setting connection isolation level to %s", isolation);
                     c.setTransactionIsolation(isolation);
                 } catch (SQLException e) {

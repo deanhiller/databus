@@ -52,7 +52,7 @@ public class Lang {
             current.set(locale);
             return true;
         } else {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Locale %s is not defined in your application.conf", locale);
             return false;
         }

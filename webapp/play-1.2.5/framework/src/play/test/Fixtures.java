@@ -551,7 +551,7 @@ public class Fixtures {
         }
 
         // Maybe Log a WARN for unsupported DB ?
-        if (Logger.isWarnEnabled())
+        if (Logger.isEnabledFor("WARN"))
     		Logger.warn("Fixtures : unable to disable constraints, unsupported database : " + DBPlugin.url);
     }
 
@@ -614,7 +614,7 @@ public class Fixtures {
             return;
           }
 
-        if (Logger.isWarnEnabled())
+        if (Logger.isEnabledFor("WARN"))
     		Logger.warn("Fixtures : unable to enable constraints, unsupported database : " + DBPlugin.url);
     }
 

@@ -104,7 +104,7 @@ public class DB {
                 if (close != null) {
                     close.invoke(DB.datasource, new Object[] {});
                     DB.datasource = null;
-                    Logger.isTraceEnabled()
+                    if (Logger.isTraceEnabled())
                 		Logger.trace("Datasource destroyed");
                 }
             }

@@ -96,7 +96,7 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
 
     @Override
     public void destroy() {
-    	Logger.isTraceEnabled()
+    	if (Logger.isTraceEnabled())
     		Logger.trace("ServletWrapper>destroy");
         Play.stop();
     }
@@ -347,8 +347,7 @@ public class ServletWrapper extends HttpServlet implements ServletContextListene
     }
 
     public void serve404(HttpServletRequest servletRequest, HttpServletResponse servletResponse, NotFound e) {
-    	if (Logger.isWarnEnabled())
-    		Logger.warn("404 -> %s %s (%s)", servletRequest.getMethod(), servletRequest.getRequestURI(), e.getMessage());
+		Logger.warn("404 -> %s %s (%s)", servletRequest.getMethod(), servletRequest.getRequestURI(), e.getMessage());
         servletResponse.setStatus(404);
         servletResponse.setContentType("text/html");
         Map<String, Object> binding = new HashMap<String, Object>();

@@ -58,7 +58,7 @@ public class BeanWrapper {
             }
         }
         String message = String.format("Can't find property with name '%s' on class %s", name, instance.getClass().getName());
-        if (Logger.isWarnEnabled())
+        if (Logger.isEnabledFor("WARN"))
     		Logger.warn(message);
         throw new UnexpectedException(message);
 
@@ -201,7 +201,7 @@ public class BeanWrapper {
                 }
 
             } catch (Exception ex) {
-            	if (Logger.isWarnEnabled())
+            	if (Logger.isEnabledFor("WARN"))
             		Logger.warn(ex, "ERROR in BeanWrapper when setting property %s value is %s (%s)", name, value, value == null ? null : value.getClass());
                 throw new UnexpectedException(ex);
             }

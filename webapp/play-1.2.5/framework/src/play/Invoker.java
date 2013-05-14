@@ -408,7 +408,7 @@ public class Invoker {
                 synchronized (WaitForTasksCompletion.class) {
                     if (instance == null) {
                         instance = new WaitForTasksCompletion();
-                        if (Logger.isWarnEnabled())
+                        if (Logger.isEnabledFor("WARN"))
                     		Logger.warn("Start WaitForTasksCompletion");
                         instance.start();
                     }
@@ -431,7 +431,7 @@ public class Invoker {
                     }
                     Thread.sleep(50);
                 } catch (InterruptedException ex) {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn(ex, "While waiting for task completions");
                 }
             }

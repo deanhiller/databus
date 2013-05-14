@@ -210,11 +210,9 @@ public class Evolutions extends PlayPlugin {
             try {
                 checkEvolutionsState();
             } catch (InvalidDatabaseRevision e) {
-            	if (Logger.isWarnEnabled()) {
-            		Logger.warn("");
-            		Logger.warn("Your database is not up to date.");
-                	Logger.warn("Use `play evolutions` command to manage database evolutions.");
-            	}
+        		Logger.warn("");
+        		Logger.warn("Your database is not up to date.");
+            	Logger.warn("Use `play evolutions` command to manage database evolutions.");
                 throw e;
             }
         }
@@ -428,7 +426,7 @@ public class Evolutions extends PlayPlugin {
                 // Table in lowercase does not exist
                 // oracle gives table names in upper case
                 tableName = tableName.toUpperCase();
-                Logger.isTraceEnabled()
+                if (Logger.isTraceEnabled())
             		Logger.trace("Checking " + tableName);
                 rs.close();
                 rs = connection.getMetaData().getTables(null, null, tableName, null);

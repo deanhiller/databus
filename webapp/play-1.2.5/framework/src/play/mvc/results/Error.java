@@ -48,7 +48,7 @@ public class Error extends Result {
         try {
             errorHtml = TemplateLoader.load("errors/" + this.status + "." + (format == null ? "html" : format)).render(binding);
         } catch (Exception e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn(e, "Error page caused an error");
         }
         try {

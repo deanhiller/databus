@@ -124,7 +124,7 @@ public class PluginCollection {
      * Enable found plugins
      */
     public void loadPlugins() {
-    	Logger.isTraceEnabled()
+    	if (Logger.isTraceEnabled())
     		Logger.trace("Loading plugins");
         // Play! plugins
         Enumeration<URL> urls = null;
@@ -142,7 +142,7 @@ public class PluginCollection {
         List<LoadingPluginInfo> pluginsToLoad = new ArrayList<LoadingPluginInfo>();
         while (urls != null && urls.hasMoreElements()) {
             URL url = urls.nextElement();
-            Logger.isTraceEnabled()
+            if (Logger.isTraceEnabled())
         		Logger.trace("Found one plugins descriptor, %s", url);
             try {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "utf-8"));
@@ -165,17 +165,16 @@ public class PluginCollection {
         Collections.sort(pluginsToLoad);
 
         for ( LoadingPluginInfo info : pluginsToLoad) {
-        	Logger.isTraceEnabled()
+        	if (Logger.isTraceEnabled())
         		Logger.trace("Loading plugin %s", info.name);
             try {
                 PlayPlugin plugin = (PlayPlugin) Play.classloader.loadClass(info.name).newInstance();
                 plugin.index = info.index;
                 if( addPlugin(plugin) ){
-                	Logger.isTraceEnabled()
+                	if (Logger.isTraceEnabled())
                 		Logger.trace("Loaded plugin %s", plugin);
                 }else{
-                	if (Logger.isWarnEnabled())
-                		Logger.warn("Did not load plugin %s. Already loaded", plugin);
+            		Logger.warn("Did not load plugin %s. Already loaded", plugin);
                 }
             } catch (Exception ex) {
                 Logger.error(ex, "Error loading plugin %s", info.toString());
@@ -248,7 +247,7 @@ public class PluginCollection {
      */
     @SuppressWarnings({"deprecation"})
     protected void initializePlugin(PlayPlugin plugin) {
-    	Logger.isTraceEnabled()
+    	if (Logger.isTraceEnabled())
     		Logger.trace("Initializing plugin " + plugin);
         //we're ready to call onLoad for this plugin.
         //must create a unique Play.plugins-list for this onLoad-method-call so
@@ -319,7 +318,7 @@ public class PluginCollection {
                     Collections.sort( enabledPlugins);
                     enabledPlugins_readOnlyCopy = createReadonlyCopy( enabledPlugins);
                     updatePlayPluginsList();
-                    Logger.isTraceEnabled()
+                    if (Logger.isTraceEnabled())
                 		Logger.trace("Plugin " + plugin + " enabled");
                     return true;
                 }
@@ -366,7 +365,7 @@ public class PluginCollection {
                 //plugin was removed
                 enabledPlugins_readOnlyCopy = createReadonlyCopy( enabledPlugins);
                 updatePlayPluginsList();
-                Logger.isTraceEnabled()
+                if (Logger.isTraceEnabled())
             		Logger.trace("Plugin " + plugin + " disabled");
                 return true;
             }

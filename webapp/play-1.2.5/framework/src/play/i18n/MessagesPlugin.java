@@ -24,7 +24,7 @@ public class MessagesPlugin extends PlayPlugin {
             FileInputStream is = new FileInputStream(new File(Play.frameworkPath, "resources/messages"));
             Messages.defaults.putAll(IO.readUtf8Properties(is));
         } catch(Exception e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Defaults messsages file missing");
         }
         for(VirtualFile module : Play.modules.values()) {

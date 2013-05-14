@@ -207,7 +207,7 @@ public class JobsPlugin extends PlayPlugin {
             CronExpression cronExp = new CronExpression(cron);
             Date nextDate = cronExp.getNextValidTimeAfter(now);
             if (nextDate == null) {
-            	if (Logger.isWarnEnabled())
+            	if (Logger.isEnabledFor("WARN"))
             		Logger.warn("The cron expression for job %s doesn't have any match in the future, will never be executed", job.getClass().getName());
                 return;
             }

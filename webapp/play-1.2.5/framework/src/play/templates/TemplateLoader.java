@@ -72,7 +72,7 @@ public class TemplateLoader {
                     templates.put(key, template);
                     return template;
                 } catch(Exception e) {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("Precompiled template %s not found, trying to load it dynamically...", file.relativePath());
                 }
             }

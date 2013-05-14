@@ -156,8 +156,7 @@ public class LocalvariablesNamesEnhancer extends Enhancer {
                         names.add(name);
                     }
                 } catch (Exception e) {
-                	if (Logger.isWarnEnabled())
-                		Logger.warn(e, "While applying localvariables to %s.%s, param %s", ctClass.getName(), method.getName(), i);
+            		Logger.warn(e, "While applying localvariables to %s.%s, param %s", ctClass.getName(), method.getName(), i);
                 }
             }
             StringBuilder iv = new StringBuilder();
@@ -296,7 +295,7 @@ public class LocalvariablesNamesEnhancer extends Enhancer {
            !"I".equals(sig) && !"J".equals(sig) && !"S".equals(sig) && !"Z".equals(sig))
             localVarDescriptor = "Ljava/lang/Object;";
 
-        Logger.isTraceEnabled()
+        if (Logger.isTraceEnabled())
         	Logger.trace("for variable '%s' in slot=%s, sig was '%s' and is now '%s'", name, slot, sig, localVarDescriptor);
 
         b.addInvokestatic("play.classloading.enhancers.LocalvariablesNamesEnhancer$LocalVariablesNamesTracer", "addVariable", "(Ljava/lang/String;"+localVarDescriptor+")V");

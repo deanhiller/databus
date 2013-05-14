@@ -55,7 +55,7 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
         	if(log.isTraceEnabled())
         		log.trace("currentmsg=null and msg chunked="+m.isChunked());
             if (m.isChunked()) {
-            	if (Logger.isEnabledFor("INFO"))
+            	if (log.isInfoEnabled())
                 	log.info("it's a chunked request");
             	
                 final String localName = UUID.randomUUID().toString();

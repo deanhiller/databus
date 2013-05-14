@@ -166,7 +166,7 @@ public class GroovyTemplate extends BaseTemplate {
                         fos.write(sb.toString().getBytes("utf-8"));
                         fos.close();
                     } catch (Exception e) {
-                    	if (Logger.isWarnEnabled())
+                    	if (Logger.isEnabledFor("WARN"))
                     		Logger.warn(e, "Unexpected");
                     }
                 }

@@ -77,7 +77,7 @@ public class UrlEncodedParser extends DataParser {
             // to prevent the Play-server from being vulnerable to POST hash collision DOS-attack (Denial of Service through hash table multi-collisions),
             // we should by default not parse the params into HashMap if the count exceeds a maximum limit
             if(maxParams != 0 && keyValues.length > maxParams) {
-            	if (Logger.isWarnEnabled())
+            	if (Logger.isEnabledFor("WARN"))
             		Logger.warn("Number of request parameters %d is higher than maximum of %d, aborting. Can be configured using 'http.maxParams'", keyValues.length, maxParams);
                 throw new Status(413); //413 Request Entity Too Large
             }

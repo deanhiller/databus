@@ -60,7 +60,7 @@ public abstract class BaseTemplate extends Template {
                 return true;
             }
         } catch (Exception e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn(e, "Cannot load %s from cache", name);
         }
         return false;

@@ -677,13 +677,13 @@ public class Router {
                     this.path = p.substring(p.indexOf("/"));
                     this.host = p.substring(0, p.indexOf("/"));
                     if (this.host.contains("{")) {
-                    	if (Logger.isWarnEnabled())
+                    	if (Logger.isEnabledFor("WARN"))
                     		Logger.warn("Static route cannot have a dynamic host name");
                         return;
                     }
                 }
                 if (!method.equalsIgnoreCase("*") && !method.equalsIgnoreCase("GET")) {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("Static route only support GET method");
                     return;
                 }
@@ -691,7 +691,7 @@ public class Router {
             // staticDir
             if (action.startsWith("staticDir:")) {
                 if (!this.path.endsWith("/") && !this.path.equals("/")) {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("The path for a staticDir route must end with / (%s)", this);
                     this.path += "/";
                 }
@@ -779,7 +779,7 @@ public class Router {
                 if (matcher.matches()) {
                     staticArgs.put(matcher.group(1), matcher.group(2));
                 } else {
-                	if (Logger.isWarnEnabled())
+                	if (Logger.isEnabledFor("WARN"))
                 		Logger.warn("Ignoring %s (static params must be specified as key:'value',...)", params);
                 }
             }

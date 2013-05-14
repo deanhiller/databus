@@ -76,13 +76,13 @@ public class XML {
         try {
             return dbf.newDocumentBuilder().parse(file);
         } catch (SAXException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Parsing error when building Document object from xml file '" + file + "'.", e);
         } catch (IOException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Reading error when building Document object from xml file '" + file + "'.", e);
         } catch (ParserConfigurationException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Parsing error when building Document object from xml file '" + file + "'.", e);
         }
         return null;
@@ -98,13 +98,13 @@ public class XML {
         try {
             return dbf.newDocumentBuilder().parse(source);
         } catch (SAXException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Parsing error when building Document object from xml data.", e);
         } catch (IOException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Reading error when building Document object from xml data.", e);
         } catch (ParserConfigurationException e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Parsing error when building Document object from xml data.", e);
         }
         return null;
@@ -161,7 +161,7 @@ public class XML {
             XMLSignature signature = fac.newXMLSignature(si, ki);
             signature.sign(dsc);
         } catch (Exception e) {
-        	if (Logger.isWarnEnabled())
+        	if (Logger.isEnabledFor("WARN"))
         		Logger.warn("Error while signing an XML document.", e);
         }
 
