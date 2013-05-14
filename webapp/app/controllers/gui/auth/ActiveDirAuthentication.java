@@ -92,7 +92,12 @@ public class ActiveDirAuthentication {
       
 	}
 
-	private DirContext fetchContext(String password, String domainName, String principalName) {
+	public static DirContext fetchCtx(String domain, String username, String password) {
+		String principalName = username + '@' + domain;
+		return fetchContext(password, domain, principalName);
+	}
+	
+	private static DirContext fetchContext(String password, String domainName, String principalName) {
 		Hashtable props = new Hashtable();
         props.put(Context.SECURITY_PRINCIPAL, principalName);
         props.put(Context.SECURITY_CREDENTIALS,password);
