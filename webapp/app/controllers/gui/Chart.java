@@ -1,5 +1,8 @@
 package controllers.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.junit.Ignore;
 
@@ -7,10 +10,17 @@ public class Chart {
 
 	private String url;
 	private String timeColumn;
+	private List<Axis> axis = new ArrayList<Axis>();
 	private String[] columns = new String[5];
 	private long startTime;
 	private long endTime;
-	
+
+	public Chart() {
+		axis.add(new Axis());
+		axis.add(new Axis());
+		axis.add(new Axis());
+	}
+
 	@JsonIgnore
 	public String getGeneratedJavascript() {
 		String javascript = "";
@@ -89,4 +99,24 @@ public class Chart {
 		return endTime;
 	}
 	
+	public Axis getAxis1() {
+		return axis.get(0);
+	}
+	
+	public void setAxis1(Axis a) {
+		axis.set(0, a);
+	}
+	
+	public Axis getAxis2() {
+		return axis.get(1);
+	}
+	public void setAxis2(Axis a) {
+		axis.set(1, a);
+	}
+	public Axis getAxis3() {
+		return axis.get(2);
+	}
+	public void setAxis3(Axis a) {
+		axis.set(2, a);
+	}
 }

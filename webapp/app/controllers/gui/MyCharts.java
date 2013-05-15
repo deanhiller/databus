@@ -25,12 +25,18 @@ import de.undercouch.bson4jackson.BsonFactory;
 public class MyCharts extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyCharts.class);
+	private static int CURRENT_VERSION = 1;
 
 	public static void createChart() {
 		render();
 	}
 	
-	public static void postCreateChart(Chart chart) throws UnsupportedEncodingException {
+	public static void modifyChart(String encodedChart, int version, int length) {
+		Chart chart = deserialize(encodedChart, version, length);
+		render("@createChart", chart);
+	}
+
+	public static void postStep1(Chart chart) throws UnsupportedEncodingException {
 		String url = chart.getUrl();
 		int index = url.lastIndexOf("/");
 		if(index < 0) {
@@ -55,6 +61,30 @@ public class MyCharts extends Controller {
 			createChart();
 		}
 		
+		Info info = createUrl(chart);
+		String encodedChart = info.getParameter();
+		int length = info.getLength();
+		createStep2(encodedChart, CURRENT_VERSION, length);
+	}
+	
+	public static void createStep2(String encodedChart, int version, int length) {
+		Chart chart = deserialize(encodedChart, version, length);
+		render(chart);
+	}
+
+	public static void postStep2(Chart chart) throws UnsupportedEncodingException {
+		Info info = createUrl(chart);
+		String encodedChart = info.getParameter();
+		int length = info.getLength();
+		drawChart(encodedChart, CURRENT_VERSION, length);
+	}
+	
+	public static void drawChart(String encodedChart, int version, int length) {
+		Chart chart = deserialize(encodedChart, version, length);
+		render(chart, encodedChart, version, length);
+	}
+
+	private static Info createUrl(Chart chart) {
 		byte[] input = convert(chart);
 
 		// Compress the bytes
@@ -70,7 +100,7 @@ public class MyCharts extends Controller {
 			log.info("length="+encodedChart.length()+" result="+encodedChart);
 		
 		int length = input.length;
-		drawChart(encodedChart, 1, length);
+		return new Info(encodedChart, length);
 	}
 
 	private static long convertLong(String str) {
@@ -94,7 +124,8 @@ public class MyCharts extends Controller {
 		}
 	}
 
-	public static void drawChart(String encodedChart, int version, int length) {
+	private static Chart deserialize(String encodedChart, int version,
+			int length) {
 		byte[] afterBase64 = null;
 		try {
 		  afterBase64 = Base64.decodeBase64(encodedChart);
@@ -114,13 +145,7 @@ public class MyCharts extends Controller {
 		}
 
 		Chart chart = convert(version, result);
-
-		String url = chart.getUrl();
-		
-
-		long startTime = 0;
-		long endTime = 500000;
-		render(chart, startTime, endTime);
+		return chart;
 	}
 
 	private static Chart convert(int version, byte[] data) {

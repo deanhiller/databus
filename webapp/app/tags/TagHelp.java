@@ -59,27 +59,18 @@ public class TagHelp extends FastTags {
         field.put("errorClass", errorClass);
         String[] pieces = _arg.split("\\.");
         Object obj = body.getProperty(pieces[0]);
+        
+        //NOTE: since formfield is typically INSIDE text2.html or other tags, we must get the caller object
+        //instead or we have no access to the field
+        if(obj == null) {
+        	Map props = (Map) body.getProperty("_caller");
+        	obj = props.get(pieces[0]);
+        }
+        
         if(obj != null){
             if(pieces.length > 1){
-                for(int i = 1; i < pieces.length; i++){
-                    try{
-                    	Field f = getDeclaredField(obj.getClass(), obj, pieces[i]);
-                        f.setAccessible(true);
-                        if(i == (pieces.length-1)){
-                            try{
-                                Method getter = obj.getClass().getMethod("get"+JavaExtensions.capFirst(f.getName()));
-                                field.put("value", getter.invoke(obj, new Object[0]));
-                            }catch(NoSuchMethodException e){
-                                field.put("value",f.get(obj).toString());
-                            }
-                        }else{
-                            obj = f.get(obj);
-                        }
-                    }catch(Exception e){
-                    	if (log.isWarnEnabled())
-                    		log.warn("Exception processing tag on object type="+obj.getClass().getName(), e);
-                    }
-                }
+            	Object val = recursivelyFindValue(pieces, obj);
+                field.put("value", val);
             }else{
                 field.put("value", obj);
             }
@@ -89,6 +80,28 @@ public class TagHelp extends FastTags {
         body.setProperty("field", field);
         body.call();
     }
+
+	private static Object recursivelyFindValue(String[] pieces, Object firstObj) {
+		Object obj = firstObj;
+		for(int i = 1; i < pieces.length; i++){
+		    try{
+		    	String method = "get"+JavaExtensions.capFirst(pieces[i]);
+		    	Method getter = getDeclaredMethod(obj.getClass(), obj, method);
+		        getter.setAccessible(true);
+		        Object property = getter.invoke(obj);
+		        if(i == (pieces.length-1)){
+		        	return property;
+		        }else{
+		        	obj = property;
+		        }
+		    }catch(Exception e){
+		    	if (log.isWarnEnabled())
+		    		log.warn("Exception processing tag on object type="+obj.getClass().getName(), e);
+		    }
+		}
+		
+		return null;
+	}
 	
 	public static void _xfield(Map<?, ?> args, Closure body, PrintWriter out, ExecutableTemplate template, int fromLine) {
         Map<String,Object> field = new HashMap<String,Object>();
@@ -156,6 +169,16 @@ public class TagHelp extends FastTags {
         body.call();
     }
 
+	private static Method getDeclaredMethod(Class clazz, Object obj, String method) throws NoSuchFieldException {
+		if(clazz == Object.class)
+			throw new NoSuchFieldException("There is no such method="+method+" on the object="+obj+" (obj is of class="+obj.getClass()+")");
+		try {
+			return clazz.getDeclaredMethod(method);
+		} catch(NoSuchMethodException e) {
+			return getDeclaredMethod(clazz.getSuperclass(), obj, method);
+		}
+	}
+	
 	private static Field getDeclaredField(Class clazz, Object obj, String fieldName) throws NoSuchFieldException {
 		if(clazz == Object.class)
 			throw new NoSuchFieldException("There is no such field="+fieldName+" on the object="+obj+" (obj is of class="+obj.getClass()+")");
