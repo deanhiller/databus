@@ -12,7 +12,9 @@
     <input type="hidden" name="chart.column3" value="${chart?.column3}">
     <input type="hidden" name="chart.column4" value="${chart?.column4}">
     <input type="hidden" name="chart.column5" value="${chart?.column5}">
-    
+    <input type="hidden" name="chart.startTime" value="${chart?.startTime}">
+    <input type="hidden" name="chart.endTime" value="${chart?.endTime}">
+
     #{text2 id:'chart.url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
 	#{text2 id:'chart.axis1.name',  label:'Y-Axis 1 Name',  help:'The first Y-axis in the chart(maybe the only one)'/}
     #{text2 id:'chart.axis1.units', label:'Y-Axis 1 Units', help:'The units of the first Y-axis in the chart'/}

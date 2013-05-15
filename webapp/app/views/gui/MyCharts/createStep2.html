@@ -13,7 +13,9 @@
     <input type="hidden" name="chart.axis2.units" value="${chart?.axis2.units}">
     <input type="hidden" name="chart.axis3.name" value="${chart?.axis3.name}">
     <input type="hidden" name="chart.axis3.units" value="${chart?.axis3.units}">
-
+    <input type="hidden" name="chart.startTime" value="${chart?.startTime}">
+    <input type="hidden" name="chart.endTime" value="${chart?.endTime}">
+    
 	#{text2 id:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'/}
     #{text2 id:'chart.column1',   label:'Column 1',    help:'The name of the first column we will draw with respect to time'/}
     #{text2 id:'chart.column2',   label:'Column 2', help:'The name of the first column we will draw with respect to time'/}

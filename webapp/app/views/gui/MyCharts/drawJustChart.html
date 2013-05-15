@@ -1,13 +1,37 @@
-#{extends './homeTemplate.html' /}
-#{set tab:'home' /}
-#{set title:'Your Chart' /}
+<!DOCTYPE html>
 
-We are rendering the chart for dataset url=${chart.url} below
+<!-- wbpreview.com/previews/WB0663265 -->
 
-<a href="@{modifyChart(encodedChart, version, length)}" class="btn btn-primary">Modify Chart</a>
-<a href="@{drawJustChart(encodedChart, version, length)}" class="btn btn-primary">Chart Only</a>
+<html>
+    <head>
+        <title>Bootstrap Prototype 1</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div id="theChart"></div>
+        <!-- JQuery -->
+        <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+        <script type="text/javascript" src="/public/includes/jquery.hotkeys.js"></script>
+
+        <link href="/public/includes/prettify/sunburst.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="/public/includes/prettify/prettify.js"></script>
+        
+        <!-- Bootstrap -->
+        <link href="/public/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+        <link href="/public/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <script type="text/javascript" src="/public/bootstrap/js/bootstrap.js"></script>
+
+        <!-- Theme -->
+        <link href="/public/bootstrap/themes/proto2/proto2.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="/public/bootstrap/themes/proto2/proto2.js"></script>
+
+        <link href="/public/bootstrap/themes/proto2/help.css" rel="stylesheet" type="text/css">
+
+        <link href="/public/stylesheets/guisearch/guisearch.css" rel="stylesheet" type="text/css">  
+
+    </head>
+    
+    <body onload="prettyPrint()">
+        
+        <div id="theChart"></div>
 
     <script type="text/javascript">
 $(function () {
@@ -318,3 +342,5 @@ $(function () {
     <script src="/public/includes/jquery.hotkeys.js"></script>
     <script src="/public/includes/highstock.js"></script>
     <script src="/public/includes/exporting.js"></script>
+    </body>
+</html>
