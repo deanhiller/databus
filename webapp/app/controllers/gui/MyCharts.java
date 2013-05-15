@@ -84,7 +84,7 @@ public class MyCharts extends Controller {
 		render(chart, encodedChart, version, length);
 	}
 	
-	public static void drawJustChart(String encodedChart, int version, int length) {
+	public static void drawJustChart(String encodedChart, String title, int version, int length) {
 		Chart chart = deserialize(encodedChart, version, length);
 		render(chart, encodedChart, version, length);
 	}

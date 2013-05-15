@@ -138,7 +138,7 @@ GET  /charts/createchart                                     gui.MyCharts.create
 POST /charts/createchart                                     gui.MyCharts.postStep1
 GET  /charts/createchart/step2/{length}/{version}/{encodedChart}  gui.MyCharts.createStep2
 POST /charts/createchart/step2                                    gui.MyCharts.postStep2
-GET  /charts/chart/{length}/{version}/{encodedChart}          gui.MyCharts.drawJustChart
+GET  /charts/chart/{length}/{version}/{title}/{encodedChart}          gui.MyCharts.drawJustChart
 GET  /charts/drawchart/{length}/{version}/{encodedChart}          gui.MyCharts.drawChart
 
 # GUI Summary Pages
