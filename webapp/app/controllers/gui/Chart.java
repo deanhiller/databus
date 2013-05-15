@@ -8,6 +8,7 @@ import org.junit.Ignore;
 
 public class Chart {
 
+	private String title;
 	private String url;
 	private String timeColumn;
 	private List<Axis> axis = new ArrayList<Axis>();
@@ -38,6 +39,14 @@ public class Chart {
 //          }
 		}
 		return javascript;
+	}
+
+	public String getTitle() {
+		return title;
+	}
+
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getUrl() {

@@ -78,6 +78,7 @@ public class TimeAverageMod extends Controller {
 		private Double total = 0d;
 		private String param;
 		private Throwable cause=null;
+		private long lastRowTime = Long.MIN_VALUE;
 		
 		public ProcessorImpl(long type, long start, long end, String param) {
 			this.interval = type;
@@ -144,8 +145,9 @@ public class TimeAverageMod extends Controller {
 			int rowPointer = 0;
 			while (rowPointer < rows.size()) {
 				TimeValue tv = rows.get(rowPointer);
-
-				if (tv.getTime() >= lastStart + interval) {
+				
+				long nextStart = lastStart+interval;
+				if (tv.getTime() >= nextStart) {
 
 					if (count != 0) {
 						double d = total / count.doubleValue();
@@ -179,8 +181,9 @@ public class TimeAverageMod extends Controller {
 					rowPointer++;
 				} else {
 					rows.remove(0);
-					throw new RuntimeException("(our problem) should never drop data in TimeAverageMod");
+					throw new RuntimeException("(our problem) should never drop data in TimeAverageMod. time="+tv.getTime()+" lastStart="+lastStart+" nextStart="+nextStart+" lastrowtime="+lastRowTime);
 				}
+				lastRowTime = tv.getTime();
 			}
 
 			if (resultingJson.length() > 0)
