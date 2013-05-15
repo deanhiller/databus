@@ -4,9 +4,9 @@
 
 We are rendering the chart for dataset url=${chart.url} below
 
-<div id="theChart"></div>
+<a href="@{modifyChart(encodedChart, version, length)}" class="btn btn-primary">Modify Chart</a>
 
-<a href="@{modifyChart(encodedChart, version, length)}" class="button">Modify Chart</a>
+<div id="theChart"></div>
 
     <script type="text/javascript">
 $(function () {
