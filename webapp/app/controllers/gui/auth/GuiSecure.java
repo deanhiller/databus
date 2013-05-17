@@ -150,7 +150,8 @@ public class GuiSecure extends Controller {
         Security.invoke("onAuthenticated");
         String url = flash.get("url");
         if(url == null) {
-            url = "/dashboard";
+            url = "dashboard";
+            
         }
         redirect(url);
     }
