@@ -12,3 +12,4 @@ export CLASSPATH
 #echo classpath=$CLASSPATH
 
 java -cp $CLASSPATH com.alvazan.ssql.cmdline.PlayOrm $@
+#-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=1044
