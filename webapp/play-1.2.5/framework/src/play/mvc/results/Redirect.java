@@ -30,6 +30,12 @@ public class Redirect extends Result {
 
     public void apply(Request request, Response response) {
         try {
+        	
+        	//NOTE: The below code BREAKS login/logout or any redirect for that matter in the situation where you 
+        	//1. have playframework running http
+        	//2. are running an LB that is doing the https
+        	//The code below incorrectly assumes we are doing http redirecting to an http address on login when it should stay on https.
+        	//
 //            if (url.startsWith("http")) {
 //                //
 //            } else if (url.startsWith("/")) {
