@@ -18,9 +18,4 @@ public class Axis {
 		this.units = units;
 	}
 
-	public void validate(int index) {
-		Chart.validate("chart.axis"+index+".name", name);
-		Chart.validate("chart.axis"+index+".units", units);
-	}
-	
 }

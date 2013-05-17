@@ -10,6 +10,8 @@ import org.junit.Ignore;
 
 import play.data.validation.Validation;
 import play.mvc.Scope.Flash;
+import play.templates.JavaExtensions;
+import play.utils.HTML;
 
 public class Chart {
 
@@ -30,25 +32,6 @@ public class Chart {
 		axis.add(new Axis());
 		axis.add(new Axis());
 		axis.add(new Axis());
-	}
-
-	@JsonIgnore
-	public String getGeneratedJavascript() {
-		String javascript = "";
-		for(int i = 0; i < columns.length; i++) {
-			String col = columns[i];
-			if(col == null || "".equals(col.trim()))
-				continue;
-			
-			javascript += "{ name: '"+col+"', data: collapseData(data, '"+col+"') }";
-			if(i < columns.length-1)
-				javascript += ",";
-//		{
-//            name: 'Aggregation',
-//            data: collapseData(data, (singleStream!==true ? true : false))
-//          }
-		}
-		return javascript;
 	}
 
 	public String getTitle() {
@@ -139,38 +122,9 @@ public class Chart {
 		axis.set(2, a);
 	}
 
-	public boolean validate() {
-		validate("chart.title", title);
-		validate("chart.url", url);
-		validate("chart.timeColumn", timeColumn);
-		for(int i = 0; i < columns.length; i++) {
-			validate("chart.column"+(i+1), columns[i]);
-		}
-
-		for(int i = 0; i < axis.size(); i++) {
-			Axis a = axis.get(i);
-			a.validate(i+1);
-		}
-		
-		Validation validation = Validation.current();
-		if(validation.hasErrors())
-			return false;
-		return true;
-	}
-
-	private boolean some() {
-		return true;
-	}
-	public static void validate(String id, String input) {
-		if(input == null || "".equals(input))
-			return;
-
-		Matcher matcher = pattern.matcher(input);
-		if(matcher.matches())
-			return;
-
-		Validation validation = Validation.current();
-		validation.addError(id, "This field can only contain alphanumeric characters");
+	@JsonIgnore
+	public String[] getColumns() {
+		return columns;
 	}
 
 }

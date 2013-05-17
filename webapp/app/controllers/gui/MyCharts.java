@@ -74,18 +74,18 @@ public class MyCharts extends Controller {
 	}
 	
 	public static void drawChart(String encodedChart, int version, int length) {
-		Chart chart = deserialize(encodedChart, version, length);
+		Chart theChart = deserialize(encodedChart, version, length);
+		ChartForJavascript chart = new ChartForJavascript(theChart);
 		render(chart, encodedChart, version, length);
 	}
 	
 	public static void drawJustChart(String encodedChart, String title, int version, int length) {
-		Chart chart = deserialize(encodedChart, version, length);
+		Chart theChart = deserialize(encodedChart, version, length);
+		ChartForJavascript chart = new ChartForJavascript(theChart);
 		render(chart, encodedChart, version, length);
 	}
 
 	private static Info createUrl(Chart chart, int stepNumber) {
-		chart.validate();
-
 		byte[] input = convert(chart);
 
 		// Compress the bytes
@@ -157,9 +157,6 @@ public class MyCharts extends Controller {
 		}
 
 		Chart chart = convert(version, result);
-		//if it is not a valid chart, to prevent javascript injection, return page not found
-		if(!chart.validate())
-			notFound();
 		return chart;
 	}
 
