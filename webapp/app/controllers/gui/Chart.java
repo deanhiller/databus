@@ -2,9 +2,14 @@ package controllers.gui;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.junit.Ignore;
+
+import play.data.validation.Validation;
+import play.mvc.Scope.Flash;
 
 public class Chart {
 
@@ -15,7 +20,12 @@ public class Chart {
 	private String[] columns = new String[5];
 	private long startTime;
 	private long endTime;
+	private static Pattern pattern;
 
+	static {
+		pattern = Pattern.compile("^[A-Za-z0-9:/s \\.]+$");
+	}
+	
 	public Chart() {
 		axis.add(new Axis());
 		axis.add(new Axis());
@@ -128,4 +138,39 @@ public class Chart {
 	public void setAxis3(Axis a) {
 		axis.set(2, a);
 	}
+
+	public boolean validate() {
+		validate("chart.title", title);
+		validate("chart.url", url);
+		validate("chart.timeColumn", timeColumn);
+		for(int i = 0; i < columns.length; i++) {
+			validate("chart.column"+(i+1), columns[i]);
+		}
+
+		for(int i = 0; i < axis.size(); i++) {
+			Axis a = axis.get(i);
+			a.validate(i+1);
+		}
+		
+		Validation validation = Validation.current();
+		if(validation.hasErrors())
+			return false;
+		return true;
+	}
+
+	private boolean some() {
+		return true;
+	}
+	public static void validate(String id, String input) {
+		if(input == null || "".equals(input))
+			return;
+
+		Matcher matcher = pattern.matcher(input);
+		if(matcher.matches())
+			return;
+
+		Validation validation = Validation.current();
+		validation.addError(id, "This field can only contain alphanumeric characters");
+	}
+
 }

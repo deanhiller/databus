@@ -30,7 +30,7 @@ public class MyCharts extends Controller {
 	public static void createChart() {
 		render();
 	}
-	
+
 	public static void modifyChart(String encodedChart, int version, int length) {
 		Chart chart = deserialize(encodedChart, version, length);
 		render("@createChart", chart);
@@ -54,14 +54,8 @@ public class MyCharts extends Controller {
 			chart.setEndTime(endTime);
 		}
 
-		if(validation.hasErrors()) {
-			validation.keep();
-			flash.keep();
-			params.flash();
-			createChart();
-		}
-		
-		Info info = createUrl(chart);
+		Info info = createUrl(chart, 1);
+
 		String encodedChart = info.getParameter();
 		int length = info.getLength();
 		createStep2(encodedChart, CURRENT_VERSION, length);
@@ -73,7 +67,7 @@ public class MyCharts extends Controller {
 	}
 
 	public static void postStep2(Chart chart) throws UnsupportedEncodingException {
-		Info info = createUrl(chart);
+		Info info = createUrl(chart, 2);
 		String encodedChart = info.getParameter();
 		int length = info.getLength();
 		drawChart(encodedChart, CURRENT_VERSION, length);
@@ -89,7 +83,9 @@ public class MyCharts extends Controller {
 		render(chart, encodedChart, version, length);
 	}
 
-	private static Info createUrl(Chart chart) {
+	private static Info createUrl(Chart chart, int stepNumber) {
+		chart.validate();
+
 		byte[] input = convert(chart);
 
 		// Compress the bytes
@@ -105,6 +101,17 @@ public class MyCharts extends Controller {
 			log.info("length="+encodedChart.length()+" result="+encodedChart);
 		
 		int length = input.length;
+		
+		if(validation.hasErrors()) {
+			validation.keep();
+			flash.keep();
+			params.flash();
+			if(stepNumber == 1)
+				createChart();
+			else
+				createStep2(encodedChart, CURRENT_VERSION, length);
+		}
+		
 		return new Info(encodedChart, length);
 	}
 
@@ -150,6 +157,9 @@ public class MyCharts extends Controller {
 		}
 
 		Chart chart = convert(version, result);
+		//if it is not a valid chart, to prevent javascript injection, return page not found
+		if(!chart.validate())
+			notFound();
 		return chart;
 	}
 
