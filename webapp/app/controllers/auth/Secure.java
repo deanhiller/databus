@@ -141,7 +141,7 @@ public class Secure extends Controller {
         Security.invoke("onAuthenticated");
         String url = flash.get("url");
         if(url == null) {
-            url = "old";
+            url = "/old";
         }
         redirect(url);
     }
