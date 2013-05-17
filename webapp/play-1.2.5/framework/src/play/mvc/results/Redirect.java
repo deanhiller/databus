@@ -30,13 +30,13 @@ public class Redirect extends Result {
 
     public void apply(Request request, Response response) {
         try {
-            if (url.startsWith("http")) {
-                //
-            } else if (url.startsWith("/")) {
-                url = String.format("http%s://%s%s%s", request.secure ? "s" : "", request.domain, (request.port == 80 || request.port == 443) ? "" : ":" + request.port, url);
-            } else {
-                url = String.format("http%s://%s%s%s%s", request.secure ? "s" : "", request.domain, (request.port == 80 || request.port == 443) ? "" : ":" + request.port, request.path, request.path.endsWith("/") ? url : "/" + url);
-            }
+//            if (url.startsWith("http")) {
+//                //
+//            } else if (url.startsWith("/")) {
+//                url = String.format("http%s://%s%s%s", request.secure ? "s" : "", request.domain, (request.port == 80 || request.port == 443) ? "" : ":" + request.port, url);
+//            } else {
+//                url = String.format("http%s://%s%s%s%s", request.secure ? "s" : "", request.domain, (request.port == 80 || request.port == 443) ? "" : ":" + request.port, request.path, request.path.endsWith("/") ? url : "/" + url);
+//            }
             response.status = code;
             response.setHeader("Location", url);
         } catch (Exception e) {
