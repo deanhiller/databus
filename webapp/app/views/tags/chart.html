@@ -6,14 +6,14 @@ $(function () {
     startTime = ${_chart.startTime},
     maximized = false,
     maximizedStream,
-    height = 700,
-    width = 951,
+    height = getHeight(),
+    width = $("#theChart").width(),
     chart;
 
   $(window).resize(function () {
-    console.log('resized window heigth:'+$(window).height());
-    console.log('fit new div container size, width='+$("#theChart").width()+' height='+$("#theChart").height())
-    chart.setSize($("#theChart").width(), $("#theChart").height(), false);
+	var height = getHeight();
+    console.log('fit new div container size, width='+$("#theChart").width()+' height='+height+' windowH='+$(window).height());
+    chart.setSize($("#theChart").width(), height, false);
   });
 
   $.ajaxSetup({
@@ -140,6 +140,14 @@ $(function () {
     return arr;
   }
 
+  function getHeight() {
+	var windowHeight = $(window).height();
+	var height = windowHeight-${_topMargin};
+	if(height < 300)
+		height = 300;
+	return height;
+  }
+  
   function collapseData(data, columnName) {
     var collapsedData = [];
     $.each(data.data, function (index, value) {
@@ -184,7 +192,7 @@ $(function () {
       chart = new Highcharts.StockChart({
         chart: {
           renderTo: mychart,
-          height: 500
+          height: getHeight()
         },
         exporting: {
           buttons: {
