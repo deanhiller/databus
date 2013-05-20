@@ -54,6 +54,9 @@ public class MyCharts extends Controller {
 			chart.setEndTime(endTime);
 		}
 
+		if(chart.getTitle() == null || "".equals(chart.getTitle().trim()))
+			validation.addError("chart.title", "This is a required field");
+		
 		Info info = createUrl(chart, 1);
 
 		String encodedChart = info.getParameter();
