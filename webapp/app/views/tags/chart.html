@@ -12,9 +12,8 @@ $(function () {
 
   $(window).resize(function () {
     console.log('resized window heigth:'+$(window).height());
-    if (maximized) {
-        chart.setSize($(window).width()-80, $(window).height(), false);
-    }
+    console.log('fit new div container size, width='+$("#theChart").width()+' height='+$("#theChart").height())
+    chart.setSize($("#theChart").width(), $("#theChart").height(), false);
   });
 
   $.ajaxSetup({
@@ -25,38 +24,6 @@ $(function () {
   Highcharts.extend(Highcharts.getOptions().lang, {
     zoomTitle: 'Zoom the chart'
   });
-
-  Highcharts.Renderer.prototype.symbols.zoomInIcon = function (x, y, width, height) {
-      console.log('zoom heigth:'+height);
-    return crisp([
-      'M',
-    x + width * 0.88575, y + height * 0.219167,
-      'L',
-    x + width, y + height * 1 / 3,
-    x + width, y,
-    x + width * 2 / 3, y,
-    x + width * 0.780833, y + height * 0.114167,
-    x + width * 0.5, y + height * 0.395,
-    x + width * 0.219167, y + height * 0.114167,
-    x + width * 1 / 3, y,
-    x, y,
-    x, y + height * 1 / 3,
-    x + width * 0.114167, y + height * 0.219167,
-    x + width * 0.395, y + height * 0.5,
-    x + width * 0.114167, y + height * 0.780833,
-    x, y + height * 2 / 3,
-    x, y + height,
-    x + width * 1 / 3, y + height,
-    x + width * 0.219083, y + height * 0.88575,
-    x + width * 1 / 2, y + height * 0.604917,
-    x + width * 0.780833, y + height * 0.885833,
-    x + width * 2 / 3, y + height,
-    x + width, y + height,
-    x + width, y + height * 2 / 3,
-    x + width * 0.885833, y + height * 0.780833,
-    x + width * 0.604917, y + height * 1 / 2,
-      'Z']);
-  };
 
   Highcharts.setOptions({
     credits: {
@@ -70,13 +37,7 @@ $(function () {
         printButton: {
           enabled: false
         },
-        zoomButton: {
-          symbol: 'zoomInIcon',
-          x: -10,
-          symbolFill: '#B5C9DF',
-          hoverSymbolFill: '#779ABF',
-          _titleKey: 'zoomTitle'
-        }
+
       }
     },
     global: {
@@ -227,19 +188,6 @@ $(function () {
         },
         exporting: {
           buttons: {
-            zoomButton: {
-              onclick: function () {
-                $('#mychart').toggleClass('overlay');
-                if (!maximized) {
-                  this.setSize($(window).width()-60, $(window).height(), false);
-                  maximized = true;
-                  maximizedStream = mychart;
-                } else {
-                  this.setSize($('.chart').width(), $('.chart').height(), false);
-                  maximized = false;
-                }
-              }
-            }
           }
         },
         legend: {

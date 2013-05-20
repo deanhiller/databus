@@ -1,3 +1,6 @@
+/**************************
+These are additions, twitter bootstrap overrides are below
+*****************************/
 
 .db_border_bottom td {
 	border-top: none;
@@ -86,4 +89,9 @@ h3 {
     background-position: 10px center;
     padding:15px 10px 15px 50px;
     background-repeat: no-repeat;
+}
+
+.container-fluid {
+    padding-right: 40px;
+    padding-left: 40px;
 }
