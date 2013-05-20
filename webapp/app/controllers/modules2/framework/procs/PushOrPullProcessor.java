@@ -22,7 +22,7 @@ public abstract class PushOrPullProcessor extends PushProcessorAbstract implemen
 	public void incomingChunk(String url, TSRelational row, ProcessedFlag flag) {
 		TSRelational newRow = modifyRow(row);
 		if(newRow != null)
-			super.incomingChunk(url, row, flag);
+			super.incomingChunk(url, newRow, flag);
 	}
 
 	protected abstract TSRelational modifyRow(TSRelational row);
