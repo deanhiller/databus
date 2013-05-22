@@ -9,6 +9,7 @@ import javax.inject.Provider;
 
 import com.google.inject.Injector;
 
+import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.FirstValuesProcessor;
 import controllers.modules2.InvertProcessor;
 import controllers.modules2.LogProcessor;
@@ -17,6 +18,7 @@ import controllers.modules2.MultiplyProcessor;
 import controllers.modules2.PassthroughProcessor;
 import controllers.modules2.RangeCleanProcessor;
 import controllers.modules2.RawProcessor;
+import controllers.modules2.RelationalOperationProcessor;
 import controllers.modules2.SplinesPullProcessor;
 import controllers.modules2.SplinesV1PullProcessor;
 import controllers.modules2.SqlPullProcessor;
@@ -53,6 +55,9 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("sumstreamsV1", SumStreamProcessor.class);
 		nameToClazz.put("csv", FTranslatorValuesToCsv.class);
 		nameToClazz.put("json", FTranslatorValuesToJson.class);
+		nameToClazz.put("relational", RelationalOperationProcessor.class);
+		nameToClazz.put("columnselect", ColumnSelectProcessor.class);
+
 
 		//moduleNamesToForward.add("passthroughV1");
 		//moduleNamesToForward.add("invertV1");
