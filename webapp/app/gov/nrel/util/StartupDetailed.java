@@ -213,9 +213,10 @@ public class StartupDetailed {
 		for(long time = start,n = 0; time < end; time+=hourInMillis, n++) {
 			String temp = n+"";
 			String volume = (totalPoints-n) +"";
+			String energy = Math.pow(n-(totalPoints/2), 2)+"";
 			//here, let's shift the power graph over to center it...
-			double divisor = Math.pow(totalPoints/2, 2)/totalPoints;
-			String energy = (Math.pow(n-(totalPoints/2), 2) / divisor)+"";
+//			double divisor = Math.pow(totalPoints/2, 2)/totalPoints;
+//			String energy = (Math.pow(n-(totalPoints/2), 2) / divisor)+"";
 			String number = totalPoints/2+"";
 			putWideData(name, user, time+"", temp, volume, energy, number);
 		}

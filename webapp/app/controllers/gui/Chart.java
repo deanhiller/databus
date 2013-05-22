@@ -24,9 +24,29 @@ public class Chart {
 	private long startTime;
 	private long endTime;
 	private static Pattern pattern;
+	private static List<String> dashStyles;
+	private static List<String> standardColors;
 
 	static {
 		pattern = Pattern.compile("^[A-Za-z0-9:/s \\.]+$");
+		dashStyles = new ArrayList<String>();
+		dashStyles.add("Solid");
+		dashStyles.add("Dot");
+		dashStyles.add("LongDash");
+		dashStyles.add("LongDashDotDot");
+		dashStyles.add("ShortDash");
+		dashStyles.add("ShortDot");
+		dashStyles.add("ShortDashDot");
+		dashStyles.add("ShortDashDotDot");
+		dashStyles.add("Dash");
+		dashStyles.add("DashDot");
+		dashStyles.add("LongDashDot");
+		standardColors = new ArrayList<String>();
+		standardColors.add("#89A54E");
+		standardColors.add("#4572A7");
+		standardColors.add("#AA4643");
+		standardColors.add("#FFFFFF");
+		standardColors.add("#FF00FF");
 	}
 	
 	public Chart() {
@@ -147,38 +167,13 @@ public class Chart {
 	
 	@JsonIgnore
 	public List<Axis> getAxisList() {
-		List<Axis> axisList = this.axis;
+		List<Axis> axisList = new ArrayList<Axis>(this.axis);
 		for(int i = axisList.size()-1; i >= 0; i--) {
 			Axis axis = axisList.get(i);
 			if(StringUtils.isEmpty(axis.getName()))
 				axisList.remove(axis);
 		}
 		return axisList;
-	}
-
-	@JsonIgnore
-	public String getGeneratedJavascript() {
-		String javascript = "";
-		
-		
-		for(int i = 0; i < columns.length; i++) {
-			ChartSeries series = columns[i];
-			String theCol = series.getName();
-			if(theCol == null || "".equals(theCol.trim()))
-				continue;
-			if(i > 0)
-				javascript += ",";
-			
-			String col = JavaExtensions.escapeJavaScript(theCol);
-			javascript += "{ name: '"+col+"', data: collapseData(data, '"+col+"') }";
-
-//		{
-//            name: 'Aggregation',
-//            data: collapseData(data, (singleStream!==true ? true : false))
-//          }
-		}
-
-		return javascript;
 	}
 
 	public void fillIn() {
@@ -189,19 +184,46 @@ public class Chart {
 				opp = !opp;
 			}
 		}
-		
-		fillSeriesColor(0, "#89A54E");
-		fillSeriesColor(1, "#4572A7");
-		fillSeriesColor(2, "#AA4643");
-		fillSeriesColor(3, "#000000");
-		fillSeriesColor(4, "#FF0000");
+	
+		if(getAxisList().size() > 1) {
+			fillInfo();
+		} else {
+			for(int i = 0;  i < columns.length; i++) {
+				ChartSeries s = columns[i];
+				if(StringUtils.isEmpty(s.getColor()))
+					s.setColor(standardColors.get(i));
+			}
+		}
 	}
 
-	private void fillSeriesColor(int i, String color) {
-		ChartSeries s = columns[i];
-		if(StringUtils.isEmpty(s.getColor())) {
-			s.setColor(color);
-		}		
+	private void fillInfo() {
+		List<ChartSeries> axis1 = new ArrayList<ChartSeries>();
+		List<ChartSeries> axis2 = new ArrayList<ChartSeries>();
+		List<ChartSeries> axis3 = new ArrayList<ChartSeries>();
+		for(int i = 0;  i < columns.length; i++) {
+			ChartSeries s = columns[i];
+			if(s.getAxis() == 0)
+				axis1.add(s);
+			else if(s.getAxis() == 1)
+				axis2.add(s);
+			else
+				axis3.add(s);
+			int index = s.getAxis();
+			Axis axis = this.axis.get(index);
+			if(StringUtils.isEmpty(s.getColor()))
+				s.setColor(axis.getColor());
+		} 
+		
+		fillStyles(axis1);
+		fillStyles(axis2);
+		fillStyles(axis3);
+	}
+
+	private void fillStyles(List<ChartSeries> axis) {
+		for(int i = 0; i < axis.size(); i++) {
+			ChartSeries s = axis.get(i);
+			s.setDashStyle(dashStyles.get(i));
+		}
 	}
 
 	public void fillInAxisColors() {

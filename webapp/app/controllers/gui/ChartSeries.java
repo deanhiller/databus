@@ -10,6 +10,7 @@ public class ChartSeries {
 	private String units;
 	private String color;
 	private int axisIndex;
+	private String dashStyle;
 	
 	public String getName() {
 		return JavaExtensions.escapeJavaScript(name);
@@ -38,5 +39,12 @@ public class ChartSeries {
 	@JsonIgnore
 	public int getAxis() {
 		return axisIndex-1;
+	}
+	
+	public void setDashStyle(String style) {
+		this.dashStyle = style;
+	}
+	public String getDashStyle() {
+		return dashStyle;
 	}
 }
