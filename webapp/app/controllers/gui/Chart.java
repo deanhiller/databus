@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.junit.Ignore;
 
@@ -19,7 +20,7 @@ public class Chart {
 	private String url;
 	private String timeColumn;
 	private List<Axis> axis = new ArrayList<Axis>();
-	private String[] columns = new String[5];
+	private ChartSeries[] columns = new ChartSeries[5];
 	private long startTime;
 	private long endTime;
 	private static Pattern pattern;
@@ -29,13 +30,24 @@ public class Chart {
 	}
 	
 	public Chart() {
-		axis.add(new Axis());
-		axis.add(new Axis());
-		axis.add(new Axis());
+		Axis a1 = new Axis();
+		a1.setOpposite(false);
+		Axis a2 = new Axis();
+		a2.setOpposite(true);
+		Axis a3 = new Axis();
+		a3.setOpposite(false);
+		
+		a1.setColor("89A54E");
+		a2.setColor("4572A7");
+		a3.setColor("AA4643");
+		
+		axis.add(a1);
+		axis.add(a2);
+		axis.add(a3);
 	}
 
 	public String getTitle() {
-		return title;
+		return JavaExtensions.escapeJavaScript(title);
 	}
 
 	public void setTitle(String title) {
@@ -43,7 +55,8 @@ public class Chart {
 	}
 
 	public String getUrl() {
-		return url;
+		String url = JavaExtensions.escapeJavaScript(this.url);
+		return url.replace("\\/", "/");
 	}
 	public void setUrl(String url) {
 		this.url = url;
@@ -54,34 +67,34 @@ public class Chart {
 	public void setTimeColumn(String timeColumn) {
 		this.timeColumn = timeColumn;
 	}
-	public String getColumn1() {
+	public ChartSeries getSeries1() {
 		return columns[0];
 	}
-	public void setColumn1(String column1) {
+	public void setSeries1(ChartSeries column1) {
 		this.columns[0] = column1;
 	}
-	public String getColumn2() {
+	public ChartSeries getSeries2() {
 		return columns[1];
 	}
-	public void setColumn2(String column2) {
+	public void setSeries2(ChartSeries column2) {
 		this.columns[1] = column2;
 	}
-	public String getColumn3() {
+	public ChartSeries getSeries3() {
 		return columns[2];
 	}
-	public void setColumn3(String column3) {
+	public void setSeries3(ChartSeries column3) {
 		this.columns[2] = column3;
 	}
-	public String getColumn4() {
+	public ChartSeries getSeries4() {
 		return columns[3];
 	}
-	public void setColumn4(String column4) {
+	public void setSeries4(ChartSeries column4) {
 		this.columns[3] = column4;
 	}
-	public String getColumn5() {
+	public ChartSeries getSeries5() {
 		return columns[4];
 	}
-	public void setColumn5(String column5) {
+	public void setSeries5(ChartSeries column5) {
 		this.columns[4] = column5;
 	}
 
@@ -123,8 +136,83 @@ public class Chart {
 	}
 
 	@JsonIgnore
-	public String[] getColumns() {
-		return columns;
+	public List<ChartSeries> getSeriesList() {
+		List<ChartSeries> result = new ArrayList<ChartSeries>();
+		for(ChartSeries s : columns) {
+			if(!StringUtils.isEmpty(s.getName())) 
+				result.add(s);
+		}
+		return result;
+	}
+	
+	@JsonIgnore
+	public List<Axis> getAxisList() {
+		List<Axis> axisList = this.axis;
+		for(int i = axisList.size()-1; i >= 0; i--) {
+			Axis axis = axisList.get(i);
+			if(StringUtils.isEmpty(axis.getName()))
+				axisList.remove(axis);
+		}
+		return axisList;
 	}
 
+	@JsonIgnore
+	public String getGeneratedJavascript() {
+		String javascript = "";
+		
+		
+		for(int i = 0; i < columns.length; i++) {
+			ChartSeries series = columns[i];
+			String theCol = series.getName();
+			if(theCol == null || "".equals(theCol.trim()))
+				continue;
+			if(i > 0)
+				javascript += ",";
+			
+			String col = JavaExtensions.escapeJavaScript(theCol);
+			javascript += "{ name: '"+col+"', data: collapseData(data, '"+col+"') }";
+
+//		{
+//            name: 'Aggregation',
+//            data: collapseData(data, (singleStream!==true ? true : false))
+//          }
+		}
+
+		return javascript;
+	}
+
+	public void fillIn() {
+		boolean opp = false;
+		for(Axis a : axis) {
+			if(a != null) {
+				a.setOpposite(opp);
+				opp = !opp;
+			}
+		}
+		
+		fillSeriesColor(0, "#89A54E");
+		fillSeriesColor(1, "#4572A7");
+		fillSeriesColor(2, "#AA4643");
+		fillSeriesColor(3, "#000000");
+		fillSeriesColor(4, "#FF0000");
+	}
+
+	private void fillSeriesColor(int i, String color) {
+		ChartSeries s = columns[i];
+		if(StringUtils.isEmpty(s.getColor())) {
+			s.setColor(color);
+		}		
+	}
+
+	public void fillInAxisColors() {
+		fillColor(0, "#89A54E");
+		fillColor(1, "#4572A7");
+		fillColor(2, "#AA4643");
+	}
+
+	private void fillColor(int index, String color) {
+		Axis axis1 = axis.get(index);
+		if(StringUtils.isEmpty(axis1.getColor()))
+			axis1.setColor(color);
+	}
 }

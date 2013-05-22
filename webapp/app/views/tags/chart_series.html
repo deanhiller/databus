@@ -1,0 +1,21 @@
+{   
+    name: '${_series.name}', 
+    color: '${_series.color}',
+    type: 'spline',
+    yAxis: ${_series.axis},
+    data: collapseData(data, '${_series.name}'),
+    tooltip: {
+        valueSuffix: ' ${_series.units}'
+    }
+} *{ {
+    name: '${_series.name}',
+    color: '${_series.color}',
+    type: 'spline',
+    yAxis: ${_series.axisIndex},
+
+    /* data: collapseData(data, 'energy') */
+    data: collapseData(data, '${_series.name}'),
+    tooltip: {
+        valueSuffix: ' ${_series.units}'
+    }
+} }*

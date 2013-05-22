@@ -2,27 +2,78 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
-#{form @postStep1(), id:'editmonitor', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+#{form @postStep1(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1000px;margin: 0 auto'}
 
     <legend>Create Chart Step 1 of 2</legend>
 
     <input type="hidden" name="chart.timeColumn" value="${chart?.timeColumn}">
-    <input type="hidden" name="chart.column1" value="${chart?.column1}">
-    <input type="hidden" name="chart.column2" value="${chart?.column2}">
-    <input type="hidden" name="chart.column3" value="${chart?.column3}">
-    <input type="hidden" name="chart.column4" value="${chart?.column4}">
-    <input type="hidden" name="chart.column5" value="${chart?.column5}">
+    <input type="hidden" name="chart.series1.name" value="${chart?.series1?.name}">
+    <input type="hidden" name="chart.series1.units" value="${chart?.series1?.units}">
+    <input type="hidden" name="chart.series1.color" value="${chart?.series1?.color}">
+    <input type="hidden" name="chart.series1.axisIndex" value="${chart?.series1?.axisIndex}">
+    <input type="hidden" name="chart.series2.name" value="${chart?.series2?.name}">
+    <input type="hidden" name="chart.series2.units" value="${chart?.series2?.units}">
+    <input type="hidden" name="chart.series2.color" value="${chart?.series2?.color}">
+    <input type="hidden" name="chart.series2.axisIndex" value="${chart?.series2?.axisIndex}">
+    <input type="hidden" name="chart.series3.name" value="${chart?.series3?.name}">
+    <input type="hidden" name="chart.series3.units" value="${chart?.series3?.units}">
+    <input type="hidden" name="chart.series3.color" value="${chart?.series3?.color}">
+    <input type="hidden" name="chart.series3.axisIndex" value="${chart?.series3?.axisIndex}">
+    <input type="hidden" name="chart.series4.name" value="${chart?.series4?.name}">
+    <input type="hidden" name="chart.series4.units" value="${chart?.series4?.units}">
+    <input type="hidden" name="chart.series4.color" value="${chart?.series4?.color}">
+    <input type="hidden" name="chart.series4.axisIndex" value="${chart?.series4?.axisIndex}">
+    <input type="hidden" name="chart.series5.name" value="${chart?.series5?.name}">
+    <input type="hidden" name="chart.series5.units" value="${chart?.series5?.units}">
+    <input type="hidden" name="chart.series5.color" value="${chart?.series5?.color}">
+    <input type="hidden" name="chart.series5.axisIndex" value="${chart?.series5?.axisIndex}">
     <input type="hidden" name="chart.startTime" value="${chart?.startTime}">
     <input type="hidden" name="chart.endTime" value="${chart?.endTime}">
 
     #{text2 id:'chart.title',     label:'Title',       help:'The title of your chart'/}
     #{text2 id:'chart.url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
-	#{text2 id:'chart.axis1.name',  label:'Y-Axis 1 Name',  help:'The first Y-axis in the chart(maybe the only one)'/}
-    #{text2 id:'chart.axis1.units', label:'Y-Axis 1 Units', help:'The units of the first Y-axis in the chart'/}
-    #{text2 id:'chart.axis2.name',  label:'Y-Axis 2 Name',  help:'The second Y-axis in the chart'/}
-    #{text2 id:'chart.axis2.units', label:'Y-Axis 2 Units', help:'The units of the second Y-axis in the chart'/}
-    #{text2 id:'chart.axis3.name',  label:'Y-Axis 3 Name',  help:'The third Y-axis in the chart'/}
-    #{text2 id:'chart.axis3.units', label:'Y-Axis 3 Units', help:'The units of the third Y-axis in the chart'/}
+    
+    #{formfield 'chart.axis1.name'}
+    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Y-Axis 1</label>
+        <div class="controls">
+            <input type="text" name="chart.axis1.name" value="${chart?.axis1?.name}" placeholder="Name(required)" class="${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis1.units" value="${chart?.axis1?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.axis1.units') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis1.color" value="${chart?.axis1?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.axis1.color') ? 'has_error' : ''}">
+            <span class="help-block">${errors.forKey('chart.axis1.name')}</span>
+            <span class="help-block">${errors.forKey('chart.axis1.units')}</span>
+            <span class="help-block">${errors.forKey('chart.axis1.color')}</span>
+        </div>
+    </div>
+    #{/formfield}
+
+    #{formfield 'chart.axis2.name'}
+    <div class="control-group ${errors.forKey('chart.axis2.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Y-Axis 2</label>
+        <div class="controls">
+            <input type="text" name="chart.axis2.name" value="${chart?.axis2?.name}" placeholder="Name(optional)" class="${errors.forKey('chart.axis2.name') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis2.units" value="${chart?.axis2?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.axis2.units') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis2.color" value="${chart?.axis2?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.axis2.color') ? 'has_error' : ''}">
+            <span class="help-block">${errors.forKey('chart.axis2.name')}</span>
+            <span class="help-block">${errors.forKey('chart.axis2.units')}</span>
+            <span class="help-block">${errors.forKey('chart.axis2.color')}</span>
+        </div>
+    </div>
+    #{/formfield}
+    
+    #{formfield 'chart.axis3.name'}
+    <div class="control-group ${errors.forKey('chart.axis3.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Y-Axis 3</label>
+        <div class="controls">
+            <input type="text" name="chart.axis3.name" value="${chart?.axis3?.name}" placeholder="Name(optional)" class="${errors.forKey('chart.axis3.name') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis3.units" value="${chart?.axis3?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.axis3.units') ? 'has_error' : ''}">
+            <input type="text" name="chart.axis3.color" value="${chart?.axis3?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.axis3.color') ? 'has_error' : ''}">
+            <span class="help-block">${errors.forKey('chart.axis3.name')}</span>
+            <span class="help-block">${errors.forKey('chart.axis3.units')}</span>
+            <span class="help-block">${errors.forKey('chart.axis3.color')}</span>
+        </div>
+    </div>
+    #{/formfield}
 
 	<div class="control-group">
 	   <div class="controls">

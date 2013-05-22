@@ -41,7 +41,6 @@ public class MyCharts extends Controller {
 		int index = url.lastIndexOf("/");
 		if(index < 0) {
 			validation.addError("chart.url", "The url supplied must end with {startTime}/{endTime}");
-			flash.error("The url supplied must end with {startTime}/{endTime} and does not");
 		} else {
 			String endTimeStr = url.substring(index+1);
 			String left = url.substring(0, index);
@@ -57,6 +56,10 @@ public class MyCharts extends Controller {
 		if(chart.getTitle() == null || "".equals(chart.getTitle().trim()))
 			validation.addError("chart.title", "This is a required field");
 		
+		if("".equals(chart.getAxis1().getName()))
+			validation.addError("chart.axis1.name", "Name is a required field");
+				
+		chart.fillInAxisColors();
 		Info info = createUrl(chart, 1);
 
 		String encodedChart = info.getParameter();
@@ -70,6 +73,7 @@ public class MyCharts extends Controller {
 	}
 
 	public static void postStep2(Chart chart) throws UnsupportedEncodingException {
+		chart.fillIn();
 		Info info = createUrl(chart, 2);
 		String encodedChart = info.getParameter();
 		int length = info.getLength();
@@ -77,14 +81,12 @@ public class MyCharts extends Controller {
 	}
 	
 	public static void drawChart(String encodedChart, int version, int length) {
-		Chart theChart = deserialize(encodedChart, version, length);
-		ChartForJavascript chart = new ChartForJavascript(theChart);
+		Chart chart = deserialize(encodedChart, version, length);
 		render(chart, encodedChart, version, length);
 	}
 	
 	public static void drawJustChart(String encodedChart, String title, int version, int length) {
-		Chart theChart = deserialize(encodedChart, version, length);
-		ChartForJavascript chart = new ChartForJavascript(theChart);
+		Chart chart = deserialize(encodedChart, version, length);
 		render(chart, encodedChart, version, length);
 	}
 
@@ -106,6 +108,7 @@ public class MyCharts extends Controller {
 		int length = input.length;
 		
 		if(validation.hasErrors()) {
+			flash.error("You have errors in your form below");
 			validation.keep();
 			flash.keep();
 			params.flash();

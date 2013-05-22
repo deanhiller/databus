@@ -1,19 +1,21 @@
 package controllers.gui;
 
+import org.codehaus.jackson.annotate.JsonIgnore;
+
 import play.templates.JavaExtensions;
 
-public class Axis {
+public class ChartSeries {
 
 	private String name;
 	private String units;
 	private String color;
-	private boolean opposite;
+	private int axisIndex;
 	
 	public String getName() {
 		return JavaExtensions.escapeJavaScript(name);
 	}
-	public void setName(String name) {
-		this.name = name;
+	public void setName(String columnName) {
+		this.name = columnName;
 	}
 	public String getUnits() {
 		return JavaExtensions.escapeJavaScript(units);
@@ -27,10 +29,14 @@ public class Axis {
 	public void setColor(String color) {
 		this.color = color;
 	}
-	public void setOpposite(boolean b) {
-		this.opposite = b;
+	public int getAxisIndex() {
+		return axisIndex;
 	}
-	public boolean isOpposite() {
-		return opposite;
+	public void setAxisIndex(int axisIndex) {
+		this.axisIndex = axisIndex;
+	}
+	@JsonIgnore
+	public int getAxis() {
+		return axisIndex-1;
 	}
 }

@@ -1,0 +1,18 @@
+{
+    gridLineWidth: 0,
+    labels: {
+        formatter: function() {
+            return this.value +'${_axis.units}';
+        },
+        style: {
+            color: '${_axis.color}'
+        }
+    },
+    title: {
+        text: '${_axis.name}',
+        style: {
+            color: '${_axis.color}'
+        }
+    }
+   ,opposite: ${_axis.isOpposite()}
+}

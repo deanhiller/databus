@@ -27,12 +27,12 @@ public class TestCompression {
 
 		Chart chart = new Chart();
 		chart.setUrl(url1);
-		chart.setColumn1("temp");
-		chart.setColumn2("volume");
-		chart.setColumn3("number");
-		chart.setColumn4("energy");
+		//chart.setColumn1("temp");
+		//chart.setColumn2("volume");
+		//chart.setColumn3("number");
+		//chart.setColumn4("energy");
 
-		String all = url1+"column1="+chart.getColumn1()+"&column2="+chart.getColumn2()+"&column3="+chart.getColumn3()+"&column4="+chart.getColumn4();
+		String all = url1+"column1="+chart.getSeries1().getName()+"&column2="+chart.getSeries2().getName()+"&column3="+chart.getSeries3().getName()+"&column4="+chart.getSeries4().getName();
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		ObjectMapper mapper = new ObjectMapper(new BsonFactory());
@@ -69,6 +69,6 @@ public class TestCompression {
 		ByteArrayInputStream bais = new ByteArrayInputStream(result);
 		Chart chart2 = mapper.readValue(bais, Chart.class);
 
-		System.out.println("chart url="+chart2.getUrl()+" col1="+chart2.getColumn1());
+		System.out.println("chart url="+chart2.getUrl()+" col1="+chart2.getSeries1().getName());
 	}
 }

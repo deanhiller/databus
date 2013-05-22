@@ -64,7 +64,8 @@ public class TagHelp extends FastTags {
         //instead or we have no access to the field
         if(obj == null) {
         	Map props = (Map) body.getProperty("_caller");
-        	obj = props.get(pieces[0]);
+        	if(props != null)
+        		obj = props.get(pieces[0]);
         }
         
         if(obj != null){
@@ -91,7 +92,9 @@ public class TagHelp extends FastTags {
 		        Object property = getter.invoke(obj);
 		        if(i == (pieces.length-1)){
 		        	return property;
-		        }else{
+		        }else if(property == null) {
+		        	return null;
+		        } else {
 		        	obj = property;
 		        }
 		    }catch(Exception e){

@@ -1,4 +1,9 @@
 
+ *{           #{list _chart.axisList, as:'axis'}
+                index=${axis_index}
+                #{if axis_index < _chart.axisList.size()},#{/if}
+            #{/list}
+}*
     <script type="text/javascript">
 $(function () {
 
@@ -185,66 +190,67 @@ $(function () {
         
         var msg = "No data available in the specified time period."
         if(data.data.length != 0) {
-            msg = "Last value was "+data.data[data.data.length-1].${_chart.column1}+" at "+new Date(data.data[data.data.length-1].${_chart.timeColumn}).toUTCString()
+            msg = "Last value was "+data.data[data.data.length-1].${_chart.series1.name}+" at "+new Date(data.data[data.data.length-1].${_chart.timeColumn}).toUTCString()
         }
-                
-        console.log('window2222 heigth:'+$(window).height());
+
+      console.log('window2222 height:'+$(window).height());
       chart = new Highcharts.StockChart({
-        chart: {
-          renderTo: mychart,
-          height: getHeight()
-        },
-        exporting: {
-          buttons: {
-          }
-        },
-        legend: {
-          align: 'center',
-          enabled: true,
-          floating: true,
-          verticalAlign: 'bottom',
-          y: -57
-        },
-        navigator: {
-          yAxis: {
-            reversed: reverseAxis
-          }
-        },
-        series: [
-
-          ${_chart.generatedJavascript}                 
-      /* The above chart.generatedJavascript generates the below code for each column...  
-         {
-          name: 'Aggregation',
-          data: collapseData(data, (singleStream!==true ? true : false))
-        }*/
-        
-        
-        ],
-        title: {
-          text: (title!==false ? title : '${_chart.title}') 
-        },
-        subtitle: {
-            text: msg
+          chart: {
+              renderTo: mychart,
+              height: getHeight()
           },
-        xAxis: {
-          ordinal: false
-        },
-        yAxis: {
           title: {
-            text: ''
+              text: (title!==false ? title : '${_chart.title}') 
           },
-          labels: {
-            align: "right",
-            x: -2,
-            y: 4
+          subtitle: {
+                text: msg
           },
-          reversed: reverseAxis
-        }
-      });
-      chart.showLoading();
+          xAxis: {
+              ordinal: false
+          },
+          yAxis: [
+  #{list _chart.axisList, as:'axis'}#{chart_yaxis axis:axis/}
+  #{if axis_index < _chart.axisList.size()},#{/if}
+  #{/list}
+          ],
+          tooltip: {
+              shared: true
+          },
+          legend: {
+              align: 'center',
+              enabled: true,
+              floating: true,
+              verticalAlign: 'bottom',
+              y: -57
+          },
+          *{ legend: {
+              layout: 'vertical',
+              align: 'left',
+              x: 120,
+              verticalAlign: 'top',
+              y: 80,
+              floating: true,
+              backgroundColor: '#FFFFFF'
+          }, }*
+       *{   exporting: {
+            buttons: {
+            }
+          },
+          navigator: {
+            yAxis: {
+              reversed: reverseAxis
+            }
+          }, }*
+          rangeSelector : {
+                  selected : 1
+          },
+          series: [
+  #{list _chart.seriesList, as:'series'}#{chart_series series:series/}
+  #{if series_index < _chart.seriesList.size()},#{/if}
+  #{/list}
+          ]
+        });
 
-      chart.hideLoading();
       
     });
   }
