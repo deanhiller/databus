@@ -8,6 +8,7 @@ public class Axis {
 	private String units;
 	private String color;
 	private boolean opposite;
+	private int offset;
 	
 	public String getName() {
 		return JavaExtensions.escapeJavaScript(name);
@@ -32,5 +33,11 @@ public class Axis {
 	}
 	public boolean isOpposite() {
 		return opposite;
+	}
+	public void setOffset(int offset) {
+		this.offset = offset;
+	}
+	public int getOffset() {
+		return offset;
 	}
 }

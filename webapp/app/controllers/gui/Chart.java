@@ -178,10 +178,15 @@ public class Chart {
 
 	public void fillIn() {
 		boolean opp = false;
-		for(Axis a : axis) {
+		for(int i = 0; i < axis.size(); i++) {
+			Axis a = axis.get(i);
 			if(a != null) {
 				a.setOpposite(opp);
 				opp = !opp;
+				if(i >= 2)
+					a.setOffset(200);
+				else
+					a.setOffset(100);
 			}
 		}
 	
