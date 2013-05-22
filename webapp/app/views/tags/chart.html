@@ -198,9 +198,9 @@ $(function () {
               ordinal: false
           },
           yAxis: [
-  #{list _chart.axisList, as:'axis'}#{chart_yaxis axis:axis/}
-  #{if axis_index < _chart.axisList.size()},#{/if}
-  #{/list}
+#{list _chart.axisList, as:'axis'}#{chart_yaxis axis:axis/}
+#{if axis_index < _chart.axisList.size()},#{/if}
+#{/list}
           ],
           tooltip: {
               shared: true
@@ -222,18 +222,6 @@ $(function () {
               floating: true,
               backgroundColor: '#FFFFFF'
           }, }*
-       *{   exporting: {
-            buttons: {
-            }
-          },
-          navigator: {
-            yAxis: {
-              reversed: reverseAxis
-            }
-          }, }*
-          rangeSelector : {
-                  selected : 1
-          },
           series: [
   #{list _chart.seriesList, as:'series'}#{chart_series series:series/}
   #{if series_index < _chart.seriesList.size()},#{/if}
