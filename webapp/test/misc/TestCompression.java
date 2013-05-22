@@ -21,7 +21,7 @@ import de.undercouch.bson4jackson.BsonFactory;
 
 public class TestCompression {
 
-	@Test
+	//@Test
 	public void testSomething() throws DataFormatException, JsonGenerationException, JsonMappingException, IOException {
 		String url1 = "url1=http://databus.nrel.gov/api/module1/module2/something";
 
