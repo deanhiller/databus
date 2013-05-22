@@ -72,6 +72,8 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	}
 
 	private String addTimeStamps(String url, long start, long end) {
+		if(url.startsWith("/"))
+			url = url.substring(1);
 		return url+"/"+start+"/"+end;
 	}
 

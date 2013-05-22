@@ -45,6 +45,6 @@ public class ChartSeries {
 		this.dashStyle = style;
 	}
 	public String getDashStyle() {
-		return dashStyle;
+		return JavaExtensions.escapeJavaScript(dashStyle);
 	}
 }
