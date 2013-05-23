@@ -19,34 +19,68 @@ public class VariabilityCleanProcessor extends PushOrPullProcessor {
 
 	private Float allowedVariation;
 	private BigDecimal previousPoint = null;
-	private CorrectionMethod correctionMethod = CorrectionMethod.PREVIOUS;
+	private CorrectionMethod correctionMethod = CorrectionMethod.REMOVE;
+	private ComparisonType comparisonType = ComparisonType.PERCENT;
 	
 	@Override
 	protected int getNumParams() {
-		return 2;
+		return 1;
 	}
 	
 	@Override
 	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String allowedVarStr = params.getParams().get(0);
-		String correctionMethodStr = params.getParams().get(1);
-		String msg = "module url /variabilityclean/{allowedVariation}/{correctionMethod}/ must be passed a long for allowed variation (ie. .2 for 20%) " +
-				"and a correctionMethod describing what to do with a value outside that allowedVariation.  " +
-				"Supported correctionMethods are PREVIOUS to use the previous value, ZERO to replace with 0 or REMOVE to remove the row entirely.";
-		correctionMethod = CorrectionMethod.translate(StringUtils.lowerCase(correctionMethodStr));
-		if (correctionMethod == null)
-			throw new BadRequest(msg);
+		String correctionMethodStr = options.get("correctionMethod");
+		String comparisonTypeStr = options.get("comparisonType");
+		String msg = "module url /variabilityclean(correctionMethod=aCorrectionMethod,comparison=aComparisonType)/<allowedVariation>/ must be passed a long for allowed variation (ie. .2 for 20%) " +
+				"and optionally a correctionMethod as an option describing what to do with a value outside that allowedVariation.  " +
+				"Supported correctionMethods are PREVIOUS to use the previous value, ZERO to replace with 0 or REMOVE to remove the row entirely; if not specified REMOVE is assumed." +
+				"Supported comparisonTypes are PERCENT to compare by percent difference (.2 = anything more then 20% different will have correction applied), SCALAR to compare by a scalar " +
+				"(100 = any value more than 100 different from previous will have correction applied)";
+		if (StringUtils.isNotBlank(correctionMethodStr)) {
+			correctionMethod = CorrectionMethod.translate(StringUtils.lowerCase(correctionMethodStr));
+			if (correctionMethod == null)
+				throw new BadRequest(msg);
+		}
+		if (StringUtils.isNotBlank(comparisonTypeStr)) {
+			comparisonType = ComparisonType.translate(StringUtils.lowerCase(comparisonTypeStr));
+			if (comparisonType == null)
+				throw new BadRequest(msg);
+		}
 		this.allowedVariation = parseFloat(allowedVarStr, msg);
 		return newPath;
 	}
 	
 	@Override
 	protected TSRelational modifyRow(TSRelational tv) {
+		
 		if (previousPoint == null) {
 			previousPoint = getValueEvenIfNull(tv);
 			return tv;
 		}
+		
+		if (comparisonType == ComparisonType.PERCENT) 
+			return compareByPercent(tv);
+		else if (comparisonType == ComparisonType.SCALAR)
+			return compareByScalar(tv);
+		else //coding error?
+			throw new BadRequest("bad comparison type, this is a bug!");
+			
+		
+	}
+	
+	private TSRelational compareByScalar(TSRelational tv) {
+		if ((previousPoint.abs().subtract(getValueEvenIfNull(tv).abs())).abs().floatValue() > allowedVariation) 
+			tv=applyCorrection(tv);
+
+		if (tv != null)
+			previousPoint = getValueEvenIfNull(tv);	
+		return tv;
+	}
+
+	private TSRelational compareByPercent(TSRelational tv) {
+		
 		//TODO:JSC special case, any value is infinite percent difference from 0, what to do?
 		if (previousPoint.compareTo(new BigDecimal("0.0"))==0) {
 			previousPoint = getValueEvenIfNull(tv);
@@ -59,19 +93,17 @@ public class VariabilityCleanProcessor extends PushOrPullProcessor {
 			return tv;
 		}
 		else if (getValueEvenIfNull(tv).subtract(previousPoint.abs()).divide(previousPoint.abs(), 12, RoundingMode.HALF_DOWN).floatValue() > allowedVariation) {
-			System.out.println("applying correction!  calculated difference between prev:"+previousPoint.floatValue()+" and tv.value():"+getValueEvenIfNull(tv)+"is "+getValueEvenIfNull(tv).subtract(previousPoint.abs()).divide(previousPoint.abs(), 12, RoundingMode.HALF_DOWN).floatValue());
 			tv = applyCorrection(tv);
 			if (tv != null)
 				previousPoint = getValueEvenIfNull(tv);
 			return tv;
 		}
 		else {
-			System.out.println("keeping value!  calculated difference between prev:"+previousPoint.floatValue()+" and tv.value():"+getValueEvenIfNull(tv)+"is "+getValueEvenIfNull(tv).subtract(previousPoint.abs()).divide(previousPoint.abs(), 12, RoundingMode.HALF_DOWN).floatValue());
 			previousPoint = getValueEvenIfNull(tv);
 			return tv;
 		}
 	}
-	
+
 	private TSRelational applyCorrection(TSRelational tv) {
 		if (correctionMethod == CorrectionMethod.REMOVE)
 			return null;
@@ -98,7 +130,7 @@ public class VariabilityCleanProcessor extends PushOrPullProcessor {
 			Map<String, CorrectionMethod> typesMap = new HashMap<String, CorrectionMethod>();
 			for(CorrectionMethod type : CorrectionMethod.values()) {
 				typesMap.put(type.getCode(), type);
-			} // for
+			}
 			types = Collections.unmodifiableMap(typesMap);
 		}
 		
@@ -107,6 +139,42 @@ public class VariabilityCleanProcessor extends PushOrPullProcessor {
 		}
 		
 		public static CorrectionMethod translate(String code) {
+			if(code == null) {
+				return null;
+			}
+			return types.get(code);
+		}
+
+		public String getCode() {
+			return code;
+		}
+
+		public void setCode(String code) {
+			this.code = code;
+		}
+	}
+	
+	private enum ComparisonType {
+		PERCENT("percent"),
+		SCALAR("scalar");
+
+		
+		private String code;
+		private static final Map<String, ComparisonType> types;
+		
+		static {
+			Map<String, ComparisonType> typesMap = new HashMap<String, ComparisonType>();
+			for(ComparisonType type : ComparisonType.values()) {
+				typesMap.put(type.getCode(), type);
+			} 
+			types = Collections.unmodifiableMap(typesMap);
+		}
+		
+		private ComparisonType(String code) {
+			this.setCode(code);
+		}
+		
+		public static ComparisonType translate(String code) {
 			if(code == null) {
 				return null;
 			}
