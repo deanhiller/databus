@@ -1,5 +1,6 @@
 package controllers.modules2.framework;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
@@ -87,7 +88,7 @@ public class ModuleCore {
 		VisitorInfo visitor = new VisitorInfo(promise, factory, isReversed);
 		if(visitor.isReversed()) {
 			lastOne = negationProcessors.get();
-			lastOne.init("negation/"+path, toOutput, visitor);
+			lastOne.init("negation/"+path, toOutput, visitor, new HashMap<String, String>());
 		}
 
 		lastOne.createPipeline(path, visitor, null, false);

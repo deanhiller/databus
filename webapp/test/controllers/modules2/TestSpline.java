@@ -5,6 +5,7 @@ import gov.nrel.util.StartupGroups;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,7 +74,7 @@ public class TestSpline {
 		mock.setRows(rows);
 		processor.setChild(mock);
 		VisitorInfo visitor = new VisitorInfo(null, null, false);
-		processor.init(path, mock, visitor);
+		processor.init(path, mock, visitor, new HashMap<String, String>());
 		
 		List<TSRelational> realResults = new ArrayList<TSRelational>();
 		while(true) {

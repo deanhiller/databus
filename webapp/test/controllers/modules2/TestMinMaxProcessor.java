@@ -2,6 +2,7 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import junit.framework.Assert;
@@ -66,7 +67,7 @@ public class TestMinMaxProcessor {
 		mock.setRows(rows);
 		processor.setChild(mock);
 		VisitorInfo visitor = new VisitorInfo(null, null, false);
-		processor.init(path, mock, visitor);
+		processor.init(path, mock, visitor, new HashMap<String, String>());
 		
 		List<TSRelational> realResults = new ArrayList<TSRelational>();
 		while(true) {
@@ -84,7 +85,7 @@ public class TestMinMaxProcessor {
 		EmptyFlag flag = new EmptyFlag();
 		MockProcessor mock = new MockProcessor();
 		VisitorInfo visitor = new VisitorInfo(null, null, false);
-		processor.init(path, mock, visitor);
+		processor.init(path, mock, visitor, new HashMap<String, String>());
 
 		for(TSRelational row : rows) {
 			processor.incomingChunk(null, row, flag);

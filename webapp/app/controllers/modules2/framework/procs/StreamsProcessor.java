@@ -2,6 +2,7 @@ package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import play.mvc.results.NotFound;
@@ -20,7 +21,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	protected Long currentTimePointer;
 	protected List<PullProcessor> children = new ArrayList<PullProcessor>();
 	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
-	private List<String> urls;
+	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
 
 	@Override
@@ -43,8 +44,8 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor) {
-		String newPath = super.init(path, nextInChain, visitor);
+			VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(path, nextInChain, visitor, options);
 		List<String> params2 = params.getParams();
 		String name = params2.get(0);
 		

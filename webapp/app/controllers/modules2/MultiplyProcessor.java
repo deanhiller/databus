@@ -1,6 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
@@ -27,8 +28,8 @@ public class MultiplyProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(pathStr, nextInChain, visitor);
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String path = params.getParams().get(0);
 		try {
 			scalar = new BigDecimal(path);

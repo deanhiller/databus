@@ -1,6 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 
@@ -28,8 +29,8 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(pathStr, nextInChain, visitor);
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String minStr = params.getParams().get(0);
 		String maxStr = params.getParams().get(1);
 		String msg = "module url /rangeclean/{min}/{max} must be passed a long for min and max and was not passed that";

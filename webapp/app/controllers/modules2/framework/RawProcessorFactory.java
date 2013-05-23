@@ -9,6 +9,7 @@ import javax.inject.Provider;
 
 import com.google.inject.Injector;
 
+import controllers.modules2.AggregationProcessor;
 import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.FirstValuesProcessor;
 import controllers.modules2.InvertProcessor;
@@ -24,6 +25,7 @@ import controllers.modules2.SplinesV1PullProcessor;
 import controllers.modules2.SqlPullProcessor;
 import controllers.modules2.SumStreamProcessor;
 import controllers.modules2.TimeAverageProcessor;
+import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
 import controllers.modules2.framework.chain.FTranslatorValuesToJson;
 import controllers.modules2.framework.procs.ProcessorSetup;
@@ -44,6 +46,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("splinesV1", SplinesV1PullProcessor.class);
 		nameToClazz.put("splinesV2", SplinesPullProcessor.class);
 		nameToClazz.put("rangecleanV1", RangeCleanProcessor.class);
+		nameToClazz.put("variabilitycleanV1", VariabilityCleanProcessor.class);
 		nameToClazz.put("timeaverageV2", TimeAverageProcessor.class);
 		nameToClazz.put("invertV1", InvertProcessor.class);
 		nameToClazz.put("passthroughV1", PassthroughProcessor.class);
@@ -57,6 +60,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("json", FTranslatorValuesToJson.class);
 		nameToClazz.put("relational", RelationalOperationProcessor.class);
 		nameToClazz.put("columnselect", ColumnSelectProcessor.class);
+		nameToClazz.put("aggregation", AggregationProcessor.class);
 
 
 		//moduleNamesToForward.add("passthroughV1");

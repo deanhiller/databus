@@ -1,6 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -24,8 +25,8 @@ public class MinMaxProcessor extends EmptyWindowProcessor {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(path, nextInChain, visitor);
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(path, nextInChain, visitor, options);
 		String msg = "After the /minmaxV1/ in the url must be a long value of the interval and that is missing";
 		long interval = parseLong(params.getParams().get(0), msg);
 		super.initEmptyParser(params.getStart(), params.getEnd(), interval, null);

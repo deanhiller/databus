@@ -1,11 +1,13 @@
 package controllers.modules2.framework.procs;
 
+import java.util.HashMap;
+
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.VisitorInfo;
 
 public interface ProcessorSetup {
 
-	String init(String path, ProcessorSetup processorSetup, VisitorInfo visitor);
+	String init(String path, ProcessorSetup processorSetup, VisitorInfo visitor, HashMap<String, String> options);
 
 	ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter);
 	

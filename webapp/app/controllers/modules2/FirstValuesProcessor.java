@@ -1,5 +1,6 @@
 package controllers.modules2;
 
+import java.util.HashMap;
 import java.util.List;
 
 import play.mvc.results.BadRequest;
@@ -24,8 +25,8 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 	}
 
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		super.init(pathStr, nextInChain, visitor);
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		super.init(pathStr, nextInChain, visitor, options);
 		//params = parsePath(pathStr, visitor);
 		//first values may have no start and end times here
 		if(params.getStart() == null) {

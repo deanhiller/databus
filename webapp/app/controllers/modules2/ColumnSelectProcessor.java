@@ -45,8 +45,8 @@ public class ColumnSelectProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(pathStr, nextInChain, visitor);
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String cols = params.getParams().get(0);
 		colMap = new HashMap<String,String>();
 		for (String s:StringUtils.split(cols, ",")) {
@@ -54,7 +54,7 @@ public class ColumnSelectProcessor extends PushOrPullProcessor {
 			String alias=StringUtils.substringAfter(s, " as ");			
 			if (StringUtils.isEmpty(alias))
 				alias = col;
-			colMap.put(col, alias);
+			colMap.put(col.trim(), alias.trim());
 		}
 		
 		return newPath;

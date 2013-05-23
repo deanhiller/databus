@@ -3,6 +3,7 @@ package controllers.modules2;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 import models.KeyToTableName;
@@ -43,8 +44,8 @@ public class LogProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(path, nextInChain, visitor);
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(path, nextInChain, visitor, options);
 		// param 1: Type: String
 		String tableName = params.getParams().get(0);
 		NoSqlEntityManager s = NoSql.em();

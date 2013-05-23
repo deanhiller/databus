@@ -2,6 +2,7 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.script.Bindings;
@@ -48,8 +49,8 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor) {
-		String newPath = super.init(pathStr, nextInChain, visitor);
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String script = params.getParams().get(0);
 		
 		if (StringUtils.isEmpty(script))

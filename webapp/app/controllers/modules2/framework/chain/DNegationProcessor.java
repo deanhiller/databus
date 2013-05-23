@@ -1,5 +1,7 @@
 package controllers.modules2.framework.chain;
 
+import java.util.HashMap;
+
 import play.mvc.Http.Request;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
@@ -19,8 +21,8 @@ public class DNegationProcessor extends PushOrPullProcessor {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor) {
-		super.init(path, nextInChain, visitor);
+			VisitorInfo visitor, HashMap<String, String> options) {
+		super.init(path, nextInChain, visitor, options);
 		//NOTE: only different from super.init is we return the same path that is passed in to us...
 		return path;
 	}

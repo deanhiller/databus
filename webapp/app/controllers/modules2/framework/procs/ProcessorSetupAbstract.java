@@ -3,10 +3,14 @@ package controllers.modules2.framework.procs;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
+
+import org.apache.commons.lang.StringUtils;
 
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
@@ -27,6 +31,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 
 	protected ProcessorSetup nextInChain;
 	protected Path params;
+	private Map<String, String> options;
 	protected ProcessorSetup child;
 	private String timeColumn;
 	private String valueColumn;
@@ -61,6 +66,13 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		String[] pieces = path.split("/");
 		String moduleName = pieces[0];
+		HashMap<String, String> childsOptions = new HashMap<String, String>();
+		if (StringUtils.contains(moduleName, "(")) {
+			String optionString = StringUtils.substringBetween(moduleName, "(", ")");
+			for (String option: optionString.split(",")) 
+				childsOptions.put(StringUtils.substringBefore(option, "="), StringUtils.substringAfter(option, "="));
+			moduleName = StringUtils.substringBefore(moduleName, "(");
+		}
 
 		child = useThisChild;
 		if(child == null) {
@@ -109,7 +121,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 			}
 		}
 
-		String newPath = child.init(path, this, visitor);
+		String newPath = child.init(path, this, visitor, childsOptions);
 		child.createPipeline(newPath, visitor, grandChild, alreadyAddedInverter);
 		return child;
 	}
@@ -151,13 +163,18 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	}
 	
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor) {
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		Path pathInfo = parsePath(path, visitor);
+		this.options = options;
 		this.params = pathInfo;
 		this.nextInChain = nextInChain;
 		//for now, hard code these until we know how we will pass them in
 		timeColumn = "time";
 		valueColumn = "value";
+		if (options.containsKey("timeColumn"))
+			timeColumn=options.get("timeColumn");
+		if (options.containsKey("valueColumn"))
+			valueColumn=options.get("valueColumn");
 		return pathInfo.getLeftOverPath();
 	}
 
@@ -207,5 +224,20 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		} catch(NumberFormatException e) {
 			throw new BadRequest(msg);
 		}
+	}
+	protected float parseFloat(String param, String msg) {
+		try {
+			return Float.parseFloat(param);
+		} catch(NumberFormatException e) {
+			throw new BadRequest(msg);
+		}
+	}
+
+	public Map<String, String> getOptions() {
+		return options;
+	}
+
+	public void setOptions(Map<String, String> options) {
+		this.options = options;
 	}
 }
