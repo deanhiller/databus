@@ -200,6 +200,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 }
 
             } catch (Exception ex) {
+            	log.error("Exception trying to process request", ex);
                 serve500(ex, ctx, nettyRequest);
             }
         }
