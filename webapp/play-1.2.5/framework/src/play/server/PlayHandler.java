@@ -862,6 +862,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 writeFuture.addListener(ChannelFutureListener.CLOSE);
                 Logger.error(e, "Internal Server Error (500) for request %s", request.method + " " + request.url);
             } catch (Throwable ex) {
+            	log.error("Exception processing request="+request.method+" "+request.url, ex);
                 Logger.error(e, "Internal Server Error (500) for request %s", request.method + " " + request.url);
                 Logger.error(ex, "Error during the 500 response generation");
                 try {
@@ -873,10 +874,12 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                     ChannelFuture writeFuture = ctx.getChannel().write(nettyResponse);
                     writeFuture.addListener(ChannelFutureListener.CLOSE);
                 } catch (UnsupportedEncodingException fex) {
+                	log.error("unsupported encoding", fex);
                     Logger.error(fex, "(encoding ?)");
                 }
             }
         } catch (Throwable exxx) {
+        	log.error("exception cleaning up", exxx);
             try {
                 final String errorHtml = "Internal Error (check logs)";
                 byte[] bytes = errorHtml.getBytes(encoding);
@@ -986,6 +989,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
 
             }
         } catch (Throwable ez) {
+        	log.error("exception serverstatic="+request.method+" "+request.url);
             Logger.error(ez, "serveStatic for request %s", request.method + " " + request.url);
             try {
                 HttpResponse errorResponse = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.INTERNAL_SERVER_ERROR);
