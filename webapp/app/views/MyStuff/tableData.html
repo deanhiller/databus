@@ -5,12 +5,12 @@
     <title>Databus Dashboard</title>
     <script type="text/javascript" src="/public/includes/jquery_1.9.0.js"></script>
     <script type="text/javascript">
-var days = 2;
 
 $(function () {
 
+  var hours = 2;
   var endTime = (new Date()).getTime(),
-    startTime = endTime - days * 24 * 3600000,
+    startTime = endTime - hours * 3600000,
     maximized = false,
     maximizedStream,
     chartMap = {},
