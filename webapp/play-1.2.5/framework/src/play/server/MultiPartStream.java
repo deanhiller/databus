@@ -26,6 +26,7 @@ public class MultiPartStream implements HttpChunkStream {
 	private Request request;
 	private Response resp;
 	private boolean isEndOfStream;
+	private boolean processingParam;
 
 	public MultiPartStream(Request req, Response resp, String[] values) {
 		String boundary = null;
@@ -76,7 +77,7 @@ public class MultiPartStream implements HttpChunkStream {
 			processBuffer();
 		}
 		
-		if(isLast && !isEndOfStream()) {
+		if(isLast && processingParam) {
 			log.warn("This should not occur but did, client may have sent malformed ending");
 			listener.currentFormParamComplete(request, resp);
 		}
@@ -92,6 +93,7 @@ public class MultiPartStream implements HttpChunkStream {
 			if(isEndOfStream()) {
 				isEndOfStream = true;
 				buffer.clear();
+				processingParam = false;
 				listener.currentFormParamComplete(request, resp);
 				return;
 			}
@@ -141,6 +143,7 @@ public class MultiPartStream implements HttpChunkStream {
 		copyDataToTemp(numBytes);
 		headers += new String(temporary, 0, numBytes);
 
+		processingParam = true;
 		listener.startingFormParameter(headers, request, resp);
 		headers = ""; //clear the headers now
 		currentDelimeter = boundaryX;

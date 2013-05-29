@@ -95,37 +95,34 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
             	if(log.isTraceEnabled())
             		log.trace("process chunk");
                 
-            	if(!specialUpload(currentMessage)) 
-            		IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
-            	else {
+            	if(specialUpload(currentMessage)) {
             		OurChunk c = new OurChunk(chunk, currentMessage);
             		UpstreamMessageEvent evt = new UpstreamMessageEvent(e.getChannel(), c, e.getRemoteAddress());
             		ctx.sendUpstream(evt);
+            		return;
             	}
 
+        		IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
                 if (chunk.isLast()) {
                 	if(log.isTraceEnabled())
                 		log.trace("this is the last chunk");
                 	
-                	if(!specialUpload(currentMessage)) {
-	                    this.out.flush();
-	                    this.out.close();
-	
-	                    currentMessage.setHeader(
-	                            HttpHeaders.Names.CONTENT_LENGTH,
-	                            String.valueOf(localFile.length()));
-	
-	                    currentMessage.setContent(new FileChannelBuffer(localFile));
-	                    this.out = null;
-	                    this.currentMessage = null;
-	                    this.file.delete();
-	                    this.file = null;
-                	}
+                    this.out.flush();
+                    this.out.close();
+
+                    currentMessage.setHeader(
+                            HttpHeaders.Names.CONTENT_LENGTH,
+                            String.valueOf(localFile.length()));
+
+                    currentMessage.setContent(new FileChannelBuffer(localFile));
+                    this.out = null;
+                    this.currentMessage = null;
+                    this.file.delete();
+                    this.file = null;
                     Channels.fireMessageReceived(ctx, currentMessage, e.getRemoteAddress());
                 }
             }
         }
-
     }
 
 	private boolean specialUpload(HttpMessage m) {
