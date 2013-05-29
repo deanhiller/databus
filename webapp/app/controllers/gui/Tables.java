@@ -2,21 +2,31 @@ package controllers.gui;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import models.PermissionType;
+import models.SecureTable;
+
 import org.apache.commons.io.IOUtils;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import play.mvc.Controller;
+import play.mvc.Http.Header;
+import play.mvc.Http.Request;
+import play.mvc.Http.Response;
+import play.mvc.With;
+import play.mvc.results.Unauthorized;
+import play.server.ChunkListener;
+import play.server.EntireBodyStream;
+import play.server.HttpChunkStream;
+import play.server.MultiPartStream;
+import play.server.ReqState;
 
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
@@ -24,19 +34,8 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
-
-import models.PermissionType;
-import models.SecureResourceGroupXref;
-import models.SecureTable;
 import controllers.SecurityUtil;
 import controllers.gui.auth.GuiSecure;
-import play.mvc.Controller;
-import play.mvc.With;
-import play.mvc.Http.Request;
-import play.mvc.Http.Response;
-import play.mvc.results.Unauthorized;
-import play.server.ChunkListener;
-import play.server.ProcessStream;
 
 @With(GuiSecure.class)
 public class Tables extends Controller {
@@ -118,7 +117,7 @@ public class Tables extends Controller {
 	}
 
 	private static void fireIntoListener(Request request) {
-		ProcessStream stream = new ProcessStream(request, response);
+		HttpChunkStream stream = ReqState.createProcessor(request, response);
 		stream.setChunkListener(request.chunkListener);
 		ByteArrayOutputStream str = new ByteArrayOutputStream();
 		try {
@@ -127,7 +126,7 @@ public class Tables extends Controller {
 			throw new RuntimeException(e);
 		}
 		byte[] data = str.toByteArray();
-		stream.addMoreData(data);
+		stream.addMoreData(data, true);
 	}
 
 	private static boolean isComplete(Request request) {

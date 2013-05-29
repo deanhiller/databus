@@ -5,6 +5,7 @@ import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.slf4j.LoggerFactory;
 
+import play.mvc.Http.Header;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 
@@ -13,7 +14,7 @@ public class ReqState {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(ReqState.class);
 	private ChannelHandlerContext ctx;
 	private Request request;
-	private ProcessStream processor;
+	private HttpChunkStream processor;
 	private boolean controllerInitialized;
 	private int counter = 0;
 	private Response response;
@@ -23,7 +24,19 @@ public class ReqState {
 		this.request = request;
 		this.response = response;
 
-		processor = new ProcessStream(request, response);
+		processor = createProcessor(request, response);
+	}
+
+	public static HttpChunkStream createProcessor(Request request, Response response) {
+		Header header = request.headers.get("content-type");
+		String value = header.value();
+		String[] values = value.split(";");
+		//For multipart, we need to parse out each payload in the body otherwise we can use a thin wrapper to stream the body through since there
+		//is nothing else
+		if("multipart/form-data".equals(values[0].trim().toLowerCase()))
+			return new MultiPartStream(request, response, values);
+		else
+			return new EntireBodyStream(request, response, values);
 	}
 
 	public ChannelHandlerContext getCtx() {
@@ -50,7 +63,7 @@ public class ReqState {
 			counter++;
 		}
 		
-		processor.addMoreData(data);
+		processor.addMoreData(data, chunk.isLast());
 	}
 
 	public void initChunkProcessor() {

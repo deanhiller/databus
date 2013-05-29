@@ -43,6 +43,7 @@ import play.mvc.Scope.Params;
 import play.mvc.results.NoResult;
 import play.mvc.results.NotFound;
 import play.mvc.results.Result;
+import play.server.PlayHandler.NettyInvocation;
 import play.utils.Java;
 import play.utils.Utils;
 
@@ -237,7 +238,8 @@ public class ActionInvoker {
                     throw actionResult;
                 }
 
-                if(request.isChunkedRequest && request.isNew)
+                String path = request.path;
+            	if(path.endsWith("specialupload") && request.isNew)
                 	throw new Suspend(1000*60*60);
                 else
                 	throw new NoResult();

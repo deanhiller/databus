@@ -190,8 +190,9 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 if (raw) {
                     copyResponse(ctx, request, response, nettyRequest);
                 } else {
+                	String path = request.path;
                 	NettyInvocation nettyInvoc = new NettyInvocation(request, response, ctx, nettyRequest, messageEvent);
-                	if(!nettyRequest.isChunked()) {
+                	if(!path.endsWith("specialupload")) {
                 		Invoker.invoke(nettyInvoc);
                 	} else {
                 		//We need to handle chunked requests a little differently...
@@ -305,7 +306,8 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 }
                 super.run();
                 
-                if(nettyRequest.isChunked())
+                String uri = nettyRequest.getUri();
+                if(uri.endsWith("specialupload"))
                 	Blackboard.markAsComplete(nettyRequest);
                 
             } catch (Exception e) {

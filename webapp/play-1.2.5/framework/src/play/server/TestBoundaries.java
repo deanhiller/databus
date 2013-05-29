@@ -50,7 +50,7 @@ public class TestBoundaries {
 		byte[] bytes = msg.getBytes();
 		
 		MockDataListener l = new MockDataListener();
-		ProcessStream str = new ProcessStream("\r\n--simple boundary", null, null);
+		MultiPartStream str = new MultiPartStream("\r\n--simple boundary", null, null);
 		str.setChunkListener(l);
 		//str.addDataListener(l);
 		
@@ -60,7 +60,7 @@ public class TestBoundaries {
 			byte[] chunk = new byte[s];
 			System.arraycopy(bytes, i, chunk, 0, chunk.length);
 			
-			str.addMoreData(chunk);
+			str.addMoreData(chunk, false);
 		}
 	}
 	
