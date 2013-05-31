@@ -307,7 +307,7 @@ public class PlayHandler extends SimpleChannelUpstreamHandler {
                 super.run();
                 
                 String uri = nettyRequest.getUri();
-                if(uri.endsWith("specialupload"))
+                if(uri.endsWith("specialupload") && request.isNew)
                 	Blackboard.markAsComplete(nettyRequest);
                 
             } catch (Exception e) {

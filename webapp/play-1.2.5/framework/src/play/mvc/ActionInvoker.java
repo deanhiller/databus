@@ -127,8 +127,13 @@ public class ActionInvoker {
 
             Map<String, String> reqArgs = request.routeArgs;
             Params params = Scope.Params.current();
-            // 1. Prepare request params
-            params.__mergeWith(reqArgs);
+            if(!request.isNew && request.path.endsWith("specialupload")) {
+            	if(log.isInfoEnabled())
+            		log.info("Completing upload");
+            } else {
+            	// 1. Prepare request params
+            	params.__mergeWith(reqArgs);
+            }
 
             // add parameters from the URI query string
             String encoding = Http.Request.current().encoding;
