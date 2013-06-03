@@ -1,6 +1,6 @@
 # Databus
 
-This is a fork of NREL's open source databus project (which has also ended up becoming the main development location now as well)
+NREL works off of this repository for databus development
 
 ## Getting Started
 
