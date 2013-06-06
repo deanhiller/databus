@@ -9,9 +9,10 @@
 var days = 2;
 
 $(function () {
-
+ 
+  var hours = 1;
   var endTime = (new Date()).getTime(),
-    startTime = 0,
+    startTime = endTime - hours*3600000,
     maximized = false,
     maximizedStream,
     chartMap = {},
@@ -221,9 +222,9 @@ $(function () {
 
     var url;
     if (!singleStream) {
-      url = '${baseurl}/api/sumstreamsV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
+      url = '/api/sumstreamsV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
     } else {
-      url = '${baseurl}/api/rawdataV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
+      url = '/api/rawdataV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
     }
     console.log(stream + ': ' + url);
     $('#theChart').append($('<div class="chart" />').attr('id', stream));

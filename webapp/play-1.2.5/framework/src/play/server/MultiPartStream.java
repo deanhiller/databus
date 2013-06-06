@@ -4,15 +4,14 @@ import java.io.ByteArrayInputStream;
 
 import org.slf4j.LoggerFactory;
 
-import play.Logger;
 import play.mvc.Http.Header;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
 
 
-public class ProcessStream {
+public class MultiPartStream implements HttpChunkStream {
 
-	private static final org.slf4j.Logger log = LoggerFactory.getLogger(ProcessStream.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(MultiPartStream.class);
 	private ChunkListener listener;
 	private CircBuffer buffer = new CircBuffer2(16384);
 	private byte[] boundaryX;
@@ -27,12 +26,9 @@ public class ProcessStream {
 	private Request request;
 	private Response resp;
 	private boolean isEndOfStream;
+	private boolean processingParam;
 
-	public ProcessStream(Request req, Response resp) {
-		Header header = req.headers.get("content-type");
-		String value = header.value();
-		
-		String[] values = value.split(";");
+	public MultiPartStream(Request req, Response resp, String[] values) {
 		String boundary = null;
 		for(String val : values) {
 			String theVal = val.trim();
@@ -44,7 +40,7 @@ public class ProcessStream {
 		init(boundary, req, resp);
 	}
 	
-	public ProcessStream(String boundary, Request req, Response resp) {
+	public MultiPartStream(String boundary, Request req, Response resp) {
 		init(boundary, req, resp);
 	}
 
@@ -64,7 +60,9 @@ public class ProcessStream {
 			return true;
 		return false;
 	}
-	public void addMoreData(byte[] chunk) {
+
+	@Override
+	public void addMoreData(byte[] chunk, boolean isLast) {
 		if(isEndOfStream)
 			return; //discard any more data
 		else if(buffer.length()+chunk.length > buffer.size())
@@ -78,6 +76,11 @@ public class ProcessStream {
 		while(buffer.length() >= currentDelimeter.length) {
 			processBuffer();
 		}
+		
+		if(isLast && processingParam) {
+			log.warn("This should not occur but did, client may have sent malformed ending");
+			listener.currentFormParamComplete(request, resp);
+		}
 	}
 
 	private void processBuffer() {
@@ -90,6 +93,7 @@ public class ProcessStream {
 			if(isEndOfStream()) {
 				isEndOfStream = true;
 				buffer.clear();
+				processingParam = false;
 				listener.currentFormParamComplete(request, resp);
 				return;
 			}
@@ -139,6 +143,7 @@ public class ProcessStream {
 		copyDataToTemp(numBytes);
 		headers += new String(temporary, 0, numBytes);
 
+		processingParam = true;
 		listener.startingFormParameter(headers, request, resp);
 		headers = ""; //clear the headers now
 		currentDelimeter = boundaryX;

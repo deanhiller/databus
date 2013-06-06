@@ -6,6 +6,7 @@ import org.jboss.netty.channel.*;
 import org.jboss.netty.handler.codec.http.HttpChunk;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMessage;
+import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,8 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
     //private volatile OutputStream out;
     //private volatile File file;
 	private int totalBytes;
+	private File file;
+	private FileOutputStream out;
 
     /**
      * Creates a new instance.
@@ -47,7 +50,7 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
         }
 
         HttpMessage currentMessage = this.currentMessage;
-        //File localFile = this.file;
+        File localFile = this.file;
         if (currentMessage == null) {
             totalBytes = 0;
             
@@ -68,9 +71,11 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
                 }
                 this.currentMessage = m;
 
-                ctx.sendUpstream(e);
-                //this.file = new File(Play.tmpDir, localName);
-                //this.out = new FileOutputStream(file, true);
+                if(!specialUpload(m)) {
+                	this.file = new File(Play.tmpDir, localName);
+                	this.out = new FileOutputStream(file, true);
+                } else //if special upload, send the first piece upstream...
+                	ctx.sendUpstream(e);
             } else {
                 // Not a chunked message - pass through.
                 ctx.sendUpstream(e);
@@ -89,32 +94,45 @@ public class StreamChunkAggregator extends SimpleChannelUpstreamHandler {
             } else {
             	if(log.isTraceEnabled())
             		log.trace("process chunk");
-                //IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
+                
+            	if(specialUpload(currentMessage)) {
+            		OurChunk c = new OurChunk(chunk, currentMessage);
+            		UpstreamMessageEvent evt = new UpstreamMessageEvent(e.getChannel(), c, e.getRemoteAddress());
+            		ctx.sendUpstream(evt);
+            		return;
+            	}
 
-            	OurChunk c = new OurChunk(chunk, currentMessage);
-            	UpstreamMessageEvent evt = new UpstreamMessageEvent(e.getChannel(), c, e.getRemoteAddress());
-                ctx.sendUpstream(evt);
-
+        		IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
                 if (chunk.isLast()) {
                 	if(log.isTraceEnabled())
                 		log.trace("this is the last chunk");
-//                    this.out.flush();
-//                    this.out.close();
-//
-//                    currentMessage.setHeader(
-//                            HttpHeaders.Names.CONTENT_LENGTH,
-//                            String.valueOf(localFile.length()));
-//
-//                    currentMessage.setContent(new FileChannelBuffer(localFile));
-//                    this.out = null;
-//                    this.currentMessage = null;
-//                    this.file.delete();
-//                    this.file = null;
+                	
+                    this.out.flush();
+                    this.out.close();
+
+                    currentMessage.setHeader(
+                            HttpHeaders.Names.CONTENT_LENGTH,
+                            String.valueOf(localFile.length()));
+
+                    currentMessage.setContent(new FileChannelBuffer(localFile));
+                    this.out = null;
+                    this.currentMessage = null;
+                    this.file.delete();
+                    this.file = null;
                     Channels.fireMessageReceived(ctx, currentMessage, e.getRemoteAddress());
                 }
             }
         }
-
     }
+
+	private boolean specialUpload(HttpMessage m) {
+		if(m instanceof HttpRequest) {
+			HttpRequest r = (HttpRequest) m;
+			String uri = r.getUri();
+			if(uri.endsWith("specialupload"))
+				return true;
+		}
+		return false;
+	}
 }
 
