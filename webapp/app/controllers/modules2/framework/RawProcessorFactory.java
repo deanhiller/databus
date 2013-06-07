@@ -60,7 +60,9 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("csv", FTranslatorValuesToCsv.class);
 		nameToClazz.put("json", FTranslatorValuesToJson.class);
 		nameToClazz.put("relational", RelationalOperationProcessor.class);
+		nameToClazz.put("relationalV1", RelationalOperationProcessor.class);
 		nameToClazz.put("columnselect", ColumnSelectProcessor.class);
+		nameToClazz.put("columnselectV1", ColumnSelectProcessor.class);
 		nameToClazz.put("aggregation", AggregationProcessor.class);
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 
