@@ -240,7 +240,7 @@ public class SearchUtils {
 		//corrupted (which happens...) this will throw com.alvazan.orm.api.exc.RowNotFoundException
 		//and will kill the entire reindex.
 		long docsindexed = 0;
-		long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis()-1;
 		Collection<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
 		while(tablesCursor.next()) {
 			if (++i%200==0)
