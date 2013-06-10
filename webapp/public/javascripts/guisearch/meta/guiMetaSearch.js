@@ -83,7 +83,11 @@ var MetaManager;
 		
 		MetaManager.init();
 		
-		MetaManager.store.addByValue('q', '*:*');
+		if(_globalMetaSearch === 'true') {
+			MetaManager.store.addByValue('q', _searchString);
+		} else {
+			MetaManager.store.addByValue('q', '*:*');
+		}
 		
 		var params = {
 			facet: true,
