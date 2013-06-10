@@ -7,13 +7,14 @@
 }%
 <div class="alert alert-info alert-block">
    Step 10. Notice you can give the url to your colleagues and it will draw the same chart if they have access to this dataset<br/>
-   Step 11. Click on Meta Search
+   Step 11. Notice the url just below this blue banner?  If you want to view the raw data, you can click the link(THEN close that window to come back to this one)<br/>
+   Step 12. Click on Meta Search
 </div>
 %{
     }
 }%
 
-We are rendering the chart for dataset url=${chart.url} below
+We are rendering the chart for dataset url=<a href="${chart.url}" target="_blank">${chart.url}</a> below
 
 <a href="@{modifyChart(encodedChart, version, length)}" class="btn btn-primary">Modify Chart</a>
 <a href="@{drawJustChart(encodedChart, chart.title, version, length)}" class="btn btn-primary">Chart Only</a>
