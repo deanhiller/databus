@@ -3,6 +3,8 @@ package gov.nrel.util;
 import java.util.List;
 import java.util.Random;
 
+import org.joda.time.DateTime;
+
 import com.alvazan.play.NoSql;
 
 import models.EntityUser;
@@ -60,12 +62,15 @@ public class StartupDemo {
 	
 	static final EntityUser DEMO;
 
-	
+	public static long current = 1362145121000L;
+
 	static {
 		DEMO = new EntityUser();
 		//lets use one that at least looks a little more realistic:
 		DEMO.setApiKey("register:15505124196:b1:2361498898283920755");
 		DEMO.setUsername("demo");
+		DEMO.setPassword("databusiscool");
+		
 	}
 	
 	public static void createStuff() {
@@ -119,7 +124,6 @@ public class StartupDemo {
 	
 	static void createSeriesImplWithPrettyDemoData(String name, long millisBack, long millisForward, long interval, String schemaName, EntityUser user, double randomness, int ampScale, double frequencyScale, int belowZeroHandling) {
 		StartupDetailed.createSeriesImpl(name, schemaName, user);
-		long current = System.currentTimeMillis();
 		insertPrettyDemoData(name, current-millisBack, current+millisForward, interval, user, randomness, ampScale, frequencyScale, belowZeroHandling);
 	}
 	

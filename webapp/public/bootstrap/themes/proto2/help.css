@@ -22,10 +22,6 @@ These are additions, twitter bootstrap overrides are below
 	border: none;
 }
 
-.db_border {
-    border: 1px solid;
-}
-
 /**************************
 TWITTER BOOTSTRAP OVERRIDES
 *****************************/
@@ -54,6 +50,7 @@ h3 {
     background-position: 10px center;
     padding:15px 10px 15px 50px;
     background-repeat: no-repeat;
+    border: 1px solid;
 }
 
 .alert h4 {
@@ -68,6 +65,7 @@ h3 {
     background-position: 10px center;
     padding:15px 10px 15px 50px;
     background-repeat: no-repeat;
+    border: 1px solid;
 }
 
  
@@ -79,6 +77,7 @@ h3 {
     background-position: 10px center;
     padding:15px 10px 15px 50px;
     background-repeat: no-repeat;
+    border: 1px solid;
 }
 
 .alert-error {
@@ -89,6 +88,7 @@ h3 {
     background-position: 10px center;
     padding:15px 10px 15px 50px;
     background-repeat: no-repeat;
+    border: 1px solid;
 }
 
 .container-fluid {

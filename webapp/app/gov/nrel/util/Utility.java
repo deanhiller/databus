@@ -338,6 +338,13 @@ public class Utility {
 		return prop;		
 	}
 
-
+	public static boolean isDemoMode() {
+		String property = Play.configuration.getProperty("demo.mode");
+		if(property == null)
+			return false;
+		else if("true".equals(property.trim()))
+			return true;
+		return false;
+	}
 
 } // Utility

@@ -2,6 +2,17 @@
 #{set tab:'home' /}
 #{set title:'Your Chart' /}
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 10. Notice you can give the url to your colleagues and it will draw the same chart if they have access to this dataset<br/>
+   Step 11. Click on Meta Search
+</div>
+%{
+    }
+}%
+
 We are rendering the chart for dataset url=${chart.url} below
 
 <a href="@{modifyChart(encodedChart, version, length)}" class="btn btn-primary">Modify Chart</a>

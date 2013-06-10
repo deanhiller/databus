@@ -7,6 +7,18 @@
 	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
 </style>
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 2. You are now viewing the databases you have access to(and each database has many tables)</br>
+   We have created and given you access to a DemoDatabase.  You can create your own databases and give us access as well to those</br>
+   Step 3. Next, please click on the DemoDatabase link
+</div>
+%{
+    }
+}%
+
 <h1 class="db_page_title">My Databases</h1>
 
 <p>These are the schemas you have access to.  Each schema may contain multiple tables</p>
@@ -33,6 +45,6 @@
 </table>
   
 <p>
-  	<a href="@{editDatabase(null)}" class="btn btn-primary">Add Schema</a>
+  	<a href="@{editDatabase(null)}" class="btn btn-primary">Add Database</a>
 </p>
   

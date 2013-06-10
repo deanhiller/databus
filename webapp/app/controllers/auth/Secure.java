@@ -101,7 +101,7 @@ public class Secure extends Controller {
         }
         if(validation.hasErrors() || !allowed) {
             flash.keep("url");
-            flash.error("secure.error");
+            flash.error("Invalid login and password combination");
             params.flash();
             login();
         }
