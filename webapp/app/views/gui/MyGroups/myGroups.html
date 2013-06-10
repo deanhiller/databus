@@ -7,6 +7,18 @@
 	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
 </style>
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 4. If you have many databases and you don't want to add a user to each database every time, simply create a group and then<br/>
+   give this group access to all your databases(or just some of them) and you can just add the user to the group once for each user<br/>
+   Step 5. Next, please click on My Databus -> Charts
+</div>
+%{
+    }
+}%
+
 <h1 class="db_page_title">My Groups</h1>
 
 <p>These are the groups you have access to.  Each group may have access to multiple schemas or tables.</p>

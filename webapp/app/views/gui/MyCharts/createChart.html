@@ -2,6 +2,18 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 5. Fill in any title you want for your first chart<br/>
+   Step 6. On the right hand side, there is help menu on forming urls.  For now, just enter the url http://demodatabus.nrel.com/api/rawdataV1/SolarPVArray1SouthRoofTopOutput/1362145121000/1362318060000<br/>
+   Step 7. We only want one Y-axis so fill in the Name "My Data" and click the next button<br/>
+</div>
+%{
+    }
+}%
+
 #{form @postStep1(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1000px;margin: 0 auto'}
 
     <legend>Create Chart Step 1 of 2</legend>

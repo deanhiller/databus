@@ -39,6 +39,16 @@
 <script type="text/javascript" src="/public/includes/highcharts/highstock.js"></script>
 <script type="text/javascript" src="/public/includes/highcharts/exporting.js"></script>
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 1. You are on the customizable dashboard page where you can define which charts show up for this user</br>
+   Step 2. Next, please click on My Databus, then click on Databases
+</div>
+%{
+    }
+}%
 
         <div class="row-fluid">
 

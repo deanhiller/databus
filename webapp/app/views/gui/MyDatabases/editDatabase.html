@@ -7,7 +7,19 @@
 	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
 </style>
 
-<a href="#" rel="tooltip" title="A nice tooltip">test</a>
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 3. This page currently has Users and Groups that have access to this database as well as tables in this database<br/>
+   This page is being modified to have subtabs Users, Groups, Tables, Triggers, Monitors</br>
+   NOTE: The View Chart and View Data links are being improved in the next release</br>
+   Step 4. Next, please click on My Databus -> Groups
+</div>
+%{
+    }
+}%
+
 #{form @postDatabase(), id:'editproject', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
     <legend>Database Properties</legend>
    <input type="hidden" name="schema.id" value="${schema?.id}">
@@ -120,7 +132,8 @@
 	        <tr>
 		        #{if table?.typeOfData == timeseries}
 					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
-					<td><a href="@{gui.MyStuff.tableData(table.tableName)}">View Data</a></td>
+					<td><a href="@{gui.MyStuff.tableData(table.tableName)}">View Chart</a></td>
+					<td>View Data</td>
 				#{/if}
 				#{else}
 					<!-- once we have a relational data view page, put the link here! -->
