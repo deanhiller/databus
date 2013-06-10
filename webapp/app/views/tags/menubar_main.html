@@ -41,10 +41,17 @@
 								</ul>
 							</li>
 
-							<li id="tab_search" class="db_main_nav_item"><a
-								href="@{gui.GUISearch.metaSearch()}" class="db_main_nav_bar_item">
-								<i class="icon-search icon-white"
-									style="position: relative; top: 1px;"></i> Meta Search</a></li>
+							<li id="tab_search"
+								class="dropdown dropdown-toggle db_main_nav_item"><a
+								class="db_main_nav_bar_item" data-toggle="dropdown" href="#"><i
+									class="icon-search icon-white"
+									style="position: relative; top: 1px;"></i> Search <b
+									class="caret"></b></a>
+								<ul class="dropdown-menu">
+									<li><a href="@{gui.GUISearch.metaSearch()}"> Global Search</a></li>											
+									<li><a href="@{gui.GUISearch.isSearchableSearch()}"> Meta Table Search</a></li>
+								</ul>
+							</li>
 						#{/else} 								
 								
 						<span class="nav pull-right" style="margin-right: 5px;">
