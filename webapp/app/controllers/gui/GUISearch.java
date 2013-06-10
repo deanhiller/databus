@@ -39,6 +39,27 @@ public class GUISearch extends Controller {
 		String solrURL = Utility.getSolrServer();
 		renderArgs.put("solrURL", solrURL);
 		
+		String searchString = params.get("searchString");
+		if((searchString != null) && (!searchString.equals(""))) {
+			renderArgs.put("_globalMetaSearch", true);
+			renderArgs.put("_searchString", searchString);
+		} else {
+			renderArgs.put("_globalMetaSearch", false);
+		}
+		
+		EntityUser user = Utility.getCurrentUser(session);
+		render(user);
+	}
+	
+	public static void globalMetaSearch() {
+		String solrURL = Utility.getSolrServer();
+		renderArgs.put("solrURL", solrURL);
+		
+		renderArgs.put("_globalMetaSearch", true);
+		
+		String searchString = params.get("searchString");
+		renderArgs.put("_searchString", searchString);
+		
 		EntityUser user = Utility.getCurrentUser(session);
 		render(user);
 	}

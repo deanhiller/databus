@@ -36,7 +36,7 @@
 $(document).ready(function(){
 	$('#global_search_bar').bind('keydown', function(e) {
 		if (e.which == 13) {				// if enter key
-			var searchURL = "@{gui.GUISearch.globalSearch()}";
+			var searchURL = "@{gui.GUISearch.metaSearch()}";
 			var searchValue = encodeURIComponent($('#global_search_bar').val());
 			
 			if(searchValue.indexOf("*") == -1) {
