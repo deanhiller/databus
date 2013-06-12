@@ -57,7 +57,7 @@ public class GUISearch extends Controller {
 	}
 	
 	public static void detailSearch(String searchTable, String searchString) {
-		System.out.println("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
+		//System.out.println("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
 		
 		renderArgs.put("searchString", searchString);
 		renderArgs.put("searchTable", searchTable);

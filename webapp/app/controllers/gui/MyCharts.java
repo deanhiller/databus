@@ -2,10 +2,10 @@ package controllers.gui;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.zip.Deflater;
 
 import org.apache.commons.codec.binary.Base64;
@@ -13,11 +13,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alvazan.play.NoSql;
-
 import play.mvc.Controller;
 import play.mvc.With;
-import play.mvc.results.NotFound;
+import play.vfs.VirtualFile;
 import controllers.gui.auth.GuiSecure;
 import de.undercouch.bson4jackson.BsonFactory;
 
@@ -26,6 +24,21 @@ public class MyCharts extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyCharts.class);
 	private static int CURRENT_VERSION = 1;
+	
+	public static void loadChart() {
+		String theRequestedChart = params.get("chart");
+		
+		/**
+		 * Load the chart code directly into a string and render it
+		 */
+		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
+		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
+		
+		log.error(theChart);
+		
+		renderArgs.put("theRequestedChart", theChart);
+		render();
+	}
 
 	public static void createChart() {
 		render();
