@@ -1,6 +1,8 @@
 package gov.nrel.util;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -62,6 +64,7 @@ public class ATriggerListener {
 		String url = trigger.getUrl();
 
 		boolean success = false;
+		String exceptionString = "";
 		//synchronously call the url awaiting a result here
 
 		Long start = startOverride;
@@ -88,10 +91,14 @@ public class ATriggerListener {
 			success = true;
 		} catch(RuntimeException e) {
 			log.warn("Exception on trigger requesting url", e);
+			StringWriter sw = new StringWriter();
+			e.printStackTrace(new PrintWriter(sw));
+			exceptionString = sw.toString();
 			//MUST be thrown as this is called from controller and we must give user exception if his url does not work at all
 			throw e;
 		} finally {
 			m.getProperties().put("success", success+"");
+			m.getProperties().put("lastException", exceptionString);
 			svc.saveMonitor(m);
 		}
 	}
@@ -116,7 +123,13 @@ public class ATriggerListener {
 
 		try {
 			MyHandler handler = new MyHandler();
+			long startTime = System.currentTimeMillis();
+			long duration = 0;
+			m.getProperties().put("startTime", ""+startTime);
+			m.getProperties().put("duration", ""+duration);
 			client.executeRequest(httpReq, handler);
+			duration = startTime - System.currentTimeMillis();
+			m.getProperties().put("duration", ""+duration);
 			handler.checkStatus();
 		} catch(IOException e) {
 			throw new RuntimeException("Failed to send request. url="+url);
@@ -154,6 +167,8 @@ public class ATriggerListener {
 		t.setUrl(job.getProperties().get("url"));
 		t.setRunAsUser(job.getProperties().get("userName"));
 		t.setLastRunSuccess(toBoolean(job.getProperties().get("success")));
+		t.setLastRunTime(Long.parseLong(job.getProperties().get("startTime")));
+		t.setLastRunDuration(Long.parseLong(job.getProperties().get("duration")));
 		return t;
 	}
 
