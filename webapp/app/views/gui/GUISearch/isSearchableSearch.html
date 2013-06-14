@@ -1,0 +1,137 @@
+#{extends '_index.html' /}
+#{set title:'Search' /}
+#{set tab:'meta_table_search' /}
+
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 13. Search only is available on production and not on this demo.<br/>
+   Step 14. As you can end up with too many datasets, this is where you can search for datasets<br/>
+   Step 15. This concludes the demo.  Install databus today!!!!
+</div>
+%{
+    }
+}%
+
+<!-- https://github.com/evolvingweb/ajax-solr -->
+<!-- http://demo.projectblacklight.org/ -->
+<!-- http://searchhub.org/2010/01/14/solr-search-user-interface-examples/ -->
+<!-- http://dartmouth.summon.serialssolutions.com/search?s.q=book -->
+
+<!-- DEBUG -->
+<!-- ======================================================================= -->
+ <!-- <head>  -->
+<!-- ======================================================================= -->
+<!-- DEBUG -->
+
+<!-- Framework variables saved in global scope for JavaScript libraries -->
+<script>
+	var _detailURL = '@{gui.GUISearch.detailSearch()}';
+</script>
+<!-- ======================================================================= -->
+
+<!-- JQuery -->
+<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/public/javascripts/jquery.livequery.js"></script>
+
+<!-- Ajax Solr -->
+<script type="text/javascript" src="/public/includes/ajax_solr/core/Core.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractManager.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/managers/Manager.jquery.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/Parameter.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/ParameterStore.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/helpers/jquery/ajaxsolr.theme.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/widgets/jquery/PagerWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractFacetWidget.js"></script>
+<script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractTextWidget.js"></script>
+
+<!-- GUISearch -->
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/guiIsSearchableSearch.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchwidget.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchtheme.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchtagcloud.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablecurrentfilter.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/searchinput.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchpager.js"></script>
+
+<!-- ICON library -->
+<!--  http://tango.freedesktop.org/Tango_Icon_Library -->
+
+
+<!-- DEBUG -->
+<!-- ======================================================================= -->
+		<!-- JQuery -->
+		 <!-- <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>  -->
+		 <!-- <script type="text/javascript" src="/public/includes/jquery.hotkeys.js"></script>  -->
+
+		<!-- Bootstrap -->
+		 <!-- <link href="/public/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">  -->
+		 <!-- <script type="text/javascript" src="/public/bootstrap/js/bootstrap.min.js"></script>  -->
+		
+		<!-- Theme -->
+		 <!-- <link href="/public/bootstrap/themes/proto2/proto2.css" rel="stylesheet" type="text/css">  -->
+		 <!-- <script type="text/javascript" src="/public/bootstrap/themes/proto2/proto2.js"></script>  -->
+
+		<!-- GUISearch -->
+ 		<!-- <link href="/public/stylesheets/guisearch/guisearch.css" rel="stylesheet" type="text/css">  -->
+ <!-- </head>  -->
+ <!-- <body>  -->
+<!-- ======================================================================= -->
+<!-- DEBUG -->
+
+<div id="main_search_div">
+	<div class="search_left">		
+		<h2 class="search_nav_title"><i class="icon-search" style="margin: 2px 0px 0px 0px;"></i> Meta Table Search</h2>
+		<ul id="selection" style="margin-top:10px; list-style: circle;"></ul>
+		
+		<p class="nav_divider" style="margin-bottom: 0px !important; padding-bottom: 0px !important;"></p>
+	
+		<div class="search_nav_facet_placeholder">
+		</div>
+		
+	</div>
+	
+	<div class="search_right_placeholder">
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){				
+		$('#table_toggle').click(function() {
+			if($('#table_icon').hasClass("icon-chevron-down")) {
+				$('#table_icon').removeClass("icon-chevron-down");
+				$('#table_icon').attr('class', 'icon-chevron-right');
+			} else {
+				$('#table_icon').removeClass("icon-chevron-right");
+				$('#table_icon').attr('class', 'icon-chevron-down');
+			}
+		});
+		
+		$('#database_toggle').click(function() {
+			if($('#database_icon').hasClass("icon-chevron-down")) {
+				$('#database_icon').removeClass("icon-chevron-down");
+				$('#database_icon').attr('class', 'icon-chevron-right');
+			} else {
+				$('#database_icon').removeClass("icon-chevron-right");
+				$('#database_icon').attr('class', 'icon-chevron-down');
+			}
+		});
+		
+		$('#creator_toggle').click(function() {
+			if($('#creator_icon').hasClass("icon-chevron-down")) {
+				$('#creator_icon').removeClass("icon-chevron-down");
+				$('#creator_icon').attr('class', 'icon-chevron-right');
+			} else {
+				$('#creator_icon').removeClass("icon-chevron-right");
+				$('#creator_icon').attr('class', 'icon-chevron-down');
+			}
+		});
+		
+	});
+</script>
+
+<!-- DEBUG -->
+<!--  </body>  -->
+<!-- DEBUG -->

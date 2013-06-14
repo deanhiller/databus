@@ -18,6 +18,13 @@
 	overflow-x: hidden;
 }
 
+.search_nav_facet_placeholder {
+	height: 150px;
+	min-height: 150px;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
 .search_left h2 {
 	clear: left;
 	padding-top: 20px;
@@ -111,6 +118,21 @@
 	border-left: 1px solid #aaa;
 }
 
+.search_right_placeholder {
+	/*position: fixed;*/
+	/*clear: both;*/
+	position: absolute;
+	margin-left: 270px;
+	width: 75%;
+	min-width: 700px;
+	/*       T   R    B    L            */
+	padding: 0px 20px 10px 20px;
+	text-align: justify;
+	border-left: 1px solid #aaa;
+	height: 410px;
+	min-height: 410px;
+}
+
 .search_right h2 {
 	padding: 15px 0 5px 0;
 	color: #B4241B;
@@ -140,6 +162,14 @@ td.result_title_icon {
 	vertical-align: middle !important;
 	color: #3c65eb;
 	font-size: 18px;
+	font-weight: 500;
+	border-top: 0px !important;
+}
+
+.searchable_result_li_value {
+	vertical-align: middle !important;
+	color: #009900;
+	font-size: 14px;
 	font-weight: 500;
 	border-top: 0px !important;
 }

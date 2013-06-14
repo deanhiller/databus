@@ -5,8 +5,6 @@ import gov.nrel.util.Utility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 
 import models.EntityUser;
@@ -22,7 +20,6 @@ import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.play.NoSql;
 
 import controllers.Search;
-import controllers.auth.Secure;
 import controllers.gui.auth.GuiSecure;
 import controllers.gui.solrsearch.SearchItem;
 import controllers.gui.solrsearch.SearchableItems;
@@ -51,21 +48,16 @@ public class GUISearch extends Controller {
 		render(user);
 	}
 	
-	public static void globalMetaSearch() {
+	public static void isSearchableSearch() {
 		String solrURL = Utility.getSolrServer();
 		renderArgs.put("solrURL", solrURL);
-		
-		renderArgs.put("_globalMetaSearch", true);
-		
-		String searchString = params.get("searchString");
-		renderArgs.put("_searchString", searchString);
 		
 		EntityUser user = Utility.getCurrentUser(session);
 		render(user);
 	}
 	
 	public static void detailSearch(String searchTable, String searchString) {
-		System.out.println("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
+		//System.out.println("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
 		
 		renderArgs.put("searchString", searchString);
 		renderArgs.put("searchTable", searchTable);

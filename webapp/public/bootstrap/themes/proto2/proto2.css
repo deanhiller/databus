@@ -37,7 +37,7 @@ body {
 .db_header {
 	background-image: url(/public/images/Databus_Logo.png);
 	background-repeat: repeat-x;
-	background-attachment: fixed;
+/*	background-attachment: fixed; */
 	background-position: 0px 25px;
 	margin-top: 0px;
 	padding-top: 0px;

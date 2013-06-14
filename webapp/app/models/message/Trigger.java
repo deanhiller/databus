@@ -47,7 +47,20 @@ public class Trigger {
 	@JsonProperty("lastRunSuccess")
     @XmlElement(name="lastRunSuccess")
 	private boolean lastRunSuccess;
+
+	@JsonProperty("lastRunTime")
+    @XmlElement(name="lastRunTime")
+	private long lastRunTime;
 	
+	@JsonProperty("lastRunDuration")
+    @XmlElement(name="lastRunDuration")
+	private long lastRunDuration;
+	
+	@JsonProperty("lastException")
+    @XmlElement(name="lastException")
+	private String lastException;
+	
+
 	public String getId() {
 		return id;
 	}
@@ -110,6 +123,30 @@ public class Trigger {
 
 	public void setLastRunSuccess(boolean lastRunSuccess) {
 		this.lastRunSuccess = lastRunSuccess;
+	}
+	
+	public long getLastRunTime() {
+		return lastRunTime;
+	}
+
+	public void setLastRunTime(long lastRunTime) {
+		this.lastRunTime = lastRunTime;
+	}
+
+	public long getLastRunDuration() {
+		return lastRunDuration;
+	}
+
+	public void setLastRunDuration(long lastRunDuration) {
+		this.lastRunDuration = lastRunDuration;
+	}
+
+	public String getLastException() {
+		return lastException;
+	}
+
+	public void setLastException(String lastException) {
+		this.lastException = lastException;
 	}
 
 } // Register

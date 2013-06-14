@@ -87,11 +87,15 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		long min = calculate(rows);
 		
 		List<TSRelational> toProcess = find(rows, min);
-		results.clear();
+		clearResults();
 		return process(toProcess);
 	}
+	
+	protected void clearResults() {
+		results.clear();
+	}
 
-	private List<TSRelational> find(List<ReadResult> rows, long min) {
+	protected List<TSRelational> find(List<ReadResult> rows, long min) {
 		List<TSRelational> toProcess = new ArrayList<TSRelational>();
 		for(int i = 0; i < rows.size(); i++) {
 			ProxyProcessor proxy = processors.get(i);
@@ -109,7 +113,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		return toProcess;
 	}
 
-	private long calculate(List<ReadResult> rows) {
+	protected long calculate(List<ReadResult> rows) {
 		long min = Long.MAX_VALUE;
 		for(ReadResult res : rows) {
 			if(res.getRow() != null) {
@@ -120,7 +124,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		return min;
 	}
 
-	private List<ReadResult> readAllRows() {
+	protected List<ReadResult> readAllRows() {
         int numChildrenRead = results.size();
 
        //This will pick up where we left off the first time....

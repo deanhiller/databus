@@ -133,13 +133,15 @@ POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabas
 POST /addgrouptodb						gui.MyDatabases.postAddGroupToDatabase
 POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
 
-GET  /charts/modifychart/{length}/{version}/{encodedChart}   gui.MyCharts.modifyChart
-GET  /charts/createchart                                     gui.MyCharts.createChart
-POST /charts/createchart                                     gui.MyCharts.postStep1
-GET  /charts/createchart/step2/{length}/{version}/{encodedChart}  gui.MyCharts.createStep2
-POST /charts/createchart/step2                                    gui.MyCharts.postStep2
-GET  /charts/chart/{length}/{version}/{title}/{encodedChart}          gui.MyCharts.drawJustChart
-GET  /charts/drawchart/{length}/{version}/{encodedChart}          gui.MyCharts.drawChart
+GET  /charts/modifychart/{length}/{version}/{encodedChart}   	gui.MyCharts.modifyChart
+GET  /charts/createchart                                     	gui.MyCharts.createChart
+POST /charts/createchart                                     	gui.MyCharts.postStep1
+GET  /charts/createchart/step2/{length}/{version}/{encodedChart}	gui.MyCharts.createStep2
+POST /charts/createchart/step2                                 	gui.MyCharts.postStep2
+GET  /charts/chart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.drawJustChart
+GET  /charts/drawchart/{length}/{version}/{encodedChart}       	gui.MyCharts.drawChart
+GET 	/charts/loadChartPage								gui.MyCharts.loadChartPage
+GET 	/charts/loadChartDiv								gui.MyCharts.loadChartDiv					
 
 # GUI Summary Pages
 # ******************************************************************************
@@ -169,6 +171,7 @@ GET  /helpmodules						gui.Help.myHelpModules
 # ******************************************************************************
 # ******************************************************************************
 GET /search/metaSearch					gui.GUISearch.metaSearch
+GET /search/isSearchableSearch			gui.GUISearch.isSearchableSearch
 GET /search/detailSearch					gui.GUISearch.detailSearch
 GET /search/globalSearch					gui.GUISearch.globalSearch
 GET /search/searchBar					gui.GUISearch.searchBar

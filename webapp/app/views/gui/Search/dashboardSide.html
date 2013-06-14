@@ -37,6 +37,7 @@
 <link href="/public/stylesheets/charts.css" rel="stylesheet" type="text/css">
 
 <script type="text/javascript" src="/public/includes/highcharts/highstock.js"></script>
+<script type="text/javascript" src="/public/includes/highcharts/highcharts-more.js"></script>
 <script type="text/javascript" src="/public/includes/highcharts/exporting.js"></script>
 
 %{
@@ -130,7 +131,17 @@
 					if(chart_1 === 'BLANK') {					
 						showBlankChart('chart_1_area');
 					} else {
-						addChart(chart_1, "#chart_1_area");
+						if(chart_1.indexOf('_SCRIPT') != -1) {
+							var chart = chart_1.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_1_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_1, "#chart_1_area");
+						}
 					}
 				} else if(_option_enabled === '2') {
 					$('#dashboard_chart_area').show();
@@ -143,13 +154,33 @@
 					if(chart_1 === 'BLANK') {
 						showBlankChart('chart_2_area');
 					} else {
-						addChart(chart_1, "#chart_2_area");
+						if(chart_1.indexOf('_SCRIPT') != -1) {
+							var chart = chart_1.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_2_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_1, "#chart_2_area");
+						}
 					}
 					
 					if(chart_2 === 'BLANK') {
 						showBlankChart('chart_3_area');
 					} else {
-						addChart(chart_2, "#chart_3_area");
+						if(chart_2.indexOf('_SCRIPT') != -1) {
+							var chart = chart_2.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_3_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_2, "#chart_3_area");
+						}
 					}
 				} else if(_option_enabled === '3') {
 					$('#dashboard_chart_area').show();
@@ -162,19 +193,49 @@
 					if(chart_1 === 'BLANK') {
 						showBlankChart('chart_4_area');
 					} else {
-						addChart(chart_1, "#chart_4_area");
+						if(chart_1.indexOf('_SCRIPT') != -1) {
+							var chart = chart_1.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_4_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_1, "#chart_4_area");
+						}
 					}
 					
 					if(chart_2 === 'BLANK') {
 						showBlankChart('chart_5_area');
 					} else {
-						addChart(chart_2, "#chart_5_area");
+						if(chart_2.indexOf('_SCRIPT') != -1) {
+							var chart = chart_2.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_5_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_2, "#chart_5_area");
+						}
 					}
 					
 					if(chart_3 === 'BLANK') {
 						showBlankChart('chart_6_area');
 					} else {
-						addChart(chart_3, "#chart_6_area");
+						if(chart_3.indexOf('_SCRIPT') != -1) {
+							var chart = chart_3.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_6_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_3, "#chart_6_area");
+						}
 					}
 				} else if(_option_enabled === '4') {
 					$('#dashboard_chart_area').show();
@@ -184,28 +245,68 @@
 					$('#quadruple_chart').show();
 					
 					// Now launch the charts
-					if(chart_1 === 'BLANK') {
+					if(chart_1 === 'BLANK') {					
 						showBlankChart('chart_7_area');
 					} else {
-						addChart(chart_1, "#chart_7_area");
+						if(chart_1.indexOf('_SCRIPT') != -1) {
+							var chart = chart_1.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_7_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_1, "#chart_7_area");
+						}
 					}
 					
 					if(chart_2 === 'BLANK') {
 						showBlankChart('chart_8_area');
 					} else {
-						addChart(chart_2, "#chart_8_area");
+						if(chart_2.indexOf('_SCRIPT') != -1) {
+							var chart = chart_2.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_8_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_2, "#chart_8_area");
+						}
 					}
 					
 					if(chart_3 === 'BLANK') {
 						showBlankChart('chart_9_area');
 					} else {
-						addChart(chart_3, "#chart_9_area");
+						if(chart_3.indexOf('_SCRIPT') != -1) {
+							var chart = chart_3.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_9_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_3, "#chart_9_area");
+						}
 					}
 					
 					if(chart_4 === 'BLANK') {
 						showBlankChart('chart_10_area');
 					} else {
-						addChart(chart_4, "#chart_10_area");
+						if(chart_4.indexOf('_SCRIPT') != -1) {
+							var chart = chart_4.replace('_SCRIPT','.js');							
+							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_10_area";
+							$.get(chartURL, function(data) {
+   								var chartData = new Function (data);
+								chartData();
+							});
+							
+						} else {
+							addChart(chart_4, "#chart_10_area");
+						}
 					}			
 				}				
 			}
