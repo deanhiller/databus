@@ -22,7 +22,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	//map of url to it's mapped column name:
 	private LinkedHashMap<String, String> entryNames = new LinkedHashMap<String, String>();
 	
-	private boolean dropIncomplete = false;
+	private boolean dropIncomplete = true;
 	private int lookaheadSize = 10;
 	private boolean lookaheadSatisfied = false;
 	private int largestRowWidth = -1;
