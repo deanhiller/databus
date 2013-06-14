@@ -1,12 +1,14 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
 import controllers.modules2.framework.ReadResult;
@@ -19,6 +21,12 @@ public class AggregationProcessor extends StreamsProcessor {
 
 	//map of url to it's mapped column name:
 	private LinkedHashMap<String, String> entryNames = new LinkedHashMap<String, String>();
+	
+	private boolean dropIncomplete = false;
+	private int lookaheadSize = 10;
+	private boolean lookaheadSatisfied = false;
+	private int largestRowWidth = -1;
+	private List<ReadResult> lookaheadBuffer;
 	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
@@ -41,6 +49,15 @@ public class AggregationProcessor extends StreamsProcessor {
 			else
 				entryNames.put(url, entryName);
 		}
+		
+		String dropIncompleteStr = options.get("dropIncomplete");
+		if (StringUtils.isNotBlank(dropIncompleteStr))
+			dropIncomplete = Boolean.parseBoolean(dropIncompleteStr);
+		
+		String lookaheadSizeStr = options.get("lookaheadSize");
+		if (StringUtils.isNotBlank(lookaheadSizeStr))
+			lookaheadSize = Integer.parseInt(lookaheadSizeStr);
+
 		return res;
 	}
 	
@@ -49,6 +66,7 @@ public class AggregationProcessor extends StreamsProcessor {
 		Long timeCompare = null;
 		BigDecimal total = BigDecimal.ZERO;
 		TSRelational ts = new TSRelational();
+		
 		int index = 0;
 		for(TSRelational row : rows) {
 			if(row == null)
@@ -76,6 +94,44 @@ public class AggregationProcessor extends StreamsProcessor {
 		setValue(ts, total);
 		ReadResult res = new ReadResult(null, ts);
 		return res;
+	}
+	
+	private int getLargestRowWidth(List<ReadResult> rows) {
+		int result = 0;
+		for (ReadResult r : rows) 
+			result = Math.max(result, r.getRow().size());
+		return result;
+	}
+
+	@Override
+	public ReadResult read() {
+		if (!dropIncomplete)
+			return super.read();
+		else {
+			if (!lookaheadSatisfied) {
+				lookaheadBuffer = new ArrayList<ReadResult>();
+				ReadResult r = super.read();
+				while (lookaheadBuffer.size() <= lookaheadSize && r != null && !r.isEndOfStream()) {
+					lookaheadBuffer.add(r);
+					r = super.read();
+				}
+				lookaheadBuffer.add(r);
+				lookaheadSatisfied = true;
+			}
+
+			if (largestRowWidth < 0)
+				largestRowWidth = getLargestRowWidth(lookaheadBuffer);
+			while (CollectionUtils.size(lookaheadBuffer)!=0) {
+				ReadResult RRreturn = lookaheadBuffer.get(0);
+				lookaheadBuffer.remove(0);
+				if (RRreturn != null && RRreturn.getRow() != null && RRreturn.isEndOfStream() && RRreturn.getRow().size() >=largestRowWidth)
+					return RRreturn;
+			}
+			ReadResult r = super.read();
+			while (r != null && r.getRow() != null && r.isEndOfStream() && r.getRow().size() >=largestRowWidth)
+				r=super.read();
+			return r;
+		}
 	}
 	
 	private String getRawDataSource(String url) {
