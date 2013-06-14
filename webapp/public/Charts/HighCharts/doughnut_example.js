@@ -1,65 +1,133 @@
 $(function () {
+
+	var days = 2;
+    	var endTime = (new Date())
+        .getTime();
+    	var startTime = endTime - days * 24 * 3600000;
+
+    	var url = 'http://' + window.location.host + '/api/aggregation/RSF_PowerConsumption_Example/' + startTime + '/' + endTime;
+    	
+    	//"RSF_LIGHTING_1MINl1m": 74243.11065477342,
+	//"RSF_BUILDING_1MINl1m": -451521.2354785786,
+	//"value": -784268.0896022104,
+	//"RSF_DATACENTER_1MINl1m": 5290.259885313927,
+	//"RSF_ELEVATOR_1MINl1m": 63140.06062611822,
+	//"RSF_HEATING_1MINl1m": 42058.61024692249,
+	//"RSF_MISC_1MINl1m": -753068.6534745345,
+	//"RSF_MECHANICAL_1MINl1m": 68952.85076945949,
+	//"RSF_COOLING_1MINl1m": 166636.9071683151
+	
+	$.getJSON(url, function (chartData) {
+	   var RSF_LIGHTING_1MINl1m_Total = 0;
+        var RSF_BUILDING_1MINl1m_Total = 0;
+        var RSF_DATACENTER_1MINl1m_Total = 0;
+        var RSF_ELEVATOR_1MINl1m_Total = 0;
+        var RSF_HEATING_1MINl1m_Total = 0;
+        var RSF_MISC_1MINl1m_Total = 0;
+        var RSF_MECHANICAL_1MINl1m_Total = 0;
+        var RSF_COOLING_1MINl1m_Total = 0;
+
+        $.each(chartData.data, function (key, val) {
+            var time = val.time;
+            
+            var RSF_LIGHTING_1MINl1m = Math.abs(val.RSF_LIGHTING_1MINl1m);
+            var RSF_BUILDING_1MINl1m = Math.abs(val.RSF_BUILDING_1MINl1m);
+            var RSF_DATACENTER_1MINl1m = Math.abs(val.RSF_DATACENTER_1MINl1m);
+            var RSF_ELEVATOR_1MINl1m = Math.abs(val.RSF_ELEVATOR_1MINl1m);
+            var RSF_HEATING_1MINl1m = Math.abs(val.RSF_HEATING_1MINl1m);
+            var RSF_MISC_1MINl1m = Math.abs(val.RSF_MISC_1MINl1m);
+            var RSF_MECHANICAL_1MINl1m = Math.abs(val.RSF_MECHANICAL_1MINl1m);
+            var RSF_COOLING_1MINl1m = Math.abs(val.RSF_COOLING_1MINl1m);
+            
+            if(RSF_LIGHTING_1MINl1m != undefined) {
+            	RSF_LIGHTING_1MINl1m_Total += RSF_LIGHTING_1MINl1m;
+            }
+            	
+            if(RSF_BUILDING_1MINl1m != undefined) {
+            	RSF_BUILDING_1MINl1m_Total += RSF_BUILDING_1MINl1m;
+            }
+            	
+            if(RSF_DATACENTER_1MINl1m != undefined) {
+            	RSF_DATACENTER_1MINl1m_Total += RSF_DATACENTER_1MINl1m;
+            }
+            	
+        	  if(RSF_ELEVATOR_1MINl1m != undefined) {
+            	RSF_ELEVATOR_1MINl1m_Total += RSF_ELEVATOR_1MINl1m;
+            }
+            	
+            if(RSF_HEATING_1MINl1m != undefined) {
+            	RSF_HEATING_1MINl1m_Total += RSF_HEATING_1MINl1m;
+            }
+            	
+            if(RSF_MISC_1MINl1m != undefined) {
+            	RSF_MISC_1MINl1m_Total += RSF_MISC_1MINl1m;
+            }
+            	
+            if(RSF_MECHANICAL_1MINl1m != undefined) {
+            	RSF_MECHANICAL_1MINl1m_Total += RSF_MECHANICAL_1MINl1m;
+            }
+            	
+            if(RSF_COOLING_1MINl1m != undefined) {
+            	RSF_COOLING_1MINl1m_Total += RSF_COOLING_1MINl1m;
+            }
+            	
+        });
+        
+        var HVACtotal = RSF_HEATING_1MINl1m_Total + RSF_COOLING_1MINl1m_Total;
+        var Mechanicaltotal = RSF_MECHANICAL_1MINl1m_Total + RSF_ELEVATOR_1MINl1m_Total + RSF_MISC_1MINl1m_Total + RSF_LIGHTING_1MINl1m_Total;
+        var Computingtotal = RSF_BUILDING_1MINl1m_Total + RSF_DATACENTER_1MINl1m_Total;
+
+        var thisTotal = HVACtotal + Mechanicaltotal + Computingtotal;
+        
+        var HVAC = [precision(((RSF_HEATING_1MINl1m_Total/HVACtotal)*100), 2), precision(((RSF_COOLING_1MINl1m_Total/HVACtotal)*100), 2)];
+        var HVACpercentage = precision((HVACtotal/thisTotal) * 100, 2);
+        
+        var Mechanical = [precision(((RSF_MECHANICAL_1MINl1m_Total/Mechanicaltotal)*100), 2), precision(((RSF_ELEVATOR_1MINl1m_Total/Mechanicaltotal)*100), 2), precision(((RSF_MISC_1MINl1m_Total/Mechanicaltotal)*100), 2), precision(((RSF_LIGHTING_1MINl1m_Total/Mechanicaltotal)*100), 2)];
+        var Mechanicalpercentage = precision((Mechanicaltotal/thisTotal) * 100, 2);
+        
+        var Computing = [precision(((RSF_BUILDING_1MINl1m_Total/Computingtotal)*100), 2), precision(((RSF_DATACENTER_1MINl1m_Total/Computingtotal)*100), 2)];
+        var Computingpercentage = precision((Computingtotal/thisTotal) * 100, 2);
     
         var colors = Highcharts.getOptions().colors,
-            categories = ['MSIE', 'Firefox', 'Chrome', 'Safari', 'Opera'],
-            name = 'Browser brands',
+            categories = ['HVAC', 'Mechanical', 'Computing', 'Lighting'],
+            name = 'Departments',
             data = [{
-                    y: 55.11,
+                    y: HVACpercentage,
                     color: colors[0],
                     drilldown: {
-                        name: 'MSIE versions',
-                        categories: ['MSIE 6.0', 'MSIE 7.0', 'MSIE 8.0', 'MSIE 9.0'],
-                        data: [10.85, 7.35, 33.06, 2.81],
+                        name: 'HVAC',
+                        categories: ['HEATING', 'COOLING'],
+                        data: HVAC,
                         color: colors[0]
                     }
                 }, {
-                    y: 21.63,
+                    y: Mechanicalpercentage,
                     color: colors[1],
                     drilldown: {
-                        name: 'Firefox versions',
-                        categories: ['Firefox 2.0', 'Firefox 3.0', 'Firefox 3.5', 'Firefox 3.6', 'Firefox 4.0'],
-                        data: [0.20, 0.83, 1.58, 13.12, 5.43],
+                        name: 'Mechanical',
+                        categories: ['MECHANICAL', 'ELEVATOR', 'MISC', 'LIGHTING'],
+                        data: Mechanical,
                         color: colors[1]
                     }
                 }, {
-                    y: 11.94,
+                    y: Computingpercentage,
                     color: colors[2],
                     drilldown: {
-                        name: 'Chrome versions',
-                        categories: ['Chrome 5.0', 'Chrome 6.0', 'Chrome 7.0', 'Chrome 8.0', 'Chrome 9.0',
-                            'Chrome 10.0', 'Chrome 11.0', 'Chrome 12.0'],
-                        data: [0.12, 0.19, 0.12, 0.36, 0.32, 9.91, 0.50, 0.22],
+                        name: 'Computing',
+                        categories: ['BUILDING', 'DATACENTER'],
+                        data: Computing,
                         color: colors[2]
-                    }
-                }, {
-                    y: 7.15,
-                    color: colors[3],
-                    drilldown: {
-                        name: 'Safari versions',
-                        categories: ['Safari 5.0', 'Safari 4.0', 'Safari Win 5.0', 'Safari 4.1', 'Safari/Maxthon',
-                            'Safari 3.1', 'Safari 4.1'],
-                        data: [4.55, 1.42, 0.23, 0.21, 0.20, 0.19, 0.14],
-                        color: colors[3]
-                    }
-                }, {
-                    y: 2.14,
-                    color: colors[4],
-                    drilldown: {
-                        name: 'Opera versions',
-                        categories: ['Opera 9.x', 'Opera 10.x', 'Opera 11.x'],
-                        data: [ 0.12, 0.37, 1.65],
-                        color: colors[4]
                     }
                 }];
     
     
         // Build the data arrays
-        var browserData = [];
-        var versionsData = [];
+        var departmentData = [];
+        var groupsData = [];
         for (var i = 0; i < data.length; i++) {
     
             // add browser data
-            browserData.push({
+            departmentData.push({
                 name: categories[i],
                 y: data[i].y,
                 color: data[i].color
@@ -68,25 +136,288 @@ $(function () {
             // add version data
             for (var j = 0; j < data[i].drilldown.data.length; j++) {
                 var brightness = 0.2 - (j / data[i].drilldown.data.length) / 5 ;
-                versionsData.push({
+                groupsData.push({
                     name: data[i].drilldown.categories[j],
                     y: data[i].drilldown.data[j],
                     color: Highcharts.Color(data[i].color).brighten(brightness).get()
                 });
             }
         }
+        
+	   var theme_de = {
+		   colors: ["#DDDF0D", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee",
+		      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+		   chart: {
+		      backgroundColor: {
+		         linearGradient: [0, 0, 250, 500],
+		         stops: [
+		            [0, 'rgb(48, 96, 48)'],
+		            [1, 'rgb(0, 0, 0)']
+		         ]
+		      },
+		      borderColor: '#000000',
+		      borderWidth: 2,
+		      className: 'dark-container',
+		      plotBackgroundColor: 'rgba(255, 255, 255, .1)',
+		      plotBorderColor: '#CCCCCC',
+		      plotBorderWidth: 1
+		   },
+		   title: {
+		      style: {
+		         color: '#C0C0C0',
+		         font: 'bold 16px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   subtitle: {
+		      style: {
+		         color: '#666666',
+		         font: 'bold 10px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   xAxis: {
+		      gridLineColor: '#333333',
+		      gridLineWidth: 1,
+		      labels: {
+		         style: {
+		         	  fontSize: '8px',
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      tickColor: '#A0A0A0',
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '10px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		
+		         }
+		      }
+		   },
+		   yAxis: {
+		      gridLineColor: '#333333',
+		      labels: {
+		         style: {
+		         	  fontSize: '8px',
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      minorTickInterval: null,
+		      tickColor: '#A0A0A0',
+		      tickWidth: 1,
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '10px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		         }
+		      }
+		   },
+		   tooltip: {
+		      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+		      style: {
+		         	  fontSize: '8px',
+		         color: '#F0F0F0'
+		      }
+		   },
+		   toolbar: {
+		      itemStyle: {
+		         	  fontSize: '8px',
+		         color: 'silver'
+		      }
+		   },
+		   plotOptions: {
+		      line: {
+		         dataLabels: {
+		         	  fontSize: '8px',
+		            color: '#CCC'
+		         },
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      spline: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      scatter: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      candlestick: {
+		         lineColor: 'white'
+		      }
+		   },
+		   legend: {
+		      itemStyle: {
+		         font: '7pt Trebuchet MS, Verdana, sans-serif',
+		         color: '#A0A0A0'
+		      },
+		      itemHoverStyle: {
+		         	  fontSize: '8px',
+		         color: '#FFF'
+		      },
+		      itemHiddenStyle: {
+		         	  fontSize: '8px',
+		         color: '#444'
+		      }
+		   },
+		   credits: {
+		      style: {
+		         fontSize: '8px',
+		         color: '#666'
+		      }
+		   },
+		   labels: {
+		      style: {
+		         fontSize: '8px',
+		         color: '#CCC'
+		      }
+		   },
+		
+		
+		   navigation: {
+		      buttonOptions: {
+		         symbolStroke: '#DDDDDD',
+		         hoverSymbolStroke: '#FFFFFF',
+		         theme: {
+		            fill: {
+		               linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		               stops: [
+		                  [0.4, '#606060'],
+		                  [0.6, '#333333']
+		               ]
+		            },
+		            stroke: '#000000'
+		         }
+		      }
+		   },
+		
+		   // scroll charts
+		   rangeSelector: {
+		      buttonTheme: {
+		         fill: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		         stroke: '#000000',
+		         style: {
+		            color: '#CCC',
+		         	  fontSize: '8px',
+		            fontWeight: 'bold'
+		         },
+		         states: {
+		            hover: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.4, '#BBB'],
+		                     [0.6, '#888']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'white'
+		               }
+		            },
+		            select: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.1, '#000'],
+		                     [0.3, '#333']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'yellow'
+		               }
+		            }
+		         }
+		      },
+		      inputStyle: {
+		         	  fontSize: '8px',
+		         backgroundColor: '#333',
+		         color: 'silver'
+		      },
+		      labelStyle: {
+		         	  fontSize: '8px',
+		         color: 'silver'
+		      }
+		   },
+		
+		   navigator: {
+		      handles: {
+		         backgroundColor: '#666',
+		         borderColor: '#AAA'
+		      },
+		      outlineColor: '#CCC',
+		      maskFill: 'rgba(16, 16, 16, 0.5)',
+		      series: {
+		         	  fontSize: '8px',
+		         color: '#7798BF',
+		         lineColor: '#A6C7ED'
+		      }
+		   },
+		
+		   scrollbar: {
+		      barBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      barBorderColor: '#CCC',
+		      buttonArrowColor: '#CCC',
+		      buttonBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      buttonBorderColor: '#CCC',
+		      rifleColor: '#FFF',
+		      trackBackgroundColor: {
+		         linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		         stops: [
+		            [0, '#000'],
+		            [1, '#333']
+		         ]
+		      },
+		      trackBorderColor: '#666'
+		   },
+		
+		   // special colors for some of the
+		   legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+		   legendBackgroundColorSolid: 'rgb(35, 35, 70)',
+		   dataLabelsColor: '#444',
+		   textColor: '#C0C0C0',
+		         	  fontSize: '8px',
+		   maskColor: 'rgba(255,255,255,0.3)'
+		};
     
         // Create the chart
-        $('#container').highcharts({
+        var options = {
             chart: {
-                type: 'pie'
+                type: 'pie',
+                renderTo: 'container'
             },
             title: {
-                text: 'Browser market share, April, 2011'
+                text: 'RSF Building Power Consumption'
             },
             yAxis: {
                 title: {
-                    text: 'Total percent market share'
+                    text: 'Total percent Power Consumption'
                 }
             },
             plotOptions: {
@@ -99,8 +430,8 @@ $(function () {
         	    valueSuffix: '%'
             },
             series: [{
-                name: 'Browsers',
-                data: browserData,
+                name: 'Departments',
+                data: departmentData,
                 size: '60%',
                 dataLabels: {
                     formatter: function() {
@@ -110,17 +441,25 @@ $(function () {
                     distance: -30
                 }
             }, {
-                name: 'Versions',
-                data: versionsData,
+                name: 'Groups',
+                data: groupsData,
                 size: '80%',
                 innerSize: '60%',
                 dataLabels: {
                     formatter: function() {
                         // display only if larger than 1
-                        return this.y > 1 ? '<b>'+ this.point.name +':</b> '+ this.y +'%'  : null;
+                        return this.y > 1 ? '<b style="font-size:8px;">'+ this.point.name +':</b><i style="font-size:8px;">'+ this.y +'%</i>'  : null;
                     }
                 }
             }]
-        });
+        };
+        
+        var theActualChart = new Highcharts.Chart(Highcharts.merge(options, theme_de));
     })
+})
+
+function precision(value, precision) {
+    var power = Math.pow(10, precision || 0);
+    return (Math.round(value * power) / power);
+}
     
