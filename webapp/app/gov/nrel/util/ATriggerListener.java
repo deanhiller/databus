@@ -10,6 +10,7 @@ import models.EntityUser;
 import models.SecureSchema;
 import models.message.Trigger;
 
+import org.apache.commons.lang.StringUtils;
 import org.mortbay.log.Log;
 import org.playorm.cron.api.CronService;
 import org.playorm.cron.api.CronServiceFactory;
@@ -64,7 +65,7 @@ public class ATriggerListener {
 		String url = trigger.getUrl();
 
 		boolean success = false;
-		String exceptionString = "";
+		String exceptionString = "none";
 		//synchronously call the url awaiting a result here
 
 		Long start = startOverride;
@@ -167,8 +168,11 @@ public class ATriggerListener {
 		t.setUrl(job.getProperties().get("url"));
 		t.setRunAsUser(job.getProperties().get("userName"));
 		t.setLastRunSuccess(toBoolean(job.getProperties().get("success")));
-		t.setLastRunTime(Long.parseLong(job.getProperties().get("startTime")));
-		t.setLastRunDuration(Long.parseLong(job.getProperties().get("duration")));
+		if (StringUtils.isNotBlank(job.getProperties().get("startTime")))
+			t.setLastRunTime(Long.parseLong(job.getProperties().get("startTime")));
+		if (StringUtils.isNotBlank(job.getProperties().get("duration")))
+			t.setLastRunDuration(Long.parseLong(job.getProperties().get("duration")));
+		t.setLastException(job.getProperties().get("lastException"));
 		return t;
 	}
 
