@@ -28,7 +28,11 @@ public class ActiveDirAuthentication {
 
 	private static final Logger log = LoggerFactory.getLogger(ActiveDirAuthentication.class);
 	
-	public boolean isUserValid(String username, String password, String domainName) {
+	public boolean isUserValid(String username, String password) {
+		String domainName = Play.configuration.getProperty("domain");
+		if(domainName == null || "".equals(domainName.trim()))
+			throw new RuntimeException("Sorry, your application.conf is missing the property=domain");
+		
 		try {
 			String demomode = Play.configuration.getProperty("demo.mode");
 			if("true".equals(demomode))

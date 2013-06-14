@@ -32,7 +32,7 @@ public class Security extends GuiSecure.Security {
 		}
 
 		ActiveDirAuthentication auth = new ActiveDirAuthentication();
-		boolean userValid = auth.isUserValid(username, password, "nrel.gov");
+		boolean userValid = auth.isUserValid(username, password);
 		if(!userValid)
 			return false;
 		
