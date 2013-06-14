@@ -51,8 +51,7 @@ public class TestRunner extends Controller {
             }
             for(File tr : testResults.listFiles()) {
                 if ((tr.getName().endsWith(".html") || tr.getName().startsWith("result.")) && !tr.delete()) {
-                	if (Logger.isWarnEnabled())
-                		Logger.warn("Cannot delete %s ...", tr.getAbsolutePath());
+                	Logger.warn("Cannot delete %s ...", tr.getAbsolutePath());
                 }
             }
             renderText("done");
