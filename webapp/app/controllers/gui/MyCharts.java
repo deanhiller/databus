@@ -25,7 +25,7 @@ public class MyCharts extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(MyCharts.class);
 	private static int CURRENT_VERSION = 1;
 	
-	public static void loadChart() {
+	public static void loadChartPage() {
 		String theRequestedChart = params.get("chart");
 		
 		/**
@@ -34,10 +34,25 @@ public class MyCharts extends Controller {
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
-		log.error(theChart);
+		//log.error(theChart);
 		
 		renderArgs.put("theRequestedChart", theChart);
 		render();
+	}
+	
+	public static void loadChartDiv() {
+		String theRequestedChart = params.get("chart");
+		String theDivContainer = params.get("div");
+		
+		/**
+		 * Load the chart code directly into a string and render it
+		 */
+		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
+		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
+		
+		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "'");
+
+		renderText(theChart);
 	}
 
 	public static void createChart() {
