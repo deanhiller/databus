@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration scan="true" scanPeriod="30 seconds">
+
+     <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+         <resetJUL>true</resetJUL>
+     </contextListener>
+
+    <!-- If MDC contains filter=true then that dude is getting a huge amount of traffic
+         that we do not want to log.. -->
+    <!--turboFilter class="com.alvazan.play.logging.MDCLevelFilter">
+       <MDCKey>filter</MDCKey>
+       <Value>true</Value>
+       <ThisLevelOrBelow>INFO</ThisLevelOrBelow>
+       <OnMatch>DENY</OnMatch>
+    </turboFilter-->
+
+	<appender name="FILE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>../logs/logback.log</file>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+			<fileNamePattern>../logs/logback.%i.log.zip</fileNamePattern>
+			<minIndex>1</minIndex>
+			<maxIndex>10</maxIndex>
+		</rollingPolicy>
+
+		<triggeringPolicy
+			class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+			<maxFileSize>50MB</maxFileSize>
+		</triggeringPolicy>
+		<encoder>
+			<pattern>%date{ISO8601} [%X{sessionid}-%X{user}] [%thread] %logger{15} %method%n%-4level: %message%n</pattern>
+		</encoder>
+	</appender>
+
+	<!-- logger name="controllers.ApiPostDataPoints" level="WARN"/-->
+
+    <root>
+        <level value="INFO" />
+        <appender-ref ref="FILE" />
+    </root>
+</configuration>
