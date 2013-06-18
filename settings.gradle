@@ -1,2 +1,2 @@
-include 'master', 'webapp'
+include 'master', 'webapp','modbus'
 

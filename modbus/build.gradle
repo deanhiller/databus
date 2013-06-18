@@ -1,0 +1,60 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+//override the default directory of build as I like to use build and build.bat for building
+buildDir = file('output')
+project.ext.fixedLibDir = file('lib')
+project.ext.stagingDir = file('staging')
+project.ext.toStagingDir = file(new File(buildDir, project.name))
+project.ext.toStagingLibsDir = file(new File(toStagingDir, 'lib'))
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.slf4j:slf4j-api:1.7.2'
+    compile 'org.slf4j:log4j-over-slf4j:1.7.2'
+    compile 'org.slf4j:jcl-over-slf4j:1.7.2'
+    compile 'org.slf4j:jul-to-slf4j:1.7.2'
+    compile 'ch.qos.logback:logback-core:1.0.9'
+    compile 'ch.qos.logback:logback-classic:1.0.9'
+    compile 'org.codehaus.groovy:groovy-all:2.0.0'
+
+    compile group: 'commons-cli',   name: 'commons-cli',    version: '1.2'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
+    compile group: 'org.codehaus.jackson', name: 'jackson-mapper-asl',    version: '1.9.8'
+    compile group: 'commons-logging', name: 'commons-logging', version: '1.1.1'
+    compile group: 'org.apache.httpcomponents', name: 'httpclient',       version: '4.2.1'
+    compile group: 'com.google.code.gson', name: 'gson',   version: '2.1'
+    compile group: 'commons-io',           name: 'commons-io',        version: '2.4'
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
+task staging(type: Sync) {
+    from(stagingDir) {}
+    into toStagingDir
+}
+
+task syncJars(type: Sync) {
+    from(configurations.compile) {}
+    from(fixedLibDir) {}
+    into toStagingLibsDir
+}
+
+task copyMainJar(type: Copy) {
+    from(libsDir) {}
+    into toStagingLibsDir
+}
+
+task myZip(type: Tar) {
+    archiveName project.name+'.tar.gz'
+    from(buildDir) {
+        include project.name+'/**'
+    }
+}
+
+syncJars.dependsOn('staging')
+copyMainJar.dependsOn('syncJars')
+myZip.dependsOn('copyMainJar')
+assemble.dependsOn('myZip')
