@@ -57,8 +57,6 @@ public class ModBusClient {
 
 	private static final Logger log = LoggerFactory.getLogger(ModBusClient.class);
 	static String SDI_HOST_URL; // = "http://sdi1.nrel.gov:8080/SDI";
-	static String DATABUS_HOST_URL; // = "https://databus.nrel.gov:5502";
-	static int PORT;
 	static String modName; // = "modRaw";
 	static Integer threadPoolSize;
 	static Integer numberOfIterations;
@@ -106,61 +104,62 @@ public class ModBusClient {
 	 */
 	public static void main(String[] args) throws SecurityException,
 			IOException {
-		SLF4JBridgeHandler.install();
-		
-		log.info("Starting ModBusClient...");
-		
-		Properties properties = loadProperties(args[1]);
-
-//		FileInputStream configFile = new FileInputStream(
-//				"../conf/logging.properties");
-//		LogManager.getLogManager().readConfiguration(configFile);
-		log.info("Starting ModBusClient2222...");
-
-		SDI_HOST_URL = properties.getProperty("SDI_HOST_URL");
-		String protocol = properties.getProperty("databus-protocol");
-		String host = properties.getProperty("databus-host");
-		String portStr = properties.getProperty("databus-port");
-		boolean isSecure = false;
-		if("https".equals(protocol.trim()))
-			isSecure = true;
-		
-		if(portStr == null) {
-			portStr = "80";
-			if("https".equals(protocol.trim()))
-				portStr = "443";
-		}
-		PORT = Integer.parseInt(portStr);
-		
-		DATABUS_HOST_URL = protocol+"://"+host+":"+PORT;
-		modName = properties.getProperty("modName");
-		threadPoolSize = Integer.parseInt(properties
-				.getProperty("thread-pool-size"));
-		numberOfIterations = Integer.parseInt(properties
-				.getProperty("number-of-iterations"));
-		int pollTime = Integer.parseInt(properties.getProperty("estimated-poll-time"));
-		GROUP_NAME = properties.getProperty("database");
-		USERNAME = properties.getProperty("user");
-		KEY = properties.getProperty("key");
-		deviceTable = properties.getProperty("deviceTable");
-		streamTable = properties.getProperty("streamTable");
-		
 		ThreadPoolExecutor threadPool = null;
-
-		meterList = new HashMap<String, Meter>();
-
-		// initialize databus stuff
-		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(
-				1000);
-		RejectedExecutionHandler rejectedExec = new RejectedExecHandler();
-		ExecutorService recorderSvc = new ThreadPoolExecutor(20, 20, 120,
-				TimeUnit.SECONDS, queue, rejectedExec);
-
-		log.info("username=" + USERNAME + "\nkey=" + KEY + "\nport=" + PORT);
-		final DatabusSender sender = new DatabusSender(USERNAME, KEY,
-				deviceTable, streamTable, recorderSvc, host, PORT, isSecure);
-
 		try {
+			SLF4JBridgeHandler.install();
+			
+			log.info("Starting ModBusClient...");
+			
+			Properties properties = loadProperties(args[1]);
+	
+	//		FileInputStream configFile = new FileInputStream(
+	//				"../conf/logging.properties");
+	//		LogManager.getLogManager().readConfiguration(configFile);
+			log.info("Starting ModBusClient2222...");
+	
+			SDI_HOST_URL = properties.getProperty("SDI_HOST_URL");
+			String url = properties.getProperty("databus-url");
+			
+			boolean isSecure = false;
+			int port = 80;
+			if(url.startsWith("https")) {
+				isSecure = true;
+				port = 443;
+			}
+			
+			int index = url.indexOf("://");
+			String host = url.substring(index+3);
+			if(host.contains(":")) {
+				int index2 = host.indexOf(":");
+				String portStr = host.substring(index2+1);
+				port = Integer.parseInt(portStr);
+				host = host.substring(0, index2);
+			}
+			
+			modName = properties.getProperty("modName");
+			threadPoolSize = Integer.parseInt(properties
+					.getProperty("thread-pool-size"));
+			numberOfIterations = Integer.parseInt(properties
+					.getProperty("number-of-iterations"));
+			int pollTime = Integer.parseInt(properties.getProperty("estimated-poll-time"));
+			GROUP_NAME = properties.getProperty("database");
+			USERNAME = properties.getProperty("user");
+			KEY = properties.getProperty("key");
+			deviceTable = properties.getProperty("deviceTable");
+			streamTable = properties.getProperty("streamTable");
+			
+			meterList = new HashMap<String, Meter>();
+	
+			// initialize databus stuff
+			LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(
+					1000);
+			RejectedExecutionHandler rejectedExec = new RejectedExecHandler();
+			ExecutorService recorderSvc = new ThreadPoolExecutor(20, 20, 120,
+					TimeUnit.SECONDS, queue, rejectedExec);
+	
+			log.info("username=" + USERNAME + "\nkey=" + KEY + "\nport=" + port);
+			final DatabusSender sender = new DatabusSender(USERNAME, KEY,
+					deviceTable, streamTable, recorderSvc, host, port, isSecure);
 
 			meterMetadata = new JSONObject(new JSONTokener(
 					new InputStreamReader(new FileInputStream(args[2]))));
@@ -194,22 +193,25 @@ public class ModBusClient {
 				});
 			}
 
+			log.info("done");
 		} catch (Exception e) {
 			log.warn( "EXCEPTION", e);
 
 		} finally {
 
-			while (!threadPool.isTerminated()) {
-				try {
-					threadPool.shutdown();
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-
-					log.warn( "EXCEPTION", e);
+			if(threadPool != null) {
+				while (!threadPool.isTerminated()) {
+					try {
+						threadPool.shutdown();
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+	
+						log.warn( "EXCEPTION", e);
+					}
 				}
 			}
 
-			log.info("done");
+			log.info("exiting");
 		}
 	}
 
@@ -337,7 +339,6 @@ public class ModBusClient {
 					
 					while (streamIt.hasNext()) {
 						String stream = streamIt.next();
-						log.info("stream="+stream);
 						processStream(sender, data, meter, master, time,
 								meterMeta, stream);
 					}
@@ -402,12 +403,12 @@ public class ModBusClient {
 		DatabusBean point = null;
 		if(value == Integer.MAX_VALUE ||
 				value == Integer.MIN_VALUE) {
-			log.info("posting null at time="+time+" stream="+stream);
+			log.info("posting null at time="+time+" stream="+meter.getSerial()+""+stream);
 			// send null
 			point = databusPoint(meter.getSerial()
 					+ stream, time, null);
 		} else {
-			log.info("posting value="+value+" at time="+time+" stream="+stream);
+			log.info("posting value="+value+" at time="+time+" stream="+meter.getSerial()+""+stream);
 			point = databusPoint(meter.getSerial()
 					+ stream, time, value.doubleValue());
 		}							
@@ -430,7 +431,7 @@ public class ModBusClient {
 
 	public static void registerWithDatabus(Meter meter, DatabusSender sender) {
 
-		log.info("Registering Device " + meter.getSerial()
+		log.info("Registering Device serial#=" + meter.getSerial()
 				+ " if MeterMeta has " + meterMetadata.has(meter.getModel()));
 
 		if (meterMetadata.has(meter.getModel())) {
@@ -447,12 +448,12 @@ public class ModBusClient {
 			d.setProtocol("ModBus");
 			d.setSite(meter.getName().contains("NWTC") ? "NWTC" : "STM");
 
-			log.info("Registering Device " + d.getDeviceId());
+			log.info("Registering Device serial#=" + d.getDeviceId());
 
 			Iterator<String> streamIt = meterMeta.keys();
 			while (streamIt.hasNext()) {
 				String stream = streamIt.next();
-				log.info("Registering " + stream);
+				log.info("Registering " +meter.getSerial()+""+ stream);
 
 				Stream s = new Stream();
 				s.setAggInterval("raw");

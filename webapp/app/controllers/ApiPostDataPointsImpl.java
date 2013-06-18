@@ -134,16 +134,16 @@ public class ApiPostDataPointsImpl {
 		Object rowKey = convertToStorage(idColumnMeta, pkValue);
 
 		String cf = table.getColumnFamily();
-		TypedRow row = typedSession.find(cf, rowKey);
-		if(row == null) {
+//		TypedRow row = typedSession.find(cf, rowKey);
+//		if(row == null) {
 			//create new row
-			row = typedSession.createTypedRow(table.getColumnFamily());
+			TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
 			row.setRowKey(rowKey);			
-		} else if(!isUpdate) {
-			if (log.isWarnEnabled())
-        		log.warn("pk already in use="+pkValue+" table="+tableName+" user needs to use _update=true in their json");
-			throw new BadRequest("This row for table="+tableName+" and primary key="+pkValue+" already exists.  Use _update=true in your json if you really want to modify this value");
-		}
+//		} else if(!isUpdate) {
+//			if (log.isWarnEnabled())
+//        		log.warn("pk already in use="+pkValue+" table="+tableName+" user needs to use _update=true in their json");
+//			throw new BadRequest("This row for table="+tableName+" and primary key="+pkValue+" already exists.  Use _update=true in your json if you really want to modify this value");
+//		}
 		
 		if (log.isInfoEnabled())
 			log.info("table name = '" + table.getColumnFamily() + "'");
