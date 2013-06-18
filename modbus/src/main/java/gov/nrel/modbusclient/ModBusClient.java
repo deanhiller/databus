@@ -74,6 +74,7 @@ public class ModBusClient {
 	static String streamTable = "modbusstreamMeta";
 	static String deviceTable = "modbusdeviceMeta";
 	static Integer pointsPerSend = 10;
+	private static long timeBetweenPolls;
 
 	private synchronized Meter getNextMeter() {
 
@@ -124,6 +125,7 @@ public class ModBusClient {
 				.getProperty("thread-pool-size"));
 		numberOfIterations = Integer.parseInt(properties
 				.getProperty("number-of-iterations"));
+		int pollTime = Integer.parseInt(properties.getProperty("estimated-poll-time"));
 
 		ThreadPoolExecutor threadPool = null;
 
@@ -148,6 +150,10 @@ public class ModBusClient {
 			loadMeters(args[0], sender);
 			writeMeters();
 
+			threadPoolSize = Math.min(threadPoolSize, meterList.size());
+			double devicesPerThread = ((double)meterList.size()) / threadPoolSize;
+			timeBetweenPolls = (long) (pollTime / devicesPerThread);
+			
 			meterIt = meterList.keySet().iterator();
 
 			iterationNumber = 0;
@@ -321,8 +327,8 @@ public class ModBusClient {
 
 				long dif = System.currentTimeMillis() - time;
 
-				if (dif < 1000) {
-					Thread.sleep(1000 - dif);
+				if (dif < timeBetweenPolls) {
+					Thread.sleep(timeBetweenPolls - dif);
 				}
 			} finally {
 				master.destroy();
