@@ -68,11 +68,11 @@ public class ModBusClient {
 	static JSONObject meterMetadata;
 
 	// databus variables
-	static String GROUP_NAME = "modbus";
-	static String USERNAME = "robot-modbus";
-	static String KEY = "941RCGA.B2.1JGZZ11OZOCEZ";
-	static String streamTable = "modbusstreamMeta";
-	static String deviceTable = "modbusdeviceMeta";
+	static String GROUP_NAME;
+	static String USERNAME;
+	static String KEY;
+	static String streamTable;
+	static String deviceTable;
 	static Integer pointsPerSend = 10;
 	private static long timeBetweenPolls;
 
@@ -126,7 +126,12 @@ public class ModBusClient {
 		numberOfIterations = Integer.parseInt(properties
 				.getProperty("number-of-iterations"));
 		int pollTime = Integer.parseInt(properties.getProperty("estimated-poll-time"));
-
+		GROUP_NAME = properties.getProperty("database");
+		USERNAME = properties.getProperty("user");
+		KEY = properties.getProperty("key");
+		deviceTable = properties.getProperty("deviceTable");
+		streamTable = properties.getProperty("streamTable");
+		
 		ThreadPoolExecutor threadPool = null;
 
 		meterList = new HashMap<String, Meter>();

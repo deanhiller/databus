@@ -169,8 +169,10 @@ public class DatabusSender {
 		result.put("stream", str.getTableName());
 		String json = writeValueAsString(result);
 		
-		long post2 = post("/api/postdataV1", json);
-		log.info(id+"registered time="+reg+" and posted time="+post2+" stream="+str.getTableName());
+		if(streamTable != null) {
+			long post2 = post("/api/postdataV1", json);
+			log.info(id+"registered time="+reg+" and posted time="+post2+" stream="+str.getTableName());
+		}
 	}
 	
 	private long registerNewStream(String tableName, String group) {
@@ -180,6 +182,8 @@ public class DatabusSender {
 
 	private synchronized void postNewDevice(String id, Device d) {
 		if(!meta.addDevice(d))
+			return;
+		else if(deviceTable == null)
 			return;
 		
 		log.info(id+"posting new device="+d.getDeviceId());

@@ -56,7 +56,8 @@ public class MetaLoader {
 		this.hostUrl = mode+"://"+host+":"+port;
 		
 		//need to read in all stuff here
-		loadDevices(httpclient, deviceTable, streamTable);
+		if(deviceTable != null)
+			loadDevices(httpclient, deviceTable, streamTable);
 	}
 
 	private void loadDevices(DefaultHttpClient httpclient, String deviceTable, String streamTable) {
