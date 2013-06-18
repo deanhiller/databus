@@ -118,8 +118,21 @@ public class ModBusClient {
 		log.info("Starting ModBusClient2222...");
 
 		SDI_HOST_URL = properties.getProperty("SDI_HOST_URL");
-		DATABUS_HOST_URL = properties.getProperty("DATABUS_HOST_URL");
-		PORT = new Integer(properties.getProperty("port"));
+		String protocol = properties.getProperty("databus-protocol");
+		String host = properties.getProperty("databus-host");
+		String portStr = properties.getProperty("databus-port");
+		boolean isSecure = false;
+		if("https".equals(protocol.trim()))
+			isSecure = true;
+		
+		if(portStr == null) {
+			portStr = "80";
+			if("https".equals(protocol.trim()))
+				portStr = "443";
+		}
+		PORT = Integer.parseInt(portStr);
+		
+		DATABUS_HOST_URL = protocol+"://"+host+":"+PORT;
 		modName = properties.getProperty("modName");
 		threadPoolSize = Integer.parseInt(properties
 				.getProperty("thread-pool-size"));
@@ -145,7 +158,7 @@ public class ModBusClient {
 
 		log.info("username=" + USERNAME + "\nkey=" + KEY + "\nport=" + PORT);
 		final DatabusSender sender = new DatabusSender(USERNAME, KEY,
-				deviceTable, streamTable, recorderSvc, "databus.nrel.gov", PORT, true);
+				deviceTable, streamTable, recorderSvc, host, PORT, isSecure);
 
 		try {
 
