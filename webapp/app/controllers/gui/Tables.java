@@ -255,6 +255,8 @@ public class Tables extends Controller {
 				waitForCatchingUp(request);
 				//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
 				ExecutorsSingleton.executor.execute(new SaveBatch(tableMeta, headers, batch, request, ((count-1)%BATCH_SIZE)+1));
+				batch = new Line[BATCH_SIZE];
+				initializeBatch();
 			}
 
 			if(log.isDebugEnabled() && count % 2000 == 0)

@@ -88,7 +88,9 @@ public class SaveBatch implements Runnable {
 		
 		long preLoop = System.currentTimeMillis();
 		NoSqlTypedSession session = mgr.getTypedSession();
-		for(Line line : batch) {
+		for (int i = 0; i<batchsize; i++) {
+		//for(Line line : batch) {
+			Line line = batch[i];
 			if(request.args.get("error") != null) {
 				if(log.isInfoEnabled())
 					log.info("csv upload - Exiting since another thread had an error");
