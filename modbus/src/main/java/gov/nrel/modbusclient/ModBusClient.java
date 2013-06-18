@@ -36,12 +36,13 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
-import java.util.logging.Logger;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import com.serotonin.modbus4j.ModbusFactory;
@@ -54,8 +55,7 @@ import java.io.*;
  */
 public class ModBusClient {
 
-	private static final Logger log = Logger.getLogger(ModBusClient.class
-			.getName());
+	private static final Logger log = LoggerFactory.getLogger(ModBusClient.class);
 	static String SDI_HOST_URL; // = "http://sdi1.nrel.gov:8080/SDI";
 	static String DATABUS_HOST_URL; // = "https://databus.nrel.gov:5502";
 	static int PORT;
@@ -170,14 +170,14 @@ public class ModBusClient {
 						try {
 							new ModBusClient().poll(sender);
 						} catch (Exception e) {
-							log.log(Level.WARNING, "Exception", e);
+							log.warn("Exception", e);
 						}
 					}
 				});
 			}
 
 		} catch (Exception e) {
-			log.log(Level.WARNING, "EXCEPTION", e);
+			log.warn( "EXCEPTION", e);
 
 		} finally {
 
@@ -187,7 +187,7 @@ public class ModBusClient {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
 
-					log.log(Level.WARNING, "EXCEPTION", e);
+					log.warn( "EXCEPTION", e);
 				}
 			}
 
@@ -222,7 +222,7 @@ public class ModBusClient {
 			file.close();
 
 		} catch (Exception e) {
-			log.log(Level.WARNING, "EXCEPTION", e);
+			log.warn( "EXCEPTION", e);
 		}
 	}
 
@@ -263,7 +263,7 @@ public class ModBusClient {
 
 		} catch (Exception e) {
 
-			log.log(Level.WARNING, "Exception while reading csv file: " + e, e);
+			log.warn( "Exception while reading csv file: " + e, e);
 		}
 	}
 
@@ -277,7 +277,7 @@ public class ModBusClient {
 			properties.load(new FileInputStream(fileName));
 		} catch (IOException e) {
 
-			log.log(Level.WARNING, e.getMessage(), e);
+			log.warn( e.getMessage(), e);
 		}
 
 		return properties;
@@ -343,7 +343,7 @@ public class ModBusClient {
 			processStreamImpl(sender, data, meter, master, time, meterMeta,
 				stream);
 		} catch(Exception e) {
-			log.log(Level.WARNING, "Exception reading then posting stream...ignore and continue", e);
+			log.warn( "Exception reading then posting stream...ignore and continue", e);
 		}
 	}
 
@@ -429,7 +429,7 @@ public class ModBusClient {
 			d.setProtocol("ModBus");
 			d.setSite(meter.getName().contains("NWTC") ? "NWTC" : "STM");
 
-			log.log(Level.INFO, "Registering Device " + d.getDeviceId());
+			log.info("Registering Device " + d.getDeviceId());
 
 			Iterator<String> streamIt = meterMeta.keys();
 			while (streamIt.hasNext()) {
@@ -461,9 +461,9 @@ public class ModBusClient {
 				sender.postNewStream(s, d, GROUP_NAME, stream);
 
 				try {
-					log.log(Level.INFO, "REGISTER STREAM " + s.getTableName());
+					log.info("REGISTER STREAM " + s.getTableName());
 				} catch (Exception e) {
-					log.log(Level.SEVERE, "Failed Registration", e);
+					log.warn("Failed Registration", e);
 				}
 			}
 		}
@@ -526,7 +526,7 @@ public class ModBusClient {
 
 			// wr.close();
 		} catch (Exception e) {
-			log.log(Level.WARNING, "EXCEPTION", e);
+			log.warn( "EXCEPTION", e);
 		}
 	}
 }
