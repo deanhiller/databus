@@ -5,9 +5,11 @@ import java.math.BigInteger;
 import java.util.HashMap;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
 import controllers.modules.SplinesBigDecBasic;
@@ -25,7 +27,7 @@ public class DataFillerProcessor  extends PullProcessorAbstract {
 	
 	protected long interval;
 	
-	private long currentTimePointer;
+	private long currentTimePointer = -1;
 	private BigDecimal valueToFill;
 
 	private ReadResult lastValue;
@@ -78,7 +80,12 @@ public class DataFillerProcessor  extends PullProcessorAbstract {
 		Long startTime = params.getStart();
 		if(log.isInfoEnabled())
 			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
-		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
+		//this calculation works based on the startTime provided in the url.
+		//not awesome for a 'firstValues' case.  In that case it's recalculated 
+		//in the read() method.
+		//hack for buildings group.
+		if (!StringUtils.containsIgnoreCase(Request.current().path, "firstvalues"))
+			currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
 		
 		return newPath;
 	}
@@ -114,6 +121,8 @@ public class DataFillerProcessor  extends PullProcessorAbstract {
 			return new ReadResult();
 		while (lastValue == null)
 			pull();
+		if (currentTimePointer == -1)
+			currentTimePointer = calculateStartTime(lastValue.getRow().getTime(), interval, epochOffset);
 		return calculatePoint();
 	}
 	
