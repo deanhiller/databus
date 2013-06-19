@@ -133,7 +133,7 @@
 		        #{if table?.typeOfData == timeseries}
 					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
 					<td><a href="@{gui.MyStuff.tableData(table.tableName)}">View Chart</a></td>
-					<td>View Data</td>
+					<td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
 				#{/if}
 				#{else}
 					<!-- once we have a relational data view page, put the link here! -->
