@@ -2,11 +2,13 @@
 
 NREL works off of this repository for databus development
 
+There is also documentation(and support available) located at http://buffalosw.com/products/databus/databus-documentation/
+
 ## Getting Started
 
 ```sh
 $ git clone git@github.com:NREL/SDI.git
-$ cd SDI
+$ cd databus
 $ ./build.sh build
 $ cd webapp
 $ ./play run
