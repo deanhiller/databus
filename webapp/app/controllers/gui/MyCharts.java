@@ -1,5 +1,7 @@
 package controllers.gui;
 
+import gov.nrel.util.Utility;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -26,6 +28,9 @@ public class MyCharts extends Controller {
 	private static int CURRENT_VERSION = 1;
 	
 	public static void loadChartPage() {
+		String protocol = Utility.getRedirectProtocol();
+		renderArgs.put("protocol", protocol);
+		
 		String theRequestedChart = params.get("chart");
 		
 		/**

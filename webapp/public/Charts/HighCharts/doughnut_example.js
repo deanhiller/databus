@@ -5,7 +5,7 @@ $(function () {
         .getTime();
     	var startTime = endTime - days * 24 * 3600000;
 
-    	var url = 'http://' + window.location.host + '/api/aggregation/RSF_PowerConsumption_Example/' + startTime + '/' + endTime;
+    	var url = _solrProtocol + '://' + window.location.host +  '/api/aggregation/RSF_PowerConsumption_Example/' + startTime + '/' + endTime;
     	
     	//"RSF_LIGHTING_1MINl1m": 74243.11065477342,
 	//"RSF_BUILDING_1MINl1m": -451521.2354785786,
