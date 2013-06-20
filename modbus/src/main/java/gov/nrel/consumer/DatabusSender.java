@@ -177,6 +177,7 @@ public class DatabusSender {
 	
 	private long registerNewStream(String tableName, String group) {
 		String json = createJsonForRequest(tableName, group);
+		log.info("registering a new table="+tableName+" in database="+group);
 		return post("/api/registerV1", json);
 	}
 
