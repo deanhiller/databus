@@ -23,9 +23,7 @@ $(function () {
         .getTime();
     var startTime = endTime - days * 24 * 3600000;
 
-    var url = 'http://' + window.location.host + '/api/aggregation/chart_avg_sums_hour/' + startTime + '/' + endTime;
-
-    //url = _solrProtocol + '://' + window.location.host + '/api/sumstreamsV1/wind303W_RainSum_log_m/' + startTime + '/' + endTime + '?singlenode=true&callback=?';
+    var url = _solrProtocol + '://' + window.location.host +  '/api/aggregation/chart_avg_sums_hour/' + startTime + '/' + endTime;
 
     $.getJSON(url, function (chartData) {
         var ranges = [];

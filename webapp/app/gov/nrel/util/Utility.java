@@ -337,6 +337,18 @@ public class Utility {
 			
 		return prop;		
 	}
+	
+	public static String getRedirectProtocol() {
+		String mode = play.Play.configuration.getProperty("application.mode");
+		String demomode = play.Play.configuration.getProperty("demo.mode");
+		   
+		String protocol = "http";
+		if("prod".equals(mode) && !"true".equals(demomode)) {
+		   	protocol = "https";
+		}
+		
+		return protocol;
+	}
 
 	public static boolean isDemoMode() {
 		String property = Play.configuration.getProperty("demo.mode");

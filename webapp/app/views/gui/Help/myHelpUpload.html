@@ -51,7 +51,135 @@ the data is provisioned, an unlimited amount of data can be uploaded to Databus.
 <h3 style="padding-bottom: 5px; padding-top: 5px; margin-bottom: 10px;">
 	Uploading via Databus User Interface</h3>
 <div style="margin-left: 60px">
-	<i> Not currently available. </i> <br />
+	To upload data via the Databus api, go to the url:  <br />
+	<div class="subdefine">
+    <table width="50%" cellspacing="0">
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            URL:
+          </b>
+        </td>
+        <td>
+          <b style="color:#191970;">
+            https://databus.nrel.gov/tables/&lttablename&gt/upload
+          </b>
+        </td>
+      </tr>
+    </table>
+  </div>
+  You will be prompted for the file to upload that contains your data.  
+  For this style of upload a csv file is required.  The format of the csv should be:
+  <ul class="subdefine" style="margin-left: 80px;">
+	<li>A header line containing one value for each column in your table.  These items should match your column names EXACTLY (including case!).</li>
+	<li>Any number of lines with exactly the same number of comma separated values as the header line.  
+	These lines are the data that will be uploaded into your table, with each comma separated value corresponding to the column name in the header line.
+	</li>
+  </ul>
+  <br><br>
+  Important notes about the csv content:<br>
+  <ol>
+  <li>The column names in the header line can be in any order.  </li>
+  <li>The header must contain ONLY names of columns that exist in the table you are uploading data to, and they must match those column names EXACTLY, including case. </li>
+  <li>The header does not have to contain ALL columns in the table.  Any data uploaded in a csv where a column in the table does not have a corresponding 
+  entry in the header line will have blank values in the columns that are not represented in the csv header. </li>
+  
+  <li>In the data lines each values type must correctly match the type of data in the corresponding column in the table being uploaded to.  This is important 
+  for numeric values, a column of type BigDecimal can have a value '1.0' as an entry in the csv, but a column of type BigInteger must be '1', not '1.0'.   </li>
+  </ol>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <h2 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  <a name="examples">Example of Uploading Via the UI</a>
+</h2>
+ 
+ <h3 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+  Example: Uploading <b>RELATIONAL</b> Data via the UI
+</h3>
+  
+<div style="margin-left: 60px">  
+  The following example will use the ui to send information to the Databus server.
+  The data will be formatted as a CSV and will be saved to a file called 
+  <span style="color: #CF2900; font-weight: bold;">ExampleData1.txt</span>.
+  It assumes that a <b>Table</b> named "relationalExample" belonging to a <b>Database</b>
+  named "ExampleDatabase" have already been created in Databus.  The table was created using 
+  the register json here:
+</div>
+<div class="code_title">
+	<span style="color: #01355e;"><b>Table:</b> relationalExample</span>
+</div>
+<pre class="prettyprint" style="width: 90%; margin-top: 2px;">
+<div class="code">
+{"datasetType":"RELATIONAL_TABLE",
+"modelName":"relationalExample",
+"schema":"ExampleDatabase",
+"columns":[
+         {"name":"Eq_ID","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false},
+         {"name":"Timestamp","dataType":"BigInteger","isIndex":true,"isPrimaryKey":true},
+         {"name":"Occupied","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false},
+         {"name":"ESMMode","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false},
+         {"name":"FanSpeed","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false},
+         {"name":"Offline","dataType":"string","isIndex":false,"isPrimaryKey":false}
+]
+}
+
+</div>
+</pre>
+<div style="margin-left: 60px">  
+To send two rows into this table, the CSV of the file selected in the UI would look like:
+</div>
+<div class="code_title">
+	<span style="color: #CF2900;"><b>File:</b> ExampleData1.csv</span>
+</div>
+<pre class="prettyprint" style="width: 90%; margin-top: 2px;">
+<div class="code">
+Eq_ID,Timestamp,Occupied,ESMMode,FanSpeed,Offline
+527.0,1356850860000,1.0,1.0,40.0,False
+527.0,1356850920000,1.0,1.0,40.0,True
+</div>
+</pre>
+
+<div style="margin-left: 60px">
+Notice the Header line contains items that EXACTLY match the columns defined in the json for the table registration, above.
+Also notice that each comma separated value in each of the two content lines types match the types defined in the registration 
+json, i.e. <i>Eq_ID</i> is a <b>BigDecimal</b> and the value in the first content line is '527.0', whereas <i>Timestamp</i> is 
+a <b>BigInteger</b> and it's value is '1356850920000'.<br><br>
+In order to run this upload, the user would direct his browser to 
+ <div class="subdefine">
+    <table width="50%" cellspacing="0">
+      <tr style="border-bottom:0;">
+        <td width="15%" style="color:#01355e;">
+          <b>
+            URL:
+          </b>
+        </td>
+        <td>
+          <b style="color:#191970;">
+            https://databus.nrel.gov/tables/relationalExample/upload
+          </b>
+        </td>
+      </tr>
+    </table>
+  </div>
+  
+  
+click the 'choose file' button and select the file ExampleData1.csv.  Then click 'Send it...'
+ </div>
+  
+  
+  
+  
+  
+  
+  
 </div>
 <h3 style="padding-bottom: 5px; padding-top: 5px; margin-bottom: 10px;">
 	Uploading via Databus API</h3>
