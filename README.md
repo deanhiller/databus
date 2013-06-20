@@ -19,9 +19,9 @@ The app should be running at: [http://localhost:9000/](http://localhost:9000/).
 <br>
 ## Unit Tests - Gradle
 
-The build must be run at least once in order to acquire needed dependencies.  From main SDI directory:
+The build must be run at least once in order to acquire needed dependencies.  From main databus directory:
 ```sh
-$ cd ${CLONE_DIR}/SDI
+$ cd ${CLONE_DIR}/databus
 $ ./build.sh build
 ```
 Once the normal build is run, kick off unit tests with:
@@ -34,7 +34,7 @@ $ ./build.sh runSDITests
 
 In order to use Eclipse for this project, a couple commands must be executed before importing into the IDE.
 ```sh
-$ cd ${CLONE_DIR}/SDI
+$ cd ${CLONE_DIR}/databus
 $ ./build.sh build
 $ cd webapp
 $ ./play eclipsify
@@ -46,5 +46,5 @@ Doing these 2 steps will ensure that:
 
 To import into Eclipse, just open Import->Existing Projects into Workspace and use the following path as the root directory:
 ```sh
-${CLONE_DIR}/SDI/webapp
+${CLONE_DIR}/databus/webapp
 ```
