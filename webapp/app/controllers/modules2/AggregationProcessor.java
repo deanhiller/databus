@@ -128,7 +128,7 @@ public class AggregationProcessor extends StreamsProcessor {
 					return RRreturn;
 			}
 			ReadResult r = super.read();
-			while (r != null && r.getRow() != null && r.isEndOfStream() && r.getRow().size() >=largestRowWidth)
+			while (r != null && r.getRow() != null && !r.isEndOfStream() && r.getRow().size() <largestRowWidth)
 				r=super.read();
 			return r;
 		}
