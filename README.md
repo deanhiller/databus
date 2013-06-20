@@ -4,6 +4,11 @@ NREL works off of this repository for databus development
 
 There is also documentation(and support available) located at http://buffalosw.com/products/databus/databus-documentation/
 
+If you are an organization that supports databus, contact databus@nrel.gov and we will add you to the list of organizations that offer services for supporting, installing or third party services around databus.  Current organizations are
+
+http://buffalosw.com
+
+
 ## Getting Started
 
 ```sh
