@@ -1,0 +1,39 @@
+#{extends './helpTemplate.html' /}
+
+<h1 class="db_page_title">First Time User</h1>
+
+As a first time user, you either want access to someone elses data or want to upload your own so we divide this help into two sections.  The first
+section is for those who wish to upload data into the system and use that data.  The second is for those who want to look around and find data sets and
+request access to those datasets.
+
+<h2>First Time User to Upload Data</h2>
+
+These are generally the first steps you will take as a first time user...
+<br/><br/>
+<ol>
+   <li>First, you should click My Databus->Databases</li>
+   <li>Next, click the button create database</li>
+   <li>Now that you have a database, you can click <a href="@{gui.Help.myHelpProvisioning()}">Provisioning Databus</a> to find out how to create tables to upload data to</li>
+</ol>
+
+Next, you may want to create a user group(this is purely optional)
+<br/><br/>
+<ol>
+   <li>Click on My Databus->Groups</li>
+   <li>Click on Create Group<li>
+   <li>Click save once you have filled the information in</li>
+   <li>You are automatically an admin member of this group</li>
+   <li>You can request other users to give your group access to their databases</li>
+</ol>
+
+<h2>First Time User to Read Data</h2>
+
+<ol>
+   <li>The first thing to look through is the list of all databases so click on My Databus->Summary and scroll down to Databases</li>
+   <li>Find the database you are interested in and look at the list of admin users or admin groups</li>
+   <li>If there is an admin user, you can contact that user to request access to that database<li>
+   <li>If there is only admin groups, you can scroll back up to the Groups section and find the group and look at the Groups admins<li>
+   <li>Now, you can contact the Group's admins to ask for access to the database<li>
+</ol>
+
+Once you have access, you can move onto the section <a href="@{gui.Help.myHelpDownload()}">Downloading Data</a>

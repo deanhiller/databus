@@ -158,6 +158,7 @@ GET /dataupload						gui.DataUpload.dataUploadMain
 # ******************************************************************************
 # ******************************************************************************
 GET  /help							gui.Help.myHelp
+GET  /firsttimeuser                 gui.Help.firstTimeUser
 GET  /helpaccess						gui.Help.myHelpAccess
 GET  /helpgroups						gui.Help.myHelpGroups
 GET  /helprobots						gui.Help.myHelpRobots

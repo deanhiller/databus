@@ -47,7 +47,11 @@ public class Help extends Controller {
 		EntityUser user = Utility.getCurrentUser(session);
 		render(user);
 	}
-	
+
+	public static void firstTimeUser() {
+		render();
+	}
+
 	/**
 	 * Twitter Bootstrap Prototypes
 	 */

@@ -1,4 +1,5 @@
 #{extends './helpTemplate.html' /}
+#{set title:'Download Data' /}
 
 <style>
 	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
@@ -6,6 +7,28 @@
 </style>
 
 <h1 class="db_page_title">Download Data</h1>
+
+You can download data as a csv or as a json download.  The simplest way to download data is to download the raw data with one of the following urls
+
+<ol>
+    <li>csv download https://databus.nrel.gov/api/csv/rawdataV1/{tablename}/{starttime}/{endtime}</li>
+    <li>json download https://databus.nrel.gov/api/json/rawdataV1/{tablename}/{starttime}/{endtime}</li>
+</ol>
+
+The values you need to specify are tablename, startime, and endtime 
+<ol>
+    <li>tablename - the name of the table you are reading from</li>
+    <li>starttime - the start time in milliseconds since the epoch.  Use www.epochconverter.com to convert from date to time in milliseconds</li>
+    <li>endtime - the end time in milliseconds since the epoch.  Use www.epochconverter.com to convert from date to time in milliseconds</li>
+</ol>
+
+An example url would be
+
+<div class="apikey">
+    <div class="key">
+        https://databus.nrel.gov/api/csv/rawdataV1/myTable/1234234324343/12343123243243
+    </div>
+</div>  
 
 Downloading data is even simpler than uploading data. The rules for downloading data are:
 <br /><br />
