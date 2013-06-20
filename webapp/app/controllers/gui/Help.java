@@ -6,7 +6,6 @@ import play.mvc.With;
 import gov.nrel.util.Utility;
 import models.EntityUser;
 
-@With(Secure.class)
 public class Help extends Controller {
 	
 	public static void myHelp() {
