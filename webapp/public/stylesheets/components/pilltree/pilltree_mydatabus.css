@@ -1,0 +1,34 @@
+#pilltree_main_parent {
+	background-color: #001429 !important;
+	color: #fff;
+}
+
+.pilltree_database_main_parent {
+	background-color: #027ac2 !important;
+}
+
+.pilltree_database_admin {
+	background-color: #5CA173 !important;
+}
+
+.pilltree_database_readwrite {
+	background-color: #CCA300 !important;
+}
+
+.pilltree_database_readonly {
+	background-color: #FF7519 !important;
+}
+
+.pilltree_database_system {
+	background-color: #D63333 !important;
+}
+
+.pilltree_database_chosen {
+	/*color: #001429 !important;*/
+	font-weight: normal !important;
+}
+
+.pilltree_user_or_group {
+	font-size: 10px;
+	font-weight: normal;
+}
