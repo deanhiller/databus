@@ -12,14 +12,16 @@ http://buffalosw.com
 ## Getting Started
 
 ```sh
-$ git clone git@github.com:NREL/SDI.git
+$ git clone git@github.com:deanhiller/databus.git
 $ cd databus
 $ ./build.sh build
 $ cd webapp
 $ ./play run
 ```
 
-The app should be running at: [http://localhost:9000/](http://localhost:9000/).    
+The app should be running at: [http://localhost:9000/](http://localhost:9000/). Login with:
+* username: dhiller2
+* password: nreliscool   
 
 <br>
 ## Unit Tests - Gradle
