@@ -1,11 +1,15 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import gov.nrel.util.TimeValue;
 
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +29,19 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	private static final Logger log = LoggerFactory.getLogger(SplinesPullProcessor.class);
 	private String splineType;
+	private List<String> columnsToInterpolate;
 	protected long interval;
-	private SplinesBigDec spline;
+	private Map<String, SplinesBigDec> spline = new HashMap<String, SplinesBigDec>();
 	private boolean isSplineCreated = false;
 
 	long timeSecondInBuffer = 0;
 	long timeThirdInBuffer = 0;
+	
+	private UninterpalatedValueMethod uninterpalatedValueMethod = UninterpalatedValueMethod.NEAREST_ROW;
 
 	private CircularFifoBuffer buffer;
-
+	//private List<TSRelational> buffer;
+	
 	private long currentTimePointer;
 
 	private ReadResult lastValue;
@@ -49,6 +57,15 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		if(log.isInfoEnabled())
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
+		columnsToInterpolate=Arrays.asList(new String[]{valueColumn});
+		String columnsToInterpolateString = options.get("columnsToInterpolate");
+		if (StringUtils.isNotBlank(columnsToInterpolateString)) {
+			columnsToInterpolate = Arrays.asList(StringUtils.split(columnsToInterpolateString, ";"));
+		}
+		String uninterpalatedValueMethodString = options.get("uninterpalatedValueMethod");
+		if (StringUtils.equalsIgnoreCase("previous", uninterpalatedValueMethodString))
+			uninterpalatedValueMethod = UninterpalatedValueMethod.PREVIOUS_ROW;
+			
 		// param 1: Type: String
 		splineType = params.getParams().get(0);
 		/**
@@ -56,9 +73,11 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		 * -> SplinesBigDecLimitDerivative
 		 */
 		if ("basic".equals(splineType)) {
-			spline = new SplinesBigDecBasic();
+			for (String colname:columnsToInterpolate)
+				spline.put(colname, new SplinesBigDecBasic());
 		} else if ("limitderivative".equals(splineType)) {
-			spline = new SplinesBigDecLimitDerivative();
+			for (String colname:columnsToInterpolate)
+				spline.put(colname, new SplinesBigDecLimitDerivative());
 		} else {
 			// fix this bad request line
 			String msg = "/splinesV2/{type}/{interval}/{epochOffset} ; type must be basic or limitderivative";
@@ -187,18 +206,16 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	private void transferRow(TSRelational row) {
 		long time = getTime(row);
-		BigDecimal val = getValueEvenIfNull(row);
-		if(val == null)
-			return;
 		
-		buffer.add(toTimeValue(time, val));
+		TSRelational clone = (TSRelational) row.clone();
+		buffer.add(clone);
 		if (buffer.size() == buffer.maxSize()) {
 			isSplineCreated = false;
 
-			Object[] objects = buffer.toArray();
-			TimeValue secondToLastVal;
-			secondToLastVal = (TimeValue) objects[objects.length - 2];
-			TimeValue secondInBuf = (TimeValue) objects[1];
+			TSRelational[] objects = (TSRelational[])buffer.toArray(new TSRelational[]{});
+			TSRelational secondToLastVal;
+			secondToLastVal = objects[objects.length - 2];
+			TSRelational secondInBuf = objects[1];
 
 			timeSecondInBuffer = secondInBuf.getTime();
 			timeThirdInBuffer = secondToLastVal.getTime();
@@ -211,16 +228,48 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			isSplineCreated = true;
 		}
 		ReadResult out;
-		BigDecimal value = spline.getValue(currentTimePointer);
-		out = pointOut(currentTimePointer, value);
+		
+		Map<String, BigDecimal> values = calculateAllValues(currentTimePointer);
+		out = pointOut(currentTimePointer, values);
+		log.error("-------- returning a point t="+out.getRow().getTime()+" other points are timeSecond="+timeSecondInBuffer+" timeThird="+timeThirdInBuffer);
 		currentTimePointer += interval;
 		return out;
 	}
 
-	private ReadResult pointOut(long time, BigDecimal value) {
-		TSRelational rowout = new TSRelational();
+	private Map<String, BigDecimal> calculateAllValues(long currentTimePointer) {
+		HashMap<String, BigDecimal> results = new HashMap<String, BigDecimal>();
+		for (String colName:columnsToInterpolate) {
+			results.put(colName, spline.get(colName).getValue(currentTimePointer));
+		}
+		return results;
+	}
+
+	private TSRelational figureOutRowToCopy() {
+		// TODO Auto-generated method stub
+		if (uninterpalatedValueMethod==UninterpalatedValueMethod.PREVIOUS_ROW) {
+			TSRelational[] objects = (TSRelational[])buffer.toArray(new TSRelational[]{});
+			return (TSRelational)objects[1].clone();
+		}
+		else {
+			TSRelational[] objects = (TSRelational[])buffer.toArray(new TSRelational[]{});
+			TSRelational secondToLastVal = objects[objects.length - 2];
+			TSRelational secondInBuf = objects[1];
+			if (Math.abs(secondInBuf.getTime()-currentTimePointer) > (secondToLastVal.getTime()-currentTimePointer))
+				return (TSRelational)secondToLastVal.clone();
+			else 
+				return (TSRelational)secondInBuf.clone();
+		}
+	}
+
+	private ReadResult pointOut(long time, Map<String, BigDecimal> values) {
+		TSRelational rowout = figureOutRowToCopy();
 		setTime(rowout, time);
-		setValue(rowout, value);
+		for (Map.Entry<String, BigDecimal> entry:values.entrySet()) {
+			Object o = rowout.get(entry.getKey());
+			if (o==null)
+				throw new RuntimeException("A column name was specified for a column that does not exist!  The column name is "+entry.getKey());
+			rowout.put(entry.getKey(), spline.get(entry.getKey()).getValue(currentTimePointer));
+		}
 		return new ReadResult(getUrl(), rowout);
 	}
 
@@ -240,22 +289,23 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 //		}
 //	}
 
-	private TimeValue toTimeValue(long time, BigDecimal val) {
-		TimeValue rowTimeValue = new TimeValue(time, val);
-		return (rowTimeValue);
-	}
 
 	private void createSpline() {
-		Object[] array = buffer.toArray();
-		long[] times = new long[buffer.maxSize()];
-		BigDecimal[] values = new BigDecimal[buffer.maxSize()];
-		for (int i = 0; i < buffer.maxSize(); i++) {
-			TimeValue tv = (TimeValue) array[i];
-			times[i] = tv.getTime();
-			values[i] = tv.getValue() == null ? BigDecimal.valueOf(0.0) : tv
-					.getValue();
+		for (String colName:columnsToInterpolate) {
+			TSRelational[] array = (TSRelational[])buffer.toArray(new TSRelational[]{});
+			long[] times = new long[buffer.maxSize()];
+			BigDecimal[] values = new BigDecimal[buffer.maxSize()];
+			for (int i = 0; i < buffer.maxSize(); i++) {
+				TSRelational tv = (TSRelational) array[i];
+				times[i] = tv.getTime();
+				values[i] = (BigDecimal) (tv.get(colName) == null ? BigDecimal.valueOf(0.0) :tv.get(colName));
+			}
+			spline.get(colName).setRawDataPoints(times, values);
 		}
-		spline.setRawDataPoints(times, values);
+	}
+	
+	private enum UninterpalatedValueMethod {
+		PREVIOUS_ROW,NEAREST_ROW
 	}
 
 	// TSRelational row = new TSRelational();
@@ -263,3 +313,5 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	// setTime(row, val);
 	// new ReadResult(getUrl(),row);
 }
+
+
