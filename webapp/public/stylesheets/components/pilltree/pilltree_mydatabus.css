@@ -1,10 +1,71 @@
+.databus_summary_navigation {
+	margin-left: 0px !important;
+	border-right: 1px solid #aaa !important;
+	min-width: 200px;
+}
+
+.my_databus_legend {
+	float: left;
+	margin: 10px;
+	padding-top: 12px;
+	padding-bottom: 0;
+}
+
+.legend_item {
+	float: left;
+	margin-bottom: 10px;
+	min-width: 100px;
+}
+
+.legend_item_graphic {
+	float: left;
+	width: 20px;
+	height: 15px;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+	border-bottom-right-radius: 4px;
+	border-bottom-left-radius: 4px;
+	border: 1px solid #dddddd;
+}
+
+.cell_color_admin {
+	background-color: #5CA173;
+	border-right: 1px solid rgb(221, 221, 221);
+}
+
+.cell_color_readwrite {
+	background-color: #CCA300;
+	border-right: 1px solid rgb(221, 221, 221);
+}
+
+.cell_color_readonly {
+	background-color: #FF7519;
+	border-right: 1px solid rgb(221, 221, 221);
+}
+
+.cell_color_system {
+	background-color: #D63333;
+	border-right: 1px solid rgb(221, 221, 221);
+}
+
+.databus_summary_tree {
+	height: 600px;
+	min-height: 600px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
 #pilltree_main_parent {
 	background-color: #001429 !important;
 	color: #fff;
 }
 
 .pilltree_database_main_parent {
-	background-color: #027ac2 !important;
+	background-color: #5CB8E6 !important;
+}
+
+.pilltree_group_main_parent {
+	background-color: #993366 !important;
 }
 
 .pilltree_database_admin {
