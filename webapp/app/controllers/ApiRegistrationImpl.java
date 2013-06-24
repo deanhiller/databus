@@ -134,6 +134,7 @@ public class ApiRegistrationImpl {
 			tm.setTimeSeries(true);
 			tm.setTimeSeriesPartionSize((int) partitionSize);
 			tm.setup(msg.getModelName(), realCf, false);
+			tm.setColNameType(long.class);
 		}
 
 		// create new Table here and add to security group as well

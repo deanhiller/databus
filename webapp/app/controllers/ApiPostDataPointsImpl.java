@@ -148,11 +148,10 @@ public class ApiPostDataPointsImpl {
 		//rowKey better be BigInteger
 		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
 		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
-		BigInteger time = (BigInteger) timeStamp;
-		long longTime = time.longValue();
+		long time = (Long) timeStamp;
 		//find the partition
 		Integer partitionSize = table.getTimeSeriesPartionSize();
-		long partitionKey = (longTime / partitionSize) * partitionSize;
+		long partitionKey = (time / partitionSize) * partitionSize;
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
 		row.setRowKey(partitionKey);	
