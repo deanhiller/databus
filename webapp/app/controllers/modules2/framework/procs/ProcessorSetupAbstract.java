@@ -33,8 +33,8 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	protected Path params;
 	private Map<String, String> options;
 	protected ProcessorSetup child;
-	private String timeColumn;
-	private String valueColumn;
+	protected String timeColumn;
+	protected String valueColumn;
 	
 	@Inject
 	private RawProcessorFactory factory;

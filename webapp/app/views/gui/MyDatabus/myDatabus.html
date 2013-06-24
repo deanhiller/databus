@@ -1,0 +1,113 @@
+#{extends '/_index.html' /}
+#{set title:'My Databus' /}
+#{set tab:'home' /}
+
+<!-- PillTree component -->
+<link href="/public/stylesheets/components/pilltree/pilltree.css" rel="stylesheet" type="text/css">
+<link href="/public/stylesheets/components/pilltree/pilltree_mydatabus.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="/public/javascripts/components/pilltree/pilltree_mydatabus.js"></script>
+
+	<!-- <h1 class="db_page_title">My Databus</h1> -->
+	<div class="pilltree span3" style="margin-left: 0px; border-right: 1px solid #aaa !important; min-width: 200px; min-height: 500px;">
+     	<ul>
+     		<li>
+     			<a id="pilltree_main_parent" >Databus</a>
+	     		<ul>
+	               	<li>
+	               		<a id="database_main_parent" >Databases</a>
+		               	<ul>
+			               	<li>
+			               		<a id="db_admin" >Owned (${myDatabases.size()})</a>
+			               		<ul>
+			               			#{list items:myDatabases.keySet(), as:'key'}
+										<li><a id="${key.schemaName.slugify()}_admin_db" style="font-weight: bold;" >${key.schemaName}<br/><span class="pilltree_user_or_group">Membership: ${myDatabases.get(key)}</span></a>
+											<ul>
+												<li><a >Tables</a></li>
+												<li><a >Groups</a></li>
+												<li><a >Users</a></li>
+											</ul>
+										</li>
+									#{/list}
+			               		</ul>
+			               	</li>
+			               	<li>
+			               		<a id="db_readwrite" >Read & Write (${readwriteDatabases.size()})</a>
+			               		<ul>
+			               			#{list items:readwriteDatabases.keySet(), as:'key'}
+										<li><a id="${key.schemaName.slugify()}_readwrite_db" style="font-weight: bold;" >${key.schemaName}<br/><span class="pilltree_user_or_group">Membership: ${readwriteDatabases.get(key)}</span></a>
+											<ul>
+												<li><a >Tables</a></li>
+												<li><a >Groups</a></li>
+												<li><a >Users</a></li>
+											</ul>
+										</li>
+									#{/list}
+			               		</ul>
+			               	</li>
+			               	<li>
+			               		<a id="db_readonly" >Read Only (${readableDatabases.size()})</a>
+			               		<ul>
+			               			#{list items:readableDatabases.keySet(), as:'key'}
+										<li><a id="${key.schemaName.slugify()}_readonly_db" style="font-weight: bold;" >${key.schemaName}<br/><span class="pilltree_user_or_group">Membership: ${readableDatabases.get(key)}</span></a>
+											<ul>
+												<li><a >Tables</a></li>
+												<li><a >Groups</a></li>
+												<li><a >Users</a></li>
+											</ul>
+										</li>
+									#{/list}
+			               		</ul>
+			               	</li>
+			               	<li>
+			               		<a id="db_system" >Inaccessible (${systemDatabases.size()})</a>
+			               		<ul>
+									#{list systemDatabases, as:'db'}
+										<li><a id="${db.schemaName.slugify()}_system_db" >${db.schemaName}</a></li> 
+									#{/list}
+			               		</ul>
+			               	</li>
+			               </ul>
+			          </li>
+	               	<li>
+	               		<a href='#'>Groups</a>
+	               		<ul>
+			               	<li>
+			               		<a >My Groups</a>
+			               		<ul>
+			               			#{list myGroups, as:'group'}
+										<li><a >${group.name}</a>
+											<ul>
+												<li><a >Users</a></li>
+												<li><a >Robots</a></li>
+												<li><a >Databases</a></li>
+											</ul>
+										</li> 
+									#{/list}
+			               		</ul>
+			               	</li>
+	               			<li>
+	               				<a >All System Groups</a>
+			               		<ul>
+			               			#{list systemGroups, as:'group'}
+										<li><a >${group.name}</a>
+											<ul>
+												<li><a >Users</a></li>
+												<li><a >Robots</a></li>
+												<li><a >Databases</a></li>
+											</ul>
+										</li> 
+									#{/list}
+			               		</ul>
+			               	</li>
+	               		</ul>
+	               	</li>
+	               </ul>
+	          </li>
+     	</ul>
+     </div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#pilltree_main_parent').click();
+	});    
+</script>
