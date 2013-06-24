@@ -38,7 +38,7 @@ public class TestRawProcessor {
 		Assert.assertEquals(new Integer(199), dataPoint2.get("value"));		
 	}
 
-	@Test
+	//@Test
 	public void hitRawDataBackward() throws ClientProtocolException, IOException {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		String requestUri = "/api/rawdataV1/fakeTimeSeries2/15500/16000?reverse=true";

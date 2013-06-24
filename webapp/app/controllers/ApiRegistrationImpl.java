@@ -132,7 +132,7 @@ public class ApiRegistrationImpl {
 			String realCf = Utility.createCfName(modelName);
 			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
 			tm.setTimeSeries(true);
-			tm.setTimeSeriesPartionSize((int) partitionSize);
+			tm.setTimeSeriesPartionSize(partitionSize);
 			tm.setup(msg.getModelName(), realCf, false);
 			tm.setColNameType(long.class);
 		}
@@ -413,8 +413,11 @@ public class ApiRegistrationImpl {
 			throw new BadRequest("primary key column was not of type integer yet this is time series data");
 		}
 
+		boolean indexed = c.isIndex;
+		if(type == DatasetType.TIME_SERIES)
+			indexed = false;
 		DboColumnIdMeta idMeta = new DboColumnIdMeta();
-		idMeta.setup(tm, c.getName(), dataType, c.isIndex);
+		idMeta.setup(tm, c.getName(), dataType, indexed);
 		return idMeta;
 	}
 

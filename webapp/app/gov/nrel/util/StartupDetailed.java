@@ -80,7 +80,7 @@ public class StartupDetailed {
 		
 		//do time series AFTER the flush above so security will check out ok
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES, 25, 30, StartupDetailed.GROUP1, DEAN);
-		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES2, 55, 60, StartupDetailed.GROUP1, DEAN);
+		createSeriesImplWithUnitTestData2(FAKE_TIME_SERIES2, 55, 60, StartupDetailed.GROUP1, DEAN);
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES_WITH_NULL, 55, 60, StartupDetailed.GROUP1, DEAN);
 		//one at the beginning, one in the middle, one at the end to test all cases:
 		putData(FAKE_TIME_SERIES_WITH_NULL, ""+1, ""+Integer.MAX_VALUE, DEAN);
@@ -135,15 +135,18 @@ public class StartupDetailed {
 	}
 	
 	static void createSeriesImplWithUnitTestData(String name, int startInterval, int endInterval, String schemaName, EntityUser user) {
-		createSeriesImpl(name, schemaName, user);
+		createSeriesImpl(name, schemaName, user, DatasetType.STREAM);
 		insertUnitTestData(name, startInterval, endInterval, user);
 	}
 	
+	static void createSeriesImplWithUnitTestData2(String name, int startInterval, int endInterval, String schemaName, EntityUser user) {
+		createSeriesImpl(name, schemaName, user, DatasetType.TIME_SERIES);
+		insertUnitTestData(name, startInterval, endInterval, user);
+	}	
 	
-	
-	static void createSeriesImpl(String name, String schemaName, EntityUser user) {
+	static void createSeriesImpl(String name, String schemaName, EntityUser user, DatasetType type) {
 		RegisterMessage msg = new RegisterMessage();
-		msg.setDatasetType(DatasetType.STREAM);
+		msg.setDatasetType(type);
 		msg.setSchema(schemaName);
 		msg.setModelName(name);
 		

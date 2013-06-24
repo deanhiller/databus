@@ -1,11 +1,14 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import sun.security.util.BigInt;
 
 import gov.nrel.util.Utility;
 
@@ -35,19 +38,23 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private byte[] startBytes;
 	private Long end;
 	private AbstractCursor<Column> cursor;
-	private Integer partitionSize;
+	private Long partitionSize;
 	private DboColumnMeta colMeta;
-
+	private boolean reverse = false;
 	private String url;
 
 	@Override
 	public void init(DboTableMeta meta, Long start, Long end, String url) {
 		this.meta = meta;
 		this.url = url;
+		String reverseParam = play.mvc.Http.Request.current().params.get("reverse");
+		if("true".equalsIgnoreCase(reverseParam))
+			reverse=true;
+
 		partitionSize = meta.getTimeSeriesPartionSize();
 		currentPartitionId = partition(start, partitionSize);
-		this.startBytes = meta.getIdColumnMeta().convertToStorage2(start);
-		this.endBytes = meta.getIdColumnMeta().convertToStorage2(end);
+		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
+		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
 		this.end = end;
 		colMeta = meta.getAllColumns().iterator().next();
 		if (log.isInfoEnabled())
@@ -79,13 +86,15 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 			NoSqlTypedSession em = NoSql.em().getTypedSession();
 			NoSqlSession raw = em.getRawSession();
 
-			byte[] key = meta.getIdColumnMeta().convertToStorage2(currentPartitionId);
-			cursor = raw.columnSlice(meta, key, startBytes, endBytes, 200);
-
+			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
+			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
+			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
 			currentPartitionId += partitionSize;
-		} while(!cursor.next() && currentPartitionId < end);
+			if(cursor.next())
+				return cursor;
+		} while(currentPartitionId < end);
 
-		return cursor;
+		return null;
 	}
 
 	private ReadResult translate(Column current) {

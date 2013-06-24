@@ -151,7 +151,7 @@ public class ApiPostDataPointsImpl {
 		BigInteger time = (BigInteger) timeStamp;
 		long longTime = time.longValue();
 		//find the partition
-		Integer partitionSize = table.getTimeSeriesPartionSize();
+		Long partitionSize = table.getTimeSeriesPartionSize();
 		long partitionKey = (longTime / partitionSize) * partitionSize;
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
