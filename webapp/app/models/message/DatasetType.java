@@ -1,5 +1,5 @@
 package models.message;
 
 public enum DatasetType {
-	STREAM, RELATIONAL_TABLE;
+	STREAM, RELATIONAL_TABLE, TIME_SERIES;
 } // DatasetType

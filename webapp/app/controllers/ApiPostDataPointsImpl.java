@@ -3,6 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -130,9 +131,60 @@ public class ApiPostDataPointsImpl {
 			throw new BadRequest("Your post contains two rows with the same key and table name.  key="+pkValue+" tablename="+tableName+".  This is not allowed");
 		keyCheck.add(theKey);
 		
+		if(table.isTimeSeries())
+			postTimeSeries(json, info, table, pkValue);
+		else
+			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue);
+	}
+
+	private static void postTimeSeries(Map<String, String> json,
+			KeyToTableName info, DboTableMeta table, Object pkValue) {
+		if (log.isInfoEnabled())
+			log.info("table name = '" + table.getColumnFamily() + "'");
+		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
+		String cf = table.getColumnFamily();
+		
+		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+		//rowKey better be BigInteger
+		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
+		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
+		BigInteger time = (BigInteger) timeStamp;
+		long longTime = time.longValue();
+		//find the partition
+		Integer partitionSize = table.getTimeSeriesPartionSize();
+		long partitionKey = (longTime / partitionSize) * partitionSize;
+
+		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+		row.setRowKey(partitionKey);	
+		
+		Collection<DboColumnMeta> cols = table.getAllColumns();
+
+		DboColumnMeta col = cols.iterator().next();
+		Object node = json.get(col.getColumnName());
+		if(node == null) {
+			if (log.isWarnEnabled())
+				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
+			throw new BadRequest("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
+		}
+		
+		Object newValue = convertToStorage(col, node);
+		byte[] val = col.convertToStorage2(newValue);
+		row.addColumn(colKey, val, null);
+
+		//This method also indexes according to the meta data as well
+		typedSession.put(cf, row);
+	}
+
+	private static void postNormalTable(Map<String, String> json,
+			Collection<SolrInputDocument> solrDocs, KeyToTableName info,
+			boolean isUpdate, DboTableMeta table, Object pkValue) {
+		if (log.isInfoEnabled())
+			log.info("normal table name = '" + table.getColumnFamily() + "'");
+
+		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();
+		
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
 		Object rowKey = convertToStorage(idColumnMeta, pkValue);
-
 		String cf = table.getColumnFamily();
 //		TypedRow row = typedSession.find(cf, rowKey);
 //		if(row == null) {
@@ -144,9 +196,7 @@ public class ApiPostDataPointsImpl {
 //        		log.warn("pk already in use="+pkValue+" table="+tableName+" user needs to use _update=true in their json");
 //			throw new BadRequest("This row for table="+tableName+" and primary key="+pkValue+" already exists.  Use _update=true in your json if you really want to modify this value");
 //		}
-		
-		if (log.isInfoEnabled())
-			log.info("table name = '" + table.getColumnFamily() + "'");
+
 		Collection<DboColumnMeta> cols = table.getAllColumns();
 		
 		long timestamp = System.currentTimeMillis();
