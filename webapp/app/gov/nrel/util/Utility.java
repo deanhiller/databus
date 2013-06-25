@@ -362,7 +362,7 @@ public class Utility {
 
 	public static String createCfName(String modelName) {
 		int hashCode = modelName.hashCode();
-		int bucketNumber = Math.abs(hashCode / ApiRegistrationImpl.divisor);
+		int bucketNumber = Math.abs(hashCode % 10);
 		if(bucketNumber > 9 || bucketNumber < 0)
 			throw new RuntimeException("bug, bucket number should be 0 to 9....hashCode="+hashCode+" buckNum="+bucketNumber);
 		String realCf = "nreldata"+bucketNumber;
