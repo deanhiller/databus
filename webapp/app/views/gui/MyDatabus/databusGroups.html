@@ -1,0 +1,27 @@
+<h2 class="db_context_header">User Groups</h2>
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Group Admins</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list groups, as:'group'}
+	        <tr>
+	            <td>
+		            	<a href="@{gui.MyGroups.editGroup(group.name)}">${group.name}</a>
+		            	<div id="tip_d_ds1_1" class="tip tipright">${group.description}</div>
+		            </span>
+	            </td>
+	            <td>
+	            #{list group.children, as:'mapping'}
+	            	#{if mapping.groupAdmin}
+		            	${mapping.entity.name} 
+	            	#{/if}
+	            #{/list}
+	            </td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>

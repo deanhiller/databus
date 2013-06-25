@@ -1,0 +1,25 @@
+<h2 class="db_context_header">Databases</h2>
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Admins</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list databases, as:'db'}
+	        <tr>
+	            <td>
+	                	<a href="@{gui.MyDatabases.editDatabase(db.schemaName)}">${db.schemaName}</a>
+		            	<div class="tip tipright">${db.description}</div>
+		            </span>
+	            </td>
+	            <td>
+	            #{list db.entitiesWithAccess, as:'user'}
+					${user.userOrGroup.name}  
+	            #{/list}
+	            </td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
