@@ -1,8 +1,14 @@
+<!-- FixedHeaderTree component -->
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/jquery.fixedheadertable.js"></script>
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/lib/jquery.mousewheel.js"></script>
+<link href="/public/javascripts/components/fixedheadertable/css/defaultTheme.css" rel="stylesheet"/>
+<link href="/public/javascripts/components/fixedheadertable/css/databusSummaryTheme.css" rel="stylesheet"/>
+
 <div class="container-fluid" style="padding-left: 20px;">
 	<h1 class="db_page_title">System Summary</h1>
-	<div class="well span12" style="padding-left: 10px; padding-right: 10px; padding-bottom: 0px; margin-bottom: 10px;">
+	<div class="well span12" style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px; margin-bottom: 10px;">
 		<h2 style="padding: 0px; margin-top: 0px;">Databases</h2>		
-			<div class="span6" id="databases_graphic" style="float: left; width: 350px; height: 235px; margin-right: 10px;"></div>
+			<div class="span6" id="databases_graphic" style="float: left; width: 340px; height: 235px; margin-right: 0px;"></div>
 			<div class="dbSummaryParagraph span6">
 				<p>
 					There are <span style="color: #001429; font-weight: bold;">${database_count}</span> Databases in this Databus installation.
@@ -12,78 +18,105 @@
 					permissions to the same Database.
 				</p>
 				
-				<table class="table table-condensed">
-		              <thead>
-		                <tr>
-		                  <th>Database</th>
-		                  <th>Tables</th>
-		                  <th>Users</th>
-		                </tr>
-		              </thead>
-		              <tbody>
-		                <tr class="success">
-		                  <td>TB - Monthly</td>
-		                  <td>01/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="error">
-		                  <td>TB - Monthly</td>
-		                  <td>02/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="warning">
-		                  <td>TB - Monthly</td>
-		                  <td>03/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="info">
-		                  <td>TB - Monthly</td>
-		                  <td>04/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		              </tbody>
-		            </table>
+				<div style="width: 370px;">
+					<table id="database_summary_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+			              <thead>
+			                <tr>
+			                  <th>Database</th>
+			                  <th>Tables</th>
+			                  <th>Users</th>
+			                </tr>
+			              </thead>
+			              <tbody>
+						#{list myDatabases, as:'admin'}
+							<tr #{if (admin_index % 2) == 0} class="admin_even"#{/if}#{else} class="admin_odd"#{/else}>
+								<td>
+									<a href="">${admin.schemaName}</a>
+								</td>
+								<td>${admin.getTableCount().format('###,###,###')}</td>
+								<td>${admin.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list readwriteDatabases, as:'readwrite'}
+							<tr #{if (readwrite_index % 2) == 0} class="readwrite_even"#{/if}#{else} class="readwrite_odd"#{/else}>
+								<td>
+									<a href="">${readwrite.schemaName}</a>
+								</td>
+								<td>${readwrite.getTableCount().format('###,###,###')}</td>
+								<td>${readwrite.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list readableDatabases, as:'readonly'}
+							<tr #{if (readonly_index % 2) == 0} class="readonly_even"#{/if}#{else} class="readonly_odd"#{/else}>
+								<td>
+									<a href="">${readonly.schemaName}</a>
+								</td>
+								<td>${readonly.getTableCount().format('###,###,###')}</td>
+								<td>${readonly.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list systemDatabases, as:'system'}
+							<tr #{if (system_index % 2) == 0} class="system_even"#{/if}#{else} class="system_odd"#{/else}>
+								<td>
+									<a href="">${system.schemaName}</a>
+								</td>
+								<td>${system.getTableCount().format('###,###,###')}</td>
+								<td>${system.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+			              </tbody>
+			            </table>
+				</div>
 			</div>
 		</div>
 		<div class="well span12" style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px; margin-bottom: 10px;">
 			<h2 style="padding: 0px; margin-top: 0px;">Groups</h2>		
-			<div class="span6" id="groups_graphic" style="float: left; width: 350px; height: 235px; margin-right: 10px;"></div>
+			<div class="span6" id="groups_graphic" style="float: left; width: 340px; height: 235px; margin-right: 0px;"></div>
 			<div class="dbSummaryParagraph span6">
 				<p>
 					There are <span style="color: #001429; font-weight: bold;">${group_count}</span> User Groups in this Databus installation.
 				</p>
 				
-				<table class="table table-condensed">
-		              <thead>
-		                <tr>
-		                  <th>Group</th>
-		                  <th>Users</th>
-		                  <th>Databases</th>
-		                </tr>
-		              </thead>
-		              <tbody>
-		                <tr class="success">
-		                  <td>TB - Monthly</td>
-		                  <td>01/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="error">
-		                  <td>TB - Monthly</td>
-		                  <td>02/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="warning">
-		                  <td>TB - Monthly</td>
-		                  <td>03/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		                <tr class="info">
-		                  <td>TB - Monthly</td>
-		                  <td>04/04/2012</td>
-		                  <td>01/04/2012</td>
-		                </tr>
-		              </tbody>
-		            </table>
+				<div style="width: 370px;">
+					<table id="group_summary_table" class="fancyTable groupTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+			              <thead>
+			                <tr>
+			                  <th>Group</th>
+			                  <th>Users</th>
+			                  <th>Databases</th>
+			                </tr>
+			              </thead>
+			              <tbody>
+			                #{list adminGroups, as:'admin'}
+							<tr #{if (admin_index % 2) == 0} class="admin_even"#{/if}#{else} class="admin_odd"#{/else}>
+								<td>
+									<a href="">${admin.name}</a>
+								</td>
+								<td>${admin.getChildren().size().format('###,###,###')}</td>
+								<td>${admin.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list memberGroups, as:'readonly'}
+							<tr #{if (readonly_index % 2) == 0} class="readonly_even"#{/if}#{else} class="readonly_odd"#{/else}>
+								<td>
+									<a href="">${readonly.name}</a>
+								</td>
+								<td>${readonly.getChildren().size().format('###,###,###')}</td>
+								<td>${readonly.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list systemGroups, as:'system'}
+							<tr #{if (system_index % 2) == 0} class="system_even"#{/if}#{else} class="system_odd"#{/else}>
+								<td>
+									<a href="">${system.name}</a>
+								</td>
+								<td>${system.getChildren().size().format('###,###,###')}</td>
+								<td>${system.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+			              </tbody>
+			            </table>
+			        </div>
 			</div>
 		</div>
 </div>
@@ -91,6 +124,10 @@
 <script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
 
 <script type="text/javascript">
+
+	$('#database_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 173, fixedColumn: false });
+	$('#group_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 198, fixedColumn: false });
+	
 	$(document).ready(function() {	
 		var theme_databases = {
 		   colors: ["#5CA173", "#CCA300", "#FF7519", "#D63333", "#aaeeee", "#ff0066", "#eeaaee",
@@ -332,18 +369,11 @@
 		   textColor: '#C0C0C0',
 		   maskColor: 'rgba(255,255,255,0.3)'
 		};
-		
-		/*
-		var adminDbInfo = precision((${myDatabaseCount}/${database_count}) * 100, 2);
-		var rwDbInfo = precision((${readwriteDatabaseCount}/${database_count}) * 100, 2);
-	     var roDbInfo = precision((${readableDatabaseCount}/${database_count}) * 100, 2);
-	     var sysDbInfo = precision((${systemDatabaseCount}/${database_count}) * 100, 2);
-	     */
-	     
-	     var adminDbInfo = ${myDatabaseCount};
-		var rwDbInfo = ${readwriteDatabaseCount};
-	     var roDbInfo = ${readableDatabaseCount};
-	     var sysDbInfo = ${systemDatabaseCount};
+			     
+	     var adminDbInfo = ${myDatabases.size()};
+		var rwDbInfo = ${readwriteDatabases.size()};
+	     var roDbInfo = ${readableDatabases.size()};
+	     var sysDbInfo = ${systemDatabases.size()};
 		
 		var dbOptions = {
 	            chart: {
@@ -382,10 +412,10 @@
 	                type: 'pie',
 	                name: 'Permissions',
 	                data: [
-	                    ['Admin (${myDatabaseCount})',   adminDbInfo],
-	                    ['Read & Write (${readwriteDatabaseCount})',   rwDbInfo],
-	                    ['Read Only (${readableDatabaseCount})',   roDbInfo],
-	                    ['Inaccessable (${systemDatabaseCount})',   sysDbInfo]
+	                    ['Admin (${myDatabases.size()})',   adminDbInfo],
+	                    ['Read & Write (${readwriteDatabases.size()})',   rwDbInfo],
+	                    ['Read Only (${readableDatabases.size()})',   roDbInfo],
+	                    ['Inaccessable (${systemDatabases.size()})',   sysDbInfo]
 	                ]
 	            }]
 	        };
@@ -630,17 +660,10 @@
 		   textColor: '#C0C0C0',
 		   maskColor: 'rgba(255,255,255,0.3)'
 		};
-		
-		/*
-		var adminDbInfo = precision((${myDatabaseCount}/${database_count}) * 100, 2);
-		var rwDbInfo = precision((${readwriteDatabaseCount}/${database_count}) * 100, 2);
-	     var roDbInfo = precision((${readableDatabaseCount}/${database_count}) * 100, 2);
-	     var sysDbInfo = precision((${systemDatabaseCount}/${database_count}) * 100, 2);
-	     */
-	     
-	     var adminGroupInfo = ${adminGroupCount};
-		var rwGroupInfo = ${memberGroupCount};
-	     var sysGroupInfo = ${systemGroupCount};
+			     
+	     var adminGroupInfo = ${adminGroups.size()};
+		var rwGroupInfo = ${memberGroups.size()};
+	     var sysGroupInfo = ${systemGroups.size()};
 		
 		var groupOptions = {
 	            chart: {
@@ -679,9 +702,9 @@
 	                type: 'pie',
 	                name: 'Permissions',
 	                data: [
-	                    ['Admin (${adminGroupCount})',   adminGroupInfo],
-	                    ['Read & Write (${memberGroupCount})',   rwGroupInfo],
-	                    ['Inaccessable (${systemGroupCount})',   sysGroupInfo]
+	                    ['Admin (${adminGroups.size()})',   adminGroupInfo],
+	                    ['Read & Write (${memberGroups.size()})',   rwGroupInfo],
+	                    ['Inaccessable (${systemGroups.size()})',   sysGroupInfo]
 	                ]
 	            }]
 	        };
