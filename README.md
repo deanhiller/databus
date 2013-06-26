@@ -1,6 +1,6 @@
 # Databus
 
-NREL works off of this repository for databus development
+NREL works off of this repository for databus development.  
 
 There is also documentation(and support available) located at http://buffalosw.com/products/databus/databus-documentation/
 
@@ -8,6 +8,7 @@ If you are an organization that supports databus, contact databus@nrel.gov and w
 
 http://buffalosw.com
 
+QUESTIONS: If you have technical/development questions, please post them on stackoverflow.com with the tag databus.  If you have user related questions, email databus@nrel.gov until we have a user forum setup(we are in the process of setting this up right now)
 
 ## Getting Started
 

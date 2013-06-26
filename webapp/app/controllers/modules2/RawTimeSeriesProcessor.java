@@ -36,6 +36,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private Long currentPartitionId;
 	private byte[] endBytes;
 	private byte[] startBytes;
+	private Long start;
 	private Long end;
 	private AbstractCursor<Column> cursor;
 	private Long partitionSize;
@@ -55,6 +56,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		currentPartitionId = partition(start, partitionSize);
 		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
 		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
+		this.start = start;
 		this.end = end;
 		colMeta = meta.getAllColumns().iterator().next();
 		if (log.isInfoEnabled())
@@ -69,11 +71,38 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 
 	@Override
 	public ReadResult read() {
-		AbstractCursor<Column> cursor = getCursorWithResults();
+		AbstractCursor<Column> cursor;
+		if(reverse)
+			cursor = getReverseCursor();
+		else
+			cursor = getCursorWithResults();
+
 		if(cursor == null)
 			return new ReadResult();
 		
 		return translate(cursor.getCurrent());
+	}
+
+	private AbstractCursor<Column> getReverseCursor() {
+		if(cursor != null && cursor.previous()) {
+			return cursor;
+		} else if(currentPartitionId > start)
+			return null;
+
+		do {
+			NoSqlTypedSession em = NoSql.em().getTypedSession();
+			NoSqlSession raw = em.getRawSession();
+
+			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
+			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
+			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
+			cursor.afterLast();
+			currentPartitionId -= partitionSize;
+			if(cursor.previous())
+				return cursor;
+		} while(currentPartitionId > start);
+
+		return null;	
 	}
 
 	private AbstractCursor<Column> getCursorWithResults() {
