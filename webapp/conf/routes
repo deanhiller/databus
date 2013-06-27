@@ -199,6 +199,7 @@ GET  /detailsearch   					gui.GUISearch.detailSearch
 # ******************************************************************************
 POST    /api/registerV1                 ApiRegistration.postRegisterTableNew
 POST    /api/postdataV1                 ApiPostDataPoints.postData
+POST    /api/UTCV1/postdataV1                 ApiPostDataPoints.postData
 GET     /api/getdataV1/meta/{table}     ApiMetaRequest.getMeta
 #GET     /api/getdataV2/{sql}            ApiSqlRequest.sqlRequest
 GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
