@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
+import play.mvc.results.BadRequest;
 import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
@@ -235,11 +236,11 @@ public class SecurityUtil {
 	public static EntityUser fetchUser(String username, String apiKey) {
 		EntityUser user = EntityUser.findByName(NoSql.em(), username);
 		if(user == null) {
-			throw new Unauthorized("User="+username+" is not authorized");
+			throw new BadRequest("User="+username+" is not authorized");
 		} else if(!user.getApiKey().equals(apiKey)) {
 			if (log.isInfoEnabled())
 				log.info("user or key is invalid for user="+username);
-			throw new Unauthorized("user or key is invalid for user="+username);
+			throw new BadRequest("user or key is invalid for user="+username);
 		}
 		
 		return user;

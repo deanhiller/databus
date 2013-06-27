@@ -5,7 +5,9 @@ $(function () {
         var children = $(this).find('> ul > li');
         children.find('a').removeClass();
         if (children.is(":visible")) {
-            children.hide('fast');            
+        	  if($(this).attr('id') != 'pilltree_base') {
+            	children.hide('fast');
+            }
         }
         else {
             children.show('fast');
@@ -23,6 +25,11 @@ $(function () {
         // Change the Databases tab CSS      
         if($.inArray('pilltree_selected', $('#database_main_parent').classes()) > -1) {
         	$('#database_main_parent').addClass('pilltree_database_main_parent');
+        }
+        
+        // Change the Databases tab CSS      
+        if($.inArray('pilltree_selected', $('#group_main_parent').classes()) > -1) {
+        	$('#group_main_parent').addClass('pilltree_group_main_parent');
         }
         
         // Now match the database subcategories to their respected CSS        
@@ -49,6 +56,10 @@ $(function () {
 			}
 			
 			if(anchorId.indexOf('_db') >= 0) {
+	        		$('#' + anchorId).addClass('pilltree_database_chosen');
+	        	}
+	        	
+	        	if(anchorId.indexOf('_group') >= 0) {
 	        		$('#' + anchorId).addClass('pilltree_database_chosen');
 	        	}
 		}

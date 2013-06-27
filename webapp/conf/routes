@@ -151,7 +151,10 @@ GET	/summary							gui.MySummary.mySummary
 # GUI My Databus Pages
 # ******************************************************************************
 # ******************************************************************************
-GET /mydatabus											gui.MyDatabus.myDatabus
+GET /mydatabus							gui.MyDatabus.myDatabus
+GET /mydatabus/summary					gui.MyDatabus.databusSummary
+GET /mydatabus/databases					gui.MyDatabus.databusDatabases
+GET /mydatabus/groups					gui.MyDatabus.databusGroups
 
 
 # GUI Data Pages (Upload/Download)

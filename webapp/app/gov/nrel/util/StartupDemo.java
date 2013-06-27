@@ -10,6 +10,7 @@ import com.alvazan.play.NoSql;
 import models.EntityUser;
 import models.SecureSchema;
 import models.StreamAggregation;
+import models.message.DatasetType;
 
 public class StartupDemo {
 	
@@ -123,7 +124,7 @@ public class StartupDemo {
 	}
 	
 	static void createSeriesImplWithPrettyDemoData(String name, long millisBack, long millisForward, long interval, String schemaName, EntityUser user, double randomness, int ampScale, double frequencyScale, int belowZeroHandling) {
-		StartupDetailed.createSeriesImpl(name, schemaName, user);
+		StartupDetailed.createSeriesImpl(name, schemaName, user, DatasetType.STREAM);
 		insertPrettyDemoData(name, current-millisBack, current+millisForward, interval, user, randomness, ampScale, frequencyScale, belowZeroHandling);
 	}
 	

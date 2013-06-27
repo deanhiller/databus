@@ -1,0 +1,724 @@
+<!-- FixedHeaderTree component -->
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/jquery.fixedheadertable.js"></script>
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/lib/jquery.mousewheel.js"></script>
+<link href="/public/javascripts/components/fixedheadertable/css/defaultTheme.css" rel="stylesheet"/>
+<link href="/public/javascripts/components/fixedheadertable/css/databusSummaryTheme.css" rel="stylesheet"/>
+
+<div class="container-fluid" style="padding-left: 20px;">
+	<h1 class="db_page_title">System Summary</h1>
+	<div class="well span12" style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px; margin-bottom: 10px;">
+		<h2 style="padding: 0px; margin-top: 0px;">Databases</h2>		
+			<div class="span6" id="databases_graphic" style="float: left; width: 340px; height: 235px; margin-right: 0px;"></div>
+			<div class="dbSummaryParagraph span6">
+				<p>
+					There are <span style="color: #001429; font-weight: bold;">${database_count}</span> Databases in this Databus installation.
+				</p>
+				<p style="font-size: 11px; font-style: italic; line-height: 110%; margin-top: -8px;">
+					Permission overlap can occur when a user has permissions to a Database and a Group the user belongs to has
+					permissions to the same Database.
+				</p>
+				
+				<div style="width: 370px;">
+					<table id="database_summary_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+			              <thead>
+			                <tr>
+			                  <th>Database</th>
+			                  <th>Tables</th>
+			                  <th>Users</th>
+			                </tr>
+			              </thead>
+			              <tbody>
+						#{list myDatabases, as:'admin'}
+							<tr #{if (admin_index % 2) == 0} class="admin_even"#{/if}#{else} class="admin_odd"#{/else}>
+								<td>
+									<a href="">${admin.schemaName}</a>
+								</td>
+								<td>${admin.getTableCount().format('###,###,###')}</td>
+								<td>${admin.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list readwriteDatabases, as:'readwrite'}
+							<tr #{if (readwrite_index % 2) == 0} class="readwrite_even"#{/if}#{else} class="readwrite_odd"#{/else}>
+								<td>
+									<a href="">${readwrite.schemaName}</a>
+								</td>
+								<td>${readwrite.getTableCount().format('###,###,###')}</td>
+								<td>${readwrite.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list readableDatabases, as:'readonly'}
+							<tr #{if (readonly_index % 2) == 0} class="readonly_even"#{/if}#{else} class="readonly_odd"#{/else}>
+								<td>
+									<a href="">${readonly.schemaName}</a>
+								</td>
+								<td>${readonly.getTableCount().format('###,###,###')}</td>
+								<td>${readonly.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list systemDatabases, as:'system'}
+							<tr #{if (system_index % 2) == 0} class="system_even"#{/if}#{else} class="system_odd"#{/else}>
+								<td>
+									<a href="">${system.schemaName}</a>
+								</td>
+								<td>${system.getTableCount().format('###,###,###')}</td>
+								<td>${system.getEntitiesWithAccess().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+			              </tbody>
+			            </table>
+				</div>
+			</div>
+		</div>
+		<div class="well span12" style="padding-left: 10px; padding-right: 10px; padding-bottom: 10px; margin-bottom: 10px;">
+			<h2 style="padding: 0px; margin-top: 0px;">Groups</h2>		
+			<div class="span6" id="groups_graphic" style="float: left; width: 340px; height: 235px; margin-right: 0px;"></div>
+			<div class="dbSummaryParagraph span6">
+				<p>
+					There are <span style="color: #001429; font-weight: bold;">${group_count}</span> User Groups in this Databus installation.
+				</p>
+				
+				<div style="width: 370px;">
+					<table id="group_summary_table" class="fancyTable groupTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+			              <thead>
+			                <tr>
+			                  <th>Group</th>
+			                  <th>Users</th>
+			                  <th>Databases</th>
+			                </tr>
+			              </thead>
+			              <tbody>
+			                #{list adminGroups, as:'admin'}
+							<tr #{if (admin_index % 2) == 0} class="admin_even"#{/if}#{else} class="admin_odd"#{/else}>
+								<td>
+									<a href="">${admin.name}</a>
+								</td>
+								<td>${admin.getChildren().size().format('###,###,###')}</td>
+								<td>${admin.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list memberGroups, as:'readonly'}
+							<tr #{if (readonly_index % 2) == 0} class="readonly_even"#{/if}#{else} class="readonly_odd"#{/else}>
+								<td>
+									<a href="">${readonly.name}</a>
+								</td>
+								<td>${readonly.getChildren().size().format('###,###,###')}</td>
+								<td>${readonly.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+						#{list systemGroups, as:'system'}
+							<tr #{if (system_index % 2) == 0} class="system_even"#{/if}#{else} class="system_odd"#{/else}>
+								<td>
+									<a href="">${system.name}</a>
+								</td>
+								<td>${system.getChildren().size().format('###,###,###')}</td>
+								<td>${system.getResources().size().format('###,###,###')}</td>
+							</tr>
+						#{/list}
+			              </tbody>
+			            </table>
+			        </div>
+			</div>
+		</div>
+</div>
+
+<script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
+
+<script type="text/javascript">
+
+	$('#database_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 173, fixedColumn: false });
+	$('#group_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 198, fixedColumn: false });
+	
+	$(document).ready(function() {	
+		var theme_databases = {
+		   colors: ["#5CA173", "#CCA300", "#FF7519", "#D63333", "#aaeeee", "#ff0066", "#eeaaee",
+		      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+		   chart: {
+		      backgroundColor: 'rgb(2, 122, 194)',
+		      borderColor: '#000000',
+		      borderWidth: 1,
+		      className: 'dark-container',
+		      plotBackgroundColor: 'rgba(255, 255, 255, .1)',
+		      plotBorderColor: '#CCCCCC',
+		      plotBorderWidth: 1
+		   },
+		   title: {
+		      style: {
+		         color: '#EEEEEE',
+		         font: 'normal 16px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   subtitle: {
+		      style: {
+		         color: '#666666',
+		         font: '12px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   xAxis: {
+		      gridLineColor: '#333333',
+		      gridLineWidth: 1,
+		      labels: {
+		         style: {
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      tickColor: '#A0A0A0',
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '12px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		
+		         }
+		      }
+		   },
+		   yAxis: {
+		      gridLineColor: '#333333',
+		      labels: {
+		         style: {
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      minorTickInterval: null,
+		      tickColor: '#A0A0A0',
+		      tickWidth: 1,
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '12px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		         }
+		      }
+		   },
+		   tooltip: {
+		      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+		      style: {
+		         color: '#F0F0F0'
+		      }
+		   },
+		   toolbar: {
+		      itemStyle: {
+		         color: 'silver'
+		      }
+		   },
+		   plotOptions: {
+		      line: {
+		         dataLabels: {
+		            color: '#CCC'
+		         },
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      spline: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      scatter: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      candlestick: {
+		         lineColor: 'white'
+		      }
+		   },
+		   legend: {
+		      itemStyle: {
+		         font: '9pt Trebuchet MS, Verdana, sans-serif',
+		         color: '#A0A0A0'
+		      },
+		      itemHoverStyle: {
+		         color: '#FFF'
+		      },
+		      itemHiddenStyle: {
+		         color: '#444'
+		      }
+		   },
+		   credits: {
+		      style: {
+		         color: '#666'
+		      }
+		   },
+		   labels: {
+		      style: {
+		         color: '#CCC'
+		      }
+		   },
+		
+		   navigation: {
+		      buttonOptions: {
+		         symbolStroke: '#DDDDDD',
+		         hoverSymbolStroke: '#FFFFFF',
+		         theme: {
+		            fill: {
+		               linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		               stops: [
+		                  [0.4, '#606060'],
+		                  [0.6, '#333333']
+		               ]
+		            },
+		            stroke: '#000000'
+		         }
+		      }
+		   },
+		
+		   // scroll charts
+		   rangeSelector: {
+		      buttonTheme: {
+		         fill: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		         stroke: '#000000',
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold'
+		         },
+		         states: {
+		            hover: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.4, '#BBB'],
+		                     [0.6, '#888']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'white'
+		               }
+		            },
+		            select: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.1, '#000'],
+		                     [0.3, '#333']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'yellow'
+		               }
+		            }
+		         }
+		      },
+		      inputStyle: {
+		         backgroundColor: '#333',
+		         color: 'silver'
+		      },
+		      labelStyle: {
+		         color: 'silver'
+		      }
+		   },
+		
+		   navigator: {
+		      handles: {
+		         backgroundColor: '#666',
+		         borderColor: '#AAA'
+		      },
+		      outlineColor: '#CCC',
+		      maskFill: 'rgba(16, 16, 16, 0.5)',
+		      series: {
+		         color: '#7798BF',
+		         lineColor: '#A6C7ED'
+		      }
+		   },
+		
+		   scrollbar: {
+		      barBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      barBorderColor: '#CCC',
+		      buttonArrowColor: '#CCC',
+		      buttonBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      buttonBorderColor: '#CCC',
+		      rifleColor: '#FFF',
+		      trackBackgroundColor: {
+		         linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		         stops: [
+		            [0, '#000'],
+		            [1, '#333']
+		         ]
+		      },
+		      trackBorderColor: '#666'
+		   },
+		
+		   // special colors for some of the
+		   legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+		   legendBackgroundColorSolid: 'rgb(35, 35, 70)',
+		   dataLabelsColor: '#444',
+		   textColor: '#C0C0C0',
+		   maskColor: 'rgba(255,255,255,0.3)'
+		};
+			     
+	     var adminDbInfo = ${myDatabases.size()};
+		var rwDbInfo = ${readwriteDatabases.size()};
+	     var roDbInfo = ${readableDatabases.size()};
+	     var sysDbInfo = ${systemDatabases.size()};
+		
+		var dbOptions = {
+	            chart: {
+	                plotBackgroundColor: null,
+	                plotBorderWidth: null,
+	                plotShadow: false,
+                	 renderTo: 'databases_graphic'
+	            },
+	            title: {
+	                text: 'Databus Database Permissions (${user.name})'
+	            },
+	            tooltip: {
+	        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+	            	percentageDecimals: 1
+	            },
+	            plotOptions: {
+	                pie: {
+	                	size: "60%",
+	                    allowPointSelect: true,
+	                    cursor: 'pointer',
+	                    dataLabels: {
+	                        enabled: true,
+	                        color: '#FFFFFF',
+	                        connectorColor: '#AAAAAA',
+	                        distance: 15,
+	                        connectorPadding: 0.0,
+	                        padding: 0.0,
+	                        useHTML: true,
+	                        formatter: function() {
+	                            return this.point.name +'<br/>'+ precision(this.percentage,2) +' %';
+	                        }
+	                    }
+	                }
+	            },
+	            series: [{
+	                type: 'pie',
+	                name: 'Permissions',
+	                data: [
+	                    ['Admin (${myDatabases.size()})',   adminDbInfo],
+	                    ['Read & Write (${readwriteDatabases.size()})',   rwDbInfo],
+	                    ['Read Only (${readableDatabases.size()})',   roDbInfo],
+	                    ['Inaccessable (${systemDatabases.size()})',   sysDbInfo]
+	                ]
+	            }]
+	        };
+	        
+	        var theme_groups = {
+		   colors: ["#5CA173", "#FF7519", "#D63333", "#aaeeee", "#ff0066", "#eeaaee",
+		      "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+		   chart: {
+		      backgroundColor: 'rgb(153, 51, 102)',
+		      borderColor: '#000000',
+		      borderWidth: 1,
+		      className: 'dark-container',
+		      plotBackgroundColor: 'rgba(255, 255, 255, .1)',
+		      plotBorderColor: '#CCCCCC',
+		      plotBorderWidth: 1
+		   },
+		   title: {
+		      style: {
+		         color: '#EEEEEE',
+		         font: 'normal 16px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   subtitle: {
+		      style: {
+		         color: '#666666',
+		         font: '12px "Trebuchet MS", Verdana, sans-serif'
+		      }
+		   },
+		   xAxis: {
+		      gridLineColor: '#333333',
+		      gridLineWidth: 1,
+		      labels: {
+		         style: {
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      tickColor: '#A0A0A0',
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '12px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		
+		         }
+		      }
+		   },
+		   yAxis: {
+		      gridLineColor: '#333333',
+		      labels: {
+		         style: {
+		            color: '#A0A0A0'
+		         }
+		      },
+		      lineColor: '#A0A0A0',
+		      minorTickInterval: null,
+		      tickColor: '#A0A0A0',
+		      tickWidth: 1,
+		      title: {
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold',
+		            fontSize: '12px',
+		            fontFamily: 'Trebuchet MS, Verdana, sans-serif'
+		         }
+		      }
+		   },
+		   tooltip: {
+		      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+		      style: {
+		         color: '#F0F0F0'
+		      }
+		   },
+		   toolbar: {
+		      itemStyle: {
+		         color: 'silver'
+		      }
+		   },
+		   plotOptions: {
+		      line: {
+		         dataLabels: {
+		            color: '#CCC'
+		         },
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      spline: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      scatter: {
+		         marker: {
+		            lineColor: '#333'
+		         }
+		      },
+		      candlestick: {
+		         lineColor: 'white'
+		      }
+		   },
+		   legend: {
+		      itemStyle: {
+		         font: '9pt Trebuchet MS, Verdana, sans-serif',
+		         color: '#A0A0A0'
+		      },
+		      itemHoverStyle: {
+		         color: '#FFF'
+		      },
+		      itemHiddenStyle: {
+		         color: '#444'
+		      }
+		   },
+		   credits: {
+		      style: {
+		         color: '#666'
+		      }
+		   },
+		   labels: {
+		      style: {
+		         color: '#CCC'
+		      }
+		   },
+		
+		   navigation: {
+		      buttonOptions: {
+		         symbolStroke: '#DDDDDD',
+		         hoverSymbolStroke: '#FFFFFF',
+		         theme: {
+		            fill: {
+		               linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		               stops: [
+		                  [0.4, '#606060'],
+		                  [0.6, '#333333']
+		               ]
+		            },
+		            stroke: '#000000'
+		         }
+		      }
+		   },
+		
+		   // scroll charts
+		   rangeSelector: {
+		      buttonTheme: {
+		         fill: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		         stroke: '#000000',
+		         style: {
+		            color: '#CCC',
+		            fontWeight: 'bold'
+		         },
+		         states: {
+		            hover: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.4, '#BBB'],
+		                     [0.6, '#888']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'white'
+		               }
+		            },
+		            select: {
+		               fill: {
+		                  linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		                  stops: [
+		                     [0.1, '#000'],
+		                     [0.3, '#333']
+		                  ]
+		               },
+		               stroke: '#000000',
+		               style: {
+		                  color: 'yellow'
+		               }
+		            }
+		         }
+		      },
+		      inputStyle: {
+		         backgroundColor: '#333',
+		         color: 'silver'
+		      },
+		      labelStyle: {
+		         color: 'silver'
+		      }
+		   },
+		
+		   navigator: {
+		      handles: {
+		         backgroundColor: '#666',
+		         borderColor: '#AAA'
+		      },
+		      outlineColor: '#CCC',
+		      maskFill: 'rgba(16, 16, 16, 0.5)',
+		      series: {
+		         color: '#7798BF',
+		         lineColor: '#A6C7ED'
+		      }
+		   },
+		
+		   scrollbar: {
+		      barBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      barBorderColor: '#CCC',
+		      buttonArrowColor: '#CCC',
+		      buttonBackgroundColor: {
+		            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		            stops: [
+		               [0.4, '#888'],
+		               [0.6, '#555']
+		            ]
+		         },
+		      buttonBorderColor: '#CCC',
+		      rifleColor: '#FFF',
+		      trackBackgroundColor: {
+		         linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+		         stops: [
+		            [0, '#000'],
+		            [1, '#333']
+		         ]
+		      },
+		      trackBorderColor: '#666'
+		   },
+		
+		   // special colors for some of the
+		   legendBackgroundColor: 'rgba(0, 0, 0, 0.5)',
+		   legendBackgroundColorSolid: 'rgb(35, 35, 70)',
+		   dataLabelsColor: '#444',
+		   textColor: '#C0C0C0',
+		   maskColor: 'rgba(255,255,255,0.3)'
+		};
+			     
+	     var adminGroupInfo = ${adminGroups.size()};
+		var rwGroupInfo = ${memberGroups.size()};
+	     var sysGroupInfo = ${systemGroups.size()};
+		
+		var groupOptions = {
+	            chart: {
+	                plotBackgroundColor: null,
+	                plotBorderWidth: null,
+	                plotShadow: false,
+                	 renderTo: 'groups_graphic'
+	            },
+	            title: {
+	                text: 'Databus Group Permissions (${user.name})'
+	            },
+	            tooltip: {
+	        	    pointFormat: '{series.name}: <b>{point.percentage}%</b>',
+	            	percentageDecimals: 1
+	            },
+	            plotOptions: {
+	                pie: {
+	                	size: "60%",
+	                    allowPointSelect: true,
+	                    cursor: 'pointer',
+	                    dataLabels: {
+	                        enabled: true,
+	                        color: '#FFFFFF',
+	                        connectorColor: '#AAAAAA',
+	                        distance: 15,
+	                        connectorPadding: 0.0,
+	                        padding: 0.0,
+	                        useHTML: true,
+	                        formatter: function() {
+	                            return this.point.name +'<br/>'+ precision(this.percentage,2) +' %';
+	                        }
+	                    }
+	                }
+	            },
+	            series: [{
+	                type: 'pie',
+	                name: 'Permissions',
+	                data: [
+	                    ['Admin (${adminGroups.size()})',   adminGroupInfo],
+	                    ['Read & Write (${memberGroups.size()})',   rwGroupInfo],
+	                    ['Inaccessable (${systemGroups.size()})',   sysGroupInfo]
+	                ]
+	            }]
+	        };
+		
+		var dbChart = new Highcharts.Chart(Highcharts.merge(dbOptions, theme_databases));
+		var groupChart = new Highcharts.Chart(Highcharts.merge(groupOptions, theme_groups));
+	});
+	
+	function precision(value, precision) {
+		var power = Math.pow(10, precision || 0);
+		return (Math.round(value * power) / power);
+	}
+</script>
+		
+		
+
+

@@ -1,6 +1,7 @@
 package controllers;
 
 import gov.nrel.util.SearchUtils;
+import gov.nrel.util.Utility;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -11,6 +12,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -66,11 +68,13 @@ import com.alvazan.play.NoSql;
 public class ApiRegistrationImpl {
 
 	private static final Logger log = LoggerFactory.getLogger(ApiRegistrationImpl.class);
-
+	public static int divisor = Integer.MAX_VALUE / 10;
+			
 	public static RegisterResponseMessage registerImpl(RegisterMessage msg, String username, String apiKey) {
 		if (log.isInfoEnabled())
 			log.info("Registering table="+msg.getModelName());
-		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE) {
+		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE 
+				&& msg.getDatasetType() != DatasetType.TIME_SERIES) {
 			if (log.isInfoEnabled())
 				log.info("only supporting type of STREAM or RELATIONAL_TABLE right now");
 			throw new BadRequest("only supporting type of STREAM or RELATIONAL_TABLE right now");
@@ -117,7 +121,21 @@ public class ApiRegistrationImpl {
 		
 		// Setup the table meta
 		DboTableMeta tm = new DboTableMeta();
-		tm.setup(msg.getModelName(), "nreldata", false);
+		if(msg.getDatasetType() != DatasetType.TIME_SERIES) {
+			tm.setup(msg.getModelName(), "nreldata", false);
+		} else {
+			List<DatasetColumnModel> columns = msg.getColumns();
+			if(columns.size() != 2)
+				throw new BadRequest("TIME_SERIES table can only have two columns, the primary key of long(time since epoch) and value of any type");
+
+			String modelName = msg.getModelName();
+			String realCf = Utility.createCfName(modelName);
+			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+			tm.setTimeSeries(true);
+			tm.setTimeSeriesPartionSize(partitionSize);
+			tm.setup(msg.getModelName(), realCf, false);
+			tm.setColNameType(long.class);
+		}
 
 		// create new Table here and add to security group as well
 		SecureTable t = new SecureTable();
@@ -395,8 +413,11 @@ public class ApiRegistrationImpl {
 			throw new BadRequest("primary key column was not of type integer yet this is time series data");
 		}
 
+		boolean indexed = c.isIndex;
+		if(type == DatasetType.TIME_SERIES)
+			indexed = false;
 		DboColumnIdMeta idMeta = new DboColumnIdMeta();
-		idMeta.setup(tm, c.getName(), dataType, c.isIndex);
+		idMeta.setup(tm, c.getName(), dataType, indexed);
 		return idMeta;
 	}
 
