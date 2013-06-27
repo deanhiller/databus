@@ -60,9 +60,9 @@ public class ApiPostDataPointsImpl {
 		boolean timeIsISOFormat = false;
 		String timeISOFormatColumn = "time";
 		String timeISOStringFormat = "";
-		if (StringUtils.contains(Request.current().path, "UTCV1")) {
+		if (StringUtils.contains(Request.current().path, "dateformatV1")) {
 			timeIsISOFormat = true;
-			String utcModString = StringUtils.substringBetween(Request.current().path, "/UTCV1(", ")/");
+			String utcModString = StringUtils.substringBetween(Request.current().path, "/dateformatV1(", ")/");
 			if (StringUtils.isNotEmpty(utcModString)) {
 				String[] options = StringUtils.split(utcModString, ",");
 				for (String s:options) {
@@ -72,7 +72,7 @@ public class ApiPostDataPointsImpl {
 					else if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "timeFormat"))
 						timeISOStringFormat = parts[1];
 					else
-						throw new RuntimeException("The format of the UTC module is not correct, it must be ../UTCV1/... or .../UTCV1(columnName=<colName>)/... or .../UTCV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+						throw new RuntimeException("The format of the UTC module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
 				}
 			}
 		}		
