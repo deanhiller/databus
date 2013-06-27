@@ -158,6 +158,10 @@ public class ApiPostDataPointsImpl {
         		log.warn("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
 			throw new BadRequest("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
 		}
+		
+		//part of short term fix to put date formatting in and have it look like 'upload module'
+		if (table.getIdColumnMeta().getColumnName().equals(timeISOFormatColumn))
+			pkValue = getTimeAsMillisFromString((String)pkValue, timeISOStringFormat);
 
 		TableKey theKey = new TableKey(tableName, pkValue);
 		if(keyCheck.contains(theKey))
@@ -261,7 +265,7 @@ public class ApiPostDataPointsImpl {
 	}
 
 	private static Object getTimeAsMillisFromString(String node, String format) {
-		DateTimeFormatter parser = ISODateTimeFormat.basicDateTime();
+		DateTimeFormatter parser = ISODateTimeFormat.basicDateTimeNoMillis();
 		if (StringUtils.isNotBlank(format)) {
 			try {
 				parser = DateTimeFormat.forPattern(format);
