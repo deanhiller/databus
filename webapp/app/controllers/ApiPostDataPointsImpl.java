@@ -165,13 +165,16 @@ public class ApiPostDataPointsImpl {
 		keyCheck.add(theKey);
 		
 		if(table.isTimeSeries())
-			postTimeSeries(json, info, table, pkValue);
+			postTimeSeries(json, info, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 		else
-			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue);
+			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 	}
 
 	private static void postTimeSeries(Map<String, String> json,
-			KeyToTableName info, DboTableMeta table, Object pkValue) {
+			KeyToTableName info, DboTableMeta table, Object pkValue,
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
+		if (timeIsISOFormat)
+			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
 		if (log.isInfoEnabled())
 			log.info("table name = '" + table.getColumnFamily() + "'");
 		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
@@ -210,7 +213,8 @@ public class ApiPostDataPointsImpl {
 
 	private static void postNormalTable(Map<String, String> json,
 			Collection<SolrInputDocument> solrDocs, KeyToTableName info,
-			boolean isUpdate, DboTableMeta table, Object pkValue) {
+			boolean isUpdate, DboTableMeta table, Object pkValue,
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
 		if (log.isInfoEnabled())
 			log.info("normal table name = '" + table.getColumnFamily() + "'");
 
