@@ -62,7 +62,7 @@ public class ColumnSelectProcessor extends PushOrPullProcessor {
 	
 	@Override
 	protected TSRelational modifyRow(TSRelational tv) {
-		TSRelational newTv = new TSRelational();
+		TSRelational newTv = new TSRelational(timeColumn, valueColumn);
 		for (Entry<String, String> col:colMap.entrySet()) {
 			newTv.put(col.getValue(), tv.get(col.getKey()));
 		}

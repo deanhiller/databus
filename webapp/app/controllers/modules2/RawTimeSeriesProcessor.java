@@ -131,7 +131,8 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		byte[] value = current.getValue();
 		Object time = meta.getIdColumnMeta().convertFromStorage2(name);
 		Object val = colMeta.convertFromStorage2(value);
-		TSRelational tv = new TSRelational();
+		//TODO:  parameterize timeColumn and valueColumn from options
+		TSRelational tv = new TSRelational("time", "value");
 		tv.put("time", time);
 		tv.put(colMeta.getColumnName(), val);
 		return new ReadResult(url, tv);
