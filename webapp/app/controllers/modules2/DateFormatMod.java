@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -21,7 +23,9 @@ import controllers.modules2.framework.procs.PushProcessorAbstract;
 public class DateFormatMod extends PushOrPullProcessor {
 
 	private String timeColumnName;
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd'T'HHmmss'Z'");
+	private String dateFormatString = "yyyyMMdd'T'HHmmss'Z'";
+	private String timeZone = null;
+	private SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
 	
 	@Override
 	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
@@ -36,12 +40,18 @@ public class DateFormatMod extends PushOrPullProcessor {
 		String dateFormatOption = options.get("dateFormat");
 		if (StringUtils.isNotBlank(dateFormatOption)) {
 			try {
+				dateFormatString = dateFormatOption;
 				dateFormat = new SimpleDateFormat(dateFormatOption);
 			}
 			catch (IllegalArgumentException iae) {
 				throw new BadRequest("The date format you specified ("+dateFormatOption+") is not a valid date format.  See this page for information on valid date formats:  http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html");
 			}
 		}
+		
+		String timeZoneOption = options.get("timeZone");
+		if (StringUtils.isNotBlank(timeZoneOption))
+			timeZone = timeZoneOption;
+		
 		
 		return newPath;
 	}
@@ -56,6 +66,16 @@ public class DateFormatMod extends PushOrPullProcessor {
 	}
 
 	private String formatDate(BigInteger val) {
+		TimeZone tz = TimeZone.getTimeZone("GMT");
+		Date dateValue = new Date(val.longValue());
+		Calendar calValue = Calendar.getInstance(tz);
+		//Calendar calValue = Calendar.getInstance();
+		calValue.setTime(dateValue);
+		
+		if (dateFormatString.endsWith("'Z'"))
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		if (StringUtils.isNotBlank(timeZone))
+			dateFormat.setTimeZone(TimeZone.getTimeZone(timeZone));
 		return dateFormat.format(new Date(val.longValue()));
 	}
 
