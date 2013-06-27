@@ -98,8 +98,10 @@ public class AggregationProcessor extends StreamsProcessor {
 	
 	private int getLargestRowWidth(List<ReadResult> rows) {
 		int result = 0;
-		for (ReadResult r : rows) 
-			result = Math.max(result, r.getRow().size());
+		for (ReadResult r : rows) {
+			if (r.getRow() != null)
+				result = Math.max(result, r.getRow().size());
+		}
 		return result;
 	}
 
