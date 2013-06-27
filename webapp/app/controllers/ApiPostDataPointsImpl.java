@@ -160,7 +160,7 @@ public class ApiPostDataPointsImpl {
 		}
 		
 		//part of short term fix to put date formatting in and have it look like 'upload module'
-		if (table.getIdColumnMeta().getColumnName().equals(timeISOFormatColumn))
+		if (timeIsISOFormat && table.getIdColumnMeta().getColumnName().equals(timeISOFormatColumn))
 			pkValue = getTimeAsMillisFromString((String)pkValue, timeISOStringFormat);
 
 		TableKey theKey = new TableKey(tableName, pkValue);
