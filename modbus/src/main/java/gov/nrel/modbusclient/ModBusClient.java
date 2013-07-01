@@ -322,8 +322,17 @@ public class ModBusClient {
 
 			ModbusFactory factory = new ModbusFactory();
 			IpParameters params = new IpParameters();
-			params.setHost(meter.getIp().split("/")[0]);
-			params.setPort(new Integer(meter.getIp().split("/")[1]));
+			
+			String[] split = meter.getIp().split("/");
+			String host = meter.getIp();
+			int port = 502;
+			if(split.length == 2) {
+				host = split[0];
+				port = new Integer(split[1]);
+			}
+
+			params.setHost(host);
+			params.setPort(port);
 			ModbusMaster master = factory.createTcpMaster(params, false);
 
 			log.info("pooling meter ID " + meter.getSerial());

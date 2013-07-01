@@ -91,7 +91,9 @@ POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 # ******************************************************************************
 # ******************************************************************************
 GET  /tables                            	gui.MyStuff.myTables
-GET  /tableData/{table}                 	gui.MyStuff.tableData
+GET  /tables/chart/{table}                 	gui.MyStuff.tableChart
+GET  /tables/data/{table}                   gui.MyStuff.tableDataset
+GET  /tables/json/{table}                   gui.MyStuff.tableJson
 GET  /aggData/{aggregationName}     		gui.MyStuff.aggData
 GET  /groups/{group}/addtable           	gui.MyStuff.tableAdd
 GET  /tables/{table}                    	gui.MyStuff.tableEdit
