@@ -3,7 +3,7 @@ $(function () {
     $('.pilltree li:first').show();
     $('.pilltree li').on('click', function (e) {        
         var children = $(this).find('> ul > li');
-        children.find('a').removeClass();
+        children.find('a').removeClass('pilltree_selected');
         if (children.is(":visible")) {
         	  if($(this).attr('id') != 'pilltree_base') {
             	children.hide('fast');
@@ -18,7 +18,7 @@ $(function () {
     $('.pilltree a').on('click', function (e) {
         var parents = $(this).parents('li');
         var siblings = parents.find('> ul > li');
-        siblings.find('a').removeClass();
+        siblings.find('a').removeClass('pilltree_selected');
         
         $(this).parents('li').find('> a').addClass('pilltree_selected label-info');
         
@@ -31,6 +31,8 @@ $(function () {
         if($.inArray('pilltree_selected', $('#group_main_parent').classes()) > -1) {
         	$('#group_main_parent').addClass('pilltree_group_main_parent');
         }
+        
+        $(this).addClass('pilltree_selected');
         
         // Now match the database subcategories to their respected CSS        
         var parentAnchors = parents.find('> a');

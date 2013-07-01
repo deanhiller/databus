@@ -55,12 +55,18 @@ public class MyDatabus extends Controller {
 		
 		List<EntityGroup> systemGroups =MyDatabus.systemGroups;
 		List<EntityGroup> adminGroups = MyDatabus.adminGroups;
-		List<EntityGroup> memberGroups = MyDatabus.memberGroups;			
+		List<EntityGroup> memberGroups = MyDatabus.memberGroups;		
+		
+		Collections.sort(systemGroups, new EntityGroupComparitor());
+		Collections.sort(adminGroups, new EntityGroupComparitor());
+		Collections.sort(memberGroups, new EntityGroupComparitor());
 			
 		List<SecureSchema> systemDatabases = MyDatabus.systemDatabases;
 		Map<SecureSchema, String> readableDatabases = MyDatabus.readableDatabases;
 		Map<SecureSchema, String> readwriteDatabases = MyDatabus.readwriteDatabases;
 		Map<SecureSchema, String> myDatabases = MyDatabus.myDatabases;
+		
+		Collections.sort(systemDatabases, new SecureSchemaComparitor());
 		
 		render(user, adminGroups, memberGroups, systemGroups, systemDatabases, myDatabases, readableDatabases, readwriteDatabases);
 	}
