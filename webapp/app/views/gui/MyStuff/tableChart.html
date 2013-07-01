@@ -11,17 +11,11 @@ var days = 2;
 $(function () {
  
   var hours = 1;
-  var endTime = (new Date()).getTime(),
-    startTime = endTime - hours*3600000,
-    maximized = false,
+  var maximized = false,
     maximizedStream,
     chartMap = {},
     height = 700,
     width = 951;
-
-  //Set explicit start time
-  //startTime = 1357596216977,
-  //endTime = startTime + days*24*3600000,
 
   $(window).resize(function () {
 	console.log('resized window heigth:'+$(window).height());
@@ -220,12 +214,8 @@ $(function () {
     singleStream = typeof singleStream !== 'undefined' ? singleStream : false;
     title = typeof title !== 'undefined' ? title : false;
 
-    var url;
-    if (!singleStream) {
-      url = '/api/sumstreamsV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
-    } else {
-      url = '/api/rawdataV1/' + stream + '/' + startTime + '/' + endTime + '?callback=?';
-    }
+    var url = '/api/firstvaluesV1/1000/rawdataV1/' + stream + '?reverse=true&callback=?';
+
     console.log(stream + ': ' + url);
     $('#theChart').append($('<div class="chart" />').attr('id', stream));
     $.getJSON(url, function (data) {
@@ -270,7 +260,7 @@ $(function () {
           data: collapseData(data, (singleStream!==true ? true : false))
         }],
         title: {
-          text: (title!==false ? title : stream) + ' - ' + days + ' Days'
+          text: (title!==false ? title : stream) + ' - Last 1000 Datapoints'
         },
         subtitle: {
             text: (data.data.length!=0 ? 
@@ -294,75 +284,10 @@ $(function () {
         }
       });
       chartMap[stream] = chart;
-      chart.showLoading();
-
-      if (!singleStream) {
-        $.getJSON('${baseurl}/api/sumstreamsV1/aggregation/' + stream + '?singlenode=true&callback=?', function (data) {
-          var urls = data.urls,
-            responses = [],
-            aggregation = [];
-          //urls = ['splinesV1/limitderivative/60000/rangecleanV1/-2000000/2000000/rawdataV1/D73937763phaseRealPower', 'rangecleanV1/-2000000/2000000/rawdataV1/D73937763phaseRealPower'];
-          //if (urls.length > 1) {
-          $.each(urls, function (urlIndex, value) {
-            var name = value.substring(value.lastIndexOf('/') + 1);
-            chart.addSeries({
-              name: name,
-              data: null
-            }, true, false);
-            // Raw Data:
-            var url = '${baseurl}/api/' + (value.indexOf('invertV1/') === 0 ? 'invertV1/' : '') + value.substring(value.indexOf('rangecleanV1/-2000000/2000000/rawdataV1/')) + '/' + startTime + '/' + endTime + '?singlenode=true&callback=?';
-            // Splined Data:
-            //var url = '${baseurl}/api/' + value + '/' + startTime + '/' + endTime + '?singlenode=true&callback=?';
-            $.getJSON(url).then(
-
-            function (data) {
-              data = collapseData(data, true);
-              responses.push(data);
-              chart.series[urlIndex + 2].setData(data);
-              /*if (urlIndex === 0) {
-                chart.addSeries({
-                  name: 'Custom Spline',
-                  data: data,
-                  type: 'spline'
-                }, true, false);
-              }*/
-              if (responses.length == urls.length) {
-                window.responses = responses;
-                var i, j, sum, lengths = [],
-                  minLength;
-                $.each(responses, function (i) {
-                  lengths.push(responses[i].length);
-                });
-                minLength = Math.min.apply(null, lengths);
-                for (i = 0; i < minLength; i++) {
-                  sum = 0;
-                  for (j = 0; j < responses.length; j++) {
-                    sum += responses[j][i][1];
-                  }
-                  aggregation.push([responses[0][i][0], sum]);
-                }
-                /*chart.addSeries({
-              name: 'Sum',
-              data: aggregation
-            }, true, false);*/
-                chart.hideLoading();
-              }
-            },
-
-            function () {
-              console.log("ERROR fetching " + name);
-            });
-            console.log(stream + ': ' + url);
-          });
-          /*}
-          else {
-            chart.hideLoading();
-          }*/
-        });
-      }
-      else {
-        chart.hideLoading();
-      }
+      /*chart.showLoading();
+      chart.hideLoading();
+      */
+      
     });
   }
 

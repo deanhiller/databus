@@ -98,8 +98,25 @@ public class MyStuff extends Controller {
 		
 		return null;
 	}
+	public static void tableDataset(String table) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema group = authTableCheck(table, user);
+		if(group == null)
+			unauthorized("You have no access to this table");
+		
+		redirect("/api/csv/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
+	}
+
+	public static void tableJson(String table) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema group = authTableCheck(table, user);
+		if(group == null)
+			unauthorized("You have no access to this table");
+		
+		redirect("/api/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
+	}
 	
-	public static void tableData(String table) {
+	public static void tableChart(String table) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema group = authTableCheck(table, user);
 		if(group == null)
