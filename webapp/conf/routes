@@ -202,6 +202,7 @@ GET  /detailsearch   					gui.GUISearch.detailSearch
 # ******************************************************************************
 POST    /api/registerV1                 ApiRegistration.postRegisterTableNew
 POST    /api/postdataV1                 ApiPostDataPoints.postData
+POST    /api/dateformatV1/postdataV1    ApiPostDataPoints.postData
 GET     /api/getdataV1/meta/{table}     ApiMetaRequest.getMeta
 #GET     /api/getdataV2/{sql}            ApiSqlRequest.sqlRequest
 GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
@@ -220,6 +221,8 @@ GET		/api/search/{table}					Search.searchTable
 POST    /api/triggerV1/add                  api.TriggersController.postAdd
 POST    /api/triggerV1/delete/{triggerId}   api.TriggersController.postDelete
 GET     /api/triggerV1/list/{database}      api.TriggersController.list
+#GET     /api/triggerV1/runall/{time}	    api.TriggersController.runall
+#GET     /api/triggerV1/run/{triggerId}/{time}	    api.TriggersController.runTrigger
 
 GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path} modules.StdDevMod.runStdDev
 GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData

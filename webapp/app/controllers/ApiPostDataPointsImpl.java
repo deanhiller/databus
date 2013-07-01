@@ -14,13 +14,18 @@ import java.util.Set;
 import models.KeyToTableName;
 import models.SecureTable;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 import play.mvc.results.Unauthorized;
 
@@ -47,6 +52,32 @@ public class ApiPostDataPointsImpl {
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	public static int postDataImpl(String json, Map<String, Object> data, String user, String password) {
+		//temporary version of 'upload module'.
+		//eventually we will have the concept of an upload module just like our current 
+		//modules that run on data retrieval.  For now, lets keep the interface the same 
+		//(chain functions into the url with options in perens), but just implement this 
+		//one 'module' here.
+		boolean timeIsISOFormat = false;
+		String timeISOFormatColumn = "time";
+		String timeISOStringFormat = "";
+		if (StringUtils.contains(Request.current().path, "dateformatV1")) {
+			timeIsISOFormat = true;
+			String utcModString = StringUtils.substringBetween(Request.current().path, "/dateformatV1(", ")/");
+			if (StringUtils.isNotEmpty(utcModString)) {
+				String[] options = StringUtils.split(utcModString, ",");
+				for (String s:options) {
+					String[] parts = StringUtils.split(utcModString, "=");
+					if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "columnName"))
+						timeISOFormatColumn = parts[1];
+					else if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "timeFormat"))
+						timeISOStringFormat = parts[1];
+					else
+						throw new RuntimeException("The format of the UTC module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+				}
+			}
+		}		
+		
+				
 		NoSqlEntityManager s = NoSql.em();
 		List dataPoints = (List) data.get("_dataset");
 		if(dataPoints == null) {
@@ -87,7 +118,7 @@ public class ApiPostDataPointsImpl {
 		for(int i = 0; i < dataPts.size(); i++) {
 			KeyValue<KeyToTableName> keyValue = info.get(i);
 			Map<String, String> row = dataPts.get(i);
-			processData(row, solrDocs, keyValue, user, password, keyCheck);
+			processData(row, solrDocs, keyValue, user, password, keyCheck, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 		}
 		
 		s.flush();
@@ -97,8 +128,10 @@ public class ApiPostDataPointsImpl {
 		return dataPoints.size();
 	}
 
+
 	private static void processData(Map<String, String> json,
-			Collection<SolrInputDocument> solrDocs, KeyValue<KeyToTableName> keyValue, String user, String password, Set<TableKey> keyCheck) {
+			Collection<SolrInputDocument> solrDocs, KeyValue<KeyToTableName> keyValue, String user, String password, Set<TableKey> keyCheck,
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
 		
 		checkSize(json);
 		
@@ -125,6 +158,10 @@ public class ApiPostDataPointsImpl {
         		log.warn("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
 			throw new BadRequest("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
 		}
+		
+		//part of short term fix to put date formatting in and have it look like 'upload module'
+		if (timeIsISOFormat && table.getIdColumnMeta().getColumnName().equals(timeISOFormatColumn))
+			pkValue = getTimeAsMillisFromString((String)pkValue, timeISOStringFormat);
 
 		TableKey theKey = new TableKey(tableName, pkValue);
 		if(keyCheck.contains(theKey))
@@ -132,13 +169,16 @@ public class ApiPostDataPointsImpl {
 		keyCheck.add(theKey);
 		
 		if(table.isTimeSeries())
-			postTimeSeries(json, info, table, pkValue);
+			postTimeSeries(json, info, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 		else
-			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue);
+			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 	}
 
 	private static void postTimeSeries(Map<String, String> json,
-			KeyToTableName info, DboTableMeta table, Object pkValue) {
+			KeyToTableName info, DboTableMeta table, Object pkValue,
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
+		if (timeIsISOFormat)
+			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
 		if (log.isInfoEnabled())
 			log.info("table name = '" + table.getColumnFamily() + "'");
 		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
@@ -177,7 +217,8 @@ public class ApiPostDataPointsImpl {
 
 	private static void postNormalTable(Map<String, String> json,
 			Collection<SolrInputDocument> solrDocs, KeyToTableName info,
-			boolean isUpdate, DboTableMeta table, Object pkValue) {
+			boolean isUpdate, DboTableMeta table, Object pkValue,
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
 		if (log.isInfoEnabled())
 			log.info("normal table name = '" + table.getColumnFamily() + "'");
 
@@ -207,7 +248,10 @@ public class ApiPostDataPointsImpl {
 	        		log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
 				throw new BadRequest("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
 			}
-			
+
+			if (timeIsISOFormat && StringUtils.equals(col.getColumnName(), timeISOFormatColumn))
+				node = getTimeAsMillisFromString((String)node, timeISOStringFormat);
+
 			addColumnData(isUpdate, row, col, node, timestamp);
 		}
 
@@ -219,6 +263,22 @@ public class ApiPostDataPointsImpl {
 		SecureTable sdiTable = info.getSdiTableMeta();
 		SearchPosting.addSolrDataDoc(row, sdiTable, solrDocs);
 	}
+
+	private static Object getTimeAsMillisFromString(String node, String format) {
+		DateTimeFormatter parser = ISODateTimeFormat.basicDateTimeNoMillis();
+		if (StringUtils.isNotBlank(format)) {
+			try {
+				parser = DateTimeFormat.forPattern(format);
+			}
+			catch (IllegalArgumentException iae) {
+				throw new RuntimeException("The date time format you provided is not legal, see this page for valid date formatting http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html");
+			}
+		}
+		Long UtcMillis = parser.parseDateTime(node).getMillis();
+		return ""+UtcMillis;
+		
+	}
+
 
 	private static void addColumnData(boolean isUpdate, TypedRow row, DboColumnMeta col, Object node, long time) {
 		Object newValue = convertToStorage(col, node);

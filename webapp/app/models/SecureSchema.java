@@ -9,7 +9,6 @@ import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.Query;
 import com.alvazan.orm.api.base.anno.NoSqlDiscriminatorColumn;
 import com.alvazan.orm.api.base.anno.NoSqlEmbedded;
-import com.alvazan.orm.api.base.anno.NoSqlEntity;
 import com.alvazan.orm.api.base.anno.NoSqlIndexed;
 import com.alvazan.orm.api.base.anno.NoSqlManyToMany;
 import com.alvazan.orm.api.base.anno.NoSqlOneToMany;
@@ -26,6 +25,8 @@ import com.alvazan.orm.api.z8spi.iter.Cursor;
 public class SecureSchema extends SecureResource {
 
 	private String description;
+	
+	private Integer tableCount = null;
 	
 	@NoSqlIndexed
 	private String schemaName;
@@ -102,8 +103,32 @@ public class SecureSchema extends SecureResource {
 	}
 	
 	public void addTable(SecureTable t) {
+		if(tableCount == null) {
+			tableCount = 0;
+		}
+		
+		tableCount++;
 		t.setSchema(this);
 		getTablesCursor().addElement(t);
+	}
+	
+	public Integer getTableCount() {
+		return tableCount;
+	}
+	
+	public void populateTableCount(NoSqlEntityManager mgr) {
+		if(tableCount == null) {
+			CursorToMany<SecureTable> c = getTablesCursor();
+			c.beforeFirst();
+			tableCount = 0;
+			while(c.next()) {
+				tableCount++;
+			}
+			c.beforeFirst();
+			
+			mgr.put(this);
+			mgr.flush();
+		}
 	}
 
 	@Override

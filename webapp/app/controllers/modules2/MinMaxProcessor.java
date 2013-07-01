@@ -61,7 +61,7 @@ public class MinMaxProcessor extends EmptyWindowProcessor {
 
 	@Override
 	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow) {
-		TSRelational r = new TSRelational();
+		TSRelational r = new TSRelational(timeColumn, valueColumn);
 		r.setTime(startOfWindow);
 		if(min != null) {
 			r.put("min", min+"");

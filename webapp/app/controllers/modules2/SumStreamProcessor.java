@@ -35,7 +35,7 @@ public class SumStreamProcessor extends StreamsProcessor {
 			return new ReadResult();
 		}
 		
-		TSRelational ts = new TSRelational();
+		TSRelational ts = new TSRelational(timeColumn, valueColumn);
 		setTime(ts, timeCompare);
 		setValue(ts, total);
 		ReadResult res = new ReadResult(null, ts);

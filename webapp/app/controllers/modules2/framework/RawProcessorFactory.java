@@ -12,6 +12,7 @@ import com.google.inject.Injector;
 import controllers.modules2.AggregationProcessor;
 import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.DataFillerProcessor;
+import controllers.modules2.DateFormatMod;
 import controllers.modules2.FirstValuesProcessor;
 import controllers.modules2.InvertProcessor;
 import controllers.modules2.LogProcessor;
@@ -65,7 +66,9 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("columnselectV1", ColumnSelectProcessor.class);
 		nameToClazz.put("aggregation", AggregationProcessor.class);
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
+		nameToClazz.put("dateformatV1", DateFormatMod.class);
 
+		
 
 
 		//moduleNamesToForward.add("passthroughV1");

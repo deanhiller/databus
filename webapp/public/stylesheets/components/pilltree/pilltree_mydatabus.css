@@ -62,10 +62,26 @@
 
 .pilltree_database_main_parent {
 	background-color: #5CB8E6 !important;
+	color: #aaa;
+}
+
+.pilltree_database_main_parent:hover {
+	background-color: #5CB8E6 !important;
+	color: #ccc;
+}
+
+.pilltree_database_main_parent li a:hover, .pilltree li a:hover+ul li a {
+    background: #c8e4f8 !important;
 }
 
 .pilltree_group_main_parent {
 	background-color: #993366 !important;
+	color: #999;
+}
+
+.pilltree_group_main_parent:hover {
+	background-color: #993366 !important;
+	color: #bbb;
 }
 
 .pilltree_database_admin {
@@ -90,6 +106,11 @@
 }
 
 .pilltree_user_or_group {
+	font-size: 10px;
+	font-weight: normal;
+}
+
+.pilltree_user_or_group:hover{
 	font-size: 10px;
 	font-weight: normal;
 }

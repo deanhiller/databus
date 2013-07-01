@@ -98,7 +98,7 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 	}
 
 	private ReadResult translate(List<TypedRow> typedRows) {
-		TSRelational tv = new TSRelational();
+		TSRelational tv = new TSRelational(timeColumn, valueColumn);
 		for(int i = 0; i < typedRows.size(); i++) {
 			TypedRow row = typedRows.get(i);
 			DboTableMeta meta = row.getView().getTableMeta();

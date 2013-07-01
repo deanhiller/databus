@@ -62,7 +62,8 @@ public class RawStreamProcessor implements RawSubProcessor {
 			return new ReadResult(url, ""+kv.getException().getMessage());
 		}
 		TypedRow row = kv.getValue();
-		TSRelational tv = new TSRelational();
+		//TODO:  parameterize timeColumn and valueColumn from options
+		TSRelational tv = new TSRelational("time", "value");
 		DboColumnMeta idMeta = meta.getIdColumnMeta();
 		if(row.getRowKey() == null)
 			return new ReadResult(url, "rowkey="+kv.getKey()+" found in index, but row not found");

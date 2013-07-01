@@ -1,6 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -217,8 +218,8 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			secondToLastVal = objects[objects.length - 2];
 			TSRelational secondInBuf = objects[1];
 
-			timeSecondInBuffer = secondInBuf.getTime();
-			timeThirdInBuffer = secondToLastVal.getTime();
+			timeSecondInBuffer = ((BigInteger)secondInBuf.get(timeColumn)).longValue();
+			timeThirdInBuffer = ((BigInteger)secondToLastVal.get(timeColumn)).longValue();
 		}
 	}
 
@@ -231,7 +232,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		
 		Map<String, BigDecimal> values = calculateAllValues(currentTimePointer);
 		out = pointOut(currentTimePointer, values);
-		log.error("-------- returning a point t="+out.getRow().getTime()+" other points are timeSecond="+timeSecondInBuffer+" timeThird="+timeThirdInBuffer);
+		log.debug("-------- returning a point t="+out.getRow().getTime()+" other points are timeSecond="+timeSecondInBuffer+" timeThird="+timeThirdInBuffer);
 		currentTimePointer += interval;
 		return out;
 	}
@@ -245,7 +246,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	}
 
 	private TSRelational figureOutRowToCopy() {
-		// TODO Auto-generated method stub
 		if (uninterpalatedValueMethod==UninterpalatedValueMethod.PREVIOUS_ROW) {
 			TSRelational[] objects = (TSRelational[])buffer.toArray(new TSRelational[]{});
 			return (TSRelational)objects[1].clone();
@@ -266,8 +266,8 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		setTime(rowout, time);
 		for (Map.Entry<String, BigDecimal> entry:values.entrySet()) {
 			Object o = rowout.get(entry.getKey());
-			if (o==null)
-				throw new RuntimeException("A column name was specified for a column that does not exist!  The column name is "+entry.getKey());
+			//if (o==null)
+				//throw new RuntimeException("A column name was specified for a column that does not exist!  The column name is "+entry.getKey());
 			rowout.put(entry.getKey(), spline.get(entry.getKey()).getValue(currentTimePointer));
 		}
 		return new ReadResult(getUrl(), rowout);

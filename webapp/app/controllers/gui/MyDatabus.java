@@ -3,6 +3,7 @@ package controllers.gui;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import models.EntityGroupXref;
 import models.EntityUser;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
+import models.comparitors.EntityGroupComparitor;
+import models.comparitors.SecureSchemaComparitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +55,18 @@ public class MyDatabus extends Controller {
 		
 		List<EntityGroup> systemGroups =MyDatabus.systemGroups;
 		List<EntityGroup> adminGroups = MyDatabus.adminGroups;
-		List<EntityGroup> memberGroups = MyDatabus.memberGroups;			
+		List<EntityGroup> memberGroups = MyDatabus.memberGroups;		
+		
+		Collections.sort(systemGroups, new EntityGroupComparitor());
+		Collections.sort(adminGroups, new EntityGroupComparitor());
+		Collections.sort(memberGroups, new EntityGroupComparitor());
 			
 		List<SecureSchema> systemDatabases = MyDatabus.systemDatabases;
 		Map<SecureSchema, String> readableDatabases = MyDatabus.readableDatabases;
 		Map<SecureSchema, String> readwriteDatabases = MyDatabus.readwriteDatabases;
 		Map<SecureSchema, String> myDatabases = MyDatabus.myDatabases;
+		
+		Collections.sort(systemDatabases, new SecureSchemaComparitor());
 		
 		render(user, adminGroups, memberGroups, systemGroups, systemDatabases, myDatabases, readableDatabases, readwriteDatabases);
 	}
@@ -70,16 +79,33 @@ public class MyDatabus extends Controller {
 		int systemGroupCount =MyDatabus.systemGroups.size();
 		int  adminGroupCount = MyDatabus.adminGroups.size();
 		int  memberGroupCount = MyDatabus.memberGroups.size();			
-			
-		int  systemDatabaseCount = MyDatabus.systemDatabases.size();
-		int  readableDatabaseCount = MyDatabus.readableDatabases.size();
-		int  readwriteDatabaseCount = MyDatabus.readwriteDatabases.size();
-		int  myDatabaseCount = MyDatabus.myDatabases.size();
-		
+					
 		int group_count = systemGroupCount + adminGroupCount + memberGroupCount;
 		int database_count = MyDatabus.allDatabases.size();
 		
-		render(user, group_count, database_count, systemGroupCount, adminGroupCount, memberGroupCount, systemDatabaseCount, readableDatabaseCount, readwriteDatabaseCount, myDatabaseCount);
+		List<EntityGroup> systemGroups =MyDatabus.systemGroups;
+		List<EntityGroup> adminGroups = MyDatabus.adminGroups;
+		List<EntityGroup> memberGroups = MyDatabus.memberGroups;	
+		
+		Collections.sort(systemGroups, new EntityGroupComparitor());
+		Collections.sort(adminGroups, new EntityGroupComparitor());
+		Collections.sort(memberGroups, new EntityGroupComparitor());
+		
+		//systemGroups.get(0).getChildren().size()
+		//systemGroups.get(0).getResources().size()
+			
+		List<SecureSchema> systemDatabases = MyDatabus.systemDatabases;
+		List<SecureSchema> readableDatabases = new ArrayList<SecureSchema>(MyDatabus.readableDatabases.keySet());
+		List<SecureSchema> readwriteDatabases =  new ArrayList<SecureSchema>(MyDatabus.readwriteDatabases.keySet());
+		List<SecureSchema> myDatabases =  new ArrayList<SecureSchema>(MyDatabus.myDatabases.keySet());
+		
+		Collections.sort(systemDatabases, new SecureSchemaComparitor());
+		Collections.sort(readableDatabases, new SecureSchemaComparitor());
+		Collections.sort(readwriteDatabases, new SecureSchemaComparitor());
+		Collections.sort(myDatabases, new SecureSchemaComparitor());
+		
+		render(user, group_count, database_count, myDatabases, systemDatabases,
+				   readableDatabases, readwriteDatabases, adminGroups, systemGroups, memberGroups);
 	}
 	
 	public static void databusDatabases() {
@@ -115,6 +141,8 @@ public class MyDatabus extends Controller {
 		MyDatabus.myDatabases = new HashMap<SecureSchema, String>();
 
 		for (SecureSchema db : allDatabases) {
+			db.populateTableCount(NoSql.em());
+			
 			List<SecureResourceGroupXref> refs = db.getEntitiesWithAccess();
 			
 			boolean foundUser = false;
