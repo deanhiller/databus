@@ -223,6 +223,8 @@ $(function () {
     $('#theChart').append($('<div class="chart" />').attr('id', stream));
     $.getJSON(url, function (data) {
     	
+    	data.data.reverse();
+    	
     	console.log('window2222 heigth:'+$(window).height());
       var chart = new Highcharts.StockChart({
         chart: {
