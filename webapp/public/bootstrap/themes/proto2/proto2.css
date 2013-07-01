@@ -344,6 +344,32 @@ p.db_content_blurb {
 	margin-top: 5px;
 	display: inline !important;
 }
+
+.db_summary_td_contents {
+	height: 32px;
+	overflow-y: auto;
+	padding-left: 2px;
+	padding-right: 2px;
+	line-height: 16px;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.db_summary_database_filter {
+	color: #888;
+	font-weight: normal;
+	cursor: pointer;
+}
+
+.db_summary_database_filter:hover {
+	color: #444;
+}
+
+.db_summary_database_filter_selected {
+	color: #444;
+	font-weight: bold;
+}
+
 /* ************************************************** */
 
 

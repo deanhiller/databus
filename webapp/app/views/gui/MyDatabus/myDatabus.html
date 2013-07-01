@@ -36,7 +36,7 @@
 		               		<a id="database_main_parent" class="pilltree_database_main_parent" >Databases</a>
 			               	<ul>
 				               	<li>
-				               		<a id="db_admin" class="cell_color_admin innerpilltree" >Owned (${myDatabases.size()})</a>
+				               		<a id="db_admin" class="cell_color_admin innerpilltree" >Administrator (${myDatabases.size()})</a>
 				               		<ul>
 				               			#{list items:myDatabases.keySet(), as:'key'}
 											<li><a  class="cell_color_admin innerpilltree" id="${key.schemaName.slugify()}_admin_db" style="font-weight: bold;" >${key.schemaName}<br/><span class="pilltree_user_or_group">Membership: ${myDatabases.get(key)}</span></a>
