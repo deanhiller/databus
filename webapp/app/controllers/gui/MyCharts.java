@@ -72,23 +72,25 @@ public class MyCharts extends Controller {
 	public static void postStep1(Chart chart) throws UnsupportedEncodingException {
 		String url = chart.getUrl();
 		int index = url.lastIndexOf("/");
+		
 		if(index < 0) {
-			validation.addError("chart.url", "The url supplied must end with {startTime}/{endTime}");
 		} else {
 			String endTimeStr = url.substring(index+1);
 			String left = url.substring(0, index);
 			int startIndex = left.lastIndexOf("/");
 			String startTimeStr = left.substring(startIndex+1);
 	
-			long endTime = convertLong(endTimeStr);
-			long startTime = convertLong(startTimeStr);
-			chart.setStartTime(startTime);
-			chart.setEndTime(endTime);
+			Long endTime = convertLong(endTimeStr);
+			Long startTime = convertLong(startTimeStr);
+			if(endTime != null && startTime != null) {
+				chart.setStartTime(startTime);
+				chart.setEndTime(endTime);
+			}
 		}
 
 		if(chart.getTitle() == null || "".equals(chart.getTitle().trim()))
 			validation.addError("chart.title", "This is a required field");
-		
+
 		if("".equals(chart.getAxis1().getName()))
 			validation.addError("chart.axis1.name", "Name is a required field");
 				
@@ -154,14 +156,12 @@ public class MyCharts extends Controller {
 		return new Info(encodedChart, length);
 	}
 
-	private static long convertLong(String str) {
+	private static Long convertLong(String str) {
 		try {
 			return Long.parseLong(str);
 		} catch(NumberFormatException e) {
-			validation.addError("chart.url", "The url supplied must end with {startTime}/{endTime}");
-			flash.error("The url supplied must end with {startTime}/{endTime} and does not");
+			return null;
 		}
-		return 0;
 	}
 
 	private static byte[] convert(Chart chart) {
