@@ -1,25 +1,383 @@
-<h2 class="db_context_header">Databases</h2>
-<table border="1" class="data" cellpadding="5" cellspacing="0">
-	<thead>
-	    <tr>
-	        <th>Name</th>
-	        <th>Admins</th>
-	    </tr>
-	</thead>
-	<tbody>
-		#{list databases, as:'db'}
-	        <tr>
-	            <td>
-	                	<a href="@{gui.MyDatabases.editDatabase(db.schemaName)}">${db.schemaName}</a>
-		            	<div class="tip tipright">${db.description}</div>
-		            </span>
-	            </td>
-	            <td>
-	            #{list db.entitiesWithAccess, as:'user'}
-					${user.userOrGroup.name}  
-	            #{/list}
-	            </td>
-	        </tr>
-	    #{/list}
-	</tbody>
-</table>
+<!-- FixedHeaderTree component -->
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/jquery.fixedheadertable.js"></script>
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/lib/jquery.mousewheel.js"></script>
+<link href="/public/javascripts/components/fixedheadertable/css/defaultTheme.css" rel="stylesheet"/>
+<link href="/public/javascripts/components/fixedheadertable/css/databusSummaryTheme.css" rel="stylesheet"/>
+
+<script type="text/javascript">
+	%{	   
+	   boolean showAll = true;
+	   boolean showAdmin = true;
+	   boolean showReadWrite = true;
+	   boolean showReadOnly = true;
+	   boolean showNoAccess = true;
+	   
+	   if((permissions != null) && (!permissions.equals(""))) {
+	   	if(permissions.equals("admin")) {
+	   		showAll = false;
+	   		showAdmin = true;
+	   		showReadWrite = false;
+	   		showReadOnly = false;
+	   		showNoAccess = false;
+	   	} else if(permissions.equals("readwrite")) {
+	   		showAll = false;
+	   		showAdmin = false;
+	   		showReadWrite = true;
+	   		showReadOnly = false;
+	   		showNoAccess = false;	   	
+	   	} else if(permissions.equals("readonly")) {
+	   		showAll = false;
+	   		showAdmin = false;
+	   		showReadWrite = false;
+	   		showReadOnly = true;
+	   		showNoAccess = false;	   	
+	   	} else if(permissions.equals("noaccess")) {
+	   		showAll = false;
+	   		showAdmin = false;
+	   		showReadWrite = false;
+	   		showReadOnly = false;
+	   		showNoAccess = true;	   	
+	   	}
+	   }
+	}%
+</script>
+
+<div class="container-fluid" style="padding-left: 20px;">
+
+	<h1 class="db_page_title">Databases</h1>
+	
+	<div class="span12" style="margin-top: 20px; margin-bottom: 10px;">		
+		<div class="span3">
+			<span id="show_admin_dbs" class="db_summary_database_filter #{if showAdmin}db_summary_database_filter_selected#{/if}">
+				<img src="public/images/icons/x48/database_1_48_ADMIN.png" />
+				<span>Administrator (${myDatabases.size()})</span>
+			</span>
+		</div>
+		
+		<div class="span3">
+			<span id="show_readwrite_dbs" class="db_summary_database_filter #{if showReadWrite}db_summary_database_filter_selected#{/if}">
+				<img src="public/images/icons/x48/database_1_48_READWRITE.png" />
+				<span>Read & Write (${readwriteDatabases.size()})</span>
+			</span>
+		</div>
+		
+		<div class="span3">
+			<span id="show_readonly_dbs" class="db_summary_database_filter #{if showReadOnly}db_summary_database_filter_selected#{/if}">
+				<img src="public/images/icons/x48/database_1_48_READONLY.png" />
+				<span>Read Only (${readableDatabases.size()})</span>
+			</span>
+		</div>
+		
+		<div class="span3">
+			<span id="show_noaccess_dbs" class="db_summary_database_filter #{if showNoAccess}db_summary_database_filter_selected#{/if}">
+				<img src="public/images/icons/x48/database_1_48_NOACCESS.png" />
+				<span>No Access (${systemDatabases.size()})</span>
+			</span>
+		</div>
+	</div>
+	<div>
+		<table id="database_summary_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+              <thead>
+                <tr>
+                  <th style="width: 150px;">Database</th>
+                  <th style="width: 70px;">Tables</th>
+                  <th style="width: 70px;">Users</th>
+                  <th style="width: 150px;">Administrators</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+              #{if showAdmin}
+				#{list myDatabases, as:'admin'}
+				<tr #{if (admin_index % 2) == 0} class="admin_even"#{/if}#{else} class="admin_odd"#{/else}>
+					<td>
+						<span class="db_summary_td_contents">
+							<a href="">${admin.schemaName}</a>
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${admin.getTableCount().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${admin.getEntitiesWithAccess().size().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+			            	%{
+			            		List refs = admin.getEntitiesWithAccess();
+			            		
+			            		for (models.SecureResourceGroupXref ref : refs) {
+								models.Entity entity = ref.getUserOrGroup();
+								
+				            		if(entity.getName() == null) {
+									continue;
+								}
+								
+								if(entity.getClassType().toLowerCase().equals("userimpl")) {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print(entity.getName() + " ");
+									}
+								}
+						    	}
+						}%
+						</span>
+			          </td>
+			          <td>
+						<span class="db_summary_td_contents">
+							#{if admin.description}
+								${admin.description}
+							#{/if}
+							#{else}
+							    <i>No Description</i>
+							#{/else}
+						</span>
+					</td>
+				</tr>
+				#{/list}
+			#{/if}
+			#{if showReadWrite}
+				#{list readwriteDatabases, as:'readwrite'}
+				<tr #{if (readwrite_index % 2) == 0} class="readwrite_even"#{/if}#{else} class="readwrite_odd"#{/else}>
+					<td>
+						<span class="db_summary_td_contents">
+							<a href="">${readwrite.schemaName}</a>
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${readwrite.getTableCount().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${readwrite.getEntitiesWithAccess().size().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+			            	%{
+			            		List refs = readwrite.getEntitiesWithAccess();
+			            		
+			            		for (models.SecureResourceGroupXref ref : refs) {
+								models.Entity entity = ref.getUserOrGroup();
+								
+				            		if(entity.getName() == null) {
+									continue;
+								}
+								
+								if(entity.getClassType().toLowerCase().equals("userimpl")) {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print(entity.getName() + " ");
+									}
+								}
+						    	}
+						}%
+						</span>
+			          </td>
+			          <td>
+						<span class="db_summary_td_contents">
+							#{if readwrite.description}
+								${readwrite.description}
+							#{/if}
+							#{else}
+							    <i>No Description</i>
+							#{/else}
+						</span>
+					</td>
+				</tr>
+				#{/list}
+			#{/if}
+			#{if showReadOnly}
+				#{list readableDatabases, as:'readonly'}
+				<tr #{if (readonly_index % 2) == 0} class="readonly_even"#{/if}#{else} class="readonly_odd"#{/else}>
+					<td>
+						<span class="db_summary_td_contents">
+							<a href="">${readonly.schemaName}</a>
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${readonly.getTableCount().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${readonly.getEntitiesWithAccess().size().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+			            	%{
+			            		List refs = readonly.getEntitiesWithAccess();
+			            		
+			            		for (models.SecureResourceGroupXref ref : refs) {
+								models.Entity entity = ref.getUserOrGroup();
+								
+				            		if(entity.getName() == null) {
+									continue;
+								}
+								
+								if(entity.getClassType().toLowerCase().equals("userimpl")) {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print(entity.getName() + " ");
+									}
+								}
+						    	}
+						}%
+						</span>
+			          </td>
+			          <td>
+						<span class="db_summary_td_contents">
+							#{if readonly.description}
+								${readonly.description}
+							#{/if}
+							#{else}
+							    <i>No Description</i>
+							#{/else}
+						</span>
+					</td>
+				</tr>
+				#{/list}
+			#{/if}
+			#{if showNoAccess}
+				#{list systemDatabases, as:'system'}
+				<tr #{if (system_index % 2) == 0} class="system_even"#{/if}#{else} class="system_odd"#{/else}>
+					<td>
+						<span class="db_summary_td_contents">
+							<a href="">${system.schemaName}</a>
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${system.getTableCount().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							${system.getEntitiesWithAccess().size().format('###,###,###')}
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+						%{
+			            		List refs = system.getEntitiesWithAccess();
+			            		
+			            		for (models.SecureResourceGroupXref ref : refs) {
+								models.Entity entity = ref.getUserOrGroup();
+								
+				            		if(entity.getName() == null) {
+									continue;
+								}
+								
+								if(entity.getClassType().toLowerCase().equals("userimpl")) {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print(entity.getName() + " ");
+									}
+								} else {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print("<b>" + entity.getName() + "</b> ");
+									}
+								}
+						    	}
+						}%
+						</span>
+			          </td>
+			          <td>
+						<span class="db_summary_td_contents">
+							#{if system.description}
+								${system.description}
+							#{/if}
+							#{else}
+							    <i>No Description</i>
+							#{/else}
+						</span>
+					</td>
+				</tr>
+			#{/list}
+			#{/if}
+              </tbody>
+            </table>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+
+	$('#database_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 530, fixedColumn: false });
+	
+	$('#show_admin_dbs').on('click', function (e) {
+		#{if showAll}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=admin", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/if}
+		#{elseif showAdmin}
+			$.get("@{gui.MyDatabus.databusDatabases()}", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/elseif}
+		#{else}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=admin", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/else}
+	});
+	
+	$('#show_readwrite_dbs').on('click', function (e) {
+		#{if showAll}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=readwrite", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/if}
+		#{elseif showReadWrite}
+			$.get("@{gui.MyDatabus.databusDatabases()}", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/elseif}
+		#{else}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=readwrite", function(data) {
+				$('#my_databus_content').html(data);
+			});	
+		#{/else}
+	});
+	
+	$('#show_readonly_dbs').on('click', function (e) {
+		#{if showAll}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=readonly", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/if}
+		#{elseif showReadOnly}
+			$.get("@{gui.MyDatabus.databusDatabases()}", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/elseif}
+		#{else}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=readonly", function(data) {
+				$('#my_databus_content').html(data);
+			});	
+		#{/else}
+	});
+	
+	$('#show_noaccess_dbs').on('click', function (e) {
+		#{if showAll}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=noaccess", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/if}
+		#{elseif showNoAccess}
+			$.get("@{gui.MyDatabus.databusDatabases()}", function(data) {
+				$('#my_databus_content').html(data);
+			});
+		#{/elseif}
+		#{else}
+			$.get("@{gui.MyDatabus.databusDatabases()}?permissions=noaccess", function(data) {
+				$('#my_databus_content').html(data);
+			});	
+		#{/else}
+	});
+</script>

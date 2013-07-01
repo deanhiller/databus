@@ -51,7 +51,8 @@ public class MyDatabus extends Controller {
 	public static void myDatabus() {
 		EntityUser user = Utility.getCurrentUser(session);
 		
-		MyDatabus.refreshSystemInformation();
+		MyDatabus.refreshDatabaseInformation();
+		MyDatabus.refreshGroupInformation();
 		
 		List<EntityGroup> systemGroups =MyDatabus.systemGroups;
 		List<EntityGroup> adminGroups = MyDatabus.adminGroups;
@@ -74,7 +75,8 @@ public class MyDatabus extends Controller {
 	public static void databusSummary() {
 		EntityUser user = Utility.getCurrentUser(session);
 		
-		MyDatabus.refreshSystemInformation();
+		MyDatabus.refreshDatabaseInformation();
+		MyDatabus.refreshGroupInformation();
 		
 		int systemGroupCount =MyDatabus.systemGroups.size();
 		int  adminGroupCount = MyDatabus.adminGroups.size();
@@ -91,9 +93,6 @@ public class MyDatabus extends Controller {
 		Collections.sort(adminGroups, new EntityGroupComparitor());
 		Collections.sort(memberGroups, new EntityGroupComparitor());
 		
-		//systemGroups.get(0).getChildren().size()
-		//systemGroups.get(0).getResources().size()
-			
 		List<SecureSchema> systemDatabases = MyDatabus.systemDatabases;
 		List<SecureSchema> readableDatabases = new ArrayList<SecureSchema>(MyDatabus.readableDatabases.keySet());
 		List<SecureSchema> readwriteDatabases =  new ArrayList<SecureSchema>(MyDatabus.readwriteDatabases.keySet());
@@ -109,11 +108,28 @@ public class MyDatabus extends Controller {
 	}
 	
 	public static void databusDatabases() {
+		MyDatabus.refreshDatabaseInformation();
+		
+		String permissions = params.get("permissions");
+		renderArgs.put("permissions", permissions);
+		
+		log.info("Got Permission Request: " + permissions);
+		
 		EntityUser user = Utility.getCurrentUser(session);
+		
+		List<SecureSchema> systemDatabases = MyDatabus.systemDatabases;
+		List<SecureSchema> readableDatabases = new ArrayList<SecureSchema>(MyDatabus.readableDatabases.keySet());
+		List<SecureSchema> readwriteDatabases =  new ArrayList<SecureSchema>(MyDatabus.readwriteDatabases.keySet());
+		List<SecureSchema> myDatabases =  new ArrayList<SecureSchema>(MyDatabus.myDatabases.keySet());
+		
+		Collections.sort(systemDatabases, new SecureSchemaComparitor());
+		Collections.sort(readableDatabases, new SecureSchemaComparitor());
+		Collections.sort(readwriteDatabases, new SecureSchemaComparitor());
+		Collections.sort(myDatabases, new SecureSchemaComparitor());
 		
 		List<SecureSchema> databases = SecureSchema.findAll(NoSql.em());
 		
-		render(databases);
+		render(databases, myDatabases, systemDatabases,  readableDatabases, readwriteDatabases);
 	}
 	
 	public static void databusGroups() {
@@ -124,16 +140,10 @@ public class MyDatabus extends Controller {
 		render(groups);
 	}
 	
-	private static void refreshSystemInformation() {
+	private static void refreshDatabaseInformation() {
 		EntityUser user = Utility.getCurrentUser(session);
 		
-		MyDatabus.allGroups = EntityGroup.findAll(NoSql.em());
 		MyDatabus.allDatabases = SecureSchema.findAll(NoSql.em());
-		
-		MyDatabus.systemGroups = new ArrayList<EntityGroup>();
-		MyDatabus.adminGroups = new ArrayList<EntityGroup>();
-		MyDatabus.memberGroups = new ArrayList<EntityGroup>();
-		
 		
 		MyDatabus.systemDatabases = new ArrayList<SecureSchema>();
 		MyDatabus.readableDatabases = new HashMap<SecureSchema, String>();
@@ -227,6 +237,16 @@ public class MyDatabus extends Controller {
 				systemDatabases.add(db);
 			}
 		}
+	}
+	
+	private static void refreshGroupInformation() {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		MyDatabus.allGroups = EntityGroup.findAll(NoSql.em());
+		
+		MyDatabus.systemGroups = new ArrayList<EntityGroup>();
+		MyDatabus.adminGroups = new ArrayList<EntityGroup>();
+		MyDatabus.memberGroups = new ArrayList<EntityGroup>();	
 		
 		for(EntityGroup group : allGroups) {
 			List<EntityGroupXref> childGroups = group.getChildren();
