@@ -29,13 +29,27 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 		super.init(pathStr, nextInChain, visitor, options);
 		//params = parsePath(pathStr, visitor);
 		//first values may have no start and end times here
-		if(params.getStart() == null) {
+		if(params.getStart() == null && params.getEnd() == null) {
 			long end= System.currentTimeMillis();
 			//long start  = Long.MIN_VALUE;
 			long start  = Long.MIN_VALUE+1; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
 			String previousPath = params.getPreviousPath()+"/"+start+"/"+end;
 			String leftOver = params.getLeftOverPath()+"/"+start+"/"+end;
 			params = new Path(params.getParams(), previousPath, leftOver, start, end, visitor.isReversed());
+		} else if(params.getStart() == null) {
+			//in this case, there is only one time in the url which was put at the end parameter :( which is confusing
+			//and to add to the confusion if reverse=true, end actually means end but reverse=false end means start instead
+			if(!visitor.isReversed()) {
+				long end = System.currentTimeMillis();
+				String previousPath = params.getPreviousPath()+"/"+params.getEnd()+"/"+end;
+				String leftOver = params.getLeftOverPath()+"/"+params.getEnd()+"/"+end;
+				params = new Path(params.getParams(), previousPath, leftOver, params.getEnd(), end, visitor.isReversed());
+			} else {
+				long start  = Long.MIN_VALUE+1; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
+				String previousPath = params.getPreviousPath()+"/"+start+"/"+params.getEnd();
+				String leftOver = params.getLeftOverPath()+"/"+start+"/"+params.getEnd();
+				params = new Path(params.getParams(), previousPath, leftOver, start, params.getEnd(), visitor.isReversed());
+			}
 		}
 		
 		String msg = "After the /firstvalues/ in the url must be a long value of how many data points you want returned";
