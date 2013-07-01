@@ -324,11 +324,15 @@ public class ModBusClient {
 			IpParameters params = new IpParameters();
 			
 			String[] split = meter.getIp().split("/");
-			if(split.length != 2)
-				throw new IllegalArgumentException("Your meters.csv contains="+meter.getIp()+" which is missing /<port> for <ip>/<port>");
+			String host = meter.getIp();
+			int port = 502;
+			if(split.length == 2) {
+				host = split[0];
+				port = new Integer(split[1]);
+			}
 
-			params.setHost(split[0]);
-			params.setPort(new Integer(split[1]));
+			params.setHost(host);
+			params.setPort(port);
 			ModbusMaster master = factory.createTcpMaster(params, false);
 
 			log.info("pooling meter ID " + meter.getSerial());
