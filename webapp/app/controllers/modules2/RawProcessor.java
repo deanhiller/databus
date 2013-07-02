@@ -44,6 +44,7 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Realm.AuthScheme;
 import com.ning.http.client.RequestBuilder;
 
+import controllers.SecurityUtil;
 import controllers.modules2.framework.Config;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
@@ -89,11 +90,12 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
 		
-		SecureTable sdiTable = SecureTable.findByName(NoSql.em(), colFamily);
+		SecureTable sdiTable = SecurityUtil.checkSingleTable(colFamily);
 		if(sdiTable == null)
 			throw new BadRequest("table="+colFamily+" does not exist");
 		
 		DboTableMeta meta = sdiTable.getTableMeta();
+		
 		if(meta.isTimeSeries()) {
 			subprocessor = new RawTimeSeriesProcessor();
 		} else
