@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLException;
+import javax.net.ssl.SSLHandshakeException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.TrustManager;
@@ -243,6 +244,9 @@ public class DatabusSender {
 			HttpEntity entity = response2.getEntity();
 			EntityUtils.consume(entity);
 			return t2-t1;
+		} catch (SSLHandshakeException e) {
+			log.info("failed to post due to ssl handshake");
+			throw new RuntimeException("Looks like your properties file has https while the server you are connecting to is http??? so maybe fix that first", e);
 		} catch (Exception e) {
 			log.info("failed to post, continuing on to next request");
 			throw new RuntimeException(e);
