@@ -1,6 +1,9 @@
 package controllers.modules2.framework.chain;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -36,6 +39,8 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 	private int rowCount = 0;
 	private HttpStatus failedStatus;
 
+	private List<String> errors = new ArrayList<String>();
+
 	@Override
 	public Direction getSourceDirection() {
 		return Direction.NONE;
@@ -62,7 +67,7 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 		}
 		return lastPart;
 	}
-	
+
 	@Override
 	public void complete(String url) {
 		writeFooter(null, null);
@@ -73,6 +78,9 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 	public void addMissingData(String url, String errorMsg) {
 		if (log.isWarnEnabled())
     		log.warn("Need to finish and add error at end of all streaming="+errorMsg);
+		if(errors.size() < 10) {
+			errors.add(errorMsg);
+		}
 	}
 
 	@Override
@@ -96,7 +104,7 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 				response.writeChunk(msg);
 				return;
 			}
-			
+
 			all.append("],");
 			all.append(writeError(error, errorMsg));
 			all.append("}");
@@ -125,12 +133,19 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 				inst = JsonStringEncoder.getInstance();
 				errorBlock.append(inst.quoteAsString(""+ExceptionUtils.getStackTrace(error)));
 			}
-
 		}
 		
 		if(errorMsg != null) {
 			errorBlock.append(errorMsg);
 		}
+
+		for(int i = 0; i < errors.size(); i++) {
+			String err = errors.get(i);
+			errorBlock.append(err);
+			if(i < errors.size())
+				errorBlock.append(", ");
+		}
+
 		errorBlock.append("\"");
 		return ""+errorBlock;
 	}

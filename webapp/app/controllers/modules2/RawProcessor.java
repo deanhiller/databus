@@ -5,6 +5,7 @@ import gov.nrel.util.Utility;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -76,8 +77,11 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		return null;
 	}
 	
+	
 	@Override
-	public void start(VisitorInfo visitor) {
+	public String init(String path, ProcessorSetup nextInChain,
+			VisitorInfo visitor, HashMap<String, String> options) {
+		String res = super.init(path, nextInChain, visitor, options);
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)
 			throw new BadRequest("rawdata module requires a column family name");
@@ -95,7 +99,13 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		} else
 			subprocessor = new RawStreamProcessor();
 		
-		subprocessor.init(meta, start, end, params.getPreviousPath());
+		subprocessor.init(meta, start, end, params.getPreviousPath(), visitor);
+		return res;
+	}
+
+	@Override
+	public void start(VisitorInfo visitor) {
+		//nothing to do, engine is the one who starts reading from us
 	}
 
 	@Override
