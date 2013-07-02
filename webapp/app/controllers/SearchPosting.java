@@ -29,6 +29,8 @@ import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
+import controllers.modules2.SqlPullProcessor;
+
 public class SearchPosting {
 
 	private static final Logger log = LoggerFactory.getLogger(SearchPosting.class);
@@ -77,7 +79,7 @@ public class SearchPosting {
 				log.info("searching for the parent table of "+table.getColumnFamily()+" with the sql:");
 				log.info(sql);
 			}
-			QueryResult result = NoSql.em().getTypedSession().createQueryCursor(sql, ApiGetData.BATCH_SIZE);
+			QueryResult result = NoSql.em().getTypedSession().createQueryCursor(sql, SqlPullProcessor.BATCH_SIZE);
 			Iterable<List<TypedRow>> cursor = result.getAllViewsIter();
 			
 			List<TypedRow> typedRows = cursor.iterator().next();

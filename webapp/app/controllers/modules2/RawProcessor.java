@@ -89,7 +89,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		String colFamily = parameters.get(0);
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
-		
+
 		SecureTable sdiTable = SecurityUtil.checkSingleTable(colFamily);
 		if(sdiTable == null)
 			throw new BadRequest("table="+colFamily+" does not exist");

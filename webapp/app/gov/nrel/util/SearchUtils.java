@@ -41,9 +41,9 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
-import controllers.ApiGetData;
 import controllers.Search;
 import controllers.SearchPosting;
+import controllers.modules2.SqlPullProcessor;
 
 public class SearchUtils {
 
@@ -269,7 +269,7 @@ public class SearchUtils {
 
 
 				try {
-					QueryResult result = NoSql.em().getTypedSession().createQueryCursor(sql, ApiGetData.BATCH_SIZE);
+					QueryResult result = NoSql.em().getTypedSession().createQueryCursor(sql, SqlPullProcessor.BATCH_SIZE);
 					Iterator<List<TypedRow>> cursor = result.getAllViewsIter().iterator();
 					
 					while (true) {

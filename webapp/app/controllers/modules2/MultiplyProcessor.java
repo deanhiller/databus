@@ -3,20 +3,11 @@ package controllers.modules2;
 import java.math.BigDecimal;
 import java.util.HashMap;
 
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
-
 import play.mvc.results.BadRequest;
-
-import controllers.modules.SplinesBasic;
-import controllers.modules.SplinesLimitDerivative;
-import controllers.modules2.framework.Path;
-import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PushOrPullProcessor;
-import controllers.modules2.framework.procs.PushProcessor;
-import controllers.modules2.framework.procs.PushProcessorAbstract;
 
 public class MultiplyProcessor extends PushOrPullProcessor {
 
