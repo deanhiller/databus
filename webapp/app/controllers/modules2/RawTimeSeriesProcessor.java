@@ -116,8 +116,12 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private AbstractCursor<Column> getReverseCursor() {
 		if(cursor != null && cursor.previous()) {
 			return cursor;
-		} else if(currentPartitionId < (start-partitionSize))
+		} else if(currentPartitionId < (start-partitionSize)) {
+			//here unlike going forwards currentPartitionId < start is valid and normal situation but
+			//currentPartitionId should not be before (start-partitionSize) as we are only searching for data
+			//from start and forward so this else if is different than getCursorWithResults one
 			return null;
+		}
 
 		int count = 0;
 		do {
