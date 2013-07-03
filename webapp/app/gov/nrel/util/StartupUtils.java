@@ -20,8 +20,8 @@ import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
-import controllers.ApiPostDataPointsImpl;
-import controllers.ApiRegistrationImpl;
+import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.ApiRegistrationImpl;
 
 /**
  * Compilation of commonly used Startup methods

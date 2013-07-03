@@ -29,11 +29,11 @@ import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
 import controllers.ApiPostDataPoints;
-import controllers.ApiPostDataPointsImpl;
 import controllers.ApiRegistration;
-import controllers.ApiRegistrationImpl;
 import controllers.MySchemaLogic;
 import controllers.MySchemas;
+import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.ApiRegistrationImpl;
 
 public class StartupGroups {
 
