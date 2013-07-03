@@ -13,23 +13,13 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 
-import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
-
 import play.mvc.results.BadRequest;
-
-import controllers.modules.SplinesBasic;
-import controllers.modules.SplinesLimitDerivative;
-import controllers.modules2.framework.Path;
-import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PushOrPullProcessor;
-import controllers.modules2.framework.procs.PushProcessor;
-import controllers.modules2.framework.procs.PushProcessorAbstract;
 
 public class RelationalOperationProcessor extends PushOrPullProcessor {
 

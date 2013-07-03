@@ -24,7 +24,7 @@ import play.mvc.Http.Response;
 
 public class SplineMod extends Controller {
 
-	public static final Logger log = LoggerFactory.getLogger(CleanerMod.class);
+	public static final Logger log = LoggerFactory.getLogger(SplineMod.class);
 
 	public static void error(String path) {
 		badRequest("Your url is invalid as you need splineV1/{interval}/{windowSize}/{nextmodule}... and interval has to be long and windowSize has to be int");

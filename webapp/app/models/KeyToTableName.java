@@ -56,10 +56,11 @@ public class KeyToTableName {
 		this.sdiTableMeta = sdiTableMeta;
 	}
 
-	@Deprecated
-	public static String formKey(String tableName, String key2) {
-		return tableName+key2;
-	}
+//	@Deprecated
+//	public static String formKey(String tableName, String key2) {
+//		return tableName+key2;
+//	}
+
 	public static String formKey(String tableName, String user, String key2) {
 		return tableName+user+key2;
 	}

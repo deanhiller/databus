@@ -18,7 +18,9 @@ $(function () {
   $(window).resize(function () {
 	var height = getHeight();
     console.log('fit new div container size, width='+$("#theChart").width()+' height='+height+' windowH='+$(window).height());
-    chart.setSize($("#theChart").width(), height, false);
+    var width = $("#theChart").width();
+    if(chart != null)
+        chart.setSize(width, height, false);
   });
 
   $.ajaxSetup({
@@ -170,13 +172,18 @@ $(function () {
     singleStream = typeof singleStream !== 'undefined' ? singleStream : false;
     title = typeof title !== 'undefined' ? title : false;
 
-    var url = '${_chart.url}'+'?callback=?';
+    var url = '${_chart.url}';
+    if(url.indexOf('?') > 0) {
+    	url = url + '&callback=?';
+    } else
+        url = url + '?callback=?';
     
     console.log('url='+url);
     
     $('#theChart').append($('<div class="chart" />').attr('id', 'mychart'));
     $.getJSON(url, function (data) {
         
+    	console.log('json callback being called with data');
         var msg = "No data available in the specified time period."
         if(data.data.length != 0) {
             msg = "Last value was "+data.data[data.data.length-1].${_chart.series1.name}+" at "+new Date(data.data[data.data.length-1].${_chart.timeColumn}).toUTCString()
@@ -241,7 +248,7 @@ $(function () {
   });
 
   addChart(false, true);
-  console.log('returned chart='+chart);
+  console.log('addChart called, waiting on json data to come back');
 });
     </script>
 

@@ -31,7 +31,7 @@
     border: 1px solid #888;
     padding: 5px 10px;
     text-decoration: none;
-    color: #555;
+    color: #ddd;
     font-family: arial, verdana, tahoma;
     font-size: 12px;
     border-radius: 5px;
@@ -52,12 +52,20 @@
 /*We will apply the hover effect the the lineage of the element also*/
  .pilltree li a:hover, .pilltree li a:hover+ul li a {
     background: #c8e4f8;
-    color: #000;
+    color: #fff;
     border: 1px solid #94a0b4;
 }
+
+.innerpilltree li a:hover, .pilltree li a:hover+ul li a {
+    background: #c8e4f8;
+    color: #555;
+    border: 1px solid #94a0b4;
+}
+
 /*Connector styles on hover*/
  .pilltree li a:hover+ul li::after, .pilltree li a:hover+ul li::before, .pilltree li a:hover+ul::before, .pilltree li a:hover+ul ul::before {
     border-color: #94a0b4;
+    color: #555;
 }
 
 .pilltree_selected {

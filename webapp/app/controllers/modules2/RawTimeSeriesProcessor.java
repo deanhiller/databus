@@ -5,6 +5,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +28,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.VisitorInfo;
 
 public class RawTimeSeriesProcessor implements RawSubProcessor {
 
@@ -44,16 +46,22 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private boolean reverse = false;
 	private String url;
 
+	private Long startPartition;
+
+	private boolean noData;
+
 	@Override
-	public void init(DboTableMeta meta, Long start, Long end, String url) {
+	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
 		this.meta = meta;
 		this.url = url;
-		String reverseParam = play.mvc.Http.Request.current().params.get("reverse");
-		if("true".equalsIgnoreCase(reverseParam))
-			reverse=true;
+		this.reverse = visitor.isReversed();
 
 		partitionSize = meta.getTimeSeriesPartionSize();
 		currentPartitionId = partition(start, partitionSize);
+		if(reverse)
+			currentPartitionId = partition(end, partitionSize);
+
+		startPartition = currentPartitionId;
 		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
 		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
 		this.start = start;
@@ -66,29 +74,56 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private Long partition(Long time, long partitionSize) {
 		if(time == null)
 			return null;
-		return (time / partitionSize)*partitionSize;
+		long partitionId = (time / partitionSize)*partitionSize;
+		if(partitionId < 0) {
+			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
+			if(Long.MIN_VALUE+partitionSize >= partitionId)
+				partitionId = Long.MIN_VALUE;
+			else
+				partitionId -= partitionSize; //subtract one partition size off of the id
+		}
+		return partitionId;
 	}
 
 	@Override
 	public ReadResult read() {
 		AbstractCursor<Column> cursor;
-		if(reverse)
-			cursor = getReverseCursor();
-		else
-			cursor = getCursorWithResults();
+		try {
+			if(noData)
+				return new ReadResult();
+			else if(reverse)
+				cursor = getReverseCursor();
+			else
+				cursor = getCursorWithResults();
+		} catch(NoDataException e) {
+			String time1 = convert(startPartition);
+			String time2 = convert(currentPartitionId);
+			noData = true;
+			return new ReadResult("", "We scanned partitions from time="+time1+" to time="+time2+" and found no data so are exiting.  perhaps add a start time and end time to your url");
+		}
 
 		if(cursor == null)
 			return new ReadResult();
-		
+
 		return translate(cursor.getCurrent());
+	}
+
+	private String convert(long startPartition2) {
+		DateTime dt = new DateTime(startPartition2);
+		return dt+"";
 	}
 
 	private AbstractCursor<Column> getReverseCursor() {
 		if(cursor != null && cursor.previous()) {
 			return cursor;
-		} else if(currentPartitionId > start)
+		} else if(currentPartitionId < (start-partitionSize)) {
+			//here unlike going forwards currentPartitionId < start is valid and normal situation but
+			//currentPartitionId should not be before (start-partitionSize) as we are only searching for data
+			//from start and forward so this else if is different than getCursorWithResults one
 			return null;
+		}
 
+		int count = 0;
 		do {
 			NoSqlTypedSession em = NoSql.em().getTypedSession();
 			NoSqlSession raw = em.getRawSession();
@@ -100,7 +135,11 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 			currentPartitionId -= partitionSize;
 			if(cursor.previous())
 				return cursor;
-		} while(currentPartitionId > start);
+			count++;
+		} while(currentPartitionId > start && count < 20);
+
+		if(count >= 20)
+			throw new NoDataException("no data in 20 partitions found...not continuing");
 
 		return null;	
 	}
@@ -111,6 +150,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		} else if(currentPartitionId > end)
 			return null;
 
+		int count = 0;
 		do {
 			NoSqlTypedSession em = NoSql.em().getTypedSession();
 			NoSqlSession raw = em.getRawSession();
@@ -121,8 +161,11 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 			currentPartitionId += partitionSize;
 			if(cursor.next())
 				return cursor;
-		} while(currentPartitionId < end);
+			count++;
+		} while(currentPartitionId < end && count < 20);
 
+		if(count >= 20)
+			throw new NoDataException("no data in 20 partitions found...not continuing");
 		return null;
 	}
 

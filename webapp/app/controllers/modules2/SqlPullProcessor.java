@@ -23,7 +23,6 @@ import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.orm.api.z8spi.meta.ViewInfo;
 import com.alvazan.play.NoSql;
 
-import controllers.ApiGetData;
 import controllers.SecurityUtil;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
@@ -34,6 +33,7 @@ import controllers.modules2.framework.procs.PullProcessorAbstract;
 public class SqlPullProcessor extends PullProcessorAbstract {
 
 	private static final Logger log = LoggerFactory.getLogger(SqlPullProcessor.class);
+	public static int BATCH_SIZE = 200;
 	private Iterator<List<TypedRow>> iterator;
 
 	@Override
@@ -75,7 +75,7 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 		NoSqlEntityManager em = NoSql.em();
 		NoSqlTypedSession s = em.getTypedSession();
 		
-		QueryResult result = s.createQueryCursor(sql, ApiGetData.BATCH_SIZE);
+		QueryResult result = s.createQueryCursor(sql, BATCH_SIZE);
 
 		Map<String, SecureResourceGroupXref> schemaIds = SecurityUtil.groupSecurityCheck();
 		List<ViewInfo> views = result.getViews();

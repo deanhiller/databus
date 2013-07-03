@@ -4,16 +4,12 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
 
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
-
-import controllers.modules.SplinesBigDecBasic;
-import controllers.modules.SplinesBigDecLimitDerivative;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;

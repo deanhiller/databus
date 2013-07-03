@@ -14,6 +14,7 @@ import com.alvazan.play.NoSql;
 
 import play.mvc.Controller;
 import play.mvc.With;
+import play.utils.HTML;
 import controllers.gui.auth.GuiSecure;
 
 @With(GuiSecure.class)
@@ -24,6 +25,8 @@ public class MySettings extends Controller {
 	private UserSettings settings;
 	
 	public static void mySettings() {
+		//HTML.htmlEscape(htmlToEscape)
+		
 		EntityUser user = Utility.getCurrentUser(session);
 		
 		// Set current options

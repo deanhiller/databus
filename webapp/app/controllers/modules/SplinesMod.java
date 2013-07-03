@@ -25,7 +25,7 @@ import play.mvc.Util;
 
 public class SplinesMod extends Controller {
 
-	public static final Logger log = LoggerFactory.getLogger(CleanerMod.class);
+	public static final Logger log = LoggerFactory.getLogger(SplinesMod.class);
 
 	public static void error(String path) {
 		badRequest("Your url is invalid as you need splinesV1/{splineType}/{interval}/{nextmodule}... and splineType must be basic or limitderivative");

@@ -46,6 +46,8 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
+import controllers.api.ApiPostDataPointsImpl;
+
 public class ApiPostDataPoints extends Controller {
 	public static final int BATCH_SIZE = 100;
 	//private static final String PREFIX = "keyToTable-";

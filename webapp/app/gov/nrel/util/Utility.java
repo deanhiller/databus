@@ -45,9 +45,9 @@ import com.alvazan.orm.layer3.typed.IterableProxy;
 import com.alvazan.orm.layer3.typed.IterableReverseProxy;
 import com.alvazan.play.NoSql;
 
-import controllers.ApiRegistrationImpl;
 import controllers.Security;
 import controllers.SecurityUtil;
+import controllers.api.ApiRegistrationImpl;
 import controllers.gui.auth.GuiSecure;
 
 public class Utility {

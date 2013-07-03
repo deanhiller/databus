@@ -5,6 +5,7 @@ import gov.nrel.util.Utility;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -43,6 +44,7 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.Realm.AuthScheme;
 import com.ning.http.client.RequestBuilder;
 
+import controllers.SecurityUtil;
 import controllers.modules2.framework.Config;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
@@ -76,26 +78,36 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		return null;
 	}
 	
+	
 	@Override
-	public void start(VisitorInfo visitor) {
+	public String init(String path, ProcessorSetup nextInChain,
+			VisitorInfo visitor, HashMap<String, String> options) {
+		String res = super.init(path, nextInChain, visitor, options);
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)
 			throw new BadRequest("rawdata module requires a column family name");
 		String colFamily = parameters.get(0);
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
-		
-		SecureTable sdiTable = SecureTable.findByName(NoSql.em(), colFamily);
+
+		SecureTable sdiTable = SecurityUtil.checkSingleTable(colFamily);
 		if(sdiTable == null)
 			throw new BadRequest("table="+colFamily+" does not exist");
 		
 		DboTableMeta meta = sdiTable.getTableMeta();
+		
 		if(meta.isTimeSeries()) {
 			subprocessor = new RawTimeSeriesProcessor();
 		} else
 			subprocessor = new RawStreamProcessor();
 		
-		subprocessor.init(meta, start, end, params.getPreviousPath());
+		subprocessor.init(meta, start, end, params.getPreviousPath(), visitor);
+		return res;
+	}
+
+	@Override
+	public void start(VisitorInfo visitor) {
+		//nothing to do, engine is the one who starts reading from us
 	}
 
 	@Override

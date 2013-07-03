@@ -1,16 +1,14 @@
 package controllers.modules2;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 
-import models.KeyToTableName;
 import models.PermissionType;
 import models.SecureTable;
-
-import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import play.mvc.Http.Request;
+import play.mvc.results.BadRequest;
+import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
@@ -19,13 +17,7 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
-import play.mvc.Http.Request;
-import play.mvc.results.BadRequest;
-import play.mvc.results.Unauthorized;
 import controllers.SecurityUtil;
-import controllers.modules.SplinesBigDecBasic;
-import controllers.modules.SplinesBigDecLimitDerivative;
-import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;

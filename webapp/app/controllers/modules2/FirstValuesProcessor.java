@@ -16,6 +16,7 @@ import controllers.modules2.framework.procs.PushProcessorAbstract;
 
 public class FirstValuesProcessor extends PushProcessorAbstract {
 
+	private long BEGIN_OF_TIME = 0; //let's have begin of time be 1970 for now
 	private long numValues;
 	private long counter = 0;
 	
@@ -29,18 +30,42 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 		super.init(pathStr, nextInChain, visitor, options);
 		//params = parsePath(pathStr, visitor);
 		//first values may have no start and end times here
-		if(params.getStart() == null) {
+		if(params.getOriginalStart() == null && params.getOriginalEnd() == null) {
 			long end= System.currentTimeMillis();
 			//long start  = Long.MIN_VALUE;
-			long start  = Long.MIN_VALUE+1; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
+			long start  = BEGIN_OF_TIME; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
 			String previousPath = params.getPreviousPath()+"/"+start+"/"+end;
 			String leftOver = params.getLeftOverPath()+"/"+start+"/"+end;
 			params = new Path(params.getParams(), previousPath, leftOver, start, end, visitor.isReversed());
+		} else if(params.getOriginalStart() == null) {
+			if(params.getOriginalEnd() < 0)
+				throw new RuntimeException("The time cannot be less than 0, ie. cannot be before 1970");
+			//strip off previouspath and leftOVer path's single time value from the url here!!!!
+			String previousPath = strip(params.getPreviousPath());
+			String leftOver = strip(params.getLeftOverPath());
+			//in this case, there is only one time in the url which was put at the end parameter :( which is confusing
+			//and to add to the confusion if reverse=true, end actually means end but reverse=false end means start instead
+			if(!visitor.isReversed()) {
+				long end = System.currentTimeMillis();
+				previousPath = previousPath+"/"+params.getOriginalEnd()+"/"+end;
+				leftOver = leftOver+"/"+params.getOriginalEnd()+"/"+end;
+				params = new Path(params.getParams(), previousPath, leftOver, params.getOriginalEnd(), end, visitor.isReversed());
+			} else {
+				long start  = BEGIN_OF_TIME; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
+				previousPath = previousPath+"/"+start+"/"+params.getOriginalEnd();
+				leftOver = leftOver+"/"+start+"/"+params.getOriginalEnd();
+				params = new Path(params.getParams(), previousPath, leftOver, start, params.getOriginalEnd(), visitor.isReversed());
+			}
 		}
 		
 		String msg = "After the /firstvalues/ in the url must be a long value of how many data points you want returned";
 		numValues = parseLong(params.getParams().get(0), msg);
 		return params.getLeftOverPath();
+	}
+
+	private String strip(String previousPath) {
+		int lastIndex = previousPath.lastIndexOf("/");
+		return previousPath.substring(0, lastIndex);
 	}
 
 	@Override

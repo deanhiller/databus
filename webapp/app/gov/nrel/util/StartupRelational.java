@@ -13,8 +13,8 @@ import models.message.RegisterResponseMessage;
 
 import com.alvazan.play.NoSql;
 
-import controllers.ApiPostDataPointsImpl;
-import controllers.ApiRegistrationImpl;
+import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.ApiRegistrationImpl;
 
 public class StartupRelational {
 

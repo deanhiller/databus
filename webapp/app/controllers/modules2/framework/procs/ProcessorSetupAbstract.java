@@ -147,12 +147,16 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		String to   = pieces[pieces.length-1];
 		String from = pieces[pieces.length-2];
 		try {
+			end = Long.parseLong(to);
+		} catch(NumberFormatException e) {
+			end = null;
+		}
+		
+		try {
 			start = Long.parseLong(from);
-			end   = Long.parseLong(to);
 		} catch(NumberFormatException e) {
 			//there is no times, so let's create our own
 			start = null;
-			end   = null;
 		}
 		
 		return new Path(result, path, newPath, start, end, visitor.isReversed());

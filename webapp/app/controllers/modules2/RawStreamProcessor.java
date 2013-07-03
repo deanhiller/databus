@@ -21,6 +21,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.VisitorInfo;
 
 public class RawStreamProcessor implements RawSubProcessor {
 
@@ -30,7 +31,7 @@ public class RawStreamProcessor implements RawSubProcessor {
 	private String url;
 	
 	@Override
-	public void init(DboTableMeta meta, Long start, Long end, String url) {
+	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
 		this.url = url;
 		this.meta = meta;
 		String cf = meta.getColumnFamily();
