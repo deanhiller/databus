@@ -72,7 +72,8 @@ public class ApiPostDataPointsImpl {
 					else if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "timeFormat"))
 						timeISOStringFormat = parts[1];
 					else
-						throw new RuntimeException("The format of the UTC module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+						throw new RuntimeException("The format of the dateformat module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+
 				}
 			}
 		}		
