@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Provider;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,7 +87,7 @@ public class ModuleCore {
 		}
 
 		VisitorInfo visitor = new VisitorInfo(promise, factory, isReversed);
-		if(visitor.isReversed()) {
+		if(visitor.isReversed() && !StringUtils.contains(path, "dateformatV")) {
 			lastOne = negationProcessors.get();
 			lastOne.init("negation/"+path, toOutput, visitor, new HashMap<String, String>());
 		}

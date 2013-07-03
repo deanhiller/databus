@@ -10,7 +10,9 @@ import java.util.HashMap;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
+import org.mortbay.log.Log;
 
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
 import controllers.modules2.framework.ProcessedFlag;
@@ -26,6 +28,7 @@ public class DateFormatMod extends PushOrPullProcessor {
 	private String dateFormatString = "yyyyMMdd'T'HHmmss'Z'";
 	private String timeZone = null;
 	private SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatString);
+	private boolean reversed = false;
 	
 	@Override
 	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
@@ -52,15 +55,19 @@ public class DateFormatMod extends PushOrPullProcessor {
 		if (StringUtils.isNotBlank(timeZoneOption))
 			timeZone = timeZoneOption;
 		
-		
+		String val = Request.current().params.get("reverse");
+		if("true".equalsIgnoreCase(val)) {
+			reversed = true;
+		}
 		return newPath;
 	}
 	
 	@Override
 	protected TSRelational modifyRow(TSRelational row) {
 		BigInteger val = (BigInteger)row.get(timeColumnName);
+
 		if(val != null)
-			row.put(timeColumnName, formatDate(val));
+			row.put(timeColumnName, formatDate(reversed?val.negate():val));
 		
 		return row;
 	}
