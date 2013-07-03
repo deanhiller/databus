@@ -1,4 +1,4 @@
-package controllers;
+package controllers.api;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -39,7 +39,8 @@ import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
-import controllers.api.DocumentUtil;
+import controllers.SearchPosting;
+import controllers.TableKey;
 
 public class ApiPostDataPointsImpl {
 
@@ -72,7 +73,8 @@ public class ApiPostDataPointsImpl {
 					else if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "timeFormat"))
 						timeISOStringFormat = parts[1];
 					else
-						throw new RuntimeException("The format of the UTC module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+						throw new RuntimeException("The format of the dateformat module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
+
 				}
 			}
 		}		
@@ -94,19 +96,13 @@ public class ApiPostDataPointsImpl {
 			Map<String, String> row = (Map<String, String>) map;
 			String tableName = (String) row.get("_tableName");
 			
-			@Deprecated  //These next TWO lines it to go away after 12/15/12 release...
-			String key = (String) row.get("_postKey");
-			String rowKey = KeyToTableName.formKey(tableName, key);
-			if(user != null || key == null) {
-				if(user == null) {
-					if (log.isInfoEnabled())
-						log.info("user is not there, we require user and password");
-					throw new Unauthorized("user must be supplied and was null in basic auth");
-				}
-
-				rowKey = KeyToTableName.formKey(tableName, user, password);
+			if(user == null) {
+				if (log.isInfoEnabled())
+					log.info("user is not there, we require user and password");
+				throw new Unauthorized("user must be supplied and was null in basic auth");
 			}
 
+			String rowKey = KeyToTableName.formKey(tableName, user, password);
 			rowKeys.add(rowKey);
 			dataPts.add(row);
 		}

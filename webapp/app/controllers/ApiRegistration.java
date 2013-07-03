@@ -48,6 +48,8 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnToOneMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
+import controllers.api.ApiRegistrationImpl;
+
 public class ApiRegistration extends Controller {
 
 	/**

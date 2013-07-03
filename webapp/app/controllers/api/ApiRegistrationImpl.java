@@ -1,4 +1,4 @@
-package controllers;
+package controllers.api;
 
 import gov.nrel.util.SearchUtils;
 import gov.nrel.util.Utility;
@@ -65,6 +65,9 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.play.NoSql;
 
+import controllers.SearchPosting;
+import controllers.SecurityUtil;
+
 public class ApiRegistrationImpl {
 
 	private static final Logger log = LoggerFactory.getLogger(ApiRegistrationImpl.class);
@@ -76,8 +79,8 @@ public class ApiRegistrationImpl {
 		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE 
 				&& msg.getDatasetType() != DatasetType.TIME_SERIES) {
 			if (log.isInfoEnabled())
-				log.info("only supporting type of STREAM or RELATIONAL_TABLE right now");
-			throw new BadRequest("only supporting type of STREAM or RELATIONAL_TABLE right now");
+				log.info("only supporting type of STREAM or RELATIONAL_TABLE or TIME_SERIES right now");
+			throw new BadRequest("only supporting type of STREAM or RELATIONAL_TABLE or TIME_SERIES right now");
 		} else if(msg.getModelName() == null) {
 			if (log.isInfoEnabled())
 				log.info("model name was null and is required");
@@ -268,12 +271,7 @@ public class ApiRegistrationImpl {
 		
 		if (e.getClassType().equals("userImpl")) {
 			EntityUser u = (EntityUser)e;
-			//OLD form
-			@Deprecated
-			String rowKey = KeyToTableName.formKey(table.getTableName(), u.getApiKey());
-			KeyToTableName k = createKeyToTable(rowKey, tm, table);
-			NoSql.em().put(k);
-			
+
 			String rowKey2 = KeyToTableName.formKey(table.getTableName(), u.getUsername(), u.getApiKey());
 			KeyToTableName k2 = createKeyToTable(rowKey2, tm, table);
 			NoSql.em().put(k2);
