@@ -4,6 +4,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import controllers.SecurityUtil;
 import controllers.gui.auth.GuiSecure;
@@ -23,6 +24,8 @@ public class AddLogContextPlugin extends PlayPlugin {
 	private ThreadLocal<Long> startTime = new ThreadLocal<Long>();
 	
 	public AddLogContextPlugin() {
+		SLF4JBridgeHandler.removeHandlersForRootLogger();
+		SLF4JBridgeHandler.install();
 		String mode = Play.configuration.getProperty("application.mode");
 		if("prod".equals(mode)) {
 			isProduction = true;
