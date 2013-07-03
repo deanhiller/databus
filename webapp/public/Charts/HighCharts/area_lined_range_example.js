@@ -17,23 +17,41 @@
 // GOOD ONE IN CSV: https://databus.nrel.gov/api/csv/rawdataV1/D73937763phaseRealPower/1371051120000/1371052260000
 
 $(function () {
-    var _solrProtocol = 'http';
-    var days = 2;
-    var endTime = (new Date())
-        .getTime();
-    var startTime = endTime - days * 24 * 3600000;
+/**
+ * |DATABUS_CHART|
+ * ***********************************************************************
+ * REQUIRED FOR DATABUS URI  -- START --
+ * ***********************************************************************
+ * 
+ * The following information MUST be present in the chart code or the
+ * Databus chart loader might encounter errors.
+ */
+var _name = '3phaseRealPower (RANGED)';
+var _title = '3phaseRealPower D73937773/D73937763 +-2000';
+ 
+var _protocol = 'http';
+var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
+/**
+ * |DATABUS_CHART|
+ * ***********************************************************************
+ * REQUIRED FOR DATABUS URI  -- END --
+ * ***********************************************************************
+ */
 
-    var url = _solrProtocol + '://' + window.location.host +  '/api/aggregation/chart_avg_sums_hour/' + startTime + '/' + endTime;
-
+    var url = _protocol + '://' + window.location.host + _database;
+        
     $.getJSON(url, function (chartData) {
         var ranges = [];
         var averages = [];
 
         var lastAvg = 0;
+        var maxRange;
+    	   var minRange;
+    	   
         $.each(chartData.data, function (key, val) {
             var time = val.time;
-            var v1 = val.D73937763phaseRealPower_log1m;
-            var v2 = val.D73937773phaseRealPower_log1m;
+            var v1 = val.value + 2000;
+            var v2 = val.value - 2000;
 
             if (v1 === undefined) {
                 v1 = v2;
@@ -47,22 +65,41 @@ $(function () {
                 v1 = lastAvg;
                 v2 = lastAvg;
             }
-
+            
             ranges.push([time, v1 / 1000, v2 / 1000]);
 
-            var avg = val.value / 2 / 1000;
+            var avg = (v1 + v2) / 2 / 1000;
             lastAvg = avg;
+            
+            if(maxRange === undefined) {
+            	maxRange = avg;
+            }
+            
+            if(minRange === undefined) {
+            	minRange = avg;
+            }
+            
+            if(avg > maxRange) {
+            	maxRange = avg;            
+            }
+            
+            if(avg < minRange) {
+            	minRange = avg;
+            }
 
             averages.push([val.time, avg]);
         });
-
+        
+        ranges.reverse();
+        averages.reverse();
+        
         var options = {
             chart: {
                 renderTo: 'container'
             },
 
             title: {
-                text: '3phaseRealPower D73937773/D73937763'
+                text: _title
             },
 
             xAxis: {
@@ -73,8 +110,8 @@ $(function () {
                 title: {
                     text: null
                 },
-                min: 0,
-                max: 90
+                min: minRange,
+                max: maxRange
             },
 
             tooltip: {
@@ -86,7 +123,7 @@ $(function () {
             legend: {},
 
             series: [{
-                name: 'Kilowatt',
+                name: 'AVG Kilowatt',
                 data: averages,
                 zIndex: 1,
                 marker: {

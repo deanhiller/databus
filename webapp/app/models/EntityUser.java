@@ -36,6 +36,9 @@ public class EntityUser extends Entity {
 	@NoSqlEmbedded
 	private UserSettings userSettings = new UserSettings();
 	
+	@NoSqlEmbedded
+	private List<UserChart> userCharts = new ArrayList<UserChart>();
+	
 	private boolean isAdmin;
 	
 	/**
@@ -233,6 +236,28 @@ public class EntityUser extends Entity {
 
 	public void setUserSettings(UserSettings userSettings) {
 		this.userSettings = userSettings;
+	}	
+
+	public List<UserChart> getUserCharts() {
+		if(userCharts == null) {
+			userCharts = new ArrayList<UserChart>();
+		}
+		return userCharts;
+	}
+
+	public void setUserCharts(List<UserChart> userCharts) {
+		this.userCharts = userCharts;
+	}
+	
+	public void addChart(UserChart chart) {
+		if(userCharts == null) {
+			userCharts = new ArrayList<UserChart>();
+		}
+		this.userCharts.add(chart);
+	}
+	
+	public void removeChart(UserChart chart) {
+		this.userCharts.remove(chart);
 	}
 	
 	

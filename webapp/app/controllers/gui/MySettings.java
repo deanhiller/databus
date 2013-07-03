@@ -2,19 +2,26 @@ package controllers.gui;
 
 import gov.nrel.util.Utility;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Embedded;
 
 import models.EntityUser;
+import models.ScriptChart;
+import models.UserChart;
 import models.UserSettings;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.alvazan.play.NoSql;
-
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.With;
-import play.utils.HTML;
+import play.vfs.VirtualFile;
+
+import com.alvazan.play.NoSql;
+
 import controllers.gui.auth.GuiSecure;
 
 @With(GuiSecure.class)
@@ -28,6 +35,13 @@ public class MySettings extends Controller {
 		//HTML.htmlEscape(htmlToEscape)
 		
 		EntityUser user = Utility.getCurrentUser(session);
+		List<UserChart> userCharts = user.getUserCharts();
+		
+		render(userCharts);
+	}
+	
+	public static void myDashboardSettings() {
+		EntityUser user = Utility.getCurrentUser(session);
 		
 		// Set current options
 		renderArgs.put("dashboard_enabled", user.getUserSettings().getDashboardEnabled());
@@ -39,6 +53,42 @@ public class MySettings extends Controller {
 		renderArgs.put("user_chart_4", user.getUserSettings().getDashboardChart_4());
 		
 		render(user);
+	}
+	
+	public static void myChartsSettings() {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		/**
+		 * We need to get all of the charts the user has currently saved
+		 */
+		List<UserChart> userCharts = user.getUserCharts();
+		
+		/**
+		 * Lets get a list of all charts in the charts directory for 
+		 */
+		List<ScriptChart> scriptCharts = new ArrayList<ScriptChart>();
+		VirtualFile highchartsDir = Play.getVirtualFile("/public/Charts/HighCharts/");
+		List<VirtualFile> highCharts = highchartsDir.list();
+		for(VirtualFile vfile : highCharts) {
+			String chartData = vfile.contentAsString();
+			if(chartData.contains("|DATABUS_CHART|")) {
+				/**
+				 * This is a legit chart (enough to know w/out fully validating it)
+				 */
+				ScriptChart scriptChart = new ScriptChart(chartData, vfile.getName());
+				if(scriptChart.validate()) {
+					scriptCharts.add(scriptChart);
+				}
+			}
+		}
+		
+		
+		
+		render(userCharts, scriptCharts);
+	}
+	
+	public static void addChartSettings() {
+		
 	}
 	
 	public static void postSaveAccountSettings(String dashboard_enabled, String dashboard_chart_count, String dashboard_chart1_select,
@@ -90,5 +140,4 @@ public class MySettings extends Controller {
 		
 		mySettings();
 	}
-
 }

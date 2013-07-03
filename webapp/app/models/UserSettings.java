@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 import com.alvazan.orm.api.base.anno.NoSqlEmbeddable;
 
 @NoSqlEmbeddable

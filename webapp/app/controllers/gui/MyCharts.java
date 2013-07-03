@@ -39,13 +39,21 @@ public class MyCharts extends Controller {
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
-		//log.error(theChart);
-		
+		/**
+		 * Make sure the protocol is correct in the chart request
+		 */
+		String stockProtocolString = "var _protocol = 'http';";
+		String realProtocolString = "var _protocol = '" + protocol + "'; // replaced in controller";		
+		theChart = theChart.replace(stockProtocolString, realProtocolString);
+				
 		renderArgs.put("theRequestedChart", theChart);
 		render();
 	}
 	
 	public static void loadChartDiv() {
+		String protocol = Utility.getRedirectProtocol();
+		renderArgs.put("protocol", protocol);
+		
 		String theRequestedChart = params.get("chart");
 		String theDivContainer = params.get("div");
 		
@@ -55,8 +63,19 @@ public class MyCharts extends Controller {
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
-		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "'");
-
+		/**
+		 * We're putting this chart straight into a requested <div>.  Lets replace the
+		 * default with the new div
+		 */
+		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "' // replaced in controller");
+		
+		/**
+		 * Make sure the protocol is correct in the chart request
+		 */
+		String stockProtocolString = "var _protocol = 'http';";
+		String realProtocolString = "var _protocol = '" + protocol + "'; // replaced in controller";		
+		theChart = theChart.replace(stockProtocolString, realProtocolString);
+		
 		renderText(theChart);
 	}
 

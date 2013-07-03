@@ -88,6 +88,9 @@ GET  /logout         					gui.auth.GuiSecure.logout
 # ******************************************************************************
 # ******************************************************************************
 GET	/accountsSettings					gui.MySettings.mySettings
+GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
+GET	/accountsSettings/charts				gui.MySettings.myChartsSettings
+GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
 POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 
 

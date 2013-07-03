@@ -119,7 +119,11 @@
 								
 								if(entity.getClassType().toLowerCase().equals("userimpl")) {
 									if(ref.getPermission() == models.PermissionType.ADMIN) {
-										out.print(entity.getName() + " ");
+										out.print(entity.getName() + "&nbsp;&nbsp;");
+									}
+								} else {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print("<b>" + entity.getName() + "</b>&nbsp;&nbsp;");
 									}
 								}
 						    	}
@@ -173,6 +177,10 @@
 									if(ref.getPermission() == models.PermissionType.ADMIN) {
 										out.print(entity.getName() + " ");
 									}
+								} else {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print("<b>" + entity.getName() + "</b> ");
+									}
 								}
 						    	}
 						}%
@@ -224,6 +232,10 @@
 								if(entity.getClassType().toLowerCase().equals("userimpl")) {
 									if(ref.getPermission() == models.PermissionType.ADMIN) {
 										out.print(entity.getName() + " ");
+									}
+								} else {
+									if(ref.getPermission() == models.PermissionType.ADMIN) {
+										out.print("<b>" + entity.getName() + "</b> ");
 									}
 								}
 						    	}

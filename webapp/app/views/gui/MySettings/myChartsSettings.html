@@ -1,0 +1,53 @@
+<!-- FixedHeaderTree component -->
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/jquery.fixedheadertable.js"></script>
+<script type="text/javascript" src="/public/javascripts/components/fixedheadertable/lib/jquery.mousewheel.js"></script>
+<link href="/public/javascripts/components/fixedheadertable/css/defaultTheme.css" rel="stylesheet"/>
+<link href="/public/javascripts/components/fixedheadertable/css/databusSummaryTheme.css" rel="stylesheet"/>
+
+#{if userCharts.size() > 0}
+	<div class="span12">
+		<table id="mycharts_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+	          <thead>
+	            <tr>
+	              <th style="width: 150px;">Chart Name</th>
+	              <th style="width: 70px;">Chart Type</th>
+	              <th style="width: 70px;">Chart Library</th>
+	              <th style="width: 150px;">Chart URI</th>
+	            </tr>
+	          </thead>
+	          <tbody>
+	          	<tr class="admin_even">
+					<td>
+						<span class="db_summary_td_contents">
+							<a href="">NAME</a>
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							TYPE
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							LIBRARY
+						</span>
+					</td>
+					<td>
+						<span class="db_summary_td_contents">
+							URI
+						</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+#{/if}
+#{else}
+	<div class="span12">
+		There are no charts in your chart list.
+	</div>
+#{/else}
+
+<script type="text/javascript">
+	$('#mycharts_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 530, fixedColumn: false });
+</script>

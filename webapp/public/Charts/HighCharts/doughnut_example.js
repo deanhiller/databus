@@ -1,11 +1,31 @@
 $(function () {
+/**
+ * |DATABUS_CHART|
+ * ***********************************************************************
+ * REQUIRED FOR DATABUS URI  -- START --
+ * ***********************************************************************
+ * 
+ * The following information MUST be present in the chart code or the
+ * Databus chart loader might encounter errors.
+ */
+var _name = 'PowerConsumption';
+var _title = 'RSF Building Power Consumption';
+
+var _protocol = 'http';
+var _database = '/api/firstvaluesV1/50/aggregation/RSF_PowerConsumption_Example?reverse=true';
+/**
+ * |DATABUS_CHART|
+ * ***********************************************************************
+ * REQUIRED FOR DATABUS URI  -- END --
+ * ***********************************************************************
+ */
 
 	var days = 2;
     	var endTime = (new Date())
         .getTime();
     	var startTime = endTime - days * 24 * 3600000;
 
-    	var url = _solrProtocol + '://' + window.location.host +  '/api/aggregation/RSF_PowerConsumption_Example/' + startTime + '/' + endTime;
+    	var url = _protocol + '://' + window.location.host + _database;
     	
     	//"RSF_LIGHTING_1MINl1m": 74243.11065477342,
 	//"RSF_BUILDING_1MINl1m": -451521.2354785786,
@@ -413,7 +433,7 @@ $(function () {
                 renderTo: 'container'
             },
             title: {
-                text: 'RSF Building Power Consumption'
+                text: _title
             },
             yAxis: {
                 title: {
