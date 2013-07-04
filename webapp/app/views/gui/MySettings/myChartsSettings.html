@@ -6,38 +6,40 @@
 
 #{if userCharts.size() > 0}
 	<div class="span12">
-		<table id="mycharts_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
+		<table id="mycharts_table" class="fancyDarkTable" style="margin-top: -35px !important;  margin-bottom: 5px;">
 	          <thead>
 	            <tr>
-	              <th style="width: 150px;">Chart Name</th>
-	              <th style="width: 70px;">Chart Type</th>
-	              <th style="width: 70px;">Chart Library</th>
-	              <th style="width: 150px;">Chart URI</th>
+	              <th>Chart Name</th>
+	              <th>Chart Type</th>
+	              <th>Chart Library</th>
+	              <th>Chart URI</th>
 	            </tr>
 	          </thead>
 	          <tbody>
-	          	<tr class="admin_even">
-					<td>
-						<span class="db_summary_td_contents">
-							<a href="">NAME</a>
+	          	#{list userCharts, as:'chart'}
+				<tr>
+					<td style="padding-top: 1px;">
+						<span class="db_chart_list_td_contents">
+							<a>${chart.chartName}</a>
 						</span>
 					</td>
 					<td>
-						<span class="db_summary_td_contents">
-							TYPE
+						<span class="db_chart_list_td_contents">
+							${chart.chartType}
 						</span>
 					</td>
 					<td>
-						<span class="db_summary_td_contents">
-							LIBRARY
+						<span class="db_chart_list_td_contents">
+							${chart.chartLibrary}
 						</span>
 					</td>
 					<td>
-						<span class="db_summary_td_contents">
-							URI
+						<span id="chart_url_${chart_index}" class="db_chart_list_td_contents">
+							${chart.getTruncatedChartURI(50)}						
 						</span>
 					</td>
 				</tr>
+				#{/list}
 			</tbody>
 		</table>
 	</div>
@@ -49,5 +51,5 @@
 #{/else}
 
 <script type="text/javascript">
-	$('#mycharts_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 530, fixedColumn: false });
+	$('#mycharts_table').fixedHeaderTable({ footer: false, altClass: 'odd', cloneHeadToFoot: false, height: 530, fixedColumn: false });
 </script>

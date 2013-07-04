@@ -11,7 +11,7 @@
 		<li class="active">
 			<a id="mydashboard_settings">Dashboard</a>
 		</li>
-		#{if userCharts.size() == 0}
+		#{if userCharts.size() > 0}
 		<li>
 			<a id="mycharts_settings">My Charts</a>
 		</li>
@@ -26,7 +26,15 @@
 
 <script type="text/javascript">
 	$(document).ready(function(){
-		$('#mydashboard_settings').click();
+		var redirect = "${redirectTo}";
+		
+		if((redirect != undefined) && (redirect === 'mycharts_settings')) {
+			$('#mycharts_settings').click();
+		} else if((redirect != undefined) && (redirect === 'addchart_settings')) {
+			$('#mycharts_settings').click();
+		} else {
+			$('#mydashboard_settings').click();
+		}
 	});
 	
 	$('#mydashboard_settings').on('click', function (e) {

@@ -213,6 +213,13 @@ public class UserChart {
 	public String getChartURI() {
 		return chartURI;
 	}
+	
+	public String getTruncatedChartURI(int count) {
+		if(count > chartURI.length()) {
+			count = chartURI.length();
+		}
+		return (chartURI.substring(0, count) + "...");
+	}
 
 	public void setChartURI(String chartURI) {
 		this.chartURI = chartURI;

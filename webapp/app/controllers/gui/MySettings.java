@@ -10,6 +10,8 @@ import javax.persistence.Embedded;
 import models.EntityUser;
 import models.ScriptChart;
 import models.UserChart;
+import models.UserChart.ChartLibrary;
+import models.UserChart.ChartType;
 import models.UserSettings;
 
 import org.slf4j.Logger;
@@ -31,13 +33,17 @@ public class MySettings extends Controller {
 	@Embedded
 	private UserSettings settings;
 	
-	public static void mySettings() {
-		//HTML.htmlEscape(htmlToEscape)
+	public static void mySettings(String redirect) {
+		String redirectTo = "";
+		
+		if(redirect != null) {
+			redirectTo = redirect;
+		}
 		
 		EntityUser user = Utility.getCurrentUser(session);
 		List<UserChart> userCharts = user.getUserCharts();
 		
-		render(userCharts);
+		render(userCharts, redirectTo);
 	}
 	
 	public static void myDashboardSettings() {
@@ -91,8 +97,19 @@ public class MySettings extends Controller {
 		render(scriptCharts);
 	}
 	
-	public static void postSaveAddChartSettings() {
+	public static void postSaveEmbeddedChartSettings(String embedded_chart_name, String embedded_chart_url) {
+		EntityUser user = Utility.getCurrentUser(session);
 		
+		log.error("\nCHARTNAME: " + embedded_chart_name);
+		log.error("\nCHARTURL: " + embedded_chart_url);
+		
+		UserChart newUserChart = new UserChart(ChartType.EMBEDDED_OBJECT, ChartLibrary.HIGHCHARTS, embedded_chart_name, embedded_chart_url);
+		user.addChart(newUserChart);
+		
+		NoSql.em().put(user);
+		NoSql.em().flush();
+		
+		mySettings("mycharts_settings");
 	}
 	
 	public static void postSaveAccountSettings(String dashboard_enabled, String dashboard_chart_count, String dashboard_chart1_select,
@@ -142,6 +159,6 @@ public class MySettings extends Controller {
 		NoSql.em().put(user);
 		NoSql.em().flush();		
 		
-		mySettings();
+		mySettings("");
 	}
 }

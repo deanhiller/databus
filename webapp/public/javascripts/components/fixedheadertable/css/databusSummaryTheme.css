@@ -255,11 +255,11 @@
 
 .fancyDarkTable td, .fancyDarkTable th {
 	border: 1px solid #000000;
-	padding: 2px;
+	padding: 2px 10px 0px 10px;
 }
 
 .fancyDarkTable thead tr th {
-	padding: 10px 5px 10px 5px;
+	padding: 8px 15px 8px 15px;
 	}
 
 .fancyDarkTable {
@@ -314,24 +314,24 @@
 .fancyDarkTable thead tr th,
 .fancyDarkTable tfoot tr td {
 	/* appearance */
-	background-color: #0b0d10;
+	background-color: #001429;
 	background-image: -moz-linear-gradient(
 		top,
-		rgba(255,255,255,0.4) 0%,
-		rgba(255,255,255,0.2) 50%,
-		rgba(255,255,255,0.1) 51%,
+		rgba(255,255,255,0.4) 20%,
+		rgba(255,255,255,0.2) 40%,
+		rgba(255,255,255,0.1) 60%,
 		rgba(255,255,255,0.0) 100%);
 	
 	background-image: -webkit-gradient(
 		linear, left top, left bottom,
-		color-stop(0%,rgba(255,255,255,0.4)),
-		color-stop(50%,rgba(255,255,255,0.2)),
-		color-stop(51%,rgba(255,255,255,0.1)),
+		color-stop(20%,rgba(255,255,255,0.4)),
+		color-stop(40%,rgba(255,255,255,0.2)),
+		color-stop(60%,rgba(255,255,255,0.1)),
 		color-stop(100%,rgba(255,255,255,0.0)));
 		
 	/* text */
 	color: #ffffff;
-	font-size: 12px;
+	font-size: 14px;
 	font-weight: bold;
 	text-shadow: 0 -1px 1px #000;
 	}
@@ -341,3 +341,26 @@
 	z-index: 1;
 	position: relative;
 	}
+	
+.db_chart_list_td_contents a {
+	font-size: 13px; 
+	font-weight: 800; 
+	text-decoration: none;
+	color: #91CFFF;
+}
+
+.fancyDarkTable tr:hover td {
+	background-color: #7A7B7C;
+	cursor: pointer;
+}
+
+.fancyDarkTable tr.odd:hover td {
+	background-color: #7A7B7C;
+	cursor: pointer;
+}
+
+.db_chart_list_td_contents a:hover {
+	text-decoration: none;
+	color: #14B8F8;
+	cursor: pointer;
+}

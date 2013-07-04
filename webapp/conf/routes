@@ -92,7 +92,7 @@ GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
 GET	/accountsSettings/charts				gui.MySettings.myChartsSettings
 GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
 POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
-POST /postSaveAddChartSettings			gui.MySettings.postSaveAddChartSettings
+POST /postsaveembeddedchartsettings		gui.MySettings.postSaveEmbeddedChartSettings
 
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
