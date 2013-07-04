@@ -372,6 +372,22 @@ p.db_content_blurb {
 
 /* ************************************************** */
 
+/* DATABUS SETTINGS ITEMS */
+/* ************************************************** */
+.db_settings_label_td {
+	text-align: right;
+	margin-right: 10px;
+	border-color: #eee;
+	font-size: 16px;
+	width: 100px;
+}
+
+.db_settings_input_td {
+	border-color: #eee;
+	/*background-color: #fff;*/
+}
+
+/* ************************************************** */
 
 /* FOOTER */
 /* ************************************************** */

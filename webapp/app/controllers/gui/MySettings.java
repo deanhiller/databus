@@ -61,7 +61,13 @@ public class MySettings extends Controller {
 		/**
 		 * We need to get all of the charts the user has currently saved
 		 */
-		List<UserChart> userCharts = user.getUserCharts();
+		List<UserChart> userCharts = user.getUserCharts();		
+		
+		render(userCharts);
+	}
+	
+	public static void addChartSettings() {
+		EntityUser user = Utility.getCurrentUser(session);
 		
 		/**
 		 * Lets get a list of all charts in the charts directory for 
@@ -82,12 +88,10 @@ public class MySettings extends Controller {
 			}
 		}
 		
-		
-		
-		render(userCharts, scriptCharts);
+		render(scriptCharts);
 	}
 	
-	public static void addChartSettings() {
+	public static void postSaveAddChartSettings() {
 		
 	}
 	

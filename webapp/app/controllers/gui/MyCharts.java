@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import play.mvc.Controller;
 import play.mvc.With;
+import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 import controllers.gui.auth.GuiSecure;
 import de.undercouch.bson4jackson.BsonFactory;
@@ -39,21 +40,13 @@ public class MyCharts extends Controller {
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
-		/**
-		 * Make sure the protocol is correct in the chart request
-		 */
-		String stockProtocolString = "var _protocol = 'http';";
-		String realProtocolString = "var _protocol = '" + protocol + "'; // replaced in controller";		
-		theChart = theChart.replace(stockProtocolString, realProtocolString);
-				
+		//log.error(theChart);
+		
 		renderArgs.put("theRequestedChart", theChart);
 		render();
 	}
 	
 	public static void loadChartDiv() {
-		String protocol = Utility.getRedirectProtocol();
-		renderArgs.put("protocol", protocol);
-		
 		String theRequestedChart = params.get("chart");
 		String theDivContainer = params.get("div");
 		
@@ -63,19 +56,8 @@ public class MyCharts extends Controller {
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
-		/**
-		 * We're putting this chart straight into a requested <div>.  Lets replace the
-		 * default with the new div
-		 */
-		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "' // replaced in controller");
-		
-		/**
-		 * Make sure the protocol is correct in the chart request
-		 */
-		String stockProtocolString = "var _protocol = 'http';";
-		String realProtocolString = "var _protocol = '" + protocol + "'; // replaced in controller";		
-		theChart = theChart.replace(stockProtocolString, realProtocolString);
-		
+		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "'");
+
 		renderText(theChart);
 	}
 
@@ -136,12 +118,38 @@ public class MyCharts extends Controller {
 	
 	public static void drawChart(String encodedChart, int version, int length) {
 		Chart chart = deserialize(encodedChart, version, length);
-		render(chart, encodedChart, version, length);
+		int height = 0;
+		render(chart, encodedChart, version, length, height);
 	}
 	
 	public static void drawJustChart(String encodedChart, String title, int version, int length) {
 		Chart chart = deserialize(encodedChart, version, length);
-		render(chart, encodedChart, version, length);
+		int height = 0;
+		String heightStr = params.get("height");
+		if(heightStr != null) {
+			String heightEsc = JavaExtensions.escapeJavaScript(heightStr);
+			height = Integer.parseInt(heightEsc);
+		}
+		render(chart, encodedChart, version, length, height);
+	}
+	
+	public static void justJavascript(String encodedChart, String title, int version, int length) {
+		Chart chart = deserialize(encodedChart, version, length);
+		
+		int height = 0;
+		String heightStr = params.get("height");
+		if(heightStr != null) {
+			String heightEsc = JavaExtensions.escapeJavaScript(heightStr);
+			height = Integer.parseInt(heightEsc);
+		}
+		
+		String divName = "mychart";
+		String divNameStr = params.get("divname");
+		if(divNameStr != null) {
+			divName = divNameStr;
+		}
+		
+		render(chart, encodedChart, version, length, height, divName);
 	}
 
 	private static Info createUrl(Chart chart, int stepNumber) {

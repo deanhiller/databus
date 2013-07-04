@@ -1,14 +1,7 @@
-
- *{           #{list _chart.axisList, as:'axis'}
-                index=${axis_index}
-                #{if axis_index < _chart.axisList.size()},#{/if}
-            #{/list}
-}*
-    <script type="text/javascript">
 $(function () {
 
-  var endTime = ${_chart.endTime},
-    startTime = ${_chart.startTime},
+  var endTime = ${chart.endTime},
+    startTime = ${chart.startTime},
     maximized = false,
     maximizedStream,
     height = getHeight(),
@@ -137,11 +130,11 @@ $(function () {
   }
 
   function getHeight() {
-	var override = ${_height};
+	var override = ${height};
 	if(override > 0)
 		return override;
 	var windowHeight = $(window).height();
-	var height = windowHeight-${_topMargin};
+	var height = windowHeight;
 	if(height < 300)
 		height = 300;
 	return height;
@@ -150,7 +143,7 @@ $(function () {
   function collapseData(data, columnName) {
     var collapsedData = [];
     $.each(data.data, function (index, value) {
-      collapsedData.push([value.${_chart.timeColumn}, (value == "NaN") ? null : value[columnName] ]);
+      collapsedData.push([value.${chart.timeColumn}, (value == "NaN") ? null : value[columnName] ]);
     });
     return collapsedData;
   }
@@ -175,7 +168,7 @@ $(function () {
     singleStream = typeof singleStream !== 'undefined' ? singleStream : false;
     title = typeof title !== 'undefined' ? title : false;
 
-    var url = '${_chart.url}';
+    var url = '${chart.url}';
     if(url.indexOf('?') > 0) {
     	url = url + '&callback=?';
     } else
@@ -189,17 +182,17 @@ $(function () {
     	console.log('json callback being called with data');
         var msg = "No data available in the specified time period."
         if(data.data.length != 0) {
-            msg = "Last value was "+data.data[data.data.length-1].${_chart.series1.name}+" at "+new Date(data.data[data.data.length-1].${_chart.timeColumn}).toUTCString()
+            msg = "Last value was "+data.data[data.data.length-1].${chart.series1.name}+" at "+new Date(data.data[data.data.length-1].${chart.timeColumn}).toUTCString()
         }
 
       console.log('window2222 height:'+$(window).height());
       chart = new Highcharts.StockChart({
           chart: {
-              renderTo: mychart,
+              renderTo: ${divName},
               height: getHeight()
           },
           title: {
-              text: (title!==false ? title : '${_chart.title}') 
+              text: (title!==false ? title : '${chart.title}') 
           },
           subtitle: {
                 text: msg
@@ -208,8 +201,8 @@ $(function () {
               ordinal: false
           },
           yAxis: [
-#{list _chart.axisList, as:'axis'}#{chart_yaxis axis:axis/}
-#{if axis_index < _chart.axisList.size()},#{/if}
+#{list chart.axisList, as:'axis'}#{chart_yaxis axis:axis/}
+#{if axis_index < chart.axisList.size()},#{/if}
 #{/list}
           ],
           tooltip: {
@@ -233,8 +226,8 @@ $(function () {
               backgroundColor: '#FFFFFF'
           }, }*
           series: [
-  #{list _chart.seriesList, as:'series'}#{chart_series series:series/}
-  #{if series_index < _chart.seriesList.size()},#{/if}
+  #{list chart.seriesList, as:'series'}#{chart_series series:series/}
+  #{if series_index < chart.seriesList.size()},#{/if}
   #{/list}
           ]
         });
@@ -252,9 +245,4 @@ $(function () {
 
   addChart(false, true);
   console.log('addChart called, waiting on json data to come back');
-});
-    </script>
-
-    <script src="/public/includes/jquery.hotkeys.js"></script>
-    <script src="/public/includes/highstock.js"></script>
-    <script src="/public/includes/exporting.js"></script>
+})

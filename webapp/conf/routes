@@ -92,6 +92,7 @@ GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
 GET	/accountsSettings/charts				gui.MySettings.myChartsSettings
 GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
 POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
+POST /postSaveAddChartSettings			gui.MySettings.postSaveAddChartSettings
 
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
@@ -148,6 +149,7 @@ POST /charts/createchart                                     	gui.MyCharts.postS
 GET  /charts/createchart/step2/{length}/{version}/{encodedChart}	gui.MyCharts.createStep2
 POST /charts/createchart/step2                                 	gui.MyCharts.postStep2
 GET  /charts/chart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.drawJustChart
+GET  /charts/jschart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.justJavascript
 GET  /charts/drawchart/{length}/{version}/{encodedChart}       	gui.MyCharts.drawChart
 GET 	/charts/loadChartPage								gui.MyCharts.loadChartPage
 GET 	/charts/loadChartDiv								gui.MyCharts.loadChartDiv					
