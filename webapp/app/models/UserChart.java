@@ -233,6 +233,22 @@ public class UserChart {
 		return chartURI;
 	}
 	
+	public String getTrueChartURI() {
+		StringBuffer trueChartURI = new StringBuffer(chartURI);
+		
+		if((getChartType() == ChartType.SCRIPT) || (getChartType() == ChartType.SCRIPT_PAGE)) {
+			 
+			 if((this.scriptChart_SingleDBOverride != null) && (!this.scriptChart_SingleDBOverride.equals(""))) {
+				 trueChartURI.append("&override_db=" + this.scriptChart_SingleDBOverride);
+			 }
+			 
+			 if((this.scriptChart_ChartTitleOverride != null) && (!this.scriptChart_ChartTitleOverride.equals(""))) {
+				 trueChartURI.append("&override_title=" + this.scriptChart_ChartTitleOverride);
+			 }
+		 }
+		return trueChartURI.toString();
+	}
+	
 	public String getTruncatedChartURI(int count) {
 		String extension = "...";
 		if(count > chartURI.length()) {

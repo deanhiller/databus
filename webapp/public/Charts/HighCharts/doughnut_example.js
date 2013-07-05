@@ -476,10 +476,10 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PowerConsumption_Example?
         
         var theActualChart = new Highcharts.Chart(Highcharts.merge(options, theme_de));
     })
-})
+});
 
 function precision(value, precision) {
     var power = Math.pow(10, precision || 0);
     return (Math.round(value * power) / power);
-}
+};
     

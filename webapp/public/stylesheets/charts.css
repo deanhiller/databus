@@ -1,14 +1,3 @@
-.db_summary_chart {
-	margin-top: 5px;
-	height: 260px;
-}
-
-.db_chart_table {
-	background-color: #ffffff;
-	height: 260px;
-	width: 100%;
-	margin-top: 5px;
-}
 
 .chart {
 	display:inline-block;

@@ -57,6 +57,9 @@ public class MyCharts extends Controller {
 		/**
 		 * Load the chart code directly into a string and render it
 		 */
+		if(theRequestedChart.equals("BLANK")) {
+			theRequestedChart = "blankchart.js";
+		}
 		String chartName = "/public/Charts/HighCharts/" + theRequestedChart;
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
@@ -89,8 +92,13 @@ public class MyCharts extends Controller {
 			Pattern _nameP = Pattern.compile("var _name = '(.*)';");
 			Matcher _nameM = _nameP.matcher(theChart);
 			if (_nameM.find()) {
-			    String defaultName = _nameM.group(1);
-			    theChart = theChart.replace(defaultName, overrideName);
+				/**
+				 * We have to replace the full pattern because its possible that the
+				 * name is reused in other poritions of the script (i.e. the stream name)
+				 */
+			    String defaultName = "var _name = '" + _nameM.group(1) + "';";
+			    String override = "var _name = '" + overrideName + "';   // replaced by controller";
+			    theChart = theChart.replace(defaultName, override);
 			}
 		}
 		
@@ -98,8 +106,13 @@ public class MyCharts extends Controller {
 			Pattern _titleP = Pattern.compile("var _title = '(.*)';");
 			Matcher _titleM = _titleP.matcher(theChart);
 			if (_titleM.find()) {
-			    String defaultTitle = _titleM.group(1);
-			    theChart = theChart.replace(defaultTitle, overrideTitle);
+				/**
+				 * We have to replace the full pattern because its possible that the
+				 * title is reused in other poritions of the script (i.e. the stream name)
+				 */
+			    String defaultTitle = "var _title = '" + _titleM.group(1) + "';";
+			    String override = "var _title = '" + overrideTitle + "';   // replaced by controller";
+			    theChart = theChart.replace(defaultTitle, override);
 			}
 		}
 		
@@ -107,8 +120,9 @@ public class MyCharts extends Controller {
 			Pattern _databaseP = Pattern.compile("var _database = '(.*)';");
 			Matcher _databaseM = _databaseP.matcher(theChart);
 			if (_databaseM.find()) {
-			    String defaultDB = _databaseM.group(1);
-			    theChart = theChart.replace(defaultDB, overrideDB);
+			    String defaultDB = "var _database = '" + _databaseM.group(1) + "';";
+			    String override = "var _database = '" + overrideDB + "';   // replaced by controller";
+			    theChart = theChart.replace(defaultDB, override);
 			}
 		}
 

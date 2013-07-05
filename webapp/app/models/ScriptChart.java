@@ -61,7 +61,7 @@ public class ScriptChart {
 	}
 	
 	public boolean validate() {
-		if((this.fileName == null) || (this.fileName.equals(""))) {
+		if((this.fileName == null) || (this.fileName.equals("") || (this.fileName.equals("BLANK")))) {
 			return false;
 		}
 		

@@ -41,7 +41,6 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
     var _url = _protocol + '://' + window.location.host + _database;
         
     $.getJSON(_url, function (chartData) {
-        var ranges = [];
         var averages = [];
 
         var lastAvg = 0;
@@ -66,7 +65,6 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
                 v2 = lastAvg;
             }
             
-            ranges.push([time, v1 / 1000, v2 / 1000]);
 
             var avg = (v1 + v2) / 2 / 1000;
             lastAvg = avg;
@@ -90,12 +88,13 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
             averages.push([val.time, avg]);
         });
         
-        ranges.reverse();
         averages.reverse();
         
         var options = {
             chart: {
-                renderTo: 'container'
+                renderTo: 'container',
+		   	 borderColor: '#dddddd',
+		   	 borderWidth: 1
             },
 
             title: {
@@ -132,16 +131,6 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
                     lineColor: Highcharts.getOptions()
                         .colors[0]
                 }
-       }, {
-                name: 'Range',
-                data: ranges,
-                type: 'arearange',
-                lineWidth: 0,
-                linkedTo: ':previous',
-                color: Highcharts.getOptions()
-                    .colors[0],
-                fillOpacity: 0.3,
-                zIndex: 0
        }]
 
         };
@@ -435,5 +424,5 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
 
         var theActualChart = new Highcharts.Chart(Highcharts.merge(options, theme_alre));
 
-    })
-})
+    });
+});

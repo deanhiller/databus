@@ -60,9 +60,17 @@ public class MySettings extends Controller {
 		renderArgs.put("dashboard_chart_count", user.getUserSettings().getDashboardChartCount());
 		
 		renderArgs.put("user_chart_1", user.getUserSettings().getDashboardChart_1());
+		renderArgs.put("user_chart_1_type", user.getUserSettings().getDashboardChart_1_type());
+		renderArgs.put("user_chart_1_uri", user.getUserSettings().getDashboardChart_1_uri());
 		renderArgs.put("user_chart_2", user.getUserSettings().getDashboardChart_2());
+		renderArgs.put("user_chart_2_type", user.getUserSettings().getDashboardChart_2_type());
+		renderArgs.put("user_chart_2_uri", user.getUserSettings().getDashboardChart_2_uri());
 		renderArgs.put("user_chart_3", user.getUserSettings().getDashboardChart_3());
+		renderArgs.put("user_chart_3_type", user.getUserSettings().getDashboardChart_3_type());
+		renderArgs.put("user_chart_3_uri", user.getUserSettings().getDashboardChart_3_uri());
 		renderArgs.put("user_chart_4", user.getUserSettings().getDashboardChart_4());
+		renderArgs.put("user_chart_4_type", user.getUserSettings().getDashboardChart_4_type());
+		renderArgs.put("user_chart_4_uri", user.getUserSettings().getDashboardChart_4_uri());
 		
 		/**
 		 * We need to get all of the charts the user has currently saved
@@ -190,10 +198,95 @@ public class MySettings extends Controller {
 			dashboardChart_4 = dashboard_chart10_select;
 		}
 		
-		userSettings.setDashboardChart_1(dashboardChart_1);
-		userSettings.setDashboardChart_2(dashboardChart_2);
-		userSettings.setDashboardChart_3(dashboardChart_3);
-		userSettings.setDashboardChart_4(dashboardChart_4);
+		/**
+		 * Now lets get each chart's data from their chart list
+		 */
+		boolean found_1 = false;
+		boolean found_2 = false;
+		boolean found_3 = false;
+		boolean found_4 = false;
+		List<UserChart> userCharts = user.getUserCharts();
+		for(UserChart userChart : userCharts) {
+			/**
+			 * Do dashboard chart 1
+			 */
+			if(!found_1) {
+				if(dashboardChart_1.equals("BLANK")) {
+					found_1 = true;
+					userSettings.setDashboardChart_1("BLANK");
+					userSettings.setDashboardChart_1_type("BLANK");
+					userSettings.setDashboardChart_1_uri("BLANK");
+				} else {
+					if(userChart.getChartName().equals(dashboardChart_1)) {
+						found_1 = true;
+						userSettings.setDashboardChart_1(dashboardChart_1);
+						userSettings.setDashboardChart_1_type(userChart.getChartType().getName());			
+						userSettings.setDashboardChart_1_uri(userChart.getTrueChartURI());
+					}
+				}
+			}
+			
+			/**
+			 * Do dashboard chart 2
+			 */
+			if(!found_2) {
+				if(dashboardChart_2.equals("BLANK")) {
+					found_2 = true;
+					userSettings.setDashboardChart_2("BLANK");
+					userSettings.setDashboardChart_2_type("BLANK");
+					userSettings.setDashboardChart_2_uri("BLANK");
+				} else {
+					if(userChart.getChartName().equals(dashboardChart_2)) {
+						found_2 = true;
+						userSettings.setDashboardChart_2(dashboardChart_2);
+						userSettings.setDashboardChart_2_type(userChart.getChartType().getName());							
+						userSettings.setDashboardChart_2_uri(userChart.getTrueChartURI());
+					}
+				}
+			}
+			
+			/**
+			 * Do dashboard chart 3
+			 */
+			if(!found_3) {
+				if(dashboardChart_3.equals("BLANK")) {
+					found_3 = true;
+					userSettings.setDashboardChart_3("BLANK");
+					userSettings.setDashboardChart_3_type("BLANK");
+					userSettings.setDashboardChart_3_uri("BLANK");
+				} else {
+					if(userChart.getChartName().equals(dashboardChart_3)) {
+						found_3 = true;
+						userSettings.setDashboardChart_3(dashboardChart_3);
+						userSettings.setDashboardChart_3_type(userChart.getChartType().getName());							
+						userSettings.setDashboardChart_3_uri(userChart.getTrueChartURI());
+					}
+				}
+			}
+			
+			/**
+			 * Do dashboard chart 4
+			 */
+			if(!found_4) {
+				if(dashboardChart_4.equals("BLANK")) {
+					found_4 = true;
+					userSettings.setDashboardChart_4("BLANK");
+					userSettings.setDashboardChart_4_type("BLANK");
+					userSettings.setDashboardChart_4_uri("BLANK");
+				} else {
+					if(userChart.getChartName().equals(dashboardChart_4)) {
+						found_4 = true;
+						userSettings.setDashboardChart_4(dashboardChart_4);
+						userSettings.setDashboardChart_4_type(userChart.getChartType().getName());							
+						userSettings.setDashboardChart_4_uri(userChart.getTrueChartURI());
+					}
+				}
+			}
+			
+			if(found_1 && found_2 && found_3 && found_4) {
+				break;
+			}
+		}
 		
 		/**
 		 * To Save:
