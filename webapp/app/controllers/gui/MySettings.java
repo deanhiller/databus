@@ -64,7 +64,12 @@ public class MySettings extends Controller {
 		renderArgs.put("user_chart_3", user.getUserSettings().getDashboardChart_3());
 		renderArgs.put("user_chart_4", user.getUserSettings().getDashboardChart_4());
 		
-		render(user);
+		/**
+		 * We need to get all of the charts the user has currently saved
+		 */
+		List<UserChart> userCharts = user.getUserCharts();	
+		
+		render(user, userCharts);
 	}
 	
 	public static void myChartsSettings() {

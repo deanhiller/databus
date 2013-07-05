@@ -234,10 +234,12 @@ public class UserChart {
 	}
 	
 	public String getTruncatedChartURI(int count) {
+		String extension = "...";
 		if(count > chartURI.length()) {
 			count = chartURI.length();
+			extension = "";
 		}
-		return (chartURI.substring(0, count) + "...");
+		return (chartURI.substring(0, count) + extension);
 	}
 
 	public void setChartURI(String chartURI) {

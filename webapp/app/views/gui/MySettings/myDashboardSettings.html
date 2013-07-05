@@ -13,6 +13,18 @@
 	var chart_2 = '${user_chart_2}';
 	var chart_3 = '${user_chart_3}';
 	var chart_4 = '${user_chart_4}';
+	
+	
+	var scriptCharts = [];
+	
+	#{list userCharts, as:'chart'}										
+		var scriptChart = {};
+		scriptChart.chartName = "${chart.chartName}";
+		scriptChart.chartType = "${chart.chartType}";
+		scriptChart.url = "${chart.chartURI}";
+		
+		scriptCharts.push(scriptChart);										
+	#{/list}
 </script>
 
 #{form @postSaveAccountSettings(), id:'savesettings'}
@@ -54,26 +66,9 @@
 						Dashboard Chart #1: &nbsp;
 						<select id="dashboard_chart1_select" name="dashboard_chart1_select">
 						<option>BLANK</option>
-						<option>RSF_BUILDING</option>
-						<option>RSF_PV</option>
-						<option>RSF_DATACENTER</option>
-						<option>RSF_ELEVATOR</option>
-						<option>RSF_LIGHTING</option>
-						<option>RSF_MECHANICAL</option>
-						<option>RSF_PLUG</option>
-						<option>RSF_MISC</option>
-						<option>RSF_HEATING</option>
-						<option>RSF_COOLING</option>
-						<option>GARAGE_BUILDING</option>
-						<option>GARAGE_EVCS</option>
-						<option>wind103W_GloCM22</option>
-						<option>wind103W_DirCH1</option>
-						<option>wind303W_Temp</option>
-						<option>wind303W_WS_AT_6</option>
-						<option>wind303W_RainSum</option>
-						<option>wind303W_EFM</option>
-						<option>area_lined_range_example_SCRIPT</option>
-						<option>doughnut_example_SCRIPT</option>
+						#{list userCharts, as:'chart'}
+							<option>${chart.chartName}</option>
+						#{/list}
 						</select>
 					</div>
 		    		</div>
@@ -88,52 +83,18 @@
 								Dashboard Chart #1: &nbsp;
 								<select id="dashboard_chart2_select" name="dashboard_chart2_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
 								<select id="dashboard_chart3_select" name="dashboard_chart3_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 						</div>
@@ -150,52 +111,18 @@
 								Dashboard Chart #1: &nbsp;
 								<select id="dashboard_chart4_select" name="dashboard_chart4_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
 								<select id="dashboard_chart5_select" name="dashboard_chart5_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 					    </div>
@@ -204,26 +131,9 @@
 								Dashboard Chart #3: &nbsp;
 								<select id="dashboard_chart6_select" name="dashboard_chart6_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 						</div>
@@ -240,52 +150,18 @@
 								Dashboard Chart #1: &nbsp;
 								<select id="dashboard_chart7_select" name="dashboard_chart7_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
 								<select id="dashboard_chart8_select" name="dashboard_chart8_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 					    </div>
@@ -294,52 +170,18 @@
 								Dashboard Chart #3: &nbsp;
 								<select id="dashboard_chart9_select" name="dashboard_chart9_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 							<span class="span6">
 								Dashboard Chart #4: &nbsp;
 								<select id="dashboard_chart10_select" name="dashboard_chart10_select">
 									<option>BLANK</option>
-									<option>RSF_BUILDING</option>
-									<option>RSF_PV</option>
-									<option>RSF_DATACENTER</option>
-									<option>RSF_ELEVATOR</option>
-									<option>RSF_LIGHTING</option>
-									<option>RSF_MECHANICAL</option>
-									<option>RSF_PLUG</option>
-									<option>RSF_MISC</option>
-									<option>RSF_HEATING</option>
-									<option>RSF_COOLING</option>
-									<option>GARAGE_BUILDING</option>
-									<option>GARAGE_EVCS</option>
-									<option>wind103W_GloCM22</option>
-									<option>wind103W_DirCH1</option>
-									<option>wind303W_Temp</option>
-									<option>wind303W_WS_AT_6</option>
-									<option>wind303W_RainSum</option>
-									<option>wind303W_EFM</option>
-									<option>area_lined_range_example_SCRIPT</option>
-									<option>doughnut_example_SCRIPT</option>
+									#{list userCharts, as:'chart'}
+										<option>${chart.chartName}</option>
+									#{/list}
 								</select>
 							</span>
 						</div>
@@ -437,6 +279,13 @@
 						showBlankChart('chart_1_area');
 					} else {
 						if(chart_1.indexOf('_SCRIPT') != -1) {
+							var selectedIndex = $("#script_chart_select").prop("selectedIndex");
+		
+							if(selectedIndex == 0) {
+								clearScriptForm();
+								return;
+							}
+							
 							var chart = chart_1.replace('_SCRIPT','.js');							
 							var chartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chart + "&div=chart_1_area";
 							$.get(chartURL, function(data) {
