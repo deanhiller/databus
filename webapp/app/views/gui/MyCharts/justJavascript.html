@@ -21,101 +21,12 @@ $(function () {
     password: '${password}'
   });
 
-  Highcharts.extend(Highcharts.getOptions().lang, {
-    zoomTitle: 'Zoom the chart'
-  });
-
   Highcharts.setOptions({
     credits: {
       enabled: false
     },
     global: {
       useUTC: false
-    },
-    loading: {
-      labelStyle: {
-        color: '#FFF'
-      },
-      style: {
-        backgroundColor: '#444'
-      }
-    },
-    navigator: {
-      margin: 50
-    },
-    plotOptions: {
-      series: {
-        dataGrouping: {
-          approximation: "high",
-          groupPixelWidth: 1
-        },
-        marker: {
-          //enabled: true
-        }
-      }
-    },
-    rangeSelector: {
-      inputEnabled: false,
-      buttons: [{
-        type: 'hour',
-        count: 1,
-        text: '1h'
-      }, {
-        type: 'hour',
-        count: 6,
-        text: '6h'
-      }, {
-        type: 'hour',
-        count: 12,
-        text: '12h'
-      }, {
-        type: 'hour',
-        count: 24,
-        text: '24h'
-      }, {
-        type: 'hour',
-        count: 48,
-        text: '48h'
-      }, {
-        type: 'all',
-        text: 'All'
-      }],
-      selected: 5
-    },
-    tooltip: {
-      backgroundColor: {
-        linearGradient: {
-          x1: 0,
-          y1: 0,
-          x2: 0,
-          y2: 1
-        },
-        stops: [
-          [0, '#FFF'],
-          [1, '#EEE']
-        ]
-      },
-      borderColor: 'gray',
-      borderWidth: 1,
-      yDecimals: 2
-    },
-    xAxis: {
-      dateTimeLabelFormats: {
-        second: '%l:%M:%S%P',
-        minute: '%l:%M%P',
-        hour: '%l%P',
-        day: '%e %b',
-        week: '%e %b'
-      },
-      maxZoom: 600000,
-      type: 'datetime',
-      title: {
-        text: ''
-      }
-    },
-    yAxis: {
-      endOnTick: false
-      //min: 0
     }
   });
 
@@ -186,10 +97,11 @@ $(function () {
         }
 
       console.log('window2222 height:'+$(window).height());
-      chart = new Highcharts.StockChart({
+      chart = new Highcharts.Chart({
           chart: {
               renderTo: ${divName},
-              height: getHeight()
+              height: getHeight(),
+              zoomType: ""
           },
           title: {
               text: (title!==false ? title : '${chart.title}') 
@@ -216,15 +128,6 @@ $(function () {
               y: 40,
               symbolWidth: 30
           },
-          *{ legend: {
-              layout: 'vertical',
-              align: 'left',
-              x: 120,
-              verticalAlign: 'top',
-              y: 80,
-              floating: true,
-              backgroundColor: '#FFFFFF'
-          }, }*
           series: [
   #{list chart.seriesList, as:'series'}#{chart_series series:series/}
   #{if series_index < chart.seriesList.size()},#{/if}
