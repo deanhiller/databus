@@ -90,7 +90,7 @@ public class UserChart {
 	/**
 	 * Chart Override variables for script charts
 	 * 
-	 * 		scriptChart_SingleDBOriginal & scriptChart_SingleDBOverride:
+	 * 		scriptChart_SingleDBOverride:
 	 * 					For use w/ single DB charts.  
 	 * 
 	 * 					In a script chart that supplies a single URL for the data, we can replace the
@@ -99,15 +99,34 @@ public class UserChart {
 	 * 					Example:
 	 * 						ORIGINAL URL	-	/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true
 	 * 					
-	 * 						scriptChart_SingleDBOriginal = "/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true"
 	 * 						scriptChart_SingleDBOverride = "/api/firstvaluesV1/50/rawdataV1/Wind303W_Glo90sPSP?reverse=true"
 	 * 
 	 * 						OVERRIDE URL	-	/api/firstvaluesV1/50/rawdataV1/Wind303W_Glo90sPSP?reverse=true
 	 * 
-	 * 					For this to work, both variables must be present for a script chart.
+	 */
+	private String scriptChart_SingleDBOverride = "";
+	
+	/**
+	 * 		scriptChart_ChartTitleOverride:
+	 * 					For use w/ single DB charts.  
+	 * 
+	 * 					In a script chart that supplies a single URL for the data, we can replace the
+	 * 					DB (or stream name) associated w/ the data on the fly.
+	 * 
+	 * 					Example:
+	 * 						ORIGINAL Title	-	'3phaseRealPower D73937773/D73937763 +-2000';
+	 * 					
+	 * 						scriptChart_ChartTitleOverride = "My Cool New Title"
+	 * 
+	 * 						OVERRIDE Title	-	'My Cool New Title'
+	 * 
+	 */
+	private String scriptChart_ChartTitleOverride = "";
+	
+	/**
+	 * Legacy (need to have this removed...)
 	 */
 	private String scriptChart_SingleDBOriginal = "";
-	private String scriptChart_SingleDBOverride = "";
 	
 	/**
 	 * 
@@ -124,8 +143,8 @@ public class UserChart {
 		this.chartURI = location;
 		this.publicViewable = true;
 		
-		this.scriptChart_SingleDBOriginal = "";
 		this.scriptChart_SingleDBOverride = "";
+		this.scriptChart_ChartTitleOverride = "";
 	}
 	
 	public boolean validate() {
@@ -233,20 +252,29 @@ public class UserChart {
 		this.publicViewable = publicViewable;
 	}
 
-	public String getScriptChart_SingleDBOriginal() {
-		return scriptChart_SingleDBOriginal;
-	}
-
-	public void setScriptChart_SingleDBOriginal(String scriptChart_SingleDBOriginal) {
-		this.scriptChart_SingleDBOriginal = scriptChart_SingleDBOriginal;
-	}
-
 	public String getScriptChart_SingleDBOverride() {
 		return scriptChart_SingleDBOverride;
 	}
 
 	public void setScriptChart_SingleDBOverride(String scriptChart_SingleDBOverride) {
 		this.scriptChart_SingleDBOverride = scriptChart_SingleDBOverride;
+	}
+
+	public String getScriptChart_ChartTitleOverride() {
+		return scriptChart_ChartTitleOverride;
+	}
+
+	public void setScriptChart_ChartTitleOverride(
+			String scriptChart_ChartTitleOverride) {
+		this.scriptChart_ChartTitleOverride = scriptChart_ChartTitleOverride;
+	}
+
+	public String getScriptChart_SingleDBOriginal() {
+		return scriptChart_SingleDBOriginal;
+	}
+
+	public void setScriptChart_SingleDBOriginal(String scriptChart_SingleDBOriginal) {
+		this.scriptChart_SingleDBOriginal = scriptChart_SingleDBOriginal;
 	}
 
 	@Override

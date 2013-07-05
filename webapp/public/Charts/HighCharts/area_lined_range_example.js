@@ -38,9 +38,9 @@ var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
  * ***********************************************************************
  */
 
-    var url = _protocol + '://' + window.location.host + _database;
+    var _url = _protocol + '://' + window.location.host + _database;
         
-    $.getJSON(url, function (chartData) {
+    $.getJSON(_url, function (chartData) {
         var ranges = [];
         var averages = [];
 

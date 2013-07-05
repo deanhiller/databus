@@ -3,9 +3,6 @@
 
 <!-- JQuery -->
 <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
-
-<!-- HighCharts -->
-<script type="text/javascript" src="/public/includes/highcharts/highcharts.js"></script>
         
 <div class="container db_container" style="float: left;">
 	<h1 class="db_page_title">My Settings</h1>
@@ -28,17 +25,20 @@
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function(){
-		var redirect = "${redirectTo}";
+	$(function() {
+		$(window).bind('load', function() {
+			var redirect = "${redirectTo}";
 		
-		if((redirect != undefined) && (redirect === 'mycharts_settings')) {
-			$('#mycharts_settings').click();
-		} else if((redirect != undefined) && (redirect === 'addchart_settings')) {
-			$('#mycharts_settings').click();
-		} else {
-			$('#mydashboard_settings').click();
-		}
+			if((redirect != undefined) && (redirect === 'mycharts_settings')) {
+				$('#mycharts_settings').click();
+			} else if((redirect != undefined) && (redirect === 'addchart_settings')) {
+				$('#mycharts_settings').click();
+			} else {
+				$('#mydashboard_settings').click();
+			}
+		});
 	});
+	
 	
 	$('#mydashboard_settings').on('click', function (e) {
 		$('#mydashboard_settings').parent().addClass('active');

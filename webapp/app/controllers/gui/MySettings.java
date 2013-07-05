@@ -33,12 +33,18 @@ public class MySettings extends Controller {
 	@Embedded
 	private UserSettings settings;
 	
-	public static void mySettings(String redirect) {
+	private static String currentRedirectTo = "";
+	
+	public static void mySettings() {
 		String redirectTo = "";
 		
-		if(redirect != null) {
-			redirectTo = redirect;
+		if((MySettings.currentRedirectTo != null) && (!MySettings.currentRedirectTo.equals(""))) {
+			redirectTo = MySettings.currentRedirectTo;
 		}
+		
+		MySettings.currentRedirectTo = "";
+		
+		log.error("mySettings REDIRECTTO IS: " + redirectTo);
 		
 		EntityUser user = Utility.getCurrentUser(session);
 		List<UserChart> userCharts = user.getUserCharts();
@@ -96,7 +102,7 @@ public class MySettings extends Controller {
 		
 		render(scriptCharts);
 	}
-	
+		
 	public static void postSaveEmbeddedChartSettings(String embedded_chart_name, String embedded_chart_url) {
 		EntityUser user = Utility.getCurrentUser(session);
 		
@@ -109,7 +115,41 @@ public class MySettings extends Controller {
 		NoSql.em().put(user);
 		NoSql.em().flush();
 		
-		mySettings("mycharts_settings");
+		MySettings.currentRedirectTo = "mycharts_settings";
+		
+		log.error("POST FIELD: REDIRECTTO IS: " + MySettings.currentRedirectTo);
+		
+		mySettings();
+	}
+	
+	public static void postSaveScriptChartSettings(String script_chart_filename, String script_chart_name, String script_chart_title, String script_chart_db) {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		log.error("\nFILENAME: " + script_chart_filename);
+		log.error("\nNAME: " + script_chart_name);
+		log.error("\nTITLE: " + script_chart_title);
+		log.error("\nDB: " + script_chart_db);
+		
+		UserChart newUserChart = new UserChart(ChartType.SCRIPT, ChartLibrary.HIGHCHARTS, script_chart_name, script_chart_filename);
+		
+		if((script_chart_title != null) && (!script_chart_title.equals(""))) {
+			newUserChart.setScriptChart_ChartTitleOverride(script_chart_title);
+		}
+		
+		if((script_chart_db != null) && (!script_chart_db.equals(""))) {
+			newUserChart.setScriptChart_SingleDBOverride(script_chart_db);
+		}
+		
+		user.addChart(newUserChart);
+		
+		NoSql.em().put(user);
+		NoSql.em().flush();
+		
+		MySettings.currentRedirectTo = "mycharts_settings";
+		
+		log.error("POST FIELD: REDIRECTTO IS: " + MySettings.currentRedirectTo);
+		
+		mySettings();
 	}
 	
 	public static void postSaveAccountSettings(String dashboard_enabled, String dashboard_chart_count, String dashboard_chart1_select,
@@ -159,6 +199,6 @@ public class MySettings extends Controller {
 		NoSql.em().put(user);
 		NoSql.em().flush();		
 		
-		mySettings("");
+		mySettings();
 	}
 }

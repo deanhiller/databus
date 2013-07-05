@@ -4,10 +4,10 @@ import gov.nrel.util.Utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 
 import org.apache.commons.codec.binary.Base64;
@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.With;
 import play.templates.JavaExtensions;
-import play.vfs.VirtualFile;
 import controllers.gui.auth.GuiSecure;
 import de.undercouch.bson4jackson.BsonFactory;
 
@@ -49,6 +48,11 @@ public class MyCharts extends Controller {
 	public static void loadChartDiv() {
 		String theRequestedChart = params.get("chart");
 		String theDivContainer = params.get("div");
+		String overrideName = params.get("override_name");
+		String overrideTitle = params.get("override_title");
+		String overrideDB = params.get("override_db");
+		
+		log.error("\nPARAMS:\n\tCHART: " + theRequestedChart + "\n\tDIV: " + theDivContainer + "\n\tNAME: " + overrideName + "\n\tTITLE: " + overrideTitle + "\n\tDB: " + overrideDB);
 		
 		/**
 		 * Load the chart code directly into a string and render it
@@ -57,6 +61,56 @@ public class MyCharts extends Controller {
 		String theChart = play.vfs.VirtualFile.fromRelativePath(chartName).contentAsString();
 		
 		theChart = theChart.replace("renderTo: 'container'", "renderTo: '" + theDivContainer + "'");
+		
+		/**
+		 * Now replace the embedded meta data
+		 * 
+		 * 
+		 * |DATABUS_CHART|
+		 * ***********************************************************************
+		 * REQUIRED FOR DATABUS URI  -- START --
+		 * ***********************************************************************
+		 * 
+		 * The following information MUST be present in the chart code or the
+		 * Databus chart loader might encounter errors.
+		 *//*
+		var _name = '3phaseRealPower (RANGED)';
+		var _title = '3phaseRealPower D73937773/D73937763 +-2000';
+		 
+		var _protocol = 'http';
+		var _database = '/api/firstvaluesV1/50/aggregation/RSF_PV_1MIN?reverse=true';
+		*//**
+		 * |DATABUS_CHART|
+		 * ***********************************************************************
+		 * REQUIRED FOR DATABUS URI  -- END --
+		 * ***********************************************************************
+		 */
+		if((overrideName != null) && (!overrideName.equals(""))) {
+			Pattern _nameP = Pattern.compile("var _name = '(.*)';");
+			Matcher _nameM = _nameP.matcher(theChart);
+			if (_nameM.find()) {
+			    String defaultName = _nameM.group(1);
+			    theChart = theChart.replace(defaultName, overrideName);
+			}
+		}
+		
+		if((overrideTitle != null) && (!overrideTitle.equals(""))) {
+			Pattern _titleP = Pattern.compile("var _title = '(.*)';");
+			Matcher _titleM = _titleP.matcher(theChart);
+			if (_titleM.find()) {
+			    String defaultTitle = _titleM.group(1);
+			    theChart = theChart.replace(defaultTitle, overrideTitle);
+			}
+		}
+		
+		if((overrideDB != null) && (!overrideDB.equals(""))) {
+			Pattern _databaseP = Pattern.compile("var _database = '(.*)';");
+			Matcher _databaseM = _databaseP.matcher(theChart);
+			if (_databaseM.find()) {
+			    String defaultDB = _databaseM.group(1);
+			    theChart = theChart.replace(defaultDB, overrideDB);
+			}
+		}
 
 		renderText(theChart);
 	}
