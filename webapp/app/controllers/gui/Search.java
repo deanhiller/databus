@@ -1,12 +1,15 @@
 package controllers.gui;
 
 import gov.nrel.util.Utility;
+
+import java.util.List;
+
 import models.EntityUser;
-import controllers.gui.auth.GuiSecure;
+import models.UserChart;
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.With;
-
-import play.Play;
+import controllers.gui.auth.GuiSecure;
 
 @With(GuiSecure.class)
 public class Search extends Controller{
@@ -45,7 +48,9 @@ public class Search extends Controller{
 		renderArgs.put("user_chart_4_type", user.getUserSettings().getDashboardChart_4_type());
 		renderArgs.put("user_chart_4_uri", user.getUserSettings().getDashboardChart_4_uri());
 		
-		render(user);
+		List<UserChart> userCharts = user.getUserCharts();	
+		
+		render(user, userCharts);
 	}
 	
 }

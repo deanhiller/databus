@@ -27,6 +27,17 @@
 	var chart_4 = '${user_chart_4}';
 	var chart_4_type = '${user_chart_4_type}';
 	var chart_4_uri = '${user_chart_4_uri}';
+	
+	var userCharts = [];
+	
+	#{list userCharts, as:'chart'}										
+		var userChart = {};
+		userChart.chartName = "${chart.chartName}";
+		userChart.chartType = "${chart.chartType}";
+		userChart.url = "${chart.getTrueChartURI()}";
+		
+		userCharts.push(userChart);									
+	#{/list}
 </script>
 
 <!-- Highcarts Remote Load -->
@@ -61,29 +72,16 @@
 
         <div class="row-fluid">
 
-        <div class="span3" style="padding-top: 20px;border-right: 1px solid #aaa !important; min-width:200px">
+        <div class="span3 dashboard_chart_list">
 		<!-- Need to add a left nav bar now so we can choose between all the different charts -->
-			<ul id="dashboard-menu" class="nav nav-list">            
+			<ul class="nav nav-list">            
 				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item"><i class="icon-th "></i> Summary</a></li> 
 				<li class="divider"></li>
-				<li class="db_left_nav_item"><a id="_RSF_BUILDING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_BUILDING</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_PV_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_PV</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_DATACENTER_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_DATACENTER</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_ELEVATOR_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_ELEVATOR</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_LIGHTING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_LIGHTING</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_MECHANICAL_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_MECHANICAL</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_PLUG_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_PLUG</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_MISC_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_MISC</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_HEATING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_HEATING</a></li>
-				<li class="db_left_nav_item"><a id="_RSF_COOLING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> RSF_COOLING</a></li>
-				<li class="db_left_nav_item"><a id="_GARAGE_BUILDING_" class="db_left_nav_menu_item"><i class="icon-signal "></i> GARAGE_BUILDING</a></li>
-				<li class="db_left_nav_item"><a id="_GARAGE_EVCS_" class="db_left_nav_menu_item"><i class="icon-signal "></i> GARAGE_EVCS</a></li>
-				<li class="db_left_nav_item"><a id="_wind103W_GloCM22_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind103W_GloCM22</a></li>
-				<li class="db_left_nav_item"><a id="_wind103W_DirCH1_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind103W_DirCH1</a></li>
-				<li class="db_left_nav_item"><a id="_wind303W_Temp_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_Temp</a></li>
-				<li class="db_left_nav_item"><a id="_wind303W_WS_AT_6_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_WS_AT_6</a></li>
-				<li class="db_left_nav_item"><a id="_wind303W_RainSum_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_RainSum</a></li>
-				<li class="db_left_nav_item"><a id="_wind303W_EFM_" class="db_left_nav_menu_item"><i class="icon-signal "></i> wind303W_EFM</a></li>
+			</ul>
+			<ul class="nav nav-list dashboard_chart_menu"> 
+				#{list userCharts, as:'chart'}
+					<li class="db_left_nav_item"><a id="${chart_index}" class="db_left_nav_menu_item"><i class="icon-signal "></i> ${chart.chartName}</a></li>
+				#{/list}
 			</ul>
 	   </div>
 	   <div id="charts_alert" class="span9 charts_alert" style="display: none;">
@@ -107,268 +105,6 @@
         </div>
     </div>
 <script type="text/javascript">
-	$('li > a').click(function() {
-		$( "li" ).each(function() {
-			if($(this).hasClass("db_left_nav_item")) {
-				$(this).removeClass("active");
-			}
-		});
-		
-		$(this).parent().addClass('active');
-	});
-
-	$.ajaxSetup({
-	    username: '${username}',
-	    password: '${password}'
-	  });
-		
-	$(document).ready(function(){
-		$("#SUMMARY").click(function(){
-			$('#db_chart_area').hide();
-			$('#dashboard_chart_area').show();
-			
-			if(_dashboard_enabled === 'true') {
-				if(_option_enabled === '1') {
-					$('#dashboard_chart_area').show();
-					$('#single_chart').show();
-					$('#dual_chart').hide();
-					$('#triple_chart').hide();
-					$('#quadruple_chart').hide();
-					
-					// Now launch the chart
-					if(chart_1 === 'BLANK') {					
-						loadChart('BLANK', 'BLANK', 'chart_1_area', 500);
-					} else {
-						loadChart(chart_1_type, chart_1_uri, 'chart_1_area', 500);
-					}
-				} else if(_option_enabled === '2') {
-					$('#dashboard_chart_area').show();
-					$('#single_chart').hide();
-					$('#dual_chart').show();
-					$('#triple_chart').hide();
-					$('#quadruple_chart').hide();
-					
-					// Now launch the charts
-					if(chart_1 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_2_area', 250);
-					} else {
-						loadChart(chart_1_type, chart_1_uri, 'chart_2_area', 250);
-					}
-					
-					if(chart_2 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_3_area', 250);
-					} else {
-						loadChart(chart_2_type, chart_2_uri, 'chart_3_area', 250);
-					}
-				} else if(_option_enabled === '3') {
-					$('#dashboard_chart_area').show();
-					$('#single_chart').hide();
-					$('#dual_chart').hide();
-					$('#triple_chart').show();
-					$('#quadruple_chart').hide();
-				
-					// Now launch the charts
-					if(chart_1 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_4_area', 250);
-					} else {
-						loadChart(chart_1_type, chart_1_uri, 'chart_4_area', 250);
-					}
-					
-					if(chart_2 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_5_area', 250);
-					} else {
-						loadChart(chart_2_type, chart_2_uri, 'chart_5_area', 250);
-					}
-					
-					if(chart_3 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_6_area', 250);
-					} else {
-						loadChart(chart_3_type, chart_3_uri, 'chart_6_area', 250);
-					}
-				} else if(_option_enabled === '4') {
-					$('#dashboard_chart_area').show();
-					$('#single_chart').hide();
-					$('#dual_chart').hide();
-					$('#triple_chart').hide();
-					$('#quadruple_chart').show();
-					
-					// Now launch the charts
-					if(chart_1 === 'BLANK') {					
-						loadChart('BLANK', 'BLANK', 'chart_7_area', 250);
-					} else {
-						loadChart(chart_1_type, chart_1_uri, 'chart_7_area', 250);
-					}
-					
-					if(chart_2 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_8_area', 250);
-					} else {
-						loadChart(chart_2_type, chart_2_uri, 'chart_8_area', 250);
-					}
-					
-					if(chart_3 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_9_area', 250);
-					} else {
-						loadChart(chart_3_type, chart_3_uri, 'chart_9_area', 250);
-					}
-					
-					if(chart_4 === 'BLANK') {
-						loadChart('BLANK', 'BLANK', 'chart_10_area', 250);
-					} else {
-						loadChart(chart_4_type, chart_4_uri, 'chart_10_area', 250);
-					}			
-				}				
-			}
-		});
-			
-		$("#_RSF_BUILDING_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_BUILDING", "#db_chart_area");
-		});	
-			
-		$("#_RSF_PV_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			$("#db_chart_area").append($('<div class="alert alert-info chart_alert">This chart is not available at this time.</div>'));
-			//addChart("RSF_PV", "#db_chart_area", true);
-		});		
-			
-		$("#_RSF_DATACENTER_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_DATACENTER", "#db_chart_area");
-		});		
-			
-		$("#_RSF_ELEVATOR_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_ELEVATOR", "#db_chart_area");
-		});		
-			
-		$("#_RSF_LIGHTING_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_LIGHTING", "#db_chart_area");
-		});		
-			
-		$("#_RSF_MECHANICAL_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_MECHANICAL", "#db_chart_area");
-		});		
-			
-		$("#_RSF_PLUG_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_PLUG", "#db_chart_area");
-		});		
-			
-		$("#_RSF_MISC_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_MISC", "#db_chart_area");
-		});		
-			
-		$("#_RSF_HEATING_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_HEATING", "#db_chart_area");
-		});		
-			
-		$("#_RSF_COOLING_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("RSF_COOLING", "#db_chart_area");
-		});		
-			
-		$("#_GARAGE_BUILDING_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("GARAGE_BUILDING", "#db_chart_area");
-		});		
-			
-		$("#_GARAGE_EVCS_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			$("#db_chart_area").append($('<div class="alert alert-info chart_alert">This chart is not available at this time.</div>'));
-		});		
-			
-		$("#_wind103W_GloCM22_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind103W_GloCM22", "#db_chart_area", false, true, "Global Irradiance - Global CM22 Vent [W/m^2]");
-		});		
-			
-		$("#_wind103W_DirCH1_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind103W_DirCH1", "#db_chart_area", false, true, "Avg Direct Irradiance - Direct CH1 [W/m^2]");
-		});		
-			
-		$("#_wind303W_Temp_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind303W_Temp", "#db_chart_area", false, true, "Deck Dry Bulb Temp [deg C]");
-		});		
-			
-		$("#_wind303W_WS_AT_6_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind303W_WS_AT_6", "#db_chart_area", false, true, "RH [%]");
-		});		
-			
-		$("#_wind303W_RainSum_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind303W_RainSum", "#db_chart_area", false, true, "Precipitation [mm]");
-		});		
-			
-		$("#_wind303W_EFM_").click(function(){
-			$('#dashboard_chart_area').hide();
-			$("#db_chart_area").css("background-color","#efefef");
-			$("#db_chart_area").show();
-			$("#db_chart_area").empty();
-			addChart("wind303W_EFM", "#db_chart_area", false, true, "Precipitation [mm]");
-		});	
-	});
-</script>
-
-	
-<script type="text/javascript">
 	$(document).ready(function() {
 		if(_charts_enabled === 'true') {
 			if(_charts_library.indexOf('_licensed') >= 0) {
@@ -383,8 +119,143 @@
 		$('#SUMMARY').click();
 	});
 	
+	$('li > a').click(function() {
+		$( "li" ).each(function() {
+			if($(this).hasClass("db_left_nav_item")) {
+				$(this).removeClass("active");
+			}
+		});
+		
+		$(this).parent().addClass('active');
+		
+		/**
+		 * Now run the chart
+		 */		
+		var selectedIndex = $(this).attr('id');
+		
+		if($.isNumeric(selectedIndex)) {
+			var thisUserChart = userCharts[(selectedIndex - 1)];
+			
+			$('#chart_1_area').html('<img src="/public/images/chart_loading.gif" style="height: 600px; display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>');
+			
+			$('#db_chart_area').hide();
+			$('#dashboard_chart_area').show();
+			
+			$('#single_chart').show();
+			$('#dual_chart').hide();
+			$('#triple_chart').hide();
+			$('#quadruple_chart').hide();
+			
+			loadChart(thisUserChart.chartType, thisUserChart.url, 'chart_1_area', 600);
+		}
+	});
+
+	$.ajaxSetup({
+	    username: '${username}',
+	    password: '${password}'
+	  });
+		
+	$("#SUMMARY").click(function(){
+		$('#db_chart_area').hide();
+		$('#dashboard_chart_area').show();
+		
+		if(_dashboard_enabled === 'true') {
+			if(_option_enabled === '1') {
+				$('#dashboard_chart_area').show();
+				$('#single_chart').show();
+				$('#dual_chart').hide();
+				$('#triple_chart').hide();
+				$('#quadruple_chart').hide();
+				
+				// Now launch the chart
+				if(chart_1 === 'BLANK') {					
+					loadChart('BLANK', 'BLANK', 'chart_1_area', 600);
+				} else {
+					loadChart(chart_1_type, chart_1_uri, 'chart_1_area', 600);
+				}
+			} else if(_option_enabled === '2') {
+				$('#dashboard_chart_area').show();
+				$('#single_chart').hide();
+				$('#dual_chart').show();
+				$('#triple_chart').hide();
+				$('#quadruple_chart').hide();
+				
+				// Now launch the charts
+				if(chart_1 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_2_area', 300);
+				} else {
+					loadChart(chart_1_type, chart_1_uri, 'chart_2_area', 300);
+				}
+				
+				if(chart_2 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_3_area', 300);
+				} else {
+					loadChart(chart_2_type, chart_2_uri, 'chart_3_area', 300);
+				}
+			} else if(_option_enabled === '3') {
+				$('#dashboard_chart_area').show();
+				$('#single_chart').hide();
+				$('#dual_chart').hide();
+				$('#triple_chart').show();
+				$('#quadruple_chart').hide();
+			
+				// Now launch the charts
+				if(chart_1 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_4_area', 300);
+				} else {
+					loadChart(chart_1_type, chart_1_uri, 'chart_4_area', 300);
+				}
+				
+				if(chart_2 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_5_area', 300);
+				} else {
+					loadChart(chart_2_type, chart_2_uri, 'chart_5_area', 300);
+				}
+				
+				if(chart_3 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_6_area', 300);
+				} else {
+					loadChart(chart_3_type, chart_3_uri, 'chart_6_area', 300);
+				}
+			} else if(_option_enabled === '4') {
+				$('#dashboard_chart_area').show();
+				$('#single_chart').hide();
+				$('#dual_chart').hide();
+				$('#triple_chart').hide();
+				$('#quadruple_chart').show();
+				
+				// Now launch the charts
+				if(chart_1 === 'BLANK') {					
+					loadChart('BLANK', 'BLANK', 'chart_7_area', 300);
+				} else {
+					loadChart(chart_1_type, chart_1_uri, 'chart_7_area', 300);
+				}
+				
+				if(chart_2 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_8_area', 300);
+				} else {
+					loadChart(chart_2_type, chart_2_uri, 'chart_8_area', 300);
+				}
+				
+				if(chart_3 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_9_area', 300);
+				} else {
+					loadChart(chart_3_type, chart_3_uri, 'chart_9_area', 300);
+				}
+				
+				if(chart_4 === 'BLANK') {
+					loadChart('BLANK', 'BLANK', 'chart_10_area', 300);
+				} else {
+					loadChart(chart_4_type, chart_4_uri, 'chart_10_area', 300);
+				}			
+			}				
+		}
+	});
+	
 	function loadChart(chartType, chartURI, chartDiv, chartHeight) {
 		$(function () {
+			$('#' + chartDiv).html('<img src="/public/images/chart_loading.gif" style="height: ' + chartHeight + 'px; display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>');
+			
 			if(chartType === 'EMBEDDED_OBJECT') {
 				var embeddedChartURL = chartURI + "?divname=" + chartDiv + "&height=" + chartHeight;
 				embeddedChartURL = embeddedChartURL.replace("/charts/chart/", "/charts/jschart/"); 
@@ -394,7 +265,9 @@
 					embeddedChartData();
 				});
 			} else if(chartType === 'SCRIPT') {
-				var scriptChartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chartURI + "&div=" + chartDiv;
+				var chartURI_escaped = decodeURIComponent(chartURI).replace('&amp;', '&');
+				
+				var scriptChartURL = "@{gui.MyCharts.loadChartDiv()}?chart=" + chartURI_escaped + "&div=" + chartDiv;
 				
 				$.get(scriptChartURL, function(scriptChartRawData) {
 					var scriptChartData = new Function (scriptChartRawData);
@@ -410,8 +283,12 @@
 				});
 				*/
 				$('#' + chartDiv).addClass('dashboardBlankChart');
-				$('#' + chartDiv).append('<img src="/public/images/BlankDashboard.png" height="' + chartHeight + 'px" style="display: block; margin-left: auto; margin-right: auto;"/>')
+				$('#' + chartDiv).html('<img src="/public/images/BlankDashboard.png" height="' + chartHeight + 'px" style="display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>')
 			}
 		});
+	}
+	
+	function fixedEncodeURIComponent (str) {
+	  return encodeURIComponent(str).replace(/[!'()]/g, escape).replace(/\*/g, "%2A");
 	}
 </script>

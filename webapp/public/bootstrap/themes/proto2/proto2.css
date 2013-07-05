@@ -307,11 +307,26 @@ p.db_content_blurb {
 	padding: 0px;
 }
 
+/* DASHBOARD */
+/* ************************************************** */
+.dashboard_chart_list {
+	padding-top: 20px;
+	border-right: 1px solid #aaa !important;
+	min-width: 200px;
+}
+
+.dashboard_chart_menu {
+	max-height: 590px;
+	overflow-y: auto;
+	overflow-x: auto;
+}
+
+/* ************************************************** */
+
 /* CHARTS */
 /* ************************************************** */
 .db_summary_chart {
 	margin-top: 5px;
-	height: 260px;
 }
 
 .dashboardBlankChart {

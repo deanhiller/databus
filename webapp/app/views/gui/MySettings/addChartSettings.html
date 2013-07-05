@@ -223,6 +223,9 @@
 		if($('#embedded_chart_url').val() != "") {
 			$('#embedded_chart_preview').show();
 			$('#embedded_chart_preview_base').hide();
+			
+			$('#embedded_chart_preview').html('<img src="/public/images/chart_loading.gif" style="height: 250px; display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>');
+			
 			var embeddedChartURL = $('#embedded_chart_url').val() + "?divname=embedded_chart_preview&height=250";
 			embeddedChartURL = embeddedChartURL.replace("/charts/chart/", "/charts/jschart/"); 
 			
@@ -322,8 +325,8 @@
 			return;
 		}
 		
-		$('#script_chart_preview').html("");
-		
+		$('#script_chart_preview').html('<img src="/public/images/chart_loading.gif" style="height: 250px; display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>');
+
 		var scriptChart = scriptCharts[(selectedIndex - 1)];
 		
 		$('#script_chart_preview').show();
