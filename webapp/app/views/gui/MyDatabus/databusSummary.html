@@ -13,10 +13,6 @@
 				<p>
 					There are <span style="color: #001429; font-weight: bold;">${database_count}</span> Databases in this Databus installation.
 				</p>
-				<p style="font-size: 11px; font-style: italic; line-height: 110%; margin-top: -8px;">
-					Permission overlap can occur when a user has permissions to a Database and a Group the user belongs to also has
-					permissions to the same Database.
-				</p>
 				
 				<div style="width: 370px;">
 					<table id="database_summary_table" class="fancyTable databaseTable" style="margin-top: -27px !important;  margin-bottom: 5px;">
@@ -125,8 +121,8 @@
 
 <script type="text/javascript">
 
-	$('#database_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 173, fixedColumn: false });
-	$('#group_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 198, fixedColumn: false });
+	$('#database_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 197, fixedColumn: false });
+	$('#group_summary_table').fixedHeaderTable({ footer: false, cloneHeadToFoot: false, height: 197, fixedColumn: false });
 	
 	$(document).ready(function() {	
 		var theme_databases = {
