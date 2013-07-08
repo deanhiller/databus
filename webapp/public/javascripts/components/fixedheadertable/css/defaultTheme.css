@@ -43,6 +43,7 @@
 	/* appearance */
     border-collapse: collapse;
     border-spacing: 0;
+    width: inherit !important;
 	}
 
 /* @end */
@@ -50,6 +51,14 @@
 /* @group Content */
 .fht-table-wrapper {
 	padding-bottom: 15px;
+}
+
+.fht-thead {
+	width: inherit;
+}
+
+.fht-tbody {
+	width: inherit;
 }
 
 .fht-table-wrapper,
@@ -69,7 +78,7 @@
 	.fht-table-wrapper .fht-tbody {
 		/* appearance */
 	    overflow-y: auto;
-	    overflow-x: none;
+	    overflow-x: auto;
 		}
 
 		.fht-table-wrapper .fht-table .fht-cell {

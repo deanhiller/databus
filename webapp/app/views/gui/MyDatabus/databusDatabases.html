@@ -119,11 +119,11 @@
 								
 								if(entity.getClassType().toLowerCase().equals("userimpl")) {
 									if(ref.getPermission() == models.PermissionType.ADMIN) {
-										out.print(entity.getName() + "&nbsp;&nbsp;");
+										out.print(entity.getName() + " ");
 									}
 								} else {
 									if(ref.getPermission() == models.PermissionType.ADMIN) {
-										out.print("<b>" + entity.getName() + "</b>&nbsp;&nbsp;");
+										out.print("<b>" + entity.getName() + "</b> ");
 									}
 								}
 						    	}
