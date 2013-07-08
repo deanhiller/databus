@@ -34,6 +34,8 @@ var _database = '/api/firstvaluesV1/50/rawdataV1/fakeTimeSeries?reverse=true';
 		    streamData.push([formattedTime.getTime(), value]);
 		});
 		
+		startingData.reverse();
+		
 		// Create the chart
 		var options = {			
 			chart : {

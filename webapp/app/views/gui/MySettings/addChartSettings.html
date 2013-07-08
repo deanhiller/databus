@@ -180,14 +180,14 @@
 		/**
 		 * Remove form enter key submit
 		 */
-		$('saveaddchartsettings input').keydown(function(event){
+		$('#saveembeddedchartsettings input').keydown(function(event){
 			if(event.keyCode == 13) {
 				event.preventDefault();
 				return false;
 			}
 		});
 		
-		$('savescriptchartsettings input').keydown(function(event){
+		$('#savescriptchartsettings input').keydown(function(event){
 			if(event.keyCode == 13) {
 				event.preventDefault();
 				return false;
