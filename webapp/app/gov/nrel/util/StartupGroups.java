@@ -49,13 +49,14 @@ public class StartupGroups {
 	public static void createStuff() {
 		EntityUser dean = EntityUser.findByName(NoSql.em(), StartupDetailed.DEAN.getUsername());
 		EntityUser justin = EntityUser.findByName(NoSql.em(), StartupDetailed.JUSTIN.getUsername());
+		EntityUser admin = EntityUser.findByName(NoSql.em(), StartupDetailed.ADMIN.getUsername());
 		
-		EntityGroup onlyusers = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP1, null, "group1user", "anothergroup1user", "bill");
-		EntityGroup usersandgroup = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP2, onlyusers, "group2user", "bill");
-		EntityGroup usersandgroupdeep = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP3, usersandgroup, "group3user", "bob");
+		EntityGroup onlyusers = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP1, null, "group1user", "anothergroup1user", "bill", StartupDetailed.ADMIN.getUsername());
+		EntityGroup usersandgroup = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP2, onlyusers, "group2user", "bill", StartupDetailed.ADMIN.getUsername());
+		EntityGroup usersandgroupdeep = StartupUtils.createEntityGroup(NoSql.em(), dean, ENTITYGROUP3, usersandgroup, "group3user", "bob", StartupDetailed.ADMIN.getUsername());
 		
 		//need a group that 'dean' is not in so that we can test missing permissions with a test user with no password
-		StartupUtils.createEntityGroup(NoSql.em(), justin, ENTITYGROUP4, null, "group4user", "anothergroup4user");
+		StartupUtils.createEntityGroup(NoSql.em(), justin, ENTITYGROUP4, null, "group4user", "anothergroup4user", StartupDetailed.ADMIN.getUsername());
 				
 		NoSql.em().flush();
 		

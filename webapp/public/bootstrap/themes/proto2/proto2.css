@@ -316,6 +316,7 @@ p.db_content_blurb {
 }
 
 .dashboard_chart_menu {
+	min-height: 590px;
 	max-height: 590px;
 	overflow-y: auto;
 	overflow-x: auto;

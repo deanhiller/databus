@@ -62,8 +62,8 @@ public class StartupDetailed {
 		
 		NoSql.em().flush();
 		
-		StartupUtils.createDatabase(NoSql.em(), DEAN, GROUP1, JUSTIN);
-		StartupUtils.createDatabase(NoSql.em(), DEAN, GROUP2, JUSTIN);
+		StartupUtils.createDatabase(NoSql.em(), DEAN, GROUP1, JUSTIN, ADMIN);
+		StartupUtils.createDatabase(NoSql.em(), DEAN, GROUP2, JUSTIN, ADMIN);
 		
 		
 		NoSql.em().flush();

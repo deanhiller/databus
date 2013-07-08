@@ -553,8 +553,13 @@
 		function loadChart(chartType, chartURI, chartDiv, chartHeight) {
 			$(function () {
 				$('#' + chartDiv).removeClass( 'dashboardBlankChart' );
-				$('#' + chartDiv).html('<img src="/public/images/chart_loading.gif" style="height: ' + chartHeight + 'px; display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>');
-			
+				
+				var loadImageMarginTop = "20px";
+				if(chartHeight == 600) {
+					loadImageMarginTop = "150px";
+				}
+				$('#' + chartDiv).html('<img src="/public/images/chart_loading.gif" style="height: 300px; display: block; margin-left: auto; margin-right: auto; margin-top: ' + loadImageMarginTop + ';"/>');
+
 				if(chartType === 'EMBEDDED_OBJECT') {
 					var embeddedChartURL = chartURI + "?divname=" + chartDiv + "&height=" + chartHeight;
 					embeddedChartURL = embeddedChartURL.replace("/charts/chart/", "/charts/jschart/"); 
