@@ -48,6 +48,9 @@
 /* @end */
 
 /* @group Content */
+.fht-table-wrapper {
+	padding-bottom: 15px;
+}
 
 .fht-table-wrapper,
 .fht-table-wrapper .fht-thead,
@@ -65,7 +68,8 @@
 	.fht-table-wrapper .fht-fixed-body .fht-tbody,
 	.fht-table-wrapper .fht-tbody {
 		/* appearance */
-	    overflow: auto;
+	    overflow-y: auto;
+	    overflow-x: none;
 		}
 
 		.fht-table-wrapper .fht-table .fht-cell {
