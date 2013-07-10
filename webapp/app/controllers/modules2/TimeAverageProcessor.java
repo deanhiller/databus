@@ -21,7 +21,7 @@ public class TimeAverageProcessor extends EmptyWindowProcessor {
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
-		String msg = "The url /timeaverageV1/{interval}/{epochOffset} must have a long as the interval but it was not a long";
+		String msg = "The url /timeaverageV1/{interval}/{interval} must have a long as the interval but it was not a long";
 		long interval = parseLong(params.getParams().get(0), msg);
 		String msg2 = "The url /timeaverageV1/{interval}/{epochOffset} must have a long as the epochOffset but it was not a long";
 		long epochOffset = parseLong(params.getParams().get(1), msg2);
@@ -30,7 +30,11 @@ public class TimeAverageProcessor extends EmptyWindowProcessor {
 	}
 	
 	@Override
-	protected void incomingTimeValue(long time, BigDecimal value) {
+	protected void incomingTimeValue(long time, TSRelational row) {
+		BigDecimal value = getValueEvenIfNull(row);
+		if(value == null)
+			return;
+		
 		if(total == null) 
 			total = BigDecimal.ZERO;
 		total = total.add(value);
