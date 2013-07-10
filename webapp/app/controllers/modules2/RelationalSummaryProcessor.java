@@ -44,7 +44,7 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 		longHelpMsg+="if any outputOptions are specified, only the options specified are output, if none are specified ALL output is included.  ";
 		longHelpMsg+="interval is a long specifying how frequent the result rows occur, epoch offset is the offset to align with day/week/month/year, etc  ";
 
-		String msg = "Expected format /relationalsummaryV1/{interval}/{interval} where interval must be a long value of the interval and that is missing";
+		String msg = "Expected format /relationalsummaryV1/{interval}/{epochOffset} where interval must be a long value of the interval and that is missing";
 		long interval = parseLong(params.getParams().get(0), msg+longHelpMsg);
 		String msg2 = "The url /relationalsummaryV1/{interval}/{epochOffset} where epochOffset must be a long value, but it was not a long";
 		long epochOffset = parseLong(params.getParams().get(1), msg2+longHelpMsg);
