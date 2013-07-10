@@ -426,6 +426,10 @@ p.db_content_blurb {
 	/*background-color: #fff;*/
 }
 
+.mychart_td_selected {
+	background-color: #9596A3 !important;
+}
+
 /* ************************************************** */
 
 /* FOOTER */

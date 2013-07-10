@@ -3,6 +3,7 @@ package controllers.gui;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Embedded;
@@ -13,6 +14,7 @@ import models.UserChart;
 import models.UserChart.ChartLibrary;
 import models.UserChart.ChartType;
 import models.UserSettings;
+import models.comparitors.UserChartComparitor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +88,8 @@ public class MySettings extends Controller {
 		/**
 		 * We need to get all of the charts the user has currently saved
 		 */
-		List<UserChart> userCharts = user.getUserCharts();		
+		List<UserChart> userCharts = user.getUserCharts();	
+		Collections.sort(userCharts, new UserChartComparitor());
 		
 		render(userCharts);
 	}
@@ -114,6 +117,38 @@ public class MySettings extends Controller {
 		}
 		
 		render(scriptCharts);
+	}
+	
+	public static void deleteChart(String chartToDelete) {		
+		log.error("\n\nDELETE CHART CALLED: [" + chartToDelete + "]");
+		
+		if((chartToDelete != null) && (!chartToDelete.equals(""))) {
+			EntityUser user = Utility.getCurrentUser(session);
+			List<UserChart> userCharts = user.getUserCharts();
+			
+			int chartIndex = 0;
+			boolean found = false;
+			for(UserChart userChart : userCharts) {
+				if(userChart.getChartName().equals(chartToDelete)) {
+					found = true;
+					break;
+				}
+				
+				chartIndex++;
+			}
+			
+			if(found) {
+				userCharts.remove(chartIndex);
+				
+				user.setUserCharts(userCharts);
+				NoSql.em().put(user);
+				NoSql.em().flush();
+			}
+		}		
+		
+		MySettings.currentRedirectTo = "mycharts_settings";
+		
+		mySettings();
 	}
 		
 	public static void postSaveEmbeddedChartSettings(String embedded_chart_name, String embedded_chart_url) {
