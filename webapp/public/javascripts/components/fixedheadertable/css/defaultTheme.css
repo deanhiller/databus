@@ -43,11 +43,23 @@
 	/* appearance */
     border-collapse: collapse;
     border-spacing: 0;
+    width: inherit !important;
 	}
 
 /* @end */
 
 /* @group Content */
+.fht-table-wrapper {
+	padding-bottom: 15px;
+}
+
+.fht-thead {
+	width: inherit;
+}
+
+.fht-tbody {
+	width: inherit;
+}
 
 .fht-table-wrapper,
 .fht-table-wrapper .fht-thead,
@@ -65,7 +77,8 @@
 	.fht-table-wrapper .fht-fixed-body .fht-tbody,
 	.fht-table-wrapper .fht-tbody {
 		/* appearance */
-	    overflow: auto;
+	    overflow-y: auto;
+	    overflow-x: auto;
 		}
 
 		.fht-table-wrapper .fht-table .fht-cell {

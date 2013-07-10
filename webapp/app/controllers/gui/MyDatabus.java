@@ -12,6 +12,7 @@ import models.Entity;
 import models.EntityGroup;
 import models.EntityGroupXref;
 import models.EntityUser;
+import models.PermissionType;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
 import models.comparitors.EntityGroupComparitor;
@@ -156,6 +157,8 @@ public class MyDatabus extends Controller {
 			List<SecureResourceGroupXref> refs = db.getEntitiesWithAccess();
 			
 			boolean foundUser = false;
+			String userName = "";
+			PermissionType highestAccess = null;
 			
 			for (SecureResourceGroupXref ref : refs) {
 				Entity entity = ref.getUserOrGroup();
@@ -166,25 +169,40 @@ public class MyDatabus extends Controller {
 				
 				if(entity.getClassType().toLowerCase().equals("userimpl")) {
 					if(entity.getName().equals(user.getName())) {
-						foundUser = true;
 						/**
 						 * Ok we found the current user in the list here... lets remember their permission
 						 */
 						switch(ref.getPermission()) {
 							case ADMIN: {
-								myDatabases.put(db, user.getName());
+								foundUser = true;
+								userName = user.getName();
+								
+								highestAccess = PermissionType.ADMIN;
 								break;
 							}
 							case READ: {
-								readableDatabases.put(db, user.getName());
+								foundUser = true;
+								userName = user.getName();
+								
+								if(highestAccess == null) {
+									highestAccess = PermissionType.READ;
+								} else {
+									highestAccess = highestAccess.max(PermissionType.READ);
+								}
 								break;
 							}
 							case READ_WRITE: {
-								readwriteDatabases.put(db, user.getName());
+								foundUser = true;
+								userName = user.getName();
+								
+								if(highestAccess == null) {
+									highestAccess = PermissionType.READ_WRITE;
+								} else {
+									highestAccess = highestAccess.max(PermissionType.READ_WRITE);
+								}
 								break;
 							}
 							default: {
-								systemDatabases.add(db);
 								break;
 							}
 						}
@@ -212,19 +230,35 @@ public class MyDatabus extends Controller {
 							
 							switch(ref.getPermission()) {
 								case ADMIN: {
-									myDatabases.put(db, group.getName() + " (Group)");
+									foundUser = true;
+									userName = group.getName() + " (Group)";
+									
+									highestAccess = PermissionType.ADMIN;
 									break;
 								}
 								case READ: {
-									readableDatabases.put(db, group.getName() + " (Group)");
+									foundUser = true;
+									userName = group.getName() + " (Group)";
+									
+									if(highestAccess == null) {
+										highestAccess = PermissionType.READ;
+									} else {
+										highestAccess = highestAccess.max(PermissionType.READ);
+									}
 									break;
 								}
 								case READ_WRITE: {
-									readwriteDatabases.put(db, group.getName() + " (Group)");
+									foundUser = true;
+									userName = group.getName() + " (Group)";
+									
+									if(highestAccess == null) {
+										highestAccess = PermissionType.READ_WRITE;
+									} else {
+										highestAccess = highestAccess.max(PermissionType.READ_WRITE);
+									}
 									break;
 								}
 								default: {
-									systemDatabases.add(db);
 									break;
 								}
 							}
@@ -233,7 +267,26 @@ public class MyDatabus extends Controller {
 				}
 			}
 			
-			if(!foundUser) {
+			if(foundUser) {
+				switch(highestAccess) {
+					case ADMIN: {
+						myDatabases.put(db, userName);
+						break;
+					}
+					case READ: {
+						readableDatabases.put(db, userName);
+						break;
+					}
+					case READ_WRITE: {
+						readwriteDatabases.put(db, userName);
+						break;
+					}
+					default: {
+						systemDatabases.add(db);
+						break;
+					}
+				}
+			} else {
 				systemDatabases.add(db);
 			}
 		}

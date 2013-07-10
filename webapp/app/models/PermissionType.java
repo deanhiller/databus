@@ -41,6 +41,18 @@ public enum PermissionType {
 			return true;
 		return false;
 	}
+	
+	public PermissionType max(PermissionType type) {
+		if(this.level < type.level)
+			return this;
+		return type;
+	}
+	
+	public PermissionType min(PermissionType type) {
+		if(this.level < type.level)
+			return type;
+		return this;
+	}
 
 	public static Set<PermissionType> allRoles() {
 		Set<PermissionType> types = new HashSet<PermissionType>();

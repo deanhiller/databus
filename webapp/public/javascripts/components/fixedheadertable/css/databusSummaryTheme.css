@@ -259,8 +259,9 @@
 }
 
 .fancyDarkTable thead tr th {
-	padding: 8px 15px 8px 15px;
-	}
+	padding: 8px 10px 8px 10px;
+	white-space: nowrap;
+}
 
 .fancyDarkTable {
 	/*border-collapse: separate;*/
@@ -342,9 +343,14 @@
 	position: relative;
 	}
 	
+.db_chart_list_td_contents {
+	font-weight: 400 !important; 
+	text-decoration: none;
+}
+	
 .db_chart_list_td_contents a {
 	font-size: 13px; 
-	font-weight: 800; 
+	font-weight: normal !important; 
 	text-decoration: none;
 	color: #91CFFF;
 }

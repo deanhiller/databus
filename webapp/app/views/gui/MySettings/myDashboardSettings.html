@@ -554,8 +554,10 @@
 			$(function () {
 				$('#' + chartDiv).removeClass( 'dashboardBlankChart' );
 				
-				var loadImageMarginTop = "20px";
-				if(chartHeight == 600) {
+				var loadImageMarginTop = "50px";
+				if((chartDiv === 'chart_2_area') || (chartDiv === 'chart_3_area') || (chartDiv === 'chart_6_area')){
+					loadImageMarginTop = "25px";
+				} else if(chartHeight == 600) {
 					loadImageMarginTop = "150px";
 				}
 				$('#' + chartDiv).html('<img src="/public/images/chart_loading.gif" style="height: 300px; display: block; margin-left: auto; margin-right: auto; margin-top: ' + loadImageMarginTop + ';"/>');
@@ -579,7 +581,7 @@
 					});
 				} else if(chartType === 'BLANK') {					
 					$('#' + chartDiv).addClass('dashboardBlankChart');
-					$('#' + chartDiv).html('<img src="/public/images/BlankDashboard.png" height="' + chartHeight + 'px" style="display: block; margin-left: auto; margin-right: auto; margin-top: 20px;"/>')
+					$('#' + chartDiv).html('<img src="/public/images/BlankDashboard.png" height="' + chartHeight + 'px" style="display: block; margin-left: auto; margin-right: auto; margin-top: ' + loadImageMarginTop + ';"/>')
 				}
 			});
 		};
