@@ -40,15 +40,12 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 	@Override
 	public final void incomingChunk(String url, TSRelational row, ProcessedFlag flag) {
 		long time = getTime(row);
-		BigDecimal value = getValueEvenIfNull(row);
-		if(value == null)
-			return; //we drop chunks with a null value
 
 		while(endOfTheWindow < time) {
 			sendWindow(url, flag);
 		}
 		
-		incomingTimeValue(time, value);
+		incomingTimeValue(time, row);
 	}
 
 	private void sendWindow(String url, ProcessedFlag flag) {
@@ -79,9 +76,6 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 
 			TSRelational row = read.getRow();
 			long time = getTime(row);
-			BigDecimal value = getValueEvenIfNull(row);
-			if(value == null)
-				continue;
 			
 			if(endOfTheWindow < time) {
 				ReadResult res = fetchWindowResult();
@@ -90,7 +84,7 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 				return res;
 			}
 	
-			incomingTimeValue(time, value);
+			incomingTimeValue(time, row);
 		}
 		
 		return new ReadResult();
@@ -121,7 +115,7 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 		return r;
 	}
 
-	protected abstract void incomingTimeValue(long time, BigDecimal value);
+	protected abstract void incomingTimeValue(long time, TSRelational value);
 	protected abstract TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow);
 
 	//unused

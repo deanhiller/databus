@@ -22,6 +22,7 @@ import controllers.modules2.PassthroughProcessor;
 import controllers.modules2.RangeCleanProcessor;
 import controllers.modules2.RawProcessor;
 import controllers.modules2.RelationalOperationProcessor;
+import controllers.modules2.RelationalSummaryProcessor;
 import controllers.modules2.SplinesPullProcessor;
 import controllers.modules2.SplinesV1PullProcessor;
 import controllers.modules2.SqlPullProcessor;
@@ -67,6 +68,8 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("aggregation", AggregationProcessor.class);
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
+		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);
+		
 
 		
 

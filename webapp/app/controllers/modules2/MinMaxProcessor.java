@@ -34,7 +34,11 @@ public class MinMaxProcessor extends EmptyWindowProcessor {
 	}
 	
 	@Override
-	protected void incomingTimeValue(long time, BigDecimal value) {
+	protected void incomingTimeValue(long time, TSRelational row) {
+		BigDecimal value = getValueEvenIfNull(row);
+		if(value == null)
+			return;
+		
 		if(min == null) {
 			initValues(time, value);
 			return;
