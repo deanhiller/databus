@@ -47,6 +47,13 @@ application.baseUrl=http://sdi-prod-01:9000
 #The url that we turn around and make requests to(service chaining)
 application.requestUrl=http://localhost:9000
 
+#This is only from an upgrade to keep system live.  If you are ok with down time to upgrade, you never need this setting
+#This is for upgrading all STREAM tables into TIME_SERIES tables
+#Values for this are OLD before the switch is started, a url of where to send the same request(you want to send the request to a server with
+#a setting of NEW) and NEW which ensures all new STREAMS are created as TIME_SERIES tables.  Having a url is like setting both where it
+#writes to old cassandra instance and forwards to a webserver with NEW that writes to new cassandra instance.
+upgrade.mode=NEW
+
 # This is the main configuration file for the application.
 # ~~~~~
 application.name=sdiwebapp
