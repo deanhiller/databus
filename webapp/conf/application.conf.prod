@@ -9,47 +9,17 @@
 #NOTE: If you don't see a property %prod.NNNN, then the property NNNN is used by default.  All the %prod are just overrides on the defaults.
 
 #This is for Active Directory.  Your IT should have an SRV record in DNS on the location of the AD server and port information.
-#Supplying your domain here llows us to use DNS to lookup the SRV record and find your Active Directory. 
-#Using a value of none disables this such that users are authenticated against the local databus database
-#domain=nrel.gov
-domain=none
-
-#Values here are inmemory or cassandra currently until hbase support is done by someone in the community
-nosql.nosqltype=inmemory
+#Supplying this domain allows us to use DNS to lookup the SRV record and find your Active Directory. 
+domain=nrel.gov
 
 # Database configuration
+nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus5
-
-#local cassandra settings(ONLY used when nosqltype=cassandra!!!!)
-nosql.cassandra.clusterName=TestCluster
-nosql.cassandra.seeds=localhost:9160
-
-#production settings
-#nosql.cassandra.clusterName=DatabusCluster
-#nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a12:9160
-
-#IMPORTANT: Make sure you modify the nosql.cassandra.seeds list to your node hostnames
-%prod.nosql.nosqltype=cassandra
-%prod.nosql.cassandra.clusterName=DatabusCluster
-%prod.nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a12:9160
-%qa.nosql.nosqltype=cassandra
-%qa.nosql.cassandra.clusterName=QACluster
-%qa.nosql.cassandra.seeds=sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160
-%demo.nosql.nosqltype=cassandra
-%demo.nosql.cassandra.clusterName=DemoCluster
-%demo.nosql.cassandra.seeds=localhost:9160
+nosql.cassandra.clusterName=DatabusCluster
+nosql.cassandra.seeds=a1:9158,a2:9158,a3:9158,a4:9158,a5:9158,a6:9158,a7:9158,a8:9158,a9:9158,a10:9158,a11:9158,a12:9158
 
 #uncomment this if you changed your cassandra thrift ports
-#nosql.cassandra.thriftport=9158
-
-# Application mode
-# ~~~~~
-# Set to dev to enable instant reloading and other development help.
-# Otherwise set to prod.
-application.mode=dev
-%demo.application.mode=prod
-%prod.application.mode=prod
-%qa.application.mode=prod
+nosql.cassandra.thriftport=9158
 
 # GUI Charting enabled/disabled
 #   - if enabled, which charting library
@@ -57,34 +27,30 @@ application.mode=dev
 #               highcharts_licensed
 #               D3.js
 gui.charting.enabled=true
-gui.charting.library=highcharts
-%demo.gui.charting.library=highcharts_licensed
+gui.charting.library=highcharts_licensed
 
 #demo.mode=true means populate tons of demo data(slow to startup first time) and ALSO means
 #display help steps on logging in for the user to follow the demo better
 demo.mode=false
-%demo.demo.mode=true
+
+#Email configuration for SMTP mail server so we can send email when a stream is down
+email.host=sdi-ci
+email.fromaddress=dean.hiller@nrel.gov
 
 # Url-resolving in Jobs
 # ~~~~~~
 # When rendering templates with reverse-url-resoling (@@{..}) in Jobs (which do not have an inbound Http.Request),
 # ie if sending a HtmlMail, Play need to know which url your users use when accessing your app.
 # %test.application.baseUrl=http://localhost:9000/
-application.baseUrl=http://localhost:9000
-%demo.application.baseUrl=http://beach.nrel.gov:8080
-%prod.application.baseUrl=http://databus.nrel.gov
-%qa.application.baseUrl=http://sdi-prod-01:9000
+application.baseUrl=https://databus.nrel.gov
 
 #The url that we turn around and make requests to(service chaining)
-application.requestUrl=http://localhost:9000
-%demo.application.requestUrl=http://beach.nrel.gov:8080
 %prod.application.requestUrl=http://databus.nrel.gov:81
 
 # This is the main configuration file for the application.
 # ~~~~~
 application.name=sdiwebapp
-
-java.source=1.6
+application.mode=prod
 
 # Secret key
 # ~~~~~
@@ -106,10 +72,7 @@ date.format=yyyy-MM-dd
 # Server configuration
 # ~~~~~
 # If you need to change the HTTP port, uncomment this (default is set to 9000)
-http.port=9000
-%demo.http.port=8080
-%prod.http.port=8080
-%test.http.port=9001
+http.port=8080
 
 XForwardedSupport=none
 %prod.XForwardedSupport=all
@@ -151,103 +114,17 @@ application.session.httpOnly=true
 #
 # Java source level => 1.5, 1.6 or 1.7 (experimental)
 # java.source=1.5
-
-# Log level
-# ~~~~~
-# Specify log level for your application.
-# If you want a very customized log, create a log4j.properties file in the conf directory
-# application.log=INFO
-#
-# More logging configuration
-application.log.path=/dev.log4j.properties
-application.log.system.out=on
-%prod.application.log.path=/prod.log4j.properties
-%prod.application.log.system.out=off
+java.source=1.6
 
 # SOLR configuration
-#solr.mode=embedded
 solr.mode=server
-solr.url=http://localhost:8983/solr
+solr.url=http://b1:8983/solr
 solr.queryRequestHandler=select
 solr.defaultSearchField=allTerms_texts
 
-%prod.solr.mode=server
-%prod.solr.url=http://b1:8983/solr
-%prod.email.host=sdi-ci
-%prod.email.fromaddress=dean.hiller@nrel.gov
 
 #Every server polls the tables this rate(in millis)
-%prod.monitor.rate=60000
-monitor.rate=10000
-
-# ~~~~~ 
-# Enable a database engine if needed.
-#
-# To quickly set up a development database, use either:
-#   - mem : for a transient in memory database (H2 in memory)
-#   - fs  : for a simple file written database (H2 file stored)
-db=mem
-#
-# To connect to a local MySQL5 database, use:
-# db=mysql://user:pwd@host/database
-#
-# To connect to a local PostgreSQL9 database, use:
-# db=postgres://user:pwd@host/database
-#
-# If you need a full JDBC configuration use the following :
-# db.url=jdbc:postgresql:database_name
-# db.driver=org.postgresql.Driver
-# db.user=root
-# db.pass=secret
-#
-# Connections pool configuration :
-# db.pool.timeout=1000
-# db.pool.maxSize=30
-# db.pool.minSize=10
-#
-# If you want to reuse an existing Datasource from your application server, use:
-# db=java:/comp/env/jdbc/myDatasource
-#
-# When using an existing Datasource, it's sometimes needed to destroy it when
-# the application is stopped. Depending on the datasource, you can define a
-# generic "destroy" method :
-# db.destroyMethod=close
-
-# JPA Configuration (Hibernate)
-# ~~~~~
-#
-# Specify the custom JPA dialect to use here (default to guess):
-# jpa.dialect=org.hibernate.dialect.PostgreSQLDialect
-#
-# Specify the ddl generation pattern to use. Set to none to disable it 
-# (default to update in DEV mode, and none in PROD mode):
-# jpa.ddl=update
-#
-# Debug SQL statements (logged using DEBUG level):
-# jpa.debugSQL=true
-#
-# You can even specify additional hibernate properties here:
-# hibernate.use_sql_comments=true
-# ...
-#
-# Store path for Blob content
-attachments.path=data/attachments
-
-# Memcached configuration
-# ~~~~~ 
-# Enable memcached if needed. Otherwise a local cache is used.
-# memcached=enabled
-#
-# Specify memcached host (default to 127.0.0.1:11211)
-# memcached.host=127.0.0.1:11211
-#
-# Or you can specify multiple host to build a distributed cache
-# memcached.1.host=127.0.0.1:11211
-# memcached.2.host=127.0.0.1:11212
-#
-# Use plain SASL to authenticate for memcached
-# memcached.user=
-# memcached.password=
+monitor.rate=60000
 
 # HTTP Response headers control for static files
 # ~~~~~
@@ -298,8 +175,6 @@ mail.smtp=mock
 #NOTE: We modify to 25 as when cassandra slows down, we can see the issue clearly otherwise we get requests waiting to start which we don't really
 #want when we hit it for a test as we miss out on the real timing info(ie. wait long period then process it causes it to go fast...ask dean)
 play.pool=25
-%prod.play.pool=25
-%qa.play.pool=25
 
 # Open file from errors pages
 # ~~~~~
