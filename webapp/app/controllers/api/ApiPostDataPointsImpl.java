@@ -138,12 +138,12 @@ public class ApiPostDataPointsImpl {
 				log.info("user="+user+" has no access to table="+tableName);
 			throw new Unauthorized("user="+user+" has no access to table="+tableName);
 		}
-		
+
 		boolean isUpdate = false;
 		Object updateStr = json.get("_update");
 		if("true".equals(updateStr) || Boolean.TRUE.equals(updateStr))
 			isUpdate = true;
-		
+
 		DboTableMeta table = info.getTableMeta();
 		
 		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();

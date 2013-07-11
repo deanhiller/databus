@@ -75,7 +75,7 @@ public class ProductionModule implements Module {
 		binder.bind(Config.class).toInstance(config);
 	}
 
-	public static AsyncHttpClient createSingleton() {
+	public synchronized static AsyncHttpClient createSingleton() {
 		try {
 			if(httpClient != null)
 				return httpClient;

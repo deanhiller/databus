@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import play.Play;
 import play.libs.F.Promise;
 import play.mvc.Controller;
 import play.mvc.results.BadRequest;
@@ -45,8 +46,15 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
+import com.ning.http.client.AsyncHttpClient;
+import com.ning.http.client.ListenableFuture;
+import com.ning.http.client.Realm;
+import com.ning.http.client.RequestBuilder;
+import com.ning.http.client.Response;
+import com.ning.http.client.Realm.AuthScheme;
 
 import controllers.api.ApiPostDataPointsImpl;
+import controllers.modules2.framework.ProductionModule;
 
 public class ApiPostDataPoints extends Controller {
 	public static final int BATCH_SIZE = 100;
@@ -54,6 +62,7 @@ public class ApiPostDataPoints extends Controller {
 	static final Logger log = LoggerFactory.getLogger(ApiPostDataPoints.class);
 
 	public static ExecutorService executor = Executors.newFixedThreadPool(20);
+	private static AsyncHttpClient client = ProductionModule.createSingleton();
 
 	private static int counter = 0;
 	private static int dataPointCounter = 0;
@@ -77,19 +86,65 @@ public class ApiPostDataPoints extends Controller {
 	}
 	
 	public static void postData() throws SolrServerException, IOException, ParserConfigurationException, SAXException {
+		String mode = (String) Play.configuration.get("upgrade.mode");
+		String requestUrl = null;
+		if(mode != null && mode.startsWith("http")) {
+			requestUrl = mode;
+		}
+
 		String json = Parsing.fetchJson();
+		ListenableFuture<Response> future = null;
 		try {
 			Map<String, Object> data = Parsing.parseJson(json, Map.class);
-	
 			String user = request.user;
 			String password = request.password;
-			int numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password);
 			
+			if(requestUrl != null) {
+				// fix this so it is passed in instead....
+				Realm realm = new Realm.RealmBuilder()
+						.setPrincipal(user)
+						.setPassword(password)
+						.setUsePreemptiveAuth(true).setScheme(AuthScheme.BASIC)
+						.build();
+
+				String fullUrl = requestUrl+"/api/postdataV1";
+
+				RequestBuilder b = new RequestBuilder("POST")
+						.setUrl(fullUrl)
+						.setRealm(realm)
+						.setBody(json);
+				com.ning.http.client.Request httpReq = b.build();
+
+				try {
+					future = client.executeRequest(httpReq);
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+				}
+			}
+			
+			int numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password);
+
 			logNoMdc(numPoints);
 		} catch(Exception e) {
 			if (log.isWarnEnabled())
         		log.warn("Exception on posting json="+json);
 			throw new RuntimeException(e);
+		}
+		
+		if(future != null) {
+			try {
+				Response response = future.get();
+				if(response.getStatusCode() != 200) {
+					RuntimeException e = new RuntimeException("status code="+response.getStatusCode());
+					e.fillInStackTrace();
+					log.warn("Exception on second request", e);
+					throw e;
+				}
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			} catch (ExecutionException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 }

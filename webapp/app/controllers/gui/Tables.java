@@ -11,11 +11,13 @@ import java.util.Map;
 
 import models.PermissionType;
 import models.SecureTable;
+import models.message.DatasetType;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.Http.Header;
 import play.mvc.Http.Request;
@@ -55,6 +57,11 @@ public class Tables extends Controller {
 
 	public static void postData(String table) throws FileNotFoundException {
 		if(request.isNew) {
+			String mode = (String) Play.configuration.get("upgrade.mode");
+			if(mode != null && mode.startsWith("http")) {
+				throw new RuntimeException("CSV upload is turned off right now while we are upgrading our servers(please contact us and let us know at databus@nrel.gov");
+			}
+
 			if (log.isDebugEnabled())
 				log.debug("first call to controller method");
 			PermissionType p = SecurityUtil.checkSingleTable2(table);
