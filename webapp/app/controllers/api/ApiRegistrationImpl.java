@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import models.DataTypeEnum;
 import models.Entity;
 import models.EntityGroup;
 import models.EntityGroupXref;
@@ -154,6 +155,12 @@ public class ApiRegistrationImpl {
 
 		// create new Table here and add to security group as well
 		SecureTable t = new SecureTable();
+		if(msg.getDatasetType() == DatasetType.RELATIONAL_TABLE) {
+			t.setTypeOfData(DataTypeEnum.RELATIONAL);
+		} else if(msg.getDatasetType() == DatasetType.TIME_SERIES) {
+			t.setTypeOfData(DataTypeEnum.TIME_SERIES);
+		}
+
 		t.setTableName(msg.getModelName());
 		t.setDateCreated(new LocalDateTime());
 		t.setTableMeta(tm);
