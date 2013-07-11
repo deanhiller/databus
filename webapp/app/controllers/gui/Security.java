@@ -19,14 +19,13 @@ public class Security extends GuiSecure.Security {
 			unauthorized("password cannot be null");
 		
 		//We have some of our own users not in ldap for development only so check entity manager first
-		String prop = Play.configuration.getProperty("security.mode");
-		String demomode = Play.configuration.getProperty("demo.mode");
-		if("dev".equals(prop) || "true".equals(demomode)) {
+		String domain = Play.configuration.getProperty("domain");
+		if("none".equals(domain)) {
 			EntityUser u = findExistingUser(username);
 			if(u != null && password.equals(u.getPassword())) {
 				addToSession(username, u);
 				return true;
-			} else if("true".equals(demomode)) {
+			} else {
 				return false;
 			}
 		}
