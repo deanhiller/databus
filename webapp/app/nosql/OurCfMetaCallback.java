@@ -15,7 +15,7 @@ public class OurCfMetaCallback implements CreateCfCallback {
 		if(cfName.startsWith("nreldata")) {
 			cfDef.setCompactionStrategy("LeveledCompactionStrategy");
 			Map<String, String> options = new HashMap<String, String>();
-			options.put("sstable_size_in_mb", "10");
+			options.put("sstable_size_in_mb", "50");
 			cfDef.setCompactionStrategyOptions(options);
 		}
 
