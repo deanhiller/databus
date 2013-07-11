@@ -91,6 +91,7 @@ GET	/accountsSettings					gui.MySettings.mySettings
 GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
 GET	/accountsSettings/charts				gui.MySettings.myChartsSettings
 GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
+POST	/accountsSettings/deleteChart			gui.MySettings.deleteChart
 POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 POST /postsaveembeddedchartsettings		gui.MySettings.postSaveEmbeddedChartSettings
 POST /postsavescriptchartsettings			gui.MySettings.postSaveScriptChartSettings
