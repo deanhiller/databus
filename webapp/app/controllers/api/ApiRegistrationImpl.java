@@ -53,6 +53,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import play.Play;
 import play.mvc.Util;
 import play.mvc.results.BadRequest;
 
@@ -72,8 +73,19 @@ public class ApiRegistrationImpl {
 
 	private static final Logger log = LoggerFactory.getLogger(ApiRegistrationImpl.class);
 	public static int divisor = Integer.MAX_VALUE / 10;
-			
+
 	public static RegisterResponseMessage registerImpl(RegisterMessage msg, String username, String apiKey) {
+		String mode = (String) Play.configuration.get("upgrade.mode");
+		String requestUrl = null;
+		if(mode == null) {
+		} if(mode.startsWith("http")) {
+			requestUrl = mode;
+		} else if("NEW".equals(mode)) {
+			DatasetType type = msg.getDatasetType();
+			if(type == DatasetType.STREAM)
+				msg.setDatasetType(DatasetType.TIME_SERIES);
+		}
+
 		if (log.isInfoEnabled())
 			log.info("Registering table="+msg.getModelName());
 		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE 
