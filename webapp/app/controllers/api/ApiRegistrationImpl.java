@@ -127,7 +127,11 @@ public class ApiRegistrationImpl {
 		// Setup the table meta
 		DboTableMeta tm = new DboTableMeta();
 		if(msg.getDatasetType() != DatasetType.TIME_SERIES) {
-			tm.setup(msg.getModelName(), "nreldata", false);
+			String dataCf = "nreldata";
+			String mode = (String) Play.configuration.get("upgrade.mode");
+			if(mode != null && "NEW".equals(mode))
+				dataCf = "relational";
+			tm.setup(msg.getModelName(), dataCf, false);
 		} else {
 			List<DatasetColumnModel> columns = msg.getColumns();
 			if(columns.size() != 2)
