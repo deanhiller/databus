@@ -59,6 +59,9 @@ public class StartupBean extends Job {
 		Upgrade8Bean up = new Upgrade8Bean();
 		//up.readOnlyTest();
 		up.upgrade();
+		
+		TransferBean b = new TransferBean();
+		b.transfer();
 	}
 	
 	private void startMonitorService() {
