@@ -137,7 +137,7 @@ public class Utility {
 
 			// Setup the table meta
 			DboTableMeta tm = new DboTableMeta();
-			tm.setup(msg.getModelName(), "nreldata", false);
+			tm.setup(msg.getModelName(), "nreldata", false, null);
 
 			// create new Table here and add to security group as well
 			SecureTable t = new SecureTable();

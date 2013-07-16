@@ -131,7 +131,7 @@ public class ApiRegistrationImpl {
 			String mode = (String) Play.configuration.get("upgrade.mode");
 			if(mode != null && "NEW".equals(mode))
 				dataCf = "relational";
-			tm.setup(msg.getModelName(), dataCf, false);
+			tm.setup(msg.getModelName(), dataCf, false, null);
 		} else {
 			List<DatasetColumnModel> columns = msg.getColumns();
 			if(columns.size() != 2)
@@ -142,7 +142,7 @@ public class ApiRegistrationImpl {
 			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
 			tm.setTimeSeries(true);
 			tm.setTimeSeriesPartionSize(partitionSize);
-			tm.setup(msg.getModelName(), realCf, false);
+			tm.setup(msg.getModelName(), realCf, false, null);
 			tm.setColNameType(long.class);
 		}
 
