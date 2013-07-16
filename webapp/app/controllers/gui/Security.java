@@ -1,5 +1,8 @@
 package controllers.gui;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import models.EntityUser;
 import play.Play;
 
@@ -12,6 +15,8 @@ import controllers.gui.auth.GuiSecure;
 
 public class Security extends GuiSecure.Security {
 
+	private static final Logger log = LoggerFactory.getLogger(Security.class);
+
 	static boolean authenticate(String username, String password) {
 		if(username == null)
 			unauthorized("username cannot be null");
@@ -21,6 +26,7 @@ public class Security extends GuiSecure.Security {
 		//We have some of our own users not in ldap for development only so check entity manager first
 		String domain = Play.configuration.getProperty("domain");
 		if("none".equals(domain)) {
+			log.info("domain=none so authenticating databus users and not using Active Directory");
 			EntityUser u = findExistingUser(username);
 			if(u != null && password.equals(u.getPassword())) {
 				addToSession(username, u);
