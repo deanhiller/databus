@@ -27,9 +27,9 @@ public class StreamAggregation {
 	@NoSqlEmbedded
 	private List<String> urls = new ArrayList<String>();
 
-	@NoSqlIndexed
-	@NoSqlManyToOne
-	private SecurityGroup group;
+//	@NoSqlIndexed
+//	@NoSqlManyToOne
+//	private SecurityGroup group;
 
 	@NoSqlIndexed
 	@NoSqlManyToOne
@@ -51,13 +51,13 @@ public class StreamAggregation {
 		this.urls = urls;
 	}
 
-	public void setGroup(SecurityGroup group) {
-		this.group = group;
-	}
-
-	public SecurityGroup getGroup() {
-		return group;
-	}
+//	public void setGroup(SecurityGroup group) {
+//		this.group = group;
+//	}
+//
+//	public SecurityGroup getGroup() {
+//		return group;
+//	}
 
 	public SecureSchema getSchema() {
 		return schema;

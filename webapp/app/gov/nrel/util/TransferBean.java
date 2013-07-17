@@ -9,6 +9,8 @@ import java.util.Map;
 
 import javax.persistence.Column;
 
+import models.SecureSchema;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +64,8 @@ public class TransferBean {
 		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
 		props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
 
-		NoSqlEntityManagerFactory factory = Bootstrap.create(props, Play.classloader);
-		NoSqlEntityManager mgr2 = factory.createEntityManager();
+		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props, Play.classloader);
+		NoSqlEntityManager mgr2 = factory2.createEntityManager();
 		NoSqlEntityManager mgr = NoSql.em();
 
 		String cf = "User";
@@ -80,8 +82,52 @@ public class TransferBean {
 		portTableToNewCassandra(mgr, mgr2, cf);
 		cf = "SecureResourceGroupXref";
 		portTableToNewCassandra(mgr, mgr2, cf);
-		cf = "SecurityGroup";
-		portTableToNewCassandra(mgr, mgr2, cf);
+
+		//time to port indexes now...
+		buildIndexesOnNewSystem(mgr, mgr2);
+	}
+
+	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
+		String cf = "User";
+		buildIndexForCf(mgr, mgr2, cf);
+		cf = "AppProperty";
+		buildIndexForCf(mgr, mgr2, cf);
+		cf = "SdiTable";
+		buildIndexForCf(mgr, mgr2, cf);
+	}
+
+	private void buildIndexForCf(NoSqlEntityManager mgr, NoSqlEntityManager mgr2, String cf) {
+		Cursor<Object> rows = mgr2.allRows(Object.class, cf, 500);
+		int counter = 0;
+		while(rows.next()) {
+			Object obj = rows.getCurrent();
+			mgr2.put(obj);
+			
+			if(obj instanceof SecureSchema) {
+				portOverCursorToMany(mgr, mgr2, ((SecureSchema)obj));
+			}
+			
+			counter++;
+			if(counter % 50 == 0) {
+				mgr2.clear();
+				mgr2.flush();
+			}
+
+			if(counter % 300 == 0) {
+				log.info("ported "+counter+" records for cf="+cf+" and still porting");
+			}
+		}
+		
+		mgr2.clear();
+		mgr2.flush();
+	}
+
+	private void portOverCursorToMany(NoSqlEntityManager mgr,
+			NoSqlEntityManager mgr2, SecureSchema secureSchema) {
+		String id = secureSchema.getId();
+		
+		//form the row key for CursorToMany
+		
 	}
 
 	private void portTableToNewCassandra(NoSqlEntityManager mgr,

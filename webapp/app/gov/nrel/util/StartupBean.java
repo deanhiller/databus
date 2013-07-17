@@ -114,7 +114,6 @@ public class StartupBean extends Job {
 		NoSql.em().flush();
 		
 		StartupDetailed.createStuff();
-		StartupForArrays.createStuff(em);
 		StartupGroups.createStuff();
 		StartupRelational.createStuff();
 		StartupForAggregations.setup();

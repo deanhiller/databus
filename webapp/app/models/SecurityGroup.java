@@ -19,7 +19,6 @@ import com.alvazan.orm.api.z8spi.iter.Cursor;
 
 // This table the user/table pair is unique, should not be duplicated so I would
 // normally do a unique constraint here.
-@NoSqlEntity
 @NoSqlQueries({
 	@NoSqlQuery(name="findByName", query="select u from TABLE as u where u.name = :name"),
 	@NoSqlQuery(name="findAll", query="select u from TABLE as u"),

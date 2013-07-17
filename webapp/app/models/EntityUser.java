@@ -49,9 +49,6 @@ public class EntityUser extends Entity {
 	// Need to add converter to ORM for LocalDateTime
 	private transient LocalDateTime lastLoggedIn; 
 	
-	@NoSqlOneToMany(keyFieldForMap="name")
-	private List<RoleMapping> securityGroups = new ArrayList<RoleMapping>();
-	
 	//NOTE: This is here as a work around OR create user/create robot throw an exception that doesn't affect behavior but is really
 	//annoying.  We should change the webpage to perhaps pass in the username itself instead of using the EntityUser???
 	private transient String username;
@@ -95,11 +92,12 @@ public class EntityUser extends Entity {
 	} // setLastLoggedIn
 
 	void addGroup(RoleMapping tableSide) {
-		securityGroups.add(tableSide);
+		//securityGroups.add(tableSide);
 	} // addMapping
 
 	public List<RoleMapping> getGroups() {
-		return securityGroups;
+		return null;
+		//return securityGroups;
 	} // getSecurityGroups
 	
 	public String getApiKey() {

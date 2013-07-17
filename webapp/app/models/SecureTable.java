@@ -49,9 +49,9 @@ public class SecureTable extends SecureResource {
 
 	private LocalDateTime dateCreated;
 
-	@Deprecated
-	@NoSqlOneToMany
-	private List<SecurityGroup> owningGroups = new ArrayList<SecurityGroup>();
+//	@Deprecated
+//	@NoSqlOneToMany
+//	private List<SecurityGroup> owningGroups = new ArrayList<SecurityGroup>();
 	
 	@NoSqlManyToOne
 	private SecureSchema schema;
@@ -106,7 +106,6 @@ public class SecureTable extends SecureResource {
 	} // setDateCreated
 
 	public void addMapping(SecurityGroup userSide) {
-		owningGroups.add(userSide);
 	} // addMapping
 	
 	public void setSchema(SecureSchema theSchema) {
@@ -176,7 +175,7 @@ public class SecureTable extends SecureResource {
 	}
 	
 	public List<SecurityGroup> getOwningGroups() {
-		return owningGroups;
+		return null;
 	}
 
 	public static Cursor<KeyValue<SecureTable>> findAllCursor(NoSqlEntityManager em) {

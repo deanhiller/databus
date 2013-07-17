@@ -10,7 +10,6 @@ import com.alvazan.orm.api.base.anno.NoSqlManyToOne;
 import com.alvazan.orm.api.base.anno.NoSqlOneToOne;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 
-@NoSqlEntity
 public class Module {
 
 	@NoSqlIndexed

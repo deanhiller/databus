@@ -4,7 +4,6 @@ import com.alvazan.orm.api.base.anno.NoSqlEntity;
 import com.alvazan.orm.api.base.anno.NoSqlId;
 import com.alvazan.orm.api.base.anno.NoSqlManyToOne;
 
-@NoSqlEntity
 public class RoleMapping {
 
 	@NoSqlId
