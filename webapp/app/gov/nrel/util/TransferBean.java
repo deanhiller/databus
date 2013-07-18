@@ -189,6 +189,9 @@ public class TransferBean {
 		while(rows.next()) {
 			Row row = rows.getCurrent();
 			List<com.alvazan.orm.api.z8spi.action.Column> columns = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
+			for(com.alvazan.orm.api.z8spi.action.Column c : row.getColumns()) {
+				c.setTimestamp(null);
+			}
 			columns.addAll(row.getColumns());
 			raw2.put(meta2, row.getKey(), columns);
 
