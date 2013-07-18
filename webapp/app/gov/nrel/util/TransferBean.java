@@ -10,11 +10,13 @@ import java.util.Map;
 import javax.persistence.Column;
 
 import models.SecureSchema;
+import models.SecureTable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alvazan.orm.api.base.Bootstrap;
+import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.DbTypeEnum;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
@@ -83,8 +85,11 @@ public class TransferBean {
 		cf = "SecureResourceGroupXref";
 		portTableToNewCassandra(mgr, mgr2, cf);
 
+		portOverCursorToMany(mgr, mgr2);
+
 		//time to port indexes now...
 		buildIndexesOnNewSystem(mgr, mgr2);
+
 	}
 
 	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
@@ -103,10 +108,6 @@ public class TransferBean {
 			Object obj = rows.getCurrent();
 			mgr2.put(obj);
 			
-			if(obj instanceof SecureSchema) {
-				portOverCursorToMany(mgr, mgr2, ((SecureSchema)obj));
-			}
-			
 			counter++;
 			if(counter % 50 == 0) {
 				mgr2.clear();
@@ -122,12 +123,45 @@ public class TransferBean {
 		mgr2.flush();
 	}
 
-	private void portOverCursorToMany(NoSqlEntityManager mgr,
-			NoSqlEntityManager mgr2, SecureSchema secureSchema) {
-		String id = secureSchema.getId();
+	private void portOverCursorToMany(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
+		List<SecureSchema> schemas = SecureSchema.findAll(mgr);
+		List<SecureSchema> schemas2 = SecureSchema.findAll(mgr2);
 		
+		Map<String, SecureSchema> map = new HashMap<String, SecureSchema>();
+		for(SecureSchema s : schemas) {
+			map.put(s.getName(), s);
+		}
+		
+		int counter = 0;
 		//form the row key for CursorToMany
+		for(SecureSchema s: schemas2) {
+			SecureSchema oldSchema = map.get(s.getName());
+			if(oldSchema == null)
+				throw new RuntimeException("bug, all the same schemas should exist in both systems. s="+s.getName()+" does not exist. id="+s.getId());
+
+			CursorToMany<SecureTable> tables = oldSchema.getTablesCursor();
+			while(tables.next()) {
+				SecureTable table = tables.getCurrent();
+				SecureTable tb = mgr2.find(SecureTable.class, table.getId());
+				if(tb == null)
+					throw new RuntimeException("Table="+table.getName()+" does not exist for some reason.  id looked up="+table.getId());
+
+				s.getTablesCursor().addElement(tb);
+
+				counter++;
+				if(counter % 50 == 0) {
+					mgr2.put(s);
+					mgr.clear();
+					mgr2.flush();
+				}
+			}
+
+			mgr2.put(s);
+
+		}
 		
+		mgr.clear();
+		mgr2.flush();
 	}
 
 	private void portTableToNewCassandra(NoSqlEntityManager mgr,
