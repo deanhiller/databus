@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import com.alvazan.orm.api.base.Bootstrap;
 import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.DbTypeEnum;
+import com.alvazan.orm.api.base.Indexing;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.base.anno.NoSqlEmbeddable;
@@ -102,6 +103,8 @@ public class TransferBean {
 	}
 
 	private void buildIndexForCf(NoSqlEntityManager mgr, NoSqlEntityManager mgr2, String cf) {
+		log.info("building index for CF="+cf);
+		Indexing.setForcedIndexing(true);
 		Cursor<Object> rows = mgr2.allRows(Object.class, cf, 500);
 		int counter = 0;
 		while(rows.next()) {
@@ -121,9 +124,12 @@ public class TransferBean {
 		
 		mgr2.clear();
 		mgr2.flush();
+
+		Indexing.setForcedIndexing(false);
 	}
 
 	private void portOverCursorToMany(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
+		log.info("porting over all the CursorToMany of SecureTable entities");
 		List<SecureSchema> schemas = SecureSchema.findAll(mgr);
 		List<SecureSchema> schemas2 = SecureSchema.findAll(mgr2);
 		
@@ -135,10 +141,12 @@ public class TransferBean {
 		int counter = 0;
 		//form the row key for CursorToMany
 		for(SecureSchema s: schemas2) {
+			log.info("porting over database="+s.getName()+" id="+s.getId());
 			SecureSchema oldSchema = map.get(s.getName());
 			if(oldSchema == null)
 				throw new RuntimeException("bug, all the same schemas should exist in both systems. s="+s.getName()+" does not exist. id="+s.getId());
 
+			int tableCount = 0;
 			CursorToMany<SecureTable> tables = oldSchema.getTablesCursor();
 			while(tables.next()) {
 				SecureTable table = tables.getCurrent();
@@ -147,12 +155,13 @@ public class TransferBean {
 					throw new RuntimeException("Table="+table.getName()+" does not exist for some reason.  id looked up="+table.getId());
 
 				s.getTablesCursor().addElement(tb);
-
+				tableCount++;
 				counter++;
 				if(counter % 50 == 0) {
 					mgr2.put(s);
 					mgr.clear();
 					mgr2.flush();
+					log.info("For db="+s.getName()+" ported over table count="+tableCount);
 				}
 			}
 
