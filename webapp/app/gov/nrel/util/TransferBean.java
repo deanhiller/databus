@@ -86,11 +86,12 @@ public class TransferBean {
 		cf = "SecureResourceGroupXref";
 		portTableToNewCassandra(mgr, mgr2, cf);
 
-		portOverCursorToMany(mgr, mgr2);
-
 		//time to port indexes now...
 		buildIndexesOnNewSystem(mgr, mgr2);
 
+		//Now that we have indexes, we can port cursor to many
+		//need indexes first since we use indexes on new cassandra(and use one on old cassandra as well).
+		portOverCursorToMany(mgr, mgr2);
 	}
 
 	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
@@ -126,6 +127,7 @@ public class TransferBean {
 		mgr2.flush();
 
 		Indexing.setForcedIndexing(false);
+		log.info("done indexing. count="+counter+" records for cf="+cf);
 	}
 
 	private void portOverCursorToMany(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
