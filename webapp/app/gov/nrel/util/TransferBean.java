@@ -100,7 +100,7 @@ public class TransferBean extends TransferSuper {
 			
 			DboTableMeta tableMeta = table.getTableMeta();
 			List<String> names = tableMeta.getColumnNameList();
-			if(names.size() == 2) {
+			if(names.size() == 2 && timeSeriesNames.contains(names.get(0)) && timeSeriesNames.contains(names.get(1))) {
 				long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
 				tableMeta.setTimeSeries(true);
 				tableMeta.setTimeSeriesPartionSize(partitionSize);
