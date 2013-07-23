@@ -46,7 +46,7 @@ public class TransferBean extends TransferSuper {
 
 	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
-		if(upgradeMode == null || !"MONITOR".equals(upgradeMode))
+		if(upgradeMode == null || !"TRANSFER".equals(upgradeMode))
 			return; //we dont' run unless we are in transfer mode
 
 		NoSqlEntityManager mgr2 = initialize();
