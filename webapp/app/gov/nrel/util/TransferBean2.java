@@ -44,11 +44,12 @@ public class TransferBean2 extends TransferSuper {
 
 	private static final Logger log = LoggerFactory.getLogger(TransferBean2.class);
 
-	protected void transferImpl(NoSqlEntityManager mgr2) {
+	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
 		if(upgradeMode == null || !"MONITOR".equals(upgradeMode))
 			return; //we dont' run unless we are in transfer mode
 
+		NoSqlEntityManager mgr2 = initialize();
 		NoSqlEntityManager mgr = NoSql.em();
 
 		String cf = "MonitorDbo";

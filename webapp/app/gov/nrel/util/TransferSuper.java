@@ -25,13 +25,9 @@ public abstract class TransferSuper {
 
 	private static final Logger log = LoggerFactory.getLogger(TransferSuper.class);
 
-	public void transfer() {
-		NoSqlEntityManager mgr = initialize();
-		transferImpl(mgr);
-	}
-	protected abstract void transferImpl(NoSqlEntityManager mgr);
+	protected abstract void transfer();
 	
-	private NoSqlEntityManager initialize() {
+	protected NoSqlEntityManager initialize() {
 		String keyspace = (String) Play.configuration.get("transfer.nosql.cassandra.keyspace");
 		String cluster = (String) Play.configuration.get("transfer.nosql.clusterName");
 		String seeds = (String) Play.configuration.get("transfer.nosql.seeds");
