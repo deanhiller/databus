@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import javax.persistence.Column;
 
 import models.DataTypeEnum;
+import models.EntityUser;
 import models.SecureSchema;
 import models.SecureTable;
 
@@ -50,12 +51,20 @@ public class TransferBean extends TransferSuper {
 
 	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
-		if(upgradeMode == null || !"TRANSFER".equals(upgradeMode))
+		if(upgradeMode == null || !upgradeMode.startsWith("http"))
 			return; //we dont' run unless we are in transfer mode
 
 		NoSqlEntityManager mgr2 = initialize();
 		NoSqlEntityManager mgr = NoSql.em();
 
+		//NEXT, we need to check if data has already been ported so we don't port twice
+		List<SecureSchema> schemas = SecureSchema.findAll(mgr2);
+		if(schemas.size() > 0) {
+			log.info("NOT RUNNING PORT DATA scripts to new cassandra since there are existing schemas(this is very bad)");
+			return;
+		} else
+			log.info("RUNNING PORT DATA scripts to new cassandra since no databases found in new cassandra instance");
+		
 		String cf = "User";
 		portTableToNewCassandra(mgr, mgr2, cf);
 		cf = "KeyToTableName";
