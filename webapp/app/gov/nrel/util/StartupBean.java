@@ -62,6 +62,9 @@ public class StartupBean extends Job {
 		
 		TransferBean b = new TransferBean();
 		b.transfer();
+		
+		TransferBean2 b2 = new TransferBean2();
+		b2.transfer();
 	}
 	
 	private void startMonitorService() {
