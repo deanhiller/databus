@@ -125,6 +125,11 @@
 	<thead>
 	    <tr>
 	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Charts</th>
+	        <th>Csv</th>
+	        <th>Json</th>
+	        <th>Upload</th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -132,6 +137,7 @@
 	        <tr>
 		        #{if table?.typeOfData == timeseries}
 					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+					<td>${table.typeOfData}</td>
 					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
 					<td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
 					<td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>

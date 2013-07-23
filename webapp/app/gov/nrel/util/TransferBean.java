@@ -3,12 +3,16 @@ package gov.nrel.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Column;
 
+import models.DataTypeEnum;
 import models.SecureSchema;
 import models.SecureTable;
 
@@ -77,6 +81,51 @@ public class TransferBean extends TransferSuper {
 		//Now that we have indexes, we can port cursor to many
 		//need indexes first since we use indexes on new cassandra(and use one on old cassandra as well).
 		portOverCursorToMany(mgr, mgr2);
+		
+		cleanupTimeSeriesMeta(mgr2);
+	}
+
+	private void cleanupTimeSeriesMeta(NoSqlEntityManager mgr2) {
+		Set<String> timeSeriesNames = new HashSet<String>();
+		timeSeriesNames.add("time");
+		timeSeriesNames.add("value");
+		Cursor<KeyValue<SecureTable>> cursor = SecureTable.findAllCursor(mgr2);
+		int counter = 0;
+		while(cursor.next()) {
+			KeyValue<SecureTable> kv = cursor.getCurrent();
+			SecureTable table = kv.getValue();
+			if(table == null) {
+				log.warn("we could not modify table="+kv.getKey(), new RuntimeException().fillInStackTrace());
+			}
+			
+			DboTableMeta tableMeta = table.getTableMeta();
+			List<String> names = tableMeta.getColumnNameList();
+			if(names.size() == 2) {
+				long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+				tableMeta.setTimeSeries(true);
+				tableMeta.setTimeSeriesPartionSize(partitionSize);
+				table.setTypeOfData(DataTypeEnum.TIME_SERIES);
+				mgr2.put(tableMeta);
+				mgr2.put(table);
+			} else {
+				table.setTypeOfData(DataTypeEnum.RELATIONAL);
+				mgr2.put(table);
+			}
+			
+			if(counter % 50 == 0) {
+				mgr2.clear();
+				mgr2.flush();
+			}
+
+			if(counter % 300 == 0) {
+				log.info("ported "+counter+" records for cf=DboTableMeta time series changes and still porting");
+			}
+			counter++;
+		}
+		
+		mgr2.clear();
+		mgr2.flush();
+		log.info("done porting. count="+counter+" records for cf=DboTableMeta time series changes");
 	}
 
 	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
@@ -124,7 +173,7 @@ public class TransferBean extends TransferSuper {
 		for(SecureSchema s : schemas) {
 			map.put(s.getName(), s);
 		}
-		
+
 		int counter = 0;
 		//form the row key for CursorToMany
 		for(SecureSchema s: schemas2) {
@@ -153,11 +202,12 @@ public class TransferBean extends TransferSuper {
 			}
 
 			mgr2.put(s);
-
+			log.info("ported total tables="+tableCount+" for schema="+s.getName());
 		}
 		
 		mgr.clear();
 		mgr2.flush();
+		log.info("counter is at="+counter+" for all tables CursorToMany port");
 	}
 
 }
