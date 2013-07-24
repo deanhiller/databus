@@ -84,13 +84,14 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		Collections.sort(existingPartitions);
 	}
 
-	protected Integer partition(long partitionSize) {
+	protected int partition(long partitionSize) {
 		for(int i = 0; i < existingPartitions.size();i++) {
 			long partId = existingPartitions.get(i);
 			if(start < partId+partitionSize)
 				return i;
 		}
-		return null;
+
+		return existingPartitions.size();
 	}
 
 	@Override

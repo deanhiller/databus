@@ -86,6 +86,10 @@ public class StartupDetailed {
 		//do time series AFTER the flush above so security will check out ok
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES, 25, 30, StartupDetailed.GROUP1, DEAN);
 		createSeriesImplWithUnitTestData2(FAKE_TIME_SERIES2, 55, 60, StartupDetailed.GROUP1, DEAN);
+		//extra data point in another partition to really test partitions
+		putData(FAKE_TIME_SERIES2, "-297843163000", "50", DEAN);
+		putData(FAKE_TIME_SERIES2, "1372700837000", "51", DEAN);
+		
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES_WITH_NULL, 55, 60, StartupDetailed.GROUP1, DEAN);
 		//one at the beginning, one in the middle, one at the end to test all cases:
 		putData(FAKE_TIME_SERIES_WITH_NULL, ""+1, ""+Integer.MAX_VALUE, DEAN);

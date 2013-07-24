@@ -13,13 +13,13 @@ import controllers.api.ApiPostDataPointsImpl;
 public class RawTimeSeriesReversedProcessor extends RawTimeSeriesProcessor
 		implements RawSubProcessor {
 
-	protected Integer partition(long partitionSize) {
+	protected int partition(long partitionSize) {
 		for(int i = existingPartitions.size()-1; i >= 0;i--) {
 			long partId = existingPartitions.get(i);
 			if(end >= partId)
 				return i;
 		}
-		return null;
+		return -1;
 	}
 
 	protected AbstractCursor<Column> getCursorWithResults() {
