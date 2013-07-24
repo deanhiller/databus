@@ -204,7 +204,7 @@ public class ApiPostDataPointsImpl {
 		long longTime = time.longValue();
 		//find the partition
 		Long partitionSize = table.getTimeSeriesPartionSize();
-		long partitionKey = (longTime / partitionSize) * partitionSize;
+		long partitionKey = calculatePartitionId(longTime, partitionSize);
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
 		BigInteger rowKey = new BigInteger(""+partitionKey);
@@ -226,6 +226,20 @@ public class ApiPostDataPointsImpl {
 
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
+	}
+
+
+	public static long calculatePartitionId(long longTime, Long partitionSize) {
+		long partitionId = (longTime / partitionSize) * partitionSize;
+		if(partitionId < 0) {
+			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
+			if(Long.MIN_VALUE+partitionSize >= partitionId)
+				partitionId = Long.MIN_VALUE;
+			else
+				partitionId -= partitionSize; //subtract one partition size off of the id
+		}
+
+		return partitionId;
 	}
 
 	private static void postNormalTable(Map<String, String> json,

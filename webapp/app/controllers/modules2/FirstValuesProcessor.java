@@ -18,11 +18,11 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 
 	//basically, a byte is -128 to 127(long is similar) so we support -127 to 127 such that someone can negate either value and they are valid
 	//If we used Long.MIN_VALUE instead of MIN_VALUE+1, we would get exceptions when someone negates the value which happens when reverse=true
-	//private long BEGIN_OF_TIME = Long.MIN_VALUE+1;
-	private long BEGIN_OF_TIME = 0; //let's have begin of time be 1970 for now
+	private long BEGIN_OF_TIME = Long.MIN_VALUE+1;
+	//private long BEGIN_OF_TIME = 0; //let's have begin of time be 1970 for now, okay, change our mind, let's not
 	private long numValues;
 	private long counter = 0;
-	
+
 	@Override
 	protected int getNumParams() {
 		return 1;
@@ -60,7 +60,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 				params = new Path(params.getParams(), previousPath, leftOver, start, params.getOriginalEnd(), visitor.isReversed());
 			}
 		}
-		
+
 		String msg = "After the /firstvalues/ in the url must be a long value of how many data points you want returned";
 		numValues = parseLong(params.getParams().get(0), msg);
 		return params.getLeftOverPath();
