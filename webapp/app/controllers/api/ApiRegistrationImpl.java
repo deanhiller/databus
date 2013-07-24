@@ -114,8 +114,12 @@ public class ApiRegistrationImpl {
 			throw new BadRequest("Missing the schema attribute which is required");
 		}
 		
+		//change the mode if we are in NEW mode to always be TIME_SERIES....
+		String mode = (String) Play.configuration.get("upgrade.mode");
+		if("NEW".equals(mode) && msg.getDatasetType() == DatasetType.STREAM)
+			msg.setDatasetType(DatasetType.TIME_SERIES);
+
 		DatasetType type = msg.getDatasetType();
-		
 		validateColumnsForDatasetType(msg);
 		ensureTableDoesNotAlreadyExist(msg);
 		EntityUser user = SecurityUtil.fetchUser(username, apiKey);
@@ -128,7 +132,7 @@ public class ApiRegistrationImpl {
 		DboTableMeta tm = new DboTableMeta();
 		if(msg.getDatasetType() != DatasetType.TIME_SERIES) {
 			String dataCf = "nreldata";
-			String mode = (String) Play.configuration.get("upgrade.mode");
+			
 			if(mode != null && "NEW".equals(mode))
 				dataCf = "relational";
 			tm.setup(msg.getModelName(), dataCf, false, null);
@@ -244,7 +248,7 @@ public class ApiRegistrationImpl {
 	
 	private static void validateColumnsForDatasetType(RegisterMessage msg) {
 		//a STREAM dataset type must only contain columns 'time' of type bigInteger and 'value' of type bigDecimal:
-		if(msg.getDatasetType() == DatasetType.STREAM) {
+		if(msg.getDatasetType() == DatasetType.STREAM || msg.getDatasetType() == DatasetType.TIME_SERIES) {
 			if (msg.getColumns().size() == 2) {
 				DatasetColumnModel c1=msg.getColumns().get(0);
 				DatasetColumnModel c2=msg.getColumns().get(1);

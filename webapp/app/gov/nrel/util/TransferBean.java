@@ -37,6 +37,7 @@ import com.alvazan.orm.api.z8spi.Row;
 import com.alvazan.orm.api.z8spi.conv.ByteArray;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
+import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedColumn;
@@ -92,6 +93,7 @@ public class TransferBean extends TransferSuper {
 		portOverCursorToMany(mgr, mgr2);
 		
 		cleanupTimeSeriesMeta(mgr2);
+		
 	}
 
 	private void cleanupTimeSeriesMeta(NoSqlEntityManager mgr2) {

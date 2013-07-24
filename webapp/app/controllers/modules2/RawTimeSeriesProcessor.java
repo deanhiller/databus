@@ -19,6 +19,7 @@ import com.alvazan.orm.api.z3api.QueryResult;
 import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.action.Column;
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
@@ -45,7 +46,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private DboColumnMeta colMeta;
 	private boolean reverse = false;
 	private String url;
-
+	private List<Long> existingPartitions = new ArrayList<Long>();
 	private Long startPartition;
 
 	private boolean noData;
@@ -56,6 +57,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		this.url = url;
 		this.reverse = visitor.isReversed();
 
+		loadPartitions(meta);
 		partitionSize = meta.getTimeSeriesPartionSize();
 		currentPartitionId = partition(start, partitionSize);
 		if(reverse)
@@ -69,6 +71,19 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		colMeta = meta.getAllColumns().iterator().next();
 		if (log.isInfoEnabled())
 			log.info("Setting up for reading partitions, partId="+currentPartitionId+" start="+start);
+	}
+
+	private void loadPartitions(DboTableMeta meta2) {
+		DboTableMeta tableMeta = NoSql.em().find(DboTableMeta.class, "partitions");
+		NoSqlSession session = NoSql.em().getSession();
+		byte[] rowKey = StandardConverters.convertToBytes(meta2.getColumnFamily());
+		Cursor<Column> results = session.columnSlice(tableMeta, rowKey, null, null, 1000);
+		
+		while(results.next()) {
+			Column col = results.getCurrent();
+			BigInteger time = StandardConverters.convertFromBytes(BigInteger.class, col.getName());
+			existingPartitions.add(time.longValue());
+		}
 	}
 
 	private Long partition(Long time, long partitionSize) {
@@ -130,7 +145,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 
 			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
 			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
-			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
+			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 500);
 			cursor.afterLast();
 			currentPartitionId -= partitionSize;
 			if(cursor.previous())
@@ -157,7 +172,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 
 			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
 			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
-			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
+			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 500);
 			currentPartitionId += partitionSize;
 			if(cursor.next())
 				return cursor;

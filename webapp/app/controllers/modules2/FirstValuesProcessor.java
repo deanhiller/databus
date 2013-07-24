@@ -16,6 +16,9 @@ import controllers.modules2.framework.procs.PushProcessorAbstract;
 
 public class FirstValuesProcessor extends PushProcessorAbstract {
 
+	//basically, a byte is -128 to 127(long is similar) so we support -127 to 127 such that someone can negate either value and they are valid
+	//If we used Long.MIN_VALUE instead of MIN_VALUE+1, we would get exceptions when someone negates the value which happens when reverse=true
+	//private long BEGIN_OF_TIME = Long.MIN_VALUE+1;
 	private long BEGIN_OF_TIME = 0; //let's have begin of time be 1970 for now
 	private long numValues;
 	private long counter = 0;
@@ -33,7 +36,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 		if(params.getOriginalStart() == null && params.getOriginalEnd() == null) {
 			long end= System.currentTimeMillis();
 			//long start  = Long.MIN_VALUE;
-			long start  = BEGIN_OF_TIME; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
+			long start  = BEGIN_OF_TIME;
 			String previousPath = params.getPreviousPath()+"/"+start+"/"+end;
 			String leftOver = params.getLeftOverPath()+"/"+start+"/"+end;
 			params = new Path(params.getParams(), previousPath, leftOver, start, end, visitor.isReversed());
@@ -51,7 +54,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 				leftOver = leftOver+"/"+params.getOriginalEnd()+"/"+end;
 				params = new Path(params.getParams(), previousPath, leftOver, params.getOriginalEnd(), end, visitor.isReversed());
 			} else {
-				long start  = BEGIN_OF_TIME; //basically, a byte is -128 to 127(long is similar) so we support -127 to -127 such that someone can negate either value and they are valid
+				long start  = BEGIN_OF_TIME;
 				previousPath = previousPath+"/"+start+"/"+params.getOriginalEnd();
 				leftOver = leftOver+"/"+start+"/"+params.getOriginalEnd();
 				params = new Path(params.getParams(), previousPath, leftOver, start, params.getOriginalEnd(), visitor.isReversed());

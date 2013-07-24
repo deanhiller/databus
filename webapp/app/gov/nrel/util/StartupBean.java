@@ -19,6 +19,8 @@ import com.alvazan.orm.api.base.DbTypeEnum;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
+import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
 @OnApplicationStart
@@ -51,6 +53,19 @@ public class StartupBean extends Job {
 			db = DbTypeEnum.CASSANDRA;
 		}
 
+		DboTableMeta tm = NoSql.em().find(DboTableMeta.class, "partitions");
+		if(tm == null) {
+			tm = new DboTableMeta();
+			tm.setup(null, "partitions", false, null);
+			tm.setColNameType(long.class);
+			DboColumnIdMeta idMeta = new DboColumnIdMeta();
+			idMeta.setup(tm, "table", String.class, false);
+
+			NoSql.em().put(idMeta);
+			NoSql.em().put(tm);
+			NoSql.em().flush();
+		}
+
 		//This method only runs in development mode!!!!...
 		runDevelopmentStuff(db);
 		
@@ -59,7 +74,7 @@ public class StartupBean extends Job {
 		Upgrade8Bean up = new Upgrade8Bean();
 		//up.readOnlyTest();
 		up.upgrade();
-		
+
 		TransferBean b = new TransferBean();
 		b.transfer();
 		

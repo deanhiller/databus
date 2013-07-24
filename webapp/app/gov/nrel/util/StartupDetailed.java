@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import play.Play;
 
 import models.EntityUser;
@@ -22,6 +26,7 @@ import controllers.api.ApiRegistrationImpl;
 
 public class StartupDetailed {
 
+	private static final Logger log = LoggerFactory.getLogger(StartupDetailed.class);
 	//these are actually "schemas"/"databases", not groups anymore:
 	public static final String GROUP1 = "supa";
 	public static final String GROUP2 = "tempDean";

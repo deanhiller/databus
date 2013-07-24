@@ -31,7 +31,9 @@ import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.KeyValue;
+import com.alvazan.orm.api.z8spi.action.Column;
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -165,34 +167,13 @@ public class ApiPostDataPointsImpl {
 		keyCheck.add(theKey);
 		
 		if(table.isTimeSeries())
-			postTimeSeries(json, info, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
+			postTimeSeries(json, info, table, pkValue, timeIsISOFormat);
 		else
 			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 	}
 
 	private static void postTimeSeries(Map<String, String> json,
-			KeyToTableName info, DboTableMeta table, Object pkValue,
-			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
-		if (timeIsISOFormat)
-			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
-		if (log.isInfoEnabled())
-			log.info("table name = '" + table.getColumnFamily() + "'");
-		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
-		String cf = table.getColumnFamily();
-		
-		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-		//rowKey better be BigInteger
-		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
-		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
-		BigInteger time = (BigInteger) timeStamp;
-		long longTime = time.longValue();
-		//find the partition
-		Long partitionSize = table.getTimeSeriesPartionSize();
-		long partitionKey = (longTime / partitionSize) * partitionSize;
-
-		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-		row.setRowKey(new BigInteger(""+partitionKey));	
-		
+			KeyToTableName info, DboTableMeta table, Object pkValue, boolean timeIsISOFormat) {
 		Collection<DboColumnMeta> cols = table.getAllColumns();
 
 		DboColumnMeta col = cols.iterator().next();
@@ -204,6 +185,42 @@ public class ApiPostDataPointsImpl {
 		}
 		
 		Object newValue = convertToStorage(col, node);
+		postTimeSeriesImpl(table, pkValue, newValue, timeIsISOFormat);
+	}
+
+	public static void postTimeSeriesImpl(DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat) {
+		if (timeIsISOFormat)
+			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
+		if (log.isInfoEnabled())
+			log.info("table name = '" + table.getColumnFamily() + "'");
+		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
+		String cf = table.getColumnFamily();
+
+		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+		//rowKey better be BigInteger
+		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
+		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
+		BigInteger time = (BigInteger) timeStamp;
+		long longTime = time.longValue();
+		//find the partition
+		Long partitionSize = table.getTimeSeriesPartionSize();
+		long partitionKey = (longTime / partitionSize) * partitionSize;
+
+		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+		BigInteger rowKey = new BigInteger(""+partitionKey);
+		row.setRowKey(rowKey);
+
+		DboTableMeta meta = NoSql.em().find(DboTableMeta.class, "partitions");
+		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
+		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
+		Column partitionIdCol = new Column(partitionBytes, null);
+		NoSqlSession session = NoSql.em().getSession();
+		List<Column> columns = new ArrayList<Column>();
+		columns.add(partitionIdCol);
+		session.put(meta, partitionsRowKey, columns);
+		
+		Collection<DboColumnMeta> cols = table.getAllColumns();
+		DboColumnMeta col = cols.iterator().next();
 		byte[] val = col.convertToStorage2(newValue);
 		row.addColumn(colKey, val, null);
 
