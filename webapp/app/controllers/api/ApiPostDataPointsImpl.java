@@ -185,15 +185,15 @@ public class ApiPostDataPointsImpl {
 		}
 		
 		Object newValue = convertToStorage(col, node);
-		postTimeSeriesImpl(table, pkValue, newValue, timeIsISOFormat);
+		postTimeSeriesImpl(NoSql.em(), table, pkValue, newValue, timeIsISOFormat);
 	}
 
-	public static void postTimeSeriesImpl(DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat) {
+	public static void postTimeSeriesImpl(NoSqlEntityManager mgr, DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat) {
 		if (timeIsISOFormat)
 			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
 		if (log.isInfoEnabled())
 			log.info("table name = '" + table.getColumnFamily() + "'");
-		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();		
+		NoSqlTypedSession typedSession = mgr.getTypedSession();		
 		String cf = table.getColumnFamily();
 
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
@@ -210,11 +210,11 @@ public class ApiPostDataPointsImpl {
 		BigInteger rowKey = new BigInteger(""+partitionKey);
 		row.setRowKey(rowKey);
 
-		DboTableMeta meta = NoSql.em().find(DboTableMeta.class, "partitions");
+		DboTableMeta meta = mgr.find(DboTableMeta.class, "partitions");
 		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
 		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
 		Column partitionIdCol = new Column(partitionBytes, null);
-		NoSqlSession session = NoSql.em().getSession();
+		NoSqlSession session = mgr.getSession();
 		List<Column> columns = new ArrayList<Column>();
 		columns.add(partitionIdCol);
 		session.put(meta, partitionsRowKey, columns);

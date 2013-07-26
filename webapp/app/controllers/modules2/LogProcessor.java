@@ -110,7 +110,7 @@ public class LogProcessor extends PullProcessorAbstract {
 		DboColumnMeta singleCol = tableMeta.getAllColumns().iterator().next();
 		Object val = row2.get(singleCol.getColumnName());
 		
-		ApiPostDataPointsImpl.postTimeSeriesImpl(tableMeta, idVal, val, false);
+		ApiPostDataPointsImpl.postTimeSeriesImpl(NoSql.em(), tableMeta, idVal, val, false);
 	}
 
 	private void saveRelational(NoSqlTypedSession typedSession,

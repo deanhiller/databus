@@ -44,7 +44,7 @@ public class RawTimeSeriesReversedProcessor extends RawTimeSeriesProcessor
 			currentIndex--;
 			if(cursor.previous())
 				return cursor;
-		} while(hasReachedEnd(start));
+		} while(!hasReachedEnd(start));
 
 		return null;	
 	}
