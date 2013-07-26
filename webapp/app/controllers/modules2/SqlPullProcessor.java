@@ -50,7 +50,7 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 	public void start(VisitorInfo visitor) {
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)
-			throw new BadRequest("rawdata module requires a column family name");
+			throw new BadRequest("getdata module requires a column family name");
 		String sql = parameters.get(0);
 		//If this is the first time in here, it is a new request
 		String correctSql = sql.replace("+", " ");
@@ -75,7 +75,12 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 		NoSqlEntityManager em = NoSql.em();
 		NoSqlTypedSession s = em.getTypedSession();
 		
-		QueryResult result = s.createQueryCursor(sql, BATCH_SIZE);
+		QueryResult result;
+		try {
+			result = s.createQueryCursor(sql, BATCH_SIZE);
+		} catch(IllegalArgumentException e) {
+			throw new BadRequest(e.getMessage());
+		}
 
 		Map<String, SecureResourceGroupXref> schemaIds = SecurityUtil.groupSecurityCheck();
 		List<ViewInfo> views = result.getViews();
