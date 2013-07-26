@@ -67,6 +67,10 @@ public class RegisterForBatchLoad {
 
 		queryEmptyTable(tableName, httpclient);
 		
+		//test for 401, no access
+		String requestUri = "/api/rawdataV1/"+tableName+"/-"+Long.MAX_VALUE+"/"+Long.MAX_VALUE;
+		Utility.sendRequest(httpclient, requestUri, StartupGroups.ROBOT_USER, "1234324234324", 401);
+		
 		String tableName2 = "pinkBlobFromMarsDataTWO"+r;
 		registerNewStream(httpclient, tableName2);
 
