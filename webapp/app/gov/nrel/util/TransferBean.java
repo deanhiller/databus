@@ -126,8 +126,8 @@ public class TransferBean extends TransferSuper {
 			}
 			
 			if(counter % 50 == 0) {
-				mgr2.clear();
 				mgr2.flush();
+				mgr2.clear();
 			}
 
 			if(counter % 300 == 0) {
@@ -143,14 +143,14 @@ public class TransferBean extends TransferSuper {
 
 	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
 		String cf = "User";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 		cf = "AppProperty";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 		cf = "SdiTable";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 	}
 
-	private void buildIndexForCf(NoSqlEntityManager mgr, NoSqlEntityManager mgr2, String cf) {
+	private void buildIndexForCf(NoSqlEntityManager mgr2, String cf) {
 		log.info("building index for CF="+cf);
 		Indexing.setForcedIndexing(true);
 		Cursor<Object> rows = mgr2.allRows(Object.class, cf, 500);
@@ -210,6 +210,7 @@ public class TransferBean extends TransferSuper {
 					mgr2.put(s);
 					mgr.clear();
 					mgr2.flush();
+					mgr2.clear();
 					log.info("For db="+s.getName()+" ported over table count="+tableCount);
 				}
 			}

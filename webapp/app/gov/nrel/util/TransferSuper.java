@@ -84,8 +84,9 @@ public abstract class TransferSuper {
 			
 			counter++;
 			if(counter % 50 == 0) {
-				raw.clear(); //clear read cache
 				raw2.flush();
+				raw2.clear();
+				raw.clear(); //clear read cache
 			}
 
 			if(counter % 300 == 0) {
@@ -94,6 +95,7 @@ public abstract class TransferSuper {
 		}
 		
 		raw.clear(); //clear read cache
+		raw2.clear();
 		raw2.flush();
 		log.info("done porting. count="+counter+" records for cf="+cf);
 	}
