@@ -28,7 +28,8 @@ public class OurCfMetaCallback implements CreateCfCallback {
 		KeyspaceDefinition keyDef = (KeyspaceDefinition) def;
 		keyDef.setStrategyClass("org.apache.cassandra.locator.NetworkTopologyStrategy");
 		Map<String, String> map = new HashMap<String, String>();
-		map.put("strategy_options", "{DC1:3}");
+		map.put("DC1", "3");
+		//map.put("strategy_options", "DC1:3");
 		keyDef.setStrategyOptions(map);
 		return keyDef;
 	}
