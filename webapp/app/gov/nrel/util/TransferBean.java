@@ -52,8 +52,10 @@ public class TransferBean extends TransferSuper {
 
 	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
-		if(upgradeMode == null || !upgradeMode.startsWith("http"))
+		if(upgradeMode == null || !upgradeMode.startsWith("http")) {
+			log.info("NOT RUNNING PORT DATA scripts since upgrademode does not start with http");
 			return; //we dont' run unless we are in transfer mode
+		}
 
 		NoSqlEntityManager mgr2 = initialize();
 		NoSqlEntityManager mgr = NoSql.em();

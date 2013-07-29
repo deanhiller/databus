@@ -46,8 +46,10 @@ public class TransferBean2 extends TransferSuper {
 
 	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
-		if(upgradeMode == null || !"MONITOR".equals(upgradeMode))
+		if(upgradeMode == null || !"MONITOR".equals(upgradeMode)) {
+			log.info("NOT running port monitor scripts since upgrade mode is not='MONITOR'");
 			return; //we dont' run unless we are in transfer mode
+		}
 
 		NoSqlEntityManager mgr2 = initialize();
 		NoSqlEntityManager mgr = NoSql.em();
