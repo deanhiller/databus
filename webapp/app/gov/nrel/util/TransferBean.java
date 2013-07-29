@@ -200,8 +200,10 @@ public class TransferBean extends TransferSuper {
 			while(tables.next()) {
 				SecureTable table = tables.getCurrent();
 				SecureTable tb = mgr2.find(SecureTable.class, table.getId());
-				if(tb == null)
-					throw new RuntimeException("Table="+table.getName()+" does not exist for some reason.  id looked up="+table.getId());
+				if(tb == null) {
+					log.warn("Table='"+table.getName()+"' does not exist for some reason.  id looked up='"+table.getId()+"'");
+					continue;
+				}
 
 				s.getTablesCursor().addElement(tb);
 				tableCount++;
