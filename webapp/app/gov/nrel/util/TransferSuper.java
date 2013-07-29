@@ -89,7 +89,7 @@ public abstract class TransferSuper {
 				raw.clear(); //clear read cache
 			}
 
-			if(counter % 300 == 0) {
+			if(counter % 500 == 0) {
 				log.info("ported "+counter+" records for cf="+cf+" and still porting");
 			}
 		}

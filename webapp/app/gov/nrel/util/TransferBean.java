@@ -211,6 +211,9 @@ public class TransferBean extends TransferSuper {
 					mgr.clear();
 					mgr2.flush();
 					mgr2.clear();
+				}
+				
+				if(counter % 500 == 0) {
 					log.info("For db="+s.getName()+" ported over table count="+tableCount);
 				}
 			}
