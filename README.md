@@ -2,6 +2,8 @@
 
 NREL works off of this repository for databus development.  
 
+Click the Documentation link to get started on installation if you are going to try it out
+
 [Energy Databus Documentation(and support available)](http://buffalosw.com/products/databus/databus-documentation/)
 [Energy Databus Community Forum](http://en.openei.org/community/group/databus) - Where General Users can get help
 [Energy Databus Forum for Developers or Chart Creators](https://github.com/deanhiller/databus/wiki/Developer-Support-and-Help)
