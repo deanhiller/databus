@@ -1,0 +1,35 @@
+#{extends './homeTemplate.html' /}
+#{set tab:'home' /}
+#{set title:'Create Chart' /}
+
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 8. Select the Basic Line Chart in the pulldown below and click Next<br/>
+</div>
+%{
+    }
+}%
+
+#{form @postSelectedChart(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
+
+    <legend>Pick a Chart</legend>
+
+    #{formfield 'chartId'}
+    <div class="control-group ${errors.forKey('chartId') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
+        <div class="controls">
+            #{select 'chartId', items:charts, valueProperty:'id', labelProperty:'name', value:id/}
+            <span class="help-block">${errors.forKey('chartId')}</span>
+        </div>
+    </div>
+    #{/formfield}
+
+	<div class="control-group">
+	   <div class="controls">
+		  <input type="submit" name="submit" value="Next" class="btn btn-primary" />
+		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
+		</div>
+	</div>
+#{/form}

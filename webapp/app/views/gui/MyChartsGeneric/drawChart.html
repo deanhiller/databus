@@ -1,0 +1,22 @@
+#{extends './homeTemplate.html' /}
+#{set tab:'home' /}
+#{set title:'Your Chart' /}
+
+myvar=${variables.myvar1}
+url=${variables.url}
+
+#{if variables.url} 
+We are rendering the chart for dataset url=<a href="${variables.url}" target="_blank">${variables.url}</a> below.  If your chart is
+not displaying, click the url to see if there is any data!!
+#{/if}
+
+*{ <a href="@{modifyChart(encodedChart, 1 length)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{drawJustChart(encodedChart, chart.title, 1, length)}" class="btn btn-primary">Chart Only</a> }*
+
+<div id="theChart"></div>
+
+    ${chart.htmlHeaders.raw()}
+
+    <script type="text/javascript">
+        ${chart.largeChart.raw()}
+    </script>

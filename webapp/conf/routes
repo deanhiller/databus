@@ -145,6 +145,12 @@ POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabas
 POST /addgrouptodb						gui.MyDatabases.postAddGroupToDatabase
 POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
 
+GET  /charts                                                    gui.MyChartsGeneric.selectChart
+POST /charts                                                    gui.MyChartsGeneric.postSelectedChart
+GET  /charts/{chartId}/{page}                                   gui.MyChartsGeneric.chartVariables
+POST /charts/{chartId}/{page}                                   gui.MyChartsGeneric.postVariables
+GET  /charts/{chartId}/drawchart/{encoded}                    gui.MyChartsGeneric.drawChart
+
 GET  /charts/modifychart/{length}/{version}/{encodedChart}   	gui.MyCharts.modifyChart
 GET  /charts/createchart                                     	gui.MyCharts.createChart
 POST /charts/createchart                                     	gui.MyCharts.postStep1

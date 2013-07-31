@@ -4,20 +4,36 @@ import gov.nrel.util.Utility;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.Deflater;
 
+import models.ScriptChart;
+import models.message.ChartMeta;
+import models.message.ChartPageMeta;
+import models.message.RegisterMessage;
+
 import org.apache.commons.codec.binary.Base64;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.mvc.Controller;
 import play.mvc.With;
 import play.templates.JavaExtensions;
+import play.vfs.VirtualFile;
+import controllers.Parsing;
 import controllers.gui.auth.GuiSecure;
 import de.undercouch.bson4jackson.BsonFactory;
 
@@ -26,7 +42,7 @@ public class MyCharts extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyCharts.class);
 	private static int CURRENT_VERSION = 1;
-	
+
 	public static void loadChartPage() {
 		String protocol = Utility.getRedirectProtocol();
 		renderArgs.put("protocol", protocol);
