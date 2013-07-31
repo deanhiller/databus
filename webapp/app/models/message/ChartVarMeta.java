@@ -30,6 +30,10 @@ public class ChartVarMeta {
     @XmlElement(name="type")
     public String type;
 
+	@JsonProperty("defaultValue")
+    @XmlElement(name="defaultValue")
+    public String defaultValue;
+
 	public String value;
 
 	public String getNameInJavascript() {
@@ -71,6 +75,15 @@ public class ChartVarMeta {
 	public void setValue(String value) {
 		this.value = value;
 	}
+
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
 	
 }
 

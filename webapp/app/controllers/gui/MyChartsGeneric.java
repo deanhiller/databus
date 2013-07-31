@@ -48,6 +48,10 @@ public class MyChartsGeneric extends Controller {
 	private static final ObjectMapper mapper = new ObjectMapper();
 	
 	static {
+		reloadChartsIfNeeded();
+	}
+
+	private static void reloadChartsIfNeeded() {
 		boolean hasChanges = addBuiltInCharts();
 		VirtualFile highchartsDir = Play.getVirtualFile("/public/Charts");
 		
@@ -77,12 +81,7 @@ public class MyChartsGeneric extends Controller {
 			sortedCharts = new ArrayList<ChartInfo>();
 			sortedCharts.addAll(filenameToChart.values());
 			Collections.sort(sortedCharts, new ChartComparator());
-		}		
-	}
-
-	public static void selectChart() {
-		List<ChartInfo> charts = sortedCharts;
-		render(charts);
+		}
 	}
 	
 	private static void loadChart(VirtualFile vfile, String chartData, long lastModified) {
@@ -168,7 +167,15 @@ public class MyChartsGeneric extends Controller {
 		return true;
 	}
 
+	public static void selectChart() {
+		reloadChartsIfNeeded();
+		List<ChartInfo> charts = sortedCharts;
+		render(charts);
+	}
+	
 	public static void postSelectedChart(String chartId) {
+		reloadChartsIfNeeded();
+
 		ChartInfo chart = filenameToChart.get(chartId);
 		if(chart == null)
 			notFound("chart="+chartId+" not found");
@@ -180,6 +187,8 @@ public class MyChartsGeneric extends Controller {
 	}
 
 	public static void chartVariables(String chartId, int page) {
+		reloadChartsIfNeeded();
+
 		ChartInfo chart = filenameToChart.get(chartId);
 		if(chart == null)
 			notFound("chart="+chartId+" not found");
@@ -190,14 +199,19 @@ public class MyChartsGeneric extends Controller {
 	}
 
 	public static void postVariables(String chartId, int page) {
+		reloadChartsIfNeeded();
+
 		Map<String, String[]> paramMap = params.all();
 
 		Map<String, String> variablesMap = new HashMap<String, String>();
 		for(String key : paramMap.keySet()) {
 			if(key.startsWith("chart.")) {
 				String[] values = paramMap.get(key);
+				String value = values[0];
 				String javascriptKey = key.substring("chart.".length());
-				variablesMap.put(javascriptKey, values[0]);
+				if(javascriptKey.equals("url"))
+					value = stripOffHost(value);
+				variablesMap.put(javascriptKey, value);
 			}
 		}
 
@@ -217,9 +231,20 @@ public class MyChartsGeneric extends Controller {
 		drawChart(chartId, encoded);
 	}
 
+	private static String stripOffHost(String value) {
+		if(!value.startsWith("http"))
+			return value;
+		int index = value.indexOf("//");
+		String val = value.substring(index+2);
+		int nextIndex = val.indexOf("/");
+		String relativeUrl = val.substring(nextIndex);
+		return relativeUrl;
+	}
+
 	public static void drawChart(String chartId, String encoded) {
-		ChartInfo chart = filenameToChart.get(chartId);
-		if(chart == null)
+		reloadChartsIfNeeded();
+		ChartInfo info = filenameToChart.get(chartId);
+		if(info == null)
 			notFound("chart="+chartId+" not found");
 
 		byte[] decoded = Base64.decodeBase64(encoded);
@@ -238,9 +263,24 @@ public class MyChartsGeneric extends Controller {
 		for(String key : variables.keySet()) {
 			String value = variables.get(key);
 			String newVal = JavaExtensions.escapeJavaScript(value);
+			if(key.equals("url"))
+				newVal = newVal.replace("\\/", "/");
 			variables.put(key, newVal);
 		}
 
-		render(chart, variables);
+		String largeChart = info.getLargeChart();
+		String chart = replaceVariables(largeChart, variables);
+		render(info, chart, variables);
+	}
+
+	private static String replaceVariables(String largeChart, Map<String, String> variables) {
+		for(String key : variables.keySet()) {
+			String val = variables.get(key);
+			largeChart = largeChart.replaceAll("\\$\\{"+key+"\\}", val);
+		}
+		
+		//replace comments
+		largeChart = largeChart.replaceAll("\\*\\{[\\w\\W]*\\}\\*", "");
+		return largeChart;
 	}
 }

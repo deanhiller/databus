@@ -2,19 +2,12 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
-%{
-   if(gov.nrel.util.Utility.isDemoMode()) {
-}%
-<div class="alert alert-info alert-block">
-   Step 8. Select the Basic Line Chart in the pulldown below and click Next<br/>
-</div>
-%{
-    }
-}%
-
 #{form @postSelectedChart(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
     <legend>Pick a Chart</legend>
+
+    The pulldown shows all charts in your webapp/public/Charts directory. Copy and modify charts in that directory to create new charts.  Feed new charts
+    back to the community or sell them in the marketplace.
 
     #{formfield 'chartId'}
     <div class="control-group ${errors.forKey('chartId') ? 'error' : ''}">
