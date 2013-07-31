@@ -62,15 +62,16 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 	@Override
 	protected void incomingTimeValue(long time, TSRelational row) {
 		
-		
+
 		for (String column:columnsToProcess) {
 			BigDecimal value = (BigDecimal)row.get(column);
-			if(value == null)
-				return;
+			if(value == null) {
+				continue;
+			}
 			
 			if(min.get(column) == null) {
 				initValues(time, column, value);
-				return;
+				continue;
 			}
 			
 			if(value.compareTo(min.get(column)) < 0)
@@ -86,6 +87,7 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 			total.put(column, total.get(column).add(value));
 			
 		}
+		
 		numberOfPoints++;
 	}
 
@@ -94,9 +96,12 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 		max.put(colname, value);
 		minAt.put(colname, time);
 		maxAt.put(colname, time);
+		total.put(colname, value);
 		valueAtBeginWindow.put(colname, null);
 		if(startOfTheWindow == time) //we only do valueAtBeginOfWindow if the time is the first time at start of window
 			valueAtBeginWindow.put(colname, value);
+		numberOfPoints=0;
+
 	}
 
 	@Override
