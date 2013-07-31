@@ -11,19 +11,19 @@
 #This is for Active Directory.  Your IT should have an SRV record in DNS on the location of the AD server and port information.
 #Supplying your domain here llows us to use DNS to lookup the SRV record and find your Active Directory. 
 #Using a value of none disables this such that users are authenticated against the local databus database
-domain=none
+#domain=none
 %prod.domain=nrel.gov
-%qa.domain=nrel.gov
+domain=nrel.gov
 
 #Values here are inmemory or cassandra currently until hbase support is done by someone in the community
-nosql.nosqltype=inmemory
+#nosql.nosqltype=inmemory
 
 # Database configuration
 nosql.cassandra.keyspace=databus5
 
 #local cassandra settings(ONLY used when nosqltype=cassandra!!!!)
-nosql.cassandra.clusterName=TestCluster
-nosql.cassandra.seeds=localhost:9160
+#nosql.cassandra.clusterName=TestCluster
+#nosql.cassandra.seeds=localhost:9160
 
 #production settings
 #nosql.cassandra.clusterName=DatabusCluster
@@ -33,9 +33,9 @@ nosql.cassandra.seeds=localhost:9160
 %prod.nosql.nosqltype=cassandra
 %prod.nosql.cassandra.clusterName=DatabusCluster
 %prod.nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a12:9160
-%qa.nosql.nosqltype=cassandra
-%qa.nosql.cassandra.clusterName=QACluster
-%qa.nosql.cassandra.seeds=sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160
+nosql.nosqltype=cassandra
+nosql.cassandra.clusterName=QACluster
+nosql.cassandra.seeds=sdi-prod-01:9160,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160
 %demo.nosql.nosqltype=cassandra
 %demo.nosql.cassandra.clusterName=DemoCluster
 %demo.nosql.cassandra.seeds=localhost:9160
@@ -49,13 +49,13 @@ nosql.cassandra.seeds=localhost:9160
 #a setting of NEW) and NEW which ensures all new STREAMS are created as TIME_SERIES tables.  Having a url is like setting both where it
 #writes to old cassandra instance and forwards to a webserver with NEW that writes to new cassandra instance.
 #IF YOU ARE A NEW USER, YOU WILL WANT THIS SETTING TO BE NEW!!!!
-upgrade.mode=OLD
+upgrade.mode=TRANSFER
 transfer.nosql.cassandra.keyspace=databus
 transfer.nosql.port=9158
-%qa.transfer.nosql.clusterName=QAClusterB
-%qa.transfer.nosql.seeds=sdi-prod-01:9158,sdi-prod-02:9158
+transfer.nosql.clusterName=QAClusterB
+transfer.nosql.seeds=sdi-prod-01:9158,sdi-prod-02:9158
 %prod.transfer.nosql.clusterName=DatabusClusterB
-%prod.transfer.nosql.seeds=a1:9158,a2:9158
+%prod.transfer.nosql.cassandra.seeds=a1:9158,a2:9158
 
 # Application mode
 # ~~~~~

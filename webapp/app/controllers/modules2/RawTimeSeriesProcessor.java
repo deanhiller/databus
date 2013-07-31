@@ -3,6 +3,7 @@ package controllers.modules2;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.joda.time.DateTime;
@@ -19,6 +20,7 @@ import com.alvazan.orm.api.z3api.QueryResult;
 import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.action.Column;
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
@@ -26,6 +28,7 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
+import controllers.api.ApiPostDataPointsImpl;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -34,139 +37,105 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(RawTimeSeriesProcessor.class);
 
-	private DboTableMeta meta;
-	private Long currentPartitionId;
-	private byte[] endBytes;
-	private byte[] startBytes;
-	private Long start;
-	private Long end;
-	private AbstractCursor<Column> cursor;
-	private Long partitionSize;
+	protected DboTableMeta meta;
+	protected byte[] endBytes;
+	protected byte[] startBytes;
+	protected long start;
+	protected long end;
+	protected AbstractCursor<Column> cursor;
+	protected Long partitionSize;
 	private DboColumnMeta colMeta;
-	private boolean reverse = false;
 	private String url;
-
-	private Long startPartition;
-
-	private boolean noData;
+	protected int currentIndex;
+	protected List<Long> existingPartitions = new ArrayList<Long>();
 
 	@Override
 	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
 		this.meta = meta;
 		this.url = url;
-		this.reverse = visitor.isReversed();
-
-		partitionSize = meta.getTimeSeriesPartionSize();
-		currentPartitionId = partition(start, partitionSize);
-		if(reverse)
-			currentPartitionId = partition(end, partitionSize);
-
-		startPartition = currentPartitionId;
-		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
-		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
+		if(start == null || end == null)
+			throw new IllegalArgumentException("start and end must be filled in for raw processor...upstream can fill in with MAX_LONG and MIN_LONG+1 if desired");
+		
 		this.start = start;
 		this.end = end;
+		loadPartitions(meta);
+		partitionSize = meta.getTimeSeriesPartionSize();
+		currentIndex = partition(partitionSize);
+			
+		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
+		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
 		colMeta = meta.getAllColumns().iterator().next();
 		if (log.isInfoEnabled())
-			log.info("Setting up for reading partitions, partId="+currentPartitionId+" start="+start);
+			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
 	}
 
-	private Long partition(Long time, long partitionSize) {
-		if(time == null)
-			return null;
-		long partitionId = (time / partitionSize)*partitionSize;
-		if(partitionId < 0) {
-			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
-			if(Long.MIN_VALUE+partitionSize >= partitionId)
-				partitionId = Long.MIN_VALUE;
-			else
-				partitionId -= partitionSize; //subtract one partition size off of the id
+	private void loadPartitions(DboTableMeta meta2) {
+		DboTableMeta tableMeta = NoSql.em().find(DboTableMeta.class, "partitions");
+		NoSqlSession session = NoSql.em().getSession();
+		byte[] rowKey = StandardConverters.convertToBytes(meta2.getColumnFamily());
+		Cursor<Column> results = session.columnSlice(tableMeta, rowKey, null, null, 1000, BigInteger.class);
+		
+		while(results.next()) {
+			Column col = results.getCurrent();
+			BigInteger time = StandardConverters.convertFromBytes(BigInteger.class, col.getName());
+			existingPartitions.add(time.longValue());
 		}
-		return partitionId;
+		
+		Collections.sort(existingPartitions);
+	}
+
+	protected int partition(long partitionSize) {
+		for(int i = 0; i < existingPartitions.size();i++) {
+			long partId = existingPartitions.get(i);
+			if(start < partId+partitionSize)
+				return i;
+		}
+
+		return existingPartitions.size();
 	}
 
 	@Override
 	public ReadResult read() {
-		AbstractCursor<Column> cursor;
-		try {
-			if(noData)
-				return new ReadResult();
-			else if(reverse)
-				cursor = getReverseCursor();
-			else
-				cursor = getCursorWithResults();
-		} catch(NoDataException e) {
-			String time1 = convert(startPartition);
-			String time2 = convert(currentPartitionId);
-			noData = true;
-			return new ReadResult("", "We scanned partitions from time="+time1+" to time="+time2+" and found no data so are exiting.  perhaps add a start time and end time to your url");
-		}
-
+		AbstractCursor<Column> cursor = getCursorWithResults();
 		if(cursor == null)
-			return new ReadResult();
+			return new ReadResult(); //no more data to read
 
 		return translate(cursor.getCurrent());
 	}
 
-	private String convert(long startPartition2) {
-		DateTime dt = new DateTime(startPartition2);
-		return dt+"";
-	}
-
-	private AbstractCursor<Column> getReverseCursor() {
-		if(cursor != null && cursor.previous()) {
-			return cursor;
-		} else if(currentPartitionId < (start-partitionSize)) {
-			//here unlike going forwards currentPartitionId < start is valid and normal situation but
-			//currentPartitionId should not be before (start-partitionSize) as we are only searching for data
-			//from start and forward so this else if is different than getCursorWithResults one
-			return null;
-		}
-
-		int count = 0;
-		do {
-			NoSqlTypedSession em = NoSql.em().getTypedSession();
-			NoSqlSession raw = em.getRawSession();
-
-			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
-			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
-			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
-			cursor.afterLast();
-			currentPartitionId -= partitionSize;
-			if(cursor.previous())
-				return cursor;
-			count++;
-		} while(currentPartitionId > start && count < 20);
-
-		if(count >= 20)
-			throw new NoDataException("no data in 20 partitions found...not continuing");
-
-		return null;	
-	}
-
-	private AbstractCursor<Column> getCursorWithResults() {
+	protected AbstractCursor<Column> getCursorWithResults() {
 		if(cursor != null && cursor.next()) {
 			return cursor;
-		} else if(currentPartitionId > end)
+		} else if(currentIndex >= existingPartitions.size())
 			return null;
 
 		int count = 0;
 		do {
+			Long currentPartId = existingPartitions.get(currentIndex);
 			NoSqlTypedSession em = NoSql.em().getTypedSession();
 			NoSqlSession raw = em.getRawSession();
 
-			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartitionId));
+			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartId));
 			byte[] rowKey = meta.getIdColumnMeta().formVirtRowKey(rowKeyPostFix);
-			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 200);
-			currentPartitionId += partitionSize;
+			cursor = raw.columnSlice(meta, rowKey, startBytes, endBytes, 500, BigInteger.class);
+			currentIndex++;
 			if(cursor.next())
 				return cursor;
 			count++;
-		} while(currentPartitionId < end && count < 20);
 
-		if(count >= 20)
-			throw new NoDataException("no data in 20 partitions found...not continuing");
+		} while(!hasReachedEnd(end));
+
+		//reached end and no data found
 		return null;
+	}
+
+	private boolean hasReachedEnd(Long end) {
+		if(currentIndex >= existingPartitions.size())
+			return true;
+		Long partId = existingPartitions.get(currentIndex);
+		if(end < partId)
+			return true;
+		return false;
 	}
 
 	private ReadResult translate(Column current) {

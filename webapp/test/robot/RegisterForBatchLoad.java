@@ -65,6 +65,12 @@ public class RegisterForBatchLoad {
 		String tableName = "pinkBlobFromMarsData"+r;
 		registerNewStream(httpclient, tableName);
 
+		queryEmptyTable(tableName, httpclient);
+		
+		//test for 401, no access
+		String requestUri = "/api/rawdataV1/"+tableName+"/-"+Long.MAX_VALUE+"/"+Long.MAX_VALUE;
+		Utility.sendRequest(httpclient, requestUri, StartupGroups.ROBOT_USER, "1234324234324", 401);
+		
 		String tableName2 = "pinkBlobFromMarsDataTWO"+r;
 		registerNewStream(httpclient, tableName2);
 
@@ -80,6 +86,19 @@ public class RegisterForBatchLoad {
 		getData(tableName, httpclient);
 	}
 	
+	private void queryEmptyTable(String tableName, DefaultHttpClient httpclient) throws ClientProtocolException, IOException {
+		String requestUri = "/api/rawdataV1/"+tableName+"/-"+Long.MAX_VALUE+"/"+Long.MAX_VALUE;
+
+		String theString = Utility.sendRequest(httpclient, requestUri, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
+
+		ObjectMapper mapper = new ObjectMapper();		
+		Object root = mapper.readValue(theString, Object.class);
+		
+		Map map = (Map) root;
+		List dataPoints = (List) map.get("data");
+		Assert.assertEquals(0, dataPoints.size());
+	}
+
 	@Test
 	public void registerInvalidStream() throws JsonGenerationException, JsonMappingException, IOException {
 		DefaultHttpClient httpclient = new DefaultHttpClient();

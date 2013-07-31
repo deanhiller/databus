@@ -149,4 +149,14 @@ public class Trigger {
 		this.lastException = lastException;
 	}
 
+	@Override
+	public String toString() {
+		return "Trigger [id=" + id + ", url=" + url + ", rate=" + rate
+				+ ", offset=" + offset + ", before=" + before + ", after="
+				+ after + ", runAsUser=" + runAsUser + ", lastRunSuccess="
+				+ lastRunSuccess + ", lastRunTime=" + lastRunTime
+				+ ", lastRunDuration=" + lastRunDuration + ", lastException="
+				+ lastException + "]";
+	}
+
 } // Register

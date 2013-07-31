@@ -7,6 +7,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import org.mortbay.log.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import play.Play;
 
 import models.EntityUser;
@@ -22,6 +26,7 @@ import controllers.api.ApiRegistrationImpl;
 
 public class StartupDetailed {
 
+	private static final Logger log = LoggerFactory.getLogger(StartupDetailed.class);
 	//these are actually "schemas"/"databases", not groups anymore:
 	public static final String GROUP1 = "supa";
 	public static final String GROUP2 = "tempDean";
@@ -81,6 +86,10 @@ public class StartupDetailed {
 		//do time series AFTER the flush above so security will check out ok
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES, 25, 30, StartupDetailed.GROUP1, DEAN);
 		createSeriesImplWithUnitTestData2(FAKE_TIME_SERIES2, 55, 60, StartupDetailed.GROUP1, DEAN);
+		//extra data point in another partition to really test partitions
+		putData(FAKE_TIME_SERIES2, "-297843163000", "50", DEAN);
+		putData(FAKE_TIME_SERIES2, "1372700837000", "51", DEAN);
+		
 		createSeriesImplWithUnitTestData(FAKE_TIME_SERIES_WITH_NULL, 55, 60, StartupDetailed.GROUP1, DEAN);
 		//one at the beginning, one in the middle, one at the end to test all cases:
 		putData(FAKE_TIME_SERIES_WITH_NULL, ""+1, ""+Integer.MAX_VALUE, DEAN);

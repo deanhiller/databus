@@ -75,16 +75,18 @@ public class ATriggerListener {
 			long range = time - trigger.getOffset();
 			long multiplier = range / trigger.getRate();
 			long endLastPeriod = trigger.getOffset()+multiplier*trigger.getRate();
-			//since we are int he middle of veryLastPeriod to next period we don't have a full period so subtract one
+			if(endLastPeriod > time) {
+				log.warn("WE have a problem in that the window is in the future...this is our bug in that our trigger fired tooooo early then", new RuntimeException("trigger fired too early.  look next log"));
+			}
 			long beginLastPeriod = endLastPeriod - trigger.getRate();
 			start = beginLastPeriod - trigger.getBefore();
 			end = endLastPeriod+trigger.getAfter();
-
-			if(end > time) {
-				log.warn("WE have a problem in that the window is in the future...this is our bug in that our trigger fired tooooo early then", new RuntimeException("trigger fired too early"));
+			while(end > time) {
+				start -= trigger.getRate();
+				end -= trigger.getRate();
+				if(log.isInfoEnabled())
+					log.info("time="+time+" range="+range+" multiplier="+multiplier+" endLastPeriod="+endLastPeriod+" beginLastPer="+beginLastPeriod+" start="+start+" end="+end+" trigger="+trigger);
 			}
-			if(log.isInfoEnabled())
-				log.info("time="+time+" range="+range+" multiplier="+multiplier+" endLastPeriod="+endLastPeriod+" beginLastPer="+beginLastPeriod+" start="+start+" end="+end);
 		}
 
 		try {

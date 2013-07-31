@@ -76,8 +76,6 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 	
 	@Override
 	public void addMissingData(String url, String errorMsg) {
-		if (log.isWarnEnabled())
-    		log.warn("Need to finish and add error at end of all streaming="+errorMsg);
 		if(errors.size() < 10) {
 			errors.add(errorMsg);
 		}

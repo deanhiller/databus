@@ -125,6 +125,11 @@
 	<thead>
 	    <tr>
 	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Charts</th>
+	        <th>1000 rows</th>
+	        <th>1000 Json</th>
+	        <th>Upload</th>
 	    </tr>
 	</thead>
 	<tbody>
@@ -132,13 +137,19 @@
 	        <tr>
 		        #{if table?.typeOfData == timeseries}
 					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+					<td>${table.typeOfData}</td>
 					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
 					<td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
 					<td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
 					<td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
 				#{/if}
 				#{else}
-					<!-- once we have a relational data view page, put the link here! -->
+				    <td>${table.tableName}</td>
+                    <td>${table.typeOfData}</td>
+                    <td></td>
+                    <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
+                    <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
+                    <td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
 				#{/else}
 	            
 	        </tr>

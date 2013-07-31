@@ -1,9 +1,6 @@
-The NREL Energy Databus is not based on any works that prevent Mozilla licensing.
-
-The modbus directory however has it's own license since it is based on a GPL library.  That license is found
-in the modbus directory.
-
-The NREL Energy Databus is based on the following Mozilla Public License
+The modbus client for Databus code is based on the Mozilla Public license BUT also uses a library based on GPL version 3 so if you use
+the entire modbus client, the entire work is based on GPL version 3, but if you use just the Modbus code, then the work is based on
+just the Mozilla Public License 2.0.  For more information, you can google "GPL and Mozilla Public License compatibility"
 
 Mozilla Public License
 Version 2.0

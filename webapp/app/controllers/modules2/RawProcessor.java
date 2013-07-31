@@ -97,7 +97,10 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		DboTableMeta meta = sdiTable.getTableMeta();
 		
 		if(meta.isTimeSeries()) {
-			subprocessor = new RawTimeSeriesProcessor();
+			if(visitor.isReversed())
+				subprocessor = new RawTimeSeriesReversedProcessor();
+			else
+				subprocessor = new RawTimeSeriesProcessor();
 		} else
 			subprocessor = new RawStreamProcessor();
 		

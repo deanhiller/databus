@@ -1,5 +1,6 @@
 package controllers.gui;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -107,6 +108,49 @@ public class SaveBatch implements Runnable {
 	}
 
 	private void processLine(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
+		if(table.isTimeSeries())
+			processLineTimeSeries(mgr, line, session);
+		else
+			processLineRel(mgr, line, session);
+	}
+
+	private void processLineTimeSeries(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
+		try {
+			BigInteger time = null;
+			Object value = null;
+			for(int i = 0; i < headersize; i++) {
+				String col = line.getColumns()[i];
+				DboColumnMeta meta = headers.get(i);
+				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
+				if(meta instanceof DboColumnIdMeta)
+					time = (BigInteger) val;
+				else
+					value = val;
+			}
+
+			ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, time, value, false);
+
+		} catch(Exception e) {
+			if (log.isWarnEnabled())
+        		log.warn("csv upload - Exception on line num="+line.getLineNumber(), e);
+			reportError(request, "Exception processing line number="+line.getLineNumber()+" exc="+e.getMessage());
+		}
+		
+		if(count >= FLUSH_SIZE) {
+			flushCount++;
+			long preFlush = System.currentTimeMillis();
+			mgr.flush();
+			long postFlush = System.currentTimeMillis();
+			mgr.clear();
+			count=0;
+			if (log.isDebugEnabled()) {
+				accumulatedFlushTime+=System.currentTimeMillis()-preFlush;
+				log.debug("flush count: "+flushCount+", time to flush once: "+(postFlush-preFlush)+ ", time to clear "+(System.currentTimeMillis()-postFlush)+" total flush time: "+accumulatedFlushTime);
+			}
+		}
+	}
+
+	private void processLineRel(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
 			TypedRow row = session.createTypedRow(tableColumnFamily);
 			for(int i = 0; i < headersize; i++) {

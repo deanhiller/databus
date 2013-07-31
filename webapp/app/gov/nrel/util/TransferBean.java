@@ -3,12 +3,17 @@ package gov.nrel.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Column;
 
+import models.DataTypeEnum;
+import models.EntityUser;
 import models.SecureSchema;
 import models.SecureTable;
 
@@ -32,6 +37,7 @@ import com.alvazan.orm.api.z8spi.Row;
 import com.alvazan.orm.api.z8spi.conv.ByteArray;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
+import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedColumn;
@@ -40,37 +46,28 @@ import com.alvazan.play.NoSql;
 
 import play.Play;
 
-public class TransferBean {
+public class TransferBean extends TransferSuper {
 
 	private static final Logger log = LoggerFactory.getLogger(TransferBean.class);
 
 	public void transfer() {
 		String upgradeMode = (String) Play.configuration.get("upgrade.mode");
-		if(upgradeMode == null || !"TRANSFER".equals(upgradeMode))
+		if(upgradeMode == null || !upgradeMode.startsWith("http")) {
+			log.info("NOT RUNNING PORT DATA scripts since upgrademode does not start with http");
 			return; //we dont' run unless we are in transfer mode
+		}
 
-		String keyspace = (String) Play.configuration.get("transfer.nosql.cassandra.keyspace");
-		String cluster = (String) Play.configuration.get("transfer.nosql.clusterName");
-		String seeds = (String) Play.configuration.get("transfer.nosql.seeds");
-		String port = (String) Play.configuration.get("transfer.nosql.port");
-
-        List<Class> classes = Play.classloader.getAnnotatedClasses(NoSqlEntity.class);
-        List<Class> classEmbeddables = Play.classloader.getAnnotatedClasses(NoSqlEmbeddable.class);
-        classes.addAll(classEmbeddables);
-        
-		Map<String, Object> props = new HashMap<String, Object>();
-		props.put(Bootstrap.TYPE, "cassandra");
-		props.put(Bootstrap.CASSANDRA_KEYSPACE, keyspace);
-		props.put(Bootstrap.CASSANDRA_CLUSTERNAME, cluster);
-		props.put(Bootstrap.CASSANDRA_SEEDS, seeds);
-		props.put(Bootstrap.CASSANDRA_THRIFT_PORT, port);
-		props.put(Bootstrap.AUTO_CREATE_KEY, "create");
-		props.put(Bootstrap.LIST_OF_EXTRA_CLASSES_TO_SCAN_KEY, classes);
-
-		NoSqlEntityManagerFactory factory2 = Bootstrap.create(props, Play.classloader);
-		NoSqlEntityManager mgr2 = factory2.createEntityManager();
+		NoSqlEntityManager mgr2 = initialize();
 		NoSqlEntityManager mgr = NoSql.em();
 
+		//NEXT, we need to check if data has already been ported so we don't port twice
+		List<SecureSchema> schemas = SecureSchema.findAll(mgr2);
+		if(schemas.size() > 0) {
+			log.info("NOT RUNNING PORT DATA scripts to new cassandra since there are existing schemas(this is very bad)");
+			return;
+		} else
+			log.info("RUNNING PORT DATA scripts to new cassandra since no databases found in new cassandra instance");
+		
 		String cf = "User";
 		portTableToNewCassandra(mgr, mgr2, cf);
 		cf = "KeyToTableName";
@@ -85,25 +82,75 @@ public class TransferBean {
 		portTableToNewCassandra(mgr, mgr2, cf);
 		cf = "SecureResourceGroupXref";
 		portTableToNewCassandra(mgr, mgr2, cf);
-
+		cf = "DboTableMeta";
+		portTableToNewCassandra(mgr, mgr2, cf);
+		cf = "DboColumnMeta";
+		portTableToNewCassandra(mgr, mgr2, cf);
+				
 		//time to port indexes now...
 		buildIndexesOnNewSystem(mgr, mgr2);
 
 		//Now that we have indexes, we can port cursor to many
 		//need indexes first since we use indexes on new cassandra(and use one on old cassandra as well).
 		portOverCursorToMany(mgr, mgr2);
+		
+		cleanupTimeSeriesMeta(mgr2);
+		
+	}
+
+	private void cleanupTimeSeriesMeta(NoSqlEntityManager mgr2) {
+		Set<String> timeSeriesNames = new HashSet<String>();
+		timeSeriesNames.add("time");
+		timeSeriesNames.add("value");
+		Cursor<KeyValue<SecureTable>> cursor = SecureTable.findAllCursor(mgr2);
+		int counter = 0;
+		while(cursor.next()) {
+			KeyValue<SecureTable> kv = cursor.getCurrent();
+			SecureTable table = kv.getValue();
+			if(table == null) {
+				log.warn("we could not modify table="+kv.getKey(), new RuntimeException().fillInStackTrace());
+			}
+			
+			DboTableMeta tableMeta = table.getTableMeta();
+			List<String> names = tableMeta.getColumnNameList();
+			if(names.size() == 2 && timeSeriesNames.contains(names.get(0)) && timeSeriesNames.contains(names.get(1))) {
+				long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+				tableMeta.setTimeSeries(true);
+				tableMeta.setTimeSeriesPartionSize(partitionSize);
+				table.setTypeOfData(DataTypeEnum.TIME_SERIES);
+				mgr2.put(tableMeta);
+				mgr2.put(table);
+			} else {
+				table.setTypeOfData(DataTypeEnum.RELATIONAL);
+				mgr2.put(table);
+			}
+			
+			if(counter % 50 == 0) {
+				mgr2.flush();
+				mgr2.clear();
+			}
+
+			if(counter % 300 == 0) {
+				log.info("ported "+counter+" records for cf=DboTableMeta time series changes and still porting");
+			}
+			counter++;
+		}
+		
+		mgr2.clear();
+		mgr2.flush();
+		log.info("done porting. count="+counter+" records for cf=DboTableMeta time series changes");
 	}
 
 	private void buildIndexesOnNewSystem(NoSqlEntityManager mgr, NoSqlEntityManager mgr2) {
 		String cf = "User";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 		cf = "AppProperty";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 		cf = "SdiTable";
-		buildIndexForCf(mgr, mgr2, cf);
+		buildIndexForCf(mgr2, cf);
 	}
 
-	private void buildIndexForCf(NoSqlEntityManager mgr, NoSqlEntityManager mgr2, String cf) {
+	private void buildIndexForCf(NoSqlEntityManager mgr2, String cf) {
 		log.info("building index for CF="+cf);
 		Indexing.setForcedIndexing(true);
 		Cursor<Object> rows = mgr2.allRows(Object.class, cf, 500);
@@ -139,7 +186,7 @@ public class TransferBean {
 		for(SecureSchema s : schemas) {
 			map.put(s.getName(), s);
 		}
-		
+
 		int counter = 0;
 		//form the row key for CursorToMany
 		for(SecureSchema s: schemas2) {
@@ -153,8 +200,10 @@ public class TransferBean {
 			while(tables.next()) {
 				SecureTable table = tables.getCurrent();
 				SecureTable tb = mgr2.find(SecureTable.class, table.getId());
-				if(tb == null)
-					throw new RuntimeException("Table="+table.getName()+" does not exist for some reason.  id looked up="+table.getId());
+				if(tb == null) {
+					log.warn("Table='"+table.getName()+"' does not exist for some reason.  id looked up='"+table.getId()+"'");
+					continue;
+				}
 
 				s.getTablesCursor().addElement(tb);
 				tableCount++;
@@ -163,63 +212,21 @@ public class TransferBean {
 					mgr2.put(s);
 					mgr.clear();
 					mgr2.flush();
+					mgr2.clear();
+				}
+				
+				if(counter % 500 == 0) {
 					log.info("For db="+s.getName()+" ported over table count="+tableCount);
 				}
 			}
 
 			mgr2.put(s);
-
+			log.info("ported total tables="+tableCount+" for schema="+s.getName());
 		}
 		
 		mgr.clear();
 		mgr2.flush();
-	}
-
-	private void portTableToNewCassandra(NoSqlEntityManager mgr,
-			NoSqlEntityManager mgr2, String cf) {
-		log.info("starting port of Column Family="+cf);
-		NoSqlTypedSession session = mgr.getTypedSession();
-		NoSqlTypedSession session2 = mgr2.getTypedSession();
-		NoSqlSession raw = session.getRawSession();
-		NoSqlSession raw2 = session2.getRawSession();
-		
-		DboTableMeta meta = mgr.find(DboTableMeta.class, cf);
-		DboTableMeta meta2 = mgr2.find(DboTableMeta.class, cf);
-		AbstractCursor<Row> rows = raw.allRows(meta, 500);
-		
-		int counter = 0;
-		while(rows.next()) {
-			Row row = rows.getCurrent();
-			List<com.alvazan.orm.api.z8spi.action.Column> columns = new ArrayList<com.alvazan.orm.api.z8spi.action.Column>();
-			for(com.alvazan.orm.api.z8spi.action.Column c : row.getColumns()) {
-				c.setTimestamp(null);
-			}
-			columns.addAll(row.getColumns());
-			raw2.put(meta2, row.getKey(), columns);
-
-//debug code to see values of bytes easier...			
-//			ByteArray b = new ByteArray(row.getKey());
-//			int d = 5+6;
-//			for(com.alvazan.orm.api.z8spi.action.Column c : columns) {
-//				ByteArray name = new ByteArray(c.getName());
-//				ByteArray col = new ByteArray(c.getValue());
-//				int a = 5+4;
-//			}
-			
-			counter++;
-			if(counter % 50 == 0) {
-				raw.clear(); //clear read cache
-				raw2.flush();
-			}
-
-			if(counter % 300 == 0) {
-				log.info("ported "+counter+" records for cf="+cf+" and still porting");
-			}
-		}
-		
-		raw.clear(); //clear read cache
-		raw2.flush();
-		log.info("done porting. count="+counter+" records for cf="+cf);
+		log.info("counter is at="+counter+" for all tables CursorToMany port");
 	}
 
 }

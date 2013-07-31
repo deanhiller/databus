@@ -10,6 +10,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import models.DataTypeEnum;
 import models.EntityUser;
 import models.KeyToTableName;
 import models.RoleMapping;
@@ -22,6 +23,7 @@ import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.play.NoSql;
 
+import controllers.SecurityUtil;
 import controllers.TableInfo;
 import controllers.gui.auth.GuiSecure;
 import play.mvc.Controller;
@@ -99,21 +101,21 @@ public class MyStuff extends Controller {
 		return null;
 	}
 	public static void tableDataset(String table) {
-		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema group = authTableCheck(table, user);
-		if(group == null)
-			unauthorized("You have no access to this table");
+		SecureTable tab = SecurityUtil.checkSingleTable(table);
 		
-		redirect("/api/csv/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
+		if(tab.getTypeOfData() == DataTypeEnum.RELATIONAL)
+			redirect("/api/csv/firstvaluesV1/1000/getdataV1/select+t+from+"+table+"+as+t");
+		else
+			redirect("/api/csv/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
 	}
 
 	public static void tableJson(String table) {
-		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema group = authTableCheck(table, user);
-		if(group == null)
-			unauthorized("You have no access to this table");
+		SecureTable tab = SecurityUtil.checkSingleTable(table);
 		
-		redirect("/api/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
+		if(tab.getTypeOfData() == DataTypeEnum.RELATIONAL)
+			redirect("/api/firstvaluesV1/1000/getdataV1/select+t+from+"+table+"+as+t");
+		else
+			redirect("/api/firstvaluesV1/1000/rawdataV1/"+table+"?reverse=true");
 	}
 	
 	public static void tableChart(String table) {

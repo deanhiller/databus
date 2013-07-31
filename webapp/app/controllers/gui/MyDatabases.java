@@ -110,7 +110,8 @@ public class MyDatabases extends Controller {
 		List<PlayOrmCronJob> mons = svc.getMonitors(ids);
 		List<TableMonitor> monitors = new ArrayList<TableMonitor>();
 		for(PlayOrmCronJob m : mons) {
-			monitors.add(TableMonitor.copy(m));
+			if(m != null)
+				monitors.add(TableMonitor.copy(m));
 		}
 		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
 		render(user, schema, oldSchemaName, tables, monitors, timeseries);

@@ -18,6 +18,7 @@ import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
+import controllers.api.ApiPostDataPointsImpl;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -80,8 +81,7 @@ public class LogProcessor extends PullProcessorAbstract {
 			theRows.add(result);
 			TSRelational row2 = result.getRow();
 			if(row2 != null) {
-				TypedRow row = createRow(typedSession, row2);
-				typedSession.put(tableMeta.getColumnFamily(), row);
+				saveData(typedSession, row2);
 			}
 			if(result.isEndOfStream())
 				break;
@@ -95,19 +95,38 @@ public class LogProcessor extends PullProcessorAbstract {
 		return null;// will continue when lower layers have more data
 	}
 
-	private TypedRow createRow(NoSqlTypedSession typedSession, TSRelational row2) {
-		TypedRow row = typedSession.createTypedRow(tableMeta.getColumnFamily());
+	private void saveData(NoSqlTypedSession typedSession, TSRelational row2) {
+		if(tableMeta.isTimeSeries())
+			saveTimeSeries(typedSession, row2);
+		else {
+			saveRelational(typedSession, row2);
+		}
+	}
+
+	private void saveTimeSeries(NoSqlTypedSession typedSession, TSRelational row2) {
+		String idName = tableMeta.getIdColumnMeta().getColumnName();
+		Object idVal = row2.get(idName);
 		
+		DboColumnMeta singleCol = tableMeta.getAllColumns().iterator().next();
+		Object val = row2.get(singleCol.getColumnName());
+		
+		ApiPostDataPointsImpl.postTimeSeriesImpl(NoSql.em(), tableMeta, idVal, val, false);
+	}
+
+	private void saveRelational(NoSqlTypedSession typedSession,
+			TSRelational row2) {
+		TypedRow row = typedSession.createTypedRow(tableMeta.getColumnFamily());
+
 		String idName = tableMeta.getIdColumnMeta().getColumnName();
 		Object idVal = row2.get(idName);
 		row.setRowKey(idVal);
-		
+
 		for(DboColumnMeta m : tableMeta.getAllColumns()) {
 			Object val = row2.get(m.getColumnName());
 			row.addColumn(m.getColumnName(), val);
 		}
 		
-		return row;
+		typedSession.put(tableMeta.getColumnFamily(), row);
 	}
 
 }

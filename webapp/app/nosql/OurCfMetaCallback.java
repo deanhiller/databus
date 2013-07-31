@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.alvazan.orm.api.z8spi.CreateCfCallback;
 import com.netflix.astyanax.ddl.ColumnFamilyDefinition;
+import com.netflix.astyanax.ddl.KeyspaceDefinition;
 
 public class OurCfMetaCallback implements CreateCfCallback {
 
@@ -20,6 +21,17 @@ public class OurCfMetaCallback implements CreateCfCallback {
 		}
 
 		return cfDef;
+	}
+
+	@Override
+	public Object configureKeySpace(String keyspaceName, Object def) {
+		KeyspaceDefinition keyDef = (KeyspaceDefinition) def;
+		keyDef.setStrategyClass("org.apache.cassandra.locator.NetworkTopologyStrategy");
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("DC1", "3");
+		//map.put("strategy_options", "DC1:3");
+		keyDef.setStrategyOptions(map);
+		return keyDef;
 	}
 
 }
