@@ -157,7 +157,7 @@ public class MyChartsGeneric extends Controller {
 		if(filenameToChart != null)
 			return false;
 		filenameToChart = new HashMap<String, ChartInfo>();
-		ChartInfo chartInfo = new ChartInfo("/charts/createchart", "3-Axis Builtin Chart", "A basic chart with 1 to 3 y axis and can draw up to 5 lines");
+		ChartInfo chartInfo = new ChartInfo("/chartbasic/createchart", "3-Axis Builtin Chart", "A basic chart with 1 to 3 y axis and can draw up to 5 lines");
 		filenameToChart.put(chartInfo.getId(), chartInfo);
 
 		return true;
