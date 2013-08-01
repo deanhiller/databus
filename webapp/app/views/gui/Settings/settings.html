@@ -1,0 +1,36 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Account' /}
+
+<!-- JQuery -->
+<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+        
+
+	<div class="row-fluid">
+	    <div class="span12">
+			<h1 class="db_page_title">My Settings</h1>
+			<br />
+			<ul class="nav nav-tabs">
+				<li class="active">
+					<a id="mydashboard_settings">Dashboard</a>
+				</li>
+				#{if userCharts.size() > 0}
+				<li>
+					<a id="mycharts_settings">My Charts</a>
+				</li>
+				#{/if}
+				<li>
+					<a id="addchart_settings">Add a Chart</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="row-fluid">
+		<div id="my_settings_content" class="span12" style="margin-left: 20px;">
+		#{doLayout /}
+		</div>
+	</div>
+
+
+
+
+

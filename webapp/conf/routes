@@ -96,6 +96,8 @@ POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 POST /postsaveembeddedchartsettings		gui.MySettings.postSaveEmbeddedChartSettings
 POST /postsavescriptchartsettings			gui.MySettings.postSaveScriptChartSettings
 
+GET  /settings/dashboard                gui.Settings.dashboardSettings
+POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************
