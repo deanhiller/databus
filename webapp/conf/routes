@@ -147,20 +147,22 @@ POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
 
 GET  /charts                                                    gui.MyChartsGeneric.selectChart
 POST /charts                                                    gui.MyChartsGeneric.postSelectedChart
-GET  /charts/{chartId}/{page}                                   gui.MyChartsGeneric.chartVariables
-POST /charts/{chartId}/{page}                                   gui.MyChartsGeneric.postVariables
-GET  /charts/{chartId}/drawchart/{encoded}                    gui.MyChartsGeneric.drawChart
+GET  /chart/{chartId}/{page}/{encoded}                         gui.MyChartsGeneric.chartVariables
+POST /chart/{chartId}/{page}/{encoded}                         gui.MyChartsGeneric.postVariables
+GET  /charts/drawchart/{chartId}/{encoded}                      gui.MyChartsGeneric.drawChart
+GET  /charts/largechart/{chartId}/{encoded}                     gui.MyChartsGeneric.largeChart
+GET  /charts/smallchart/{chartId}/{encoded}                     gui.MyChartsGeneric.smallChart
 
-GET  /charts/modifychart/{length}/{version}/{encodedChart}   	gui.MyCharts.modifyChart
-GET  /charts/createchart                                     	gui.MyCharts.createChart
-POST /charts/createchart                                     	gui.MyCharts.postStep1
-GET  /charts/createchart/step2/{length}/{version}/{encodedChart}	gui.MyCharts.createStep2
-POST /charts/createchart/step2                                 	gui.MyCharts.postStep2
-GET  /charts/chart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.drawJustChart
-GET  /charts/jschart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.justJavascript
-GET  /charts/drawchart/{length}/{version}/{encodedChart}       	gui.MyCharts.drawChart
-GET 	/charts/loadChartPage								gui.MyCharts.loadChartPage
-GET 	/charts/loadChartDiv								gui.MyCharts.loadChartDiv					
+GET  /chartbasic/modifychart/{length}/{version}/{encodedChart}   	gui.MyCharts.modifyChart
+GET  /chartbasic/createchart                                     	gui.MyCharts.createChart
+POST /chartbasic/createchart                                     	gui.MyCharts.postStep1
+GET  /chartbasic/createchart/step2/{length}/{version}/{encodedChart}	gui.MyCharts.createStep2
+POST /chartbasic/createchart/step2                                 	gui.MyCharts.postStep2
+GET  /chartbasic/chart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.drawJustChart
+GET  /chartbasic/jschart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.justJavascript
+GET  /chartbasic/drawchart/{length}/{version}/{encodedChart}       	gui.MyCharts.drawChart
+GET  /chartbasic/loadChartPage								gui.MyCharts.loadChartPage
+GET  /chartbasic/loadChartDiv								gui.MyCharts.loadChartDiv					
 
 # GUI Summary Pages
 # ******************************************************************************

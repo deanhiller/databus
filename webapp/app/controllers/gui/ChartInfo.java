@@ -48,6 +48,8 @@ public class ChartInfo {
 	}
 
 	public String getSmallChart() {
+		if(smallChart == null)
+			return largeChart;
 		return smallChart;
 	}
 

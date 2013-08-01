@@ -26,6 +26,10 @@ public class ChartMeta {
     @XmlElement(name="description")
     public String description;
 	
+	@JsonProperty("needsHighChartsLicense")
+	@XmlElement(name="needsHighChartsLicense")
+    public boolean needsHighChartsLicense;
+	
 	@JsonProperty("pages")
     @XmlElement(name="pages")
 	private List<ChartPageMeta> pages;
@@ -52,6 +56,14 @@ public class ChartMeta {
 
 	public void setPages(List<ChartPageMeta> pages) {
 		this.pages = pages;
+	}
+
+	public boolean isNeedsHighChartsLicense() {
+		return needsHighChartsLicense;
+	}
+
+	public void setNeedsHighChartsLicense(boolean needsHighChartsLicense) {
+		this.needsHighChartsLicense = needsHighChartsLicense;
 	}
 
 }

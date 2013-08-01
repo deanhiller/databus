@@ -13,6 +13,7 @@ import java.util.Map;
 
 import models.message.ChartMeta;
 import models.message.ChartPageMeta;
+import models.message.ChartVarMeta;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
@@ -128,11 +129,6 @@ public class MyChartsGeneric extends Controller {
 			return;
 		}
 
-		if(chartMeta.getPages().size() != 1) {
-			log.warn("Number of pages in "+META_META+" section must be 1 at this time until we expand.  We are skipping the chart load of file="+name);
-			return;
-		}
-
 		String htmlHeaders = chartData.substring(indexHead+META_HEAD.length(), indexLarge);
 		
 		String largeChart;
@@ -174,36 +170,48 @@ public class MyChartsGeneric extends Controller {
 	}
 	
 	public static void postSelectedChart(String chartId) {
-		reloadChartsIfNeeded();
-
-		ChartInfo chart = filenameToChart.get(chartId);
-		if(chart == null)
-			notFound("chart="+chartId+" not found");
+		ChartInfo chart = fetchChart(chartId);
 		
 		if(chart.isBuiltinChart()) {
 			redirect(chart.getRoute());
 		}
-		chartVariables(chartId, 0);
+		String encoded = "start";
+		chartVariables(chartId, 0, encoded);
 	}
 
-	public static void chartVariables(String chartId, int page) {
-		reloadChartsIfNeeded();
+	public static void chartVariables(String chartId, int page, String encoded) {
+		ChartInfo chart = fetchChart(chartId);
+		if(page < 0 || page >= chart.getChartMeta().getPages().size())
+			notFound("this page is not found");
+		ChartPageMeta pageMeta = chart.getChartMeta().getPages().get(page);
+		if(!"start".equals(encoded)) {
+			Map<String, String> variables = decodeVariables(encoded);
+			for(ChartVarMeta var : pageMeta.getVariables()) {
+				String value = variables.get(var.getNameInJavascript());
+				var.setValue(value);
+			}
+		}
 
+		String subtitle = "("+(page+1) +" of "+chart.getChartMeta().getPages().size()+")";
+		boolean isLastPage = false;
+		if(page == chart.getChartMeta().getPages().size()-1)
+			isLastPage = true;
+		render(chart, pageMeta, chartId, page, encoded, isLastPage, subtitle);
+	}
+
+	private static ChartInfo fetchChart(String chartId) {
+		reloadChartsIfNeeded();
 		ChartInfo chart = filenameToChart.get(chartId);
 		if(chart == null)
-			notFound("chart="+chartId+" not found");
-
-		ChartMeta meta = chart.getChartMeta();
-		ChartPageMeta pageMeta = meta.getPages().get(page);
-		render(chart, pageMeta, chartId, page);
+			notFound("chart="+chartId+" was not found in our Charts directory");
+		return chart;
 	}
 
-	public static void postVariables(String chartId, int page) {
-		reloadChartsIfNeeded();
+	public static void postVariables(String chartId, int page, String encoded) {
+		ChartInfo chart = fetchChart(chartId);
 
 		Map<String, String[]> paramMap = params.all();
-
-		Map<String, String> variablesMap = new HashMap<String, String>();
+		Map<String, String> variablesMap = decodeVariables(encoded);
 		for(String key : paramMap.keySet()) {
 			if(key.startsWith("chart.")) {
 				String[] values = paramMap.get(key);
@@ -215,7 +223,6 @@ public class MyChartsGeneric extends Controller {
 			}
 		}
 
-		String encoded;
 		try {
 			encoded = mapper.writeValueAsString(variablesMap);
 		} catch (JsonGenerationException e) {
@@ -228,7 +235,12 @@ public class MyChartsGeneric extends Controller {
 
 		byte[] bytes = encoded.getBytes();
 		encoded = Base64.encodeBase64URLSafeString(bytes);
-		drawChart(chartId, encoded);
+		
+		page = page+1;
+		if(page >= chart.getChartMeta().getPages().size())
+			drawChart(chartId, encoded);
+		else
+			chartVariables(chartId, page, encoded);
 	}
 
 	private static String stripOffHost(String value) {
@@ -242,11 +254,35 @@ public class MyChartsGeneric extends Controller {
 	}
 
 	public static void drawChart(String chartId, String encoded) {
-		reloadChartsIfNeeded();
-		ChartInfo info = filenameToChart.get(chartId);
-		if(info == null)
-			notFound("chart="+chartId+" not found");
+		ChartInfo info = fetchChart(chartId);
+		Map<String, String> variables = decodeVariables(encoded);
 
+		String largeChart = info.getLargeChart();
+		String chart = replaceVariables(largeChart, variables);
+		render(info, chart, variables, chartId, encoded);
+	}
+
+	public static void largeChart(String chartId, String encoded) {
+		ChartInfo info = fetchChart(chartId);
+		Map<String, String> variables = decodeVariables(encoded);
+
+		String largeChart = info.getLargeChart();
+		String chart = replaceVariables(largeChart, variables);
+		render("@chartonly", info, chart, variables, chartId, encoded);
+	}
+
+	public static void smallChart(String chartId, String encoded) {
+		ChartInfo info = fetchChart(chartId);
+		Map<String, String> variables = decodeVariables(encoded);
+
+		String largeChart = info.getSmallChart();
+		String chart = replaceVariables(largeChart, variables);
+		render("@chartonly", info, chart, variables, chartId, encoded);
+	}
+
+	private static Map<String, String> decodeVariables(String encoded) {
+		if("start".equals(encoded))
+			return new HashMap<String, String>();
 		byte[] decoded = Base64.decodeBase64(encoded);
 		String json = new String(decoded);
 		Map<String, String> variables;
@@ -267,20 +303,19 @@ public class MyChartsGeneric extends Controller {
 				newVal = newVal.replace("\\/", "/");
 			variables.put(key, newVal);
 		}
-
-		String largeChart = info.getLargeChart();
-		String chart = replaceVariables(largeChart, variables);
-		render(info, chart, variables);
+		return variables;
 	}
 
 	private static String replaceVariables(String largeChart, Map<String, String> variables) {
+		//replace comments first so if there are variables in the comment, they will not be replaced since
+		//they are removed from the file anyways.
+		largeChart = largeChart.replaceAll("\\*\\{[\\w\\W]*?\\}\\*", "");
+		
 		for(String key : variables.keySet()) {
 			String val = variables.get(key);
 			largeChart = largeChart.replaceAll("\\$\\{"+key+"\\}", val);
 		}
-		
-		//replace comments
-		largeChart = largeChart.replaceAll("\\*\\{[\\w\\W]*\\}\\*", "");
+
 		return largeChart;
 	}
 }

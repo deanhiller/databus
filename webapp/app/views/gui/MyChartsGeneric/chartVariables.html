@@ -13,9 +13,9 @@
     }
 }%
 
-#{form @postVariables(chartId, page), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
+#{form @postVariables(chartId, page, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
-    <legend>Create Chart ""${chart.name}"</legend>
+    <legend>Create Chart ""${chart.name}" ${subtitle}</legend>
 
     #{list items:pageMeta.variables, as:'v'}
 	    <div class="control-group ${errors.forKey('v') ? 'error' : ''}">
@@ -29,7 +29,12 @@
 
 	<div class="control-group">
 	   <div class="controls">
-		  <input type="submit" name="submit" value="Create Chart" class="btn btn-primary" />
+	      #{if isLastPage}
+    		  <input type="submit" name="submit" value="Create Chart" class="btn btn-primary" />
+    	  #{/if}
+    	  #{else}
+    	      <input type="submit" name="submit" value="Next" class="btn btn-primary" />
+    	  #{/else}
 		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
 		</div>
 	</div>

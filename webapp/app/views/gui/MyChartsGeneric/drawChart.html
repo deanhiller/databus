@@ -2,16 +2,14 @@
 #{set tab:'home' /}
 #{set title:'Your Chart' /}
 
-myvar=${variables.myvar1}
-url=${variables.url}
-
 #{if variables.url} 
 We are rendering the chart for dataset url=<a href="${variables.url}" target="_blank">${variables.url}</a> below.  If your chart is
 not displaying, click the url to see if there is any data!!
 #{/if}
 
-*{ <a href="@{modifyChart(encodedChart, 1 length)}" class="btn btn-primary">Modify Chart</a>
-<a href="@{drawJustChart(encodedChart, chart.title, 1, length)}" class="btn btn-primary">Chart Only</a> }*
+<a href="@{chartVariables(chartId, 0, encoded)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{largeChart(chartId, encoded)}" class="btn btn-primary">Large Chart Only</a>
+<a href="@{smallChart(chartId, encoded)}" class="btn btn-primary">Small Chart Only</a>
 
 <div id="theChart"></div>
 
