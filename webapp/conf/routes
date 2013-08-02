@@ -24,14 +24,14 @@
 # ADMIN Section....
 # ******************************************************************************
 # ******************************************************************************
-GET  /admin                            gui.Admin.index
-GET  /admin/sanity                     gui.Admin.sanity
+GET  /admin                                 gui.Admin.index
+GET  /admin/sanity                          gui.Admin.sanity
 GET  /admin/users                           gui.Admin.users
 GET  /admin/user/{username}                 gui.Admin.becomeUser
-GET  /admin/meta                       gui.Admin.meta
+GET  /admin/meta                            gui.Admin.meta
 GET  /admin/meta/{tableName}                gui.Admin.metaTable
 GET  /admin/meta/{tableName}/{colName}      gui.Admin.viewIndex
-GET  /admin/search/reindex          Admin.reindex
+GET  /admin/search/reindex                  gui.Admin.reindex
 
 GET  /pingtest                              gui.Application.pingTest
 GET  /pingtest2                             gui.Application.pingTest2
@@ -43,8 +43,8 @@ GET /search/legacyMetaSearch				gui.GUISearch.legacyMetaSearch
 # GUI MAIN
 # ******************************************************************************
 # ******************************************************************************
-GET 	/                					gui.auth.GuiSecure.login
-GET	/helpunauth						gui.Application.myHelpUnAuth
+GET 	/                				gui.auth.GuiSecure.login
+GET	/helpunauth						    gui.Application.myHelpUnAuth
 GET	/searchunauth						gui.Application.nonAuthSearch
 GET  /dashboard      					gui.Search.dashboardSide
 POST /login          					gui.auth.GuiSecure.authenticate
@@ -55,12 +55,12 @@ GET  /logout         					gui.auth.GuiSecure.logout
 # ******************************************************************************
 GET	/accountsSettings					gui.MySettings.mySettings
 GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
-GET	/accountsSettings/charts				gui.MySettings.myChartsSettings
+GET	/accountsSettings/charts			gui.MySettings.myChartsSettings
 GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
-POST	/accountsSettings/deleteChart			gui.MySettings.deleteChart
+POST	/accountsSettings/deleteChart	gui.MySettings.deleteChart
 POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
 POST /postsaveembeddedchartsettings		gui.MySettings.postSaveEmbeddedChartSettings
-POST /postsavescriptchartsettings			gui.MySettings.postSaveScriptChartSettings
+POST /postsavescriptchartsettings		gui.MySettings.postSaveScriptChartSettings
 
 GET  /settings/dashboard                gui.Settings.dashboardSettings
 POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
@@ -110,25 +110,28 @@ POST /databases/{schema}/savemonitor      	gui.MyDatabases.postMonitor
 GET  /databases/{schema}/addtable         	gui.MyDatabases.tableAdd
 GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase
 POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabase
-POST /addgrouptodb						gui.MyDatabases.postAddGroupToDatabase
-POST /addusertodb						gui.MyDatabases.postAddUserToDatabase
+POST /addgrouptodb						    gui.MyDatabases.postAddGroupToDatabase
+POST /addusertodb						    gui.MyDatabases.postAddUserToDatabase
 
-GET  /charts                                                    gui.MyChartsGeneric.selectChart
-POST /charts                                                    gui.MyChartsGeneric.postSelectedChart
-GET  /chart/{chartId}/{page}/{encoded}                         gui.MyChartsGeneric.chartVariables
-POST /chart/{chartId}/{page}/{encoded}                         gui.MyChartsGeneric.postVariables
-GET  /charts/drawchart/{chartId}/{encoded}                      gui.MyChartsGeneric.drawChart
-GET  /charts/largechart/{chartId}/{encoded}                     gui.MyChartsGeneric.largeChart
-GET  /charts/smallchart/{chartId}/{encoded}                     gui.MyChartsGeneric.smallChart
+# Charting framework and built in charts as well(currently just the one chartbasic)
+# ******************************************************************************
+# ******************************************************************************
+GET  /charts                                   gui.MyChartsGeneric.selectChart
+POST /charts                                   gui.MyChartsGeneric.postSelectedChart
+GET  /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.chartVariables
+POST /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.postVariables
+GET  /charts/drawchart/{chartId}/{encoded}     gui.MyChartsGeneric.drawChart
+GET  /charts/largechart/{chartId}/{encoded}    gui.MyChartsGeneric.largeChart
+GET  /charts/smallchart/{chartId}/{encoded}    gui.MyChartsGeneric.smallChart
 
-GET  /chartbasic/modifychart/{length}/{version}/{encodedChart}   	gui.MyCharts.modifyChart
-GET  /chartbasic/createchart                                     	gui.MyCharts.createChart
-POST /chartbasic/createchart                                     	gui.MyCharts.postStep1
-GET  /chartbasic/createchart/step2/{length}/{version}/{encodedChart}	gui.MyCharts.createStep2
-POST /chartbasic/createchart/step2                                 	gui.MyCharts.postStep2
-GET  /chartbasic/chart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.drawJustChart
-GET  /chartbasic/jschart/{length}/{version}/{title}/{encodedChart}  	gui.MyCharts.justJavascript
-GET  /chartbasic/drawchart/{length}/{version}/{encodedChart}       	gui.MyCharts.drawChart
+GET  /chartbasic/modifychart/{length}/{version}/{encodedChart}   	 gui.MyCharts.modifyChart
+GET  /chartbasic/createchart                                     	 gui.MyCharts.createChart
+POST /chartbasic/createchart                                     	 gui.MyCharts.postStep1
+GET  /chartbasic/createchart/step2/{length}/{version}/{encodedChart} gui.MyCharts.createStep2
+POST /chartbasic/createchart/step2                                 	 gui.MyCharts.postStep2
+GET  /chartbasic/chart/{length}/{version}/{title}/{encodedChart}  	 gui.MyCharts.drawJustChart
+GET  /chartbasic/jschart/{length}/{version}/{title}/{encodedChart}   gui.MyCharts.justJavascript
+GET  /chartbasic/drawchart/{length}/{version}/{encodedChart}       	 gui.MyCharts.drawChart
 GET  /chartbasic/loadChartPage								gui.MyCharts.loadChartPage
 GET  /chartbasic/loadChartDiv								gui.MyCharts.loadChartDiv					
 
@@ -142,7 +145,7 @@ GET	/summary							gui.MySummary.mySummary
 # ******************************************************************************
 GET /mydatabus							gui.MyDatabus.myDatabus
 GET /mydatabus/summary					gui.MyDatabus.databusSummary
-GET /mydatabus/databases					gui.MyDatabus.databusDatabases
+GET /mydatabus/databases				gui.MyDatabus.databusDatabases
 GET /mydatabus/groups					gui.MyDatabus.databusGroups
 
 
@@ -156,13 +159,13 @@ GET /dataupload						gui.DataUpload.dataUploadMain
 # ******************************************************************************
 GET  /help							gui.Help.myHelp
 GET  /firsttimeuser                 gui.Help.firstTimeUser
-GET  /helpaccess						gui.Help.myHelpAccess
-GET  /helpgroups						gui.Help.myHelpGroups
-GET  /helprobots						gui.Help.myHelpRobots
-GET  /helpprovisioning					gui.Help.myHelpProvisioning
-GET  /helpupload						gui.Help.myHelpUpload
-GET  /helpdownload						gui.Help.myHelpDownload
-GET  /helpmodules						gui.Help.myHelpModules
+GET  /helpaccess					gui.Help.myHelpAccess
+GET  /helpgroups					gui.Help.myHelpGroups
+GET  /helprobots					gui.Help.myHelpRobots
+GET  /helpprovisioning				gui.Help.myHelpProvisioning
+GET  /helpupload					gui.Help.myHelpUpload
+GET  /helpdownload					gui.Help.myHelpDownload
+GET  /helpmodules					gui.Help.myHelpModules
 
 
 # GUISearch
@@ -170,8 +173,8 @@ GET  /helpmodules						gui.Help.myHelpModules
 # ******************************************************************************
 GET /search/metaSearch					gui.GUISearch.metaSearch
 GET /search/isSearchableSearch			gui.GUISearch.isSearchableSearch
-GET /search/detailSearch					gui.GUISearch.detailSearch
-GET /search/globalSearch					gui.GUISearch.globalSearch
+GET /search/detailSearch				gui.GUISearch.detailSearch
+GET /search/globalSearch				gui.GUISearch.globalSearch
 GET /search/searchBar					gui.GUISearch.searchBar
 
 
@@ -179,21 +182,21 @@ GET /search/searchBar					gui.GUISearch.searchBar
 # ******************************************************************************
 # ******************************************************************************
 GET	/prototype1					    	Help.myHelpBootstrapProto1
-GET  /prototype2					    	gui.Search.dashboardSide
-GET	/myHelpBootstrapProto_Summary			gui.Search.myHelpBootstrapProto_Summary
-GET  /dashboard      					gui.Search.dashboardSide
-GET  /search         					gui.GUISearch.metaSearch
-GET  /detailsearch   					gui.GUISearch.detailSearch
+GET /prototype2				            gui.Search.dashboardSide
+GET	/myHelpBootstrapProto_Summary		gui.Search.myHelpBootstrapProto_Summary
+GET /dashboard      					gui.Search.dashboardSide
+GET /search         					gui.GUISearch.metaSearch
+GET /detailsearch   					gui.GUISearch.detailSearch
 
 
 # Databus API calls
 # ******************************************************************************
 # ******************************************************************************
-POST    /api/registerV1                 ApiRegistration.postRegisterTableNew
-POST    /api/postdataV1                 ApiPostDataPoints.postData
-POST    /api/dateformatV1/postdataV1    ApiPostDataPoints.postData
-GET     /api/getdataV1/meta/{table}     ApiMetaRequest.getMeta
-#GET     /api/getdataV2/{sql}            ApiSqlRequest.sqlRequest
+POST    /api/registerV1                      ApiRegistration.postRegisterTableNew
+POST    /api/postdataV1                      ApiPostDataPoints.postData
+POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
+GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
+#GET     /api/getdataV2/{sql}                ApiSqlRequest.sqlRequest
 GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
 
 #We need to remove this AFTER buildings group converts to the new urls...
@@ -207,20 +210,20 @@ GET     /getdata/{sql}                  ApiSqlRequest.sqlRequest
 GET		/api/search							Search.searchAll
 GET		/api/search/searchableItems			Search.searchableItems
 GET		/api/search/{table}					Search.searchTable
-POST    /api/triggerV1/add                  api.TriggersController.postAdd
-POST    /api/triggerV1/delete/{triggerId}   api.TriggersController.postDelete
-GET     /api/triggerV1/list/{database}      api.TriggersController.list
-#GET     /api/triggerV1/runall/{time}	    api.TriggersController.runall
-#GET     /api/triggerV1/run/{triggerId}/{time}	    api.TriggersController.runTrigger
+POST    /api/triggerV1/add                         api.TriggersController.postAdd
+POST    /api/triggerV1/delete/{triggerId}          api.TriggersController.postDelete
+GET     /api/triggerV1/list/{database}             api.TriggersController.list
+#GET     /api/triggerV1/runall/{time}	           api.TriggersController.runall
+#GET     /api/triggerV1/run/{triggerId}/{time}	   api.TriggersController.runTrigger
 
-GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path} modules.StdDevMod.runStdDev
+GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path}         modules.StdDevMod.runStdDev
 GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData
 GET     /api/rawdataGeneratorV1/{table}/{start}/{end}      DataGenerator.generateData
 
 GET     /api/nullV1/{<.*>path}                     modules.NullMod.go
-#GET     /api/cacheV1/{<.*>path}                    modules.CacheMod.go
-#GET     /api/rangecleanV1/{min}/{max}/{<.*>path}   modules.CleanerMod.go
-#GET     /api/rangecleanV1/{<.*>path}               modules.CleanerMod.error
+#GET    /api/cacheV1/{<.*>path}                    modules.CacheMod.go
+#GET    /api/rangecleanV1/{min}/{max}/{<.*>path}   modules.CleanerMod.go
+#GET    /api/rangecleanV1/{<.*>path}               modules.CleanerMod.error
 GET     /api/timeaverageV1/{type}/{<.*>path}       modules.TimeAverageMod.timeAggregation
 GET     /api/timeaverageV1/{type}/{adjustment}/{<.*>path} modules.TimeAverageMod.timeAggregation
 GET     /api/timeaverageV1/{<.*>path}              modules.TimeAverageMod.error
