@@ -14,7 +14,7 @@ Click a name AND you BECOME that user so you can reproduce their issue as that u
 	<tbody>
 	    #{list users, as:'user'}
 	        <tr>
-	            <td><a href="@{Admin.becomeUser(user.username)}">${user.username}</a></td>
+	            <td><a href="@{becomeUser(user.username)}">${user.username}</a></td>
 	        </tr>
 	    #{/list}
 	</tbody>

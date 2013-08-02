@@ -56,7 +56,18 @@ public class MyDatabases extends Controller {
 
 		SecureSchema schema = new SecureSchema();
 		List<SecureTable> tables = new ArrayList<SecureTable>();
-		
+		if (schemaName != null) {
+			schema = SecureSchema.findByName(NoSql.em(), schemaName);
+			Set<PermissionType> roles = fetchRoles(schema, user);
+			if(roles.contains(PermissionType.READ) || roles.contains(PermissionType.READ_WRITE)
+					|| roles.contains(PermissionType.ADMIN)) {
+				tables = schema.getTables(0, 50);
+			} else if(roles.size() == 0) {
+				notFound("Your user does not have access to this resource");
+			} else
+				viewDatabase(schemaName);
+		}
+
 		List<String> ids = schema.getMonitorIds();
 		CronService svc = CronServiceFactory.getSingleton(null);
 		List<PlayOrmCronJob> mons = svc.getMonitors(ids);
@@ -64,7 +75,8 @@ public class MyDatabases extends Controller {
 		for(PlayOrmCronJob m : mons) {
 			monitors.add(TableMonitor.copy(m));
 		}
-		render(user, schema, tables, monitors);
+		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
+		render(user, schema, tables, monitors, timeseries);
 	}
 	
 	public static void viewDatabase(String schemaName) {

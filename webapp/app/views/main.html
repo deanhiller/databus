@@ -132,7 +132,7 @@
 				 </a>
 			</li>
 		#{if session.get('admin') != null}
-			<li class="clearfix"><a href="@{Admin.index()}" id="tab_admin">
+			<li class="clearfix"><a href="@{gui.Admin.index()}" id="tab_admin">
 			<strong>Admin</strong></a></li>
 		#{/if}
 	</ul>
@@ -149,8 +149,8 @@
 			<li><a href="@{Application.index()}" id="tab_home"><span class="hidden">SDI Home</span></a></li>
 			<li><a href="@{MyStuff.myTables()}" id="tab_groups"><span class="hidden">My Stuff</span></a></li>
 			#{if session.get('admin') != null}
-				<li><a href="@{Admin.index()}" id="tab3"><span class="hidden">Admin</span></a></li>	
-				<li><a href="@{Admin.index()}" id="tab_admin"><span class="hidden">Admin</span></a></li>
+				<li><a href="@{gui.Admin.index()}" id="tab3"><span class="hidden">Admin</span></a></li>	
+				<li><a href="@{gui.Admin.index()}" id="tab_admin"><span class="hidden">Admin</span></a></li>
 			#{/if}
 		</ul>
 </div --><!--startindex-->

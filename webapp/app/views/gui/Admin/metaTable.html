@@ -13,7 +13,7 @@
 	<tbody>
 		<tr>
 	       	#{if idMeta.isIndexed}
-	        	<td><a href="@{Admin.viewIndex(idMeta.owner.columnFamily, idMeta.columnName)}">${idMeta.columnName}</a></td>
+	        	<td><a href="@{viewIndex(idMeta.owner.columnFamily, idMeta.columnName)}">${idMeta.columnName}</a></td>
 	        #{/if}
 	        #{else}
 	        	<td>${idMeta.columnName}</td>
@@ -23,7 +23,7 @@
 		#{list columns, as:'col'}
 	        <tr>
 	        	#{if col.isIndexed}
-	        		<td><a href="@{Admin.viewIndex(col.owner.columnFamily, col.columnName)}">${col.columnName}</a></td>
+	        		<td><a href="@{viewIndex(col.owner.columnFamily, col.columnName)}">${col.columnName}</a></td>
 	        	#{/if}
 	        	#{else}
 	            	<td>${col.columnName}</td>

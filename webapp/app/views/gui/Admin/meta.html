@@ -12,7 +12,7 @@
 	<tbody>
 		#{list tables, as:'table'}
 	        <tr>
-	            <td><a href="@{Admin.metaTable(table.columnFamily)}">${table.columnFamily}</a></td>
+	            <td><a href="@{metaTable(table.columnFamily)}">${table.columnFamily}</a></td>
 	        </tr>
 	    #{/list}
 	</tbody>

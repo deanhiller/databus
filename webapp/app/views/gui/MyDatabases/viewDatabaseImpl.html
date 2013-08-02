@@ -2,14 +2,20 @@
 #{set tab:'home' /}
 #{set title:'View Database' /}
 
-	<h2>View Database ${schema.schemaName}</h2>
+	<h2>Database '${schema.schemaName}'</h2>
 
-	Description: <br/>
-	${schema.description}
+	#{if schema.description}
+    	${schema.description}
+    #{/if}
+    #{else}
+       (No description was supplied by admins)
+    #{/else}
 
 <h2>Admins of the schema</h2>
 
-Please let us know if you need this and we will add this immediately
+ #{list schema.entitiesWithAccess, as:'user'}
+                    ${user.userOrGroup.name}  
+ #{/list}
 
 <h2>Tables in this Schema(first 50 shown)</h2>
 	
@@ -17,12 +23,29 @@ Please let us know if you need this and we will add this immediately
 	<thead>
 	    <tr>
 	        <th>Name</th>
+	        <th>Type</th>
+            <th>Charts</th>
+            <th>1000 rows</th>
+            <th>1000 Json</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    #{list tables, as:'table'}
 	        <tr>
-	            <td>${table.tableName}</td>
+                #{if table?.typeOfData == timeseries}
+                    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+                    <td>${table.typeOfData}</td>
+                    <td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
+                    <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
+                    <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
+                #{/if}
+                #{else}
+                    <td>${table.tableName}</td>
+                    <td>${table.typeOfData}</td>
+                    <td></td>
+                    <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
+                    <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
+                #{/else}
 	        </tr>
 	    #{/list}    	    
 	</tbody>
