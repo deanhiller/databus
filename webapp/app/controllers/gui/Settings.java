@@ -58,6 +58,12 @@ public class Settings extends Controller {
 		render(user, userCharts);
 	}
 	
+	public static void addChart() {
+		EntityUser user = Utility.getCurrentUser(session);
+		List<UserChart> userCharts = user.getUserCharts();
+		render(userCharts);
+	}
+	
 	public static void myChartsSettings() {
 		EntityUser user = Utility.getCurrentUser(session);
 		

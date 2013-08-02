@@ -64,6 +64,11 @@ POST /postsavescriptchartsettings		gui.MySettings.postSaveScriptChartSettings
 
 GET  /settings/dashboard                gui.Settings.dashboardSettings
 POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
+GET  /settings/addchart                 gui.Settings.addChart
+
+
+POST /postsaveembeddedchartsettingsTEMP     gui.Settings.postSaveEmbeddedChartSettings
+POST /postsavescriptchartsettingsTEMP       gui.Settings.postSaveScriptChartSettings
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************
