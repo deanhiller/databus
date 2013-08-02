@@ -35,16 +35,6 @@ public class Settings extends Controller {
 	private static String currentRedirectTo = "";
 	
 	public static void dashboardSettings() {
-		String redirectTo = "";
-		
-		if((Settings.currentRedirectTo != null) && (!Settings.currentRedirectTo.equals(""))) {
-			redirectTo = Settings.currentRedirectTo;
-		}
-		
-		Settings.currentRedirectTo = "";
-		
-		log.error("mySettings REDIRECTTO IS: " + redirectTo);
-		
 		EntityUser user = Utility.getCurrentUser(session);
 		List<UserChart> userCharts = user.getUserCharts();
 		
@@ -65,7 +55,7 @@ public class Settings extends Controller {
 		renderArgs.put("user_chart_4_type", user.getUserSettings().getDashboardChart_4_type());
 		renderArgs.put("user_chart_4_uri", user.getUserSettings().getDashboardChart_4_uri());
 		
-		render(user, userCharts, redirectTo);
+		render(user, userCharts);
 	}
 	
 	public static void myChartsSettings() {

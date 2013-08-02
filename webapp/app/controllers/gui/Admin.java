@@ -1,4 +1,4 @@
-package controllers;
+package controllers.gui;
 
 import gov.nrel.util.SearchUtils;
 import gov.nrel.util.Utility;
@@ -20,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import play.mvc.Controller;
+import play.mvc.With;
 import play.mvc.Http.Request;
 
 import com.alvazan.orm.api.base.NoSqlDao;
@@ -34,8 +35,11 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
+import controllers.SecurityUtil;
+import controllers.Tuple;
 import controllers.gui.auth.GuiSecure;
 
+@With(GuiSecure.class)
 public class Admin extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(Admin.class);

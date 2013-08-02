@@ -1,11 +1,11 @@
-#{extends 'main.html' /}
+#{extends '_index.html' /}
 #{set title:'Admin' /}
 #{set tab:'admin' /}
 
 <ul id="subnav">
-	<li><a href="@{Admin.index()}" id="subtab_groups">Groups</a></li>
-	<li><a href="@{Admin.meta()}" id="subtab_meta">Meta Info</a></li>
-	<li><a href="@{Admin.users()}" id="subtab_users">Users</a></li>
+	<li><a href="@{index()}" id="subtab_groups">Groups</a></li>
+	<li><a href="@{meta()}" id="subtab_meta">Meta Info</a></li>
+	<li><a href="@{users()}" id="subtab_users">Users</a></li>
 </ul>
 
 <script type="text/javascript" language="JavaScript">

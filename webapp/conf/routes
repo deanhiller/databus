@@ -53,20 +53,18 @@
 #GET  /old/helpdownload                		Help.myHelpDownload
 #GET  /old/helpmodules              		Help.myHelpModules
 
-# PORT to NEW GUI PLEASE at some point....
+# ADMIN Section....
 # ******************************************************************************
 # ******************************************************************************
-GET  /old/admin                     Admin.index
-GET  /old/admin/sanity                  Admin.sanity
-GET  /old/admin/users                           Admin.users
-GET  /old/admin/user/{username}                 Admin.becomeUser
-GET  /old/admin/meta                    Admin.meta
-GET  /old/admin/meta/{tableName}                Admin.metaTable
-GET  /old/admin/meta/{tableName}/{colName}      Admin.viewIndex
-GET  /old/admin/logs                            admins.Logging.latestLogs
-GET  /old/admin/logs/{rowNum}/{size}            admins.Logging.allLogs
-GET  /old/admin/logs/{sessionId}                admins.Logging.sessionLogs
-GET  /old/admin/search/reindex          Admin.reindex
+GET  /admin                            gui.Admin.index
+GET  /admin/sanity                     gui.Admin.sanity
+GET  /admin/users                           gui.Admin.users
+GET  /admin/user/{username}                 gui.Admin.becomeUser
+GET  /admin/meta                       gui.Admin.meta
+GET  /admin/meta/{tableName}                gui.Admin.metaTable
+GET  /admin/meta/{tableName}/{colName}      gui.Admin.viewIndex
+GET  /admin/search/reindex          Admin.reindex
+
 GET  /pingtest                              Application.pingTest
 GET  /pingtest2                             Application.pingTest2
 

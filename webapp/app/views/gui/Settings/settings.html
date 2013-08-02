@@ -11,7 +11,7 @@
 			<br />
 			<ul class="nav nav-tabs">
 				<li class="active">
-					<a id="mydashboard_settings">Dashboard</a>
+					<a id="mydashboard_settings" href="@{dashboardSettings()}">Dashboard</a>
 				</li>
 				#{if userCharts.size() > 0}
 				<li>
@@ -19,7 +19,7 @@
 				</li>
 				#{/if}
 				<li>
-					<a id="addchart_settings">Add a Chart</a>
+					<a id="addchart_settings" href="@{addChart()}">Add a Chart</a>
 				</li>
 			</ul>
 		</div>
