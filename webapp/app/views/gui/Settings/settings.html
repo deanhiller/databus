@@ -13,11 +13,9 @@
 				<li id="subtab_dashboard">
 					<a id="mydashboard_settings" href="@{dashboardSettings()}">Dashboard</a>
 				</li>
-				#{if userCharts.size() > 0}
 				<li id="subtab_charts">
-					<a id="mycharts_settings">My Charts</a>
+					<a id="mycharts_settings" href="@{charts()}">My Charts</a>
 				</li>
-				#{/if}
 				<li id="subtab_addchart">
 					<a id="addchart_settings" href="@{addChart()}">Add a Chart</a>
 				</li>

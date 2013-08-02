@@ -64,9 +64,10 @@ POST /postsavescriptchartsettings		gui.MySettings.postSaveScriptChartSettings
 
 GET  /settings/dashboard                gui.Settings.dashboardSettings
 POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
+GET  /settings/charts                   gui.Settings.charts
+
+
 GET  /settings/addchart                 gui.Settings.addChart
-
-
 POST /postsaveembeddedchartsettingsTEMP     gui.Settings.postSaveEmbeddedChartSettings
 POST /postsavescriptchartsettingsTEMP       gui.Settings.postSaveScriptChartSettings
 
@@ -128,6 +129,7 @@ POST /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.postVariables
 GET  /charts/drawchart/{chartId}/{encoded}     gui.MyChartsGeneric.drawChart
 GET  /charts/largechart/{chartId}/{encoded}    gui.MyChartsGeneric.largeChart
 GET  /charts/smallchart/{chartId}/{encoded}    gui.MyChartsGeneric.smallChart
+POST /charts/addchart/{chartId}/{encoded}      gui.MyChartsGeneric.addChartToDashboard
 
 GET  /chartbasic/modifychart/{length}/{version}/{encodedChart}   	 gui.MyCharts.modifyChart
 GET  /chartbasic/createchart                                     	 gui.MyCharts.createChart
@@ -190,6 +192,7 @@ GET	/prototype1					    	Help.myHelpBootstrapProto1
 GET /prototype2				            gui.Search.dashboardSide
 GET	/myHelpBootstrapProto_Summary		gui.Search.myHelpBootstrapProto_Summary
 GET /dashboard      					gui.Search.dashboardSide
+GET /dashboard2                         gui.Application.dashboard
 GET /search         					gui.GUISearch.metaSearch
 GET /detailsearch   					gui.GUISearch.detailSearch
 

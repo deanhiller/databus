@@ -1,0 +1,26 @@
+#{extends './settings.html' /}
+#{set title:'Charts' /}
+#{set subtab:'charts'/}
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Chart</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        #{list charts, as:'chart'}
+            <tr>
+                <td>${chart.title}</td>
+                <td>Delete</td>
+            </tr>
+        #{/list}
+        #{else}
+        <tr>
+            <td colspan=2>You do not own to any Charts yet.  <a href="@{gui.MyChartsGeneric.select()}">Add a Chart Now!!!</a></td>
+        </tr>
+        #{/else}
+    </tbody>
+</table>

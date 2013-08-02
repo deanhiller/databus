@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.persistence.Embedded;
 
+import models.ChartDbo;
 import models.EntityUser;
 import models.ScriptChart;
 import models.UserChart;
@@ -57,7 +58,14 @@ public class Settings extends Controller {
 		
 		render(user, userCharts);
 	}
-	
+
+	public static void charts() {
+		EntityUser user = Utility.getCurrentUser(session);
+		List<ChartDbo> charts = user.getCharts();
+		
+		render(charts);
+	}
+
 	public static void addChart() {
 		EntityUser user = Utility.getCurrentUser(session);
 		List<UserChart> userCharts = user.getUserCharts();
@@ -140,7 +148,7 @@ public class Settings extends Controller {
 		log.error("\nCHARTURL: " + embedded_chart_url);
 		
 		UserChart newUserChart = new UserChart(ChartType.EMBEDDED_OBJECT, ChartLibrary.HIGHCHARTS, embedded_chart_name, embedded_chart_url);
-		user.addChart(newUserChart);
+		user.addUserChart(newUserChart);
 		
 		NoSql.em().put(user);
 		NoSql.em().flush();
@@ -170,7 +178,7 @@ public class Settings extends Controller {
 			newUserChart.setScriptChart_SingleDBOverride(script_chart_db);
 		}
 		
-		user.addChart(newUserChart);
+		user.addUserChart(newUserChart);
 		
 		NoSql.em().put(user);
 		NoSql.em().flush();
@@ -316,4 +324,5 @@ public class Settings extends Controller {
 		
 		dashboardSettings();
 	}
+
 }

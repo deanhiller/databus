@@ -158,7 +158,7 @@ public class MySettings extends Controller {
 		log.error("\nCHARTURL: " + embedded_chart_url);
 		
 		UserChart newUserChart = new UserChart(ChartType.EMBEDDED_OBJECT, ChartLibrary.HIGHCHARTS, embedded_chart_name, embedded_chart_url);
-		user.addChart(newUserChart);
+		user.addUserChart(newUserChart);
 		
 		NoSql.em().put(user);
 		NoSql.em().flush();
@@ -188,7 +188,7 @@ public class MySettings extends Controller {
 			newUserChart.setScriptChart_SingleDBOverride(script_chart_db);
 		}
 		
-		user.addChart(newUserChart);
+		user.addUserChart(newUserChart);
 		
 		NoSql.em().put(user);
 		NoSql.em().flush();

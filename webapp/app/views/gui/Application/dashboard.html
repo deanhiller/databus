@@ -1,0 +1,47 @@
+#{extends '_index.html' /}
+#{set title:'Dashboard' /}
+#{set tab:'dashboard' /}
+
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 1. You are on the customizable dashboard page where you can define which charts show up for this user</br>
+   Step 2. Next, please click on My Databus, then click on Databases
+</div>
+%{
+    }
+}%
+
+    <div class="row-fluid">
+
+        <div class="span3 dashboard_chart_list">
+		<!-- Need to add a left nav bar now so we can choose between all the different charts -->
+			<ul class="nav nav-list">            
+				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item"><i class="icon-th "></i> Summary</a></li> 
+				<li class="divider"></li>
+			</ul>
+			<ul class="nav nav-list dashboard_chart_menu"> 
+				#{list userCharts, as:'chart'}
+					<li class="db_left_nav_item"><a id="${chart_index}" class="db_left_nav_menu_item"><i class="icon-signal "></i> ${chart.chartName}</a></li>
+				#{/list}
+			</ul>
+	   </div>
+	   <div id="charts_alert" class="span9 charts_alert">
+	   	 #{messages/charts_alert /}
+	   </div>
+	   <div class="span9" id="dashboard_chart_area">
+	       #{if settings.dashboardChartCount == 1}
+    			#{dashboardCharts/chartsingle settings:settings/}
+    		#{/if}
+    		#{elseif settings.dashboardChartCount == 2}
+    			#{dashboardCharts/chartsdual settings:settings/}
+    		#{/elseif}
+    		#{elseif settings.dashboardChartCount == 3}
+		    	#{dashboardCharts/chartsthree settings:settings/}
+		    #{/elseif}
+		    #{else}
+		    	#{dashboardCharts/chartsfour settings:settings/}
+		    #{/else}
+	   </div>
+    </div>

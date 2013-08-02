@@ -10,6 +10,14 @@ not displaying, click the url to see if there is any data!!
 <a href="@{chartVariables(chartId, 0, encoded)}" class="btn btn-primary">Modify Chart</a>
 <a href="@{largeChart(chartId, encoded)}" class="btn btn-primary">Large Chart Only</a>
 <a href="@{smallChart(chartId, encoded)}" class="btn btn-primary">Small Chart Only</a>
+<br/><br/>
+#{form @addChartToDashboard(chartId, encoded), id:'formAddChart'}
+     <div class="control-group">
+       <div class="controls">
+          <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
+        </div>
+    </div>
+#{/form}
 
 <div id="theChart"></div>
 

@@ -1,7 +1,10 @@
 package controllers.gui.util;
 
+import java.util.Map;
+
 import play.templates.JavaExtensions;
 import play.utils.HTML;
+import models.ChartDbo;
 import models.message.ChartMeta;
 
 public class ChartInfo {

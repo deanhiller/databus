@@ -39,6 +39,9 @@ public class EntityUser extends Entity {
 	@NoSqlEmbedded
 	private List<UserChart> userCharts = new ArrayList<UserChart>();
 	
+	@NoSqlEmbedded
+	private List<ChartDbo> charts = new ArrayList<ChartDbo>();
+	
 	private boolean isAdmin;
 	
 	/**
@@ -247,17 +250,23 @@ public class EntityUser extends Entity {
 		this.userCharts = userCharts;
 	}
 	
-	public void addChart(UserChart chart) {
+	public void addUserChart(UserChart chart) {
 		if(userCharts == null) {
 			userCharts = new ArrayList<UserChart>();
 		}
 		this.userCharts.add(chart);
 	}
 	
-	public void removeChart(UserChart chart) {
+	public void removeUserChart(UserChart chart) {
 		this.userCharts.remove(chart);
 	}
-	
-	
+
+	public List<ChartDbo> getCharts() {
+		return charts;
+	}
+
+	public void setCharts(List<ChartDbo> charts) {
+		this.charts = charts;
+	}
 	
 } // User
