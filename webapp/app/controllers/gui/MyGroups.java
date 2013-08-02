@@ -12,7 +12,6 @@ import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
-import controllers.auth.Secure;
 import controllers.gui.auth.GuiSecure;
 
 import play.mvc.Controller;

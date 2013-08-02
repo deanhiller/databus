@@ -1,6 +1,5 @@
 package controllers.gui;
 
-import controllers.auth.Secure;
 import play.mvc.Controller;
 import play.mvc.With;
 import gov.nrel.util.Utility;

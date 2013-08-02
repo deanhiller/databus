@@ -30,9 +30,9 @@ import play.mvc.With;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
-import controllers.auth.Secure;
+import controllers.gui.auth.GuiSecure;
 
-@With(Secure.class)
+@With(GuiSecure.class)
 public class MySchemas extends Controller {
 	
 	static final Logger log = LoggerFactory.getLogger(MySchemas.class);

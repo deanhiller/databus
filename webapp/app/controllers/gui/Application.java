@@ -7,9 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import models.Entity;
+import models.EntityGroup;
 import models.EntityUser;
+import models.SecureResourceGroupXref;
+import models.SecureSchema;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alvazan.play.NoSql;
 
 import play.mvc.Controller;
 import play.mvc.Http.Request;
@@ -19,6 +27,33 @@ import controllers.gui.solrsearch.SearchableItems;
 import controllers.gui.solrsearch.SolrSearchResult;
 
 public class Application extends Controller {
+
+	private static final Logger log = LoggerFactory.getLogger(Application.class);
+
+	public static void pingTest() {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		List<EntityGroup> groups = EntityGroup.findAll(NoSql.em());
+		List<SecureSchema> schemas = SecureSchema.findAll(NoSql.em());
+
+		for (SecureSchema s : schemas) {
+			List<SecureResourceGroupXref> refs = s.getEntitiesWithAccess();
+			for (SecureResourceGroupXref ref : refs) {
+				Entity entity = ref.getUserOrGroup();
+				log.info("entity=" + entity);
+			}
+		}
+		String sid = session.get("sid");
+
+		log.info("ping test!!!! index. user=" + user + " num tables=" + schemas.size()
+				+ " groupscnt=" + groups.size() + " session=" + sid);
+		
+		render();
+	}
+
+	public static void pingTest2() {
+		render();
+	}
 
 	public static void unauth() {
 		EntityUser user = Utility.getCurrentUser(session);

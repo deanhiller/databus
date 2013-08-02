@@ -28,6 +28,7 @@ import play.mvc.results.Unauthorized;
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.play.NoSql;
 
+import controllers.gui.Security;
 import controllers.gui.auth.GuiSecure;
 
 public class SecurityUtil {

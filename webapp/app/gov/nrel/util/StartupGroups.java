@@ -31,7 +31,6 @@ import com.alvazan.play.NoSql;
 import controllers.ApiPostDataPoints;
 import controllers.ApiRegistration;
 import controllers.MySchemaLogic;
-import controllers.MySchemas;
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.api.ApiRegistrationImpl;
 

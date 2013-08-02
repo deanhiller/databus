@@ -45,10 +45,7 @@ import com.alvazan.orm.layer3.typed.IterableProxy;
 import com.alvazan.orm.layer3.typed.IterableReverseProxy;
 import com.alvazan.play.NoSql;
 
-import controllers.Security;
 import controllers.SecurityUtil;
-import controllers.api.ApiRegistrationImpl;
-import controllers.gui.auth.GuiSecure;
 
 public class Utility {
 
@@ -86,7 +83,7 @@ public class Utility {
 				throw new Unauthorized("Please log into databus before using the api");
 			else if(user.getApiKey().equals(r.password))
 				return user;
-			else if(Security.authenticate(r.user, r.password))
+			else if(controllers.gui.Security.authenticate(r.user, r.password))
 				return user;
 			throw new Unauthorized("User or password is incorrect");
 		} else {

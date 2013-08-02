@@ -17,7 +17,7 @@ public class Security extends GuiSecure.Security {
 
 	private static final Logger log = LoggerFactory.getLogger(Security.class);
 
-	static boolean authenticate(String username, String password) {
+	public static boolean authenticate(String username, String password) {
 		if(username == null)
 			unauthorized("username cannot be null");
 		else if(password == null)

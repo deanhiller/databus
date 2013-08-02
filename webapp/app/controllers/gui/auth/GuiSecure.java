@@ -48,7 +48,7 @@ public class GuiSecure extends Controller {
         }
 
     	String username = SecurityUtil.getUser();
-        controllers.Security.createUserIfNotExist(username);
+        controllers.gui.Security.createUserIfNotExist(username);
     }
 
     private static void check(SecureCheck check) throws Throwable {
