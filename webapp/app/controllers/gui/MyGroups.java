@@ -13,6 +13,7 @@ import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.AccessInfo;
 
 import play.mvc.Controller;
 import play.mvc.With;

@@ -1,4 +1,4 @@
-package controllers.gui;
+package controllers.gui.util;
 
 import org.codehaus.jackson.annotate.JsonIgnore;
 

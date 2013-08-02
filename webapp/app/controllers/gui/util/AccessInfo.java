@@ -1,4 +1,4 @@
-package controllers.gui;
+package controllers.gui.util;
 
 import models.PermissionType;
 import models.SecureResourceGroupXref;

@@ -35,6 +35,8 @@ import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 import controllers.Parsing;
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.Chart;
+import controllers.gui.util.Info;
 import de.undercouch.bson4jackson.BsonFactory;
 
 @With(GuiSecure.class)

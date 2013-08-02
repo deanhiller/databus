@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controllers.gui.ExecutorsSingleton;
+import controllers.gui.util.ExecutorsSingleton;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.OurPromise;
 import controllers.modules2.framework.ProcessedFlag;

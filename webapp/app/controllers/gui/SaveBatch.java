@@ -18,6 +18,7 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 
 import controllers.api.ApiPostDataPointsImpl;
+import controllers.gui.util.Line;
 
 public class SaveBatch implements Runnable {
 

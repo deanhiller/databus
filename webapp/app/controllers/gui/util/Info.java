@@ -1,4 +1,4 @@
-package controllers.gui;
+package controllers.gui.util;
 
 public class Info {
 

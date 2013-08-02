@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 
-import controllers.gui.Chart;
+import controllers.gui.util.Chart;
 import de.undercouch.bson4jackson.BsonFactory;
 
 public class TestCompression {

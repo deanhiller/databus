@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.ChartComparator;
+import controllers.gui.util.ChartInfo;
 
 import play.Play;
 import play.mvc.Controller;

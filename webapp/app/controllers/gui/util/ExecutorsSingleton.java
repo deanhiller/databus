@@ -1,4 +1,4 @@
-package controllers.gui;
+package controllers.gui.util;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
