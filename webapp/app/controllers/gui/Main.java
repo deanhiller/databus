@@ -20,18 +20,8 @@ import models.UserSettings;
 @With(GuiSecure.class)
 public class Main extends Controller {
 
-	private static final Logger log = LoggerFactory.getLogger(Application.class);
-
 	public static void dashboard() {
 		EntityUser user = Utility.getCurrentUser(session);
-		UserSettings settings = user.getUserSettings();
-		
-		//"https://maps.google.com/?ie=UTF8&amp;ll=38.997934,-105.550567&amp;spn=4.362152,7.481689&amp;t=h&amp;z=7&amp;output=embed"
-//		settings.setDashboardChart_1_uri("http://localhost:9000/charts/smallchart/FakeChart-js/eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
-//		settings.setDashboardChart_2_uri("http://localhost:9000/charts/smallchart/FakeChart-js/eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
-//		settings.setDashboardChart_3_uri("http://localhost:9000/charts/smallchart/FakeChart-js/eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
-//		settings.setDashboardChart_4_uri("https://maps.google.com/?ie=UTF8&amp;ll=38.997934,-105.550567&amp;spn=4.362152,7.481689&amp;t=h&amp;z=7&amp;output=embed");
-		
 		List<ChartDbo> charts = user.getCharts();
 		render(user, charts);
 	}
@@ -44,7 +34,6 @@ public class Main extends Controller {
 				selected = chartDbo;
 				break;
 			}
-				
 		}
 
 		if(selected == null)
