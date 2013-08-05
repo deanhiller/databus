@@ -81,4 +81,23 @@ public class Settings extends Controller {
 		dashboardSettings();
 	}
 
+	public static void postSaveEmbeddedChartSettings(String title, String chartUrl) {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		log.error("\nCHARTNAME: " + title);
+		log.error("\nCHARTURL: " + chartUrl);
+
+		ChartDbo chart = new ChartDbo();
+		chart.setId(title);
+		chart.setTitle(title);
+		chart.setUrl(chartUrl);
+
+		user.getCharts().add(chart);
+		
+		NoSql.em().put(user);
+		NoSql.em().flush();
+		
+		charts();
+	}
+
 }

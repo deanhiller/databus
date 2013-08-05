@@ -13,6 +13,7 @@
 		scriptCharts['${chart.id}'] = {};
 		scriptCharts['${chart.id}'].encoding = '${chart.encodedVariables}';
 		scriptCharts['${chart.id}'].chartId = '${chart.chartId}';
+		scriptCharts['${chart.id}'].url = '${chart.url}';
 	#{/list}
 </script>
 
@@ -191,18 +192,22 @@ Any changes are not applied until you click the Save button
 		function loadChart(pulldownIndex, id) {
 			var numCharts = parseInt($("#dashboard_chart_count :selected").text());
 			var chart = scriptCharts[id];
-			var encodedVars = chart.encoding;
-			var chartId = chart.chartId;
-
-			var type = 'smallchart';
-			if(numCharts == 1 || numCharts == 2) 
-				type = 'largechart';
-			else if(numCharts == 3) {
-				if(pulldownIndex == 2)
-					type = 'largechart';
-			}
 			
-	         var url = '/charts/'+type+'/'+chartId+'/'+encodedVars;
+			if(chart.url == '') {
+				var encodedVars = chart.encoding;
+				var chartId = chart.chartId;
+
+				var type = 'smallchart';
+				if(numCharts == 1 || numCharts == 2) 
+					type = 'largechart';
+				else if(numCharts == 3) {
+					if(pulldownIndex == 2)
+						type = 'largechart';
+				}
+				url = '/charts/'+type+'/'+chartId+'/'+encodedVars;
+			} else
+				url = chart.url;
+
 			if(pulldownIndex == 0) {
 				//switch the first chart in every view
 				$('#chart_1_area').html('<iframe style="border: none;" width="100%" height="100%" src="'+url+'"></iframe>');

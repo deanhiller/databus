@@ -17,6 +17,8 @@ public class ChartDbo {
 	private String chartId;
 	private String encodedVariables;
 	private String title;
+
+	private String url;
 	
 	public String getId() {
 		return id;
@@ -80,5 +82,17 @@ public class ChartDbo {
 
 	public String getLargeChartUrl() {
 		return "/charts/largechart/"+chartId+"/"+encodedVariables;
+	}
+
+	public void setTitle(String title2) {
+		this.title = title2;
+	}
+
+	public void setUrl(String chartUrl) {
+		this.url = chartUrl;
+	}
+
+	public String getUrl() {
+		return url;
 	}
 }
