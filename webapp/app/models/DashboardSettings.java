@@ -16,7 +16,7 @@ public class DashboardSettings {
 			return chart1Id;
 		else if(index == 1)
 			return chart2Id;
-		else if(index == 3)
+		else if(index == 2)
 			return chart3Id;
 		return chart4Id;
 	}

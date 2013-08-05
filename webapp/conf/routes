@@ -21,6 +21,14 @@
 #POST /old/addgrouptoschema      			MySchemas.postAddGroupToSchema
 #POST /old/addusertoschema      			MySchemas.postAddUserToSchema
 
+
+# PROTOTYPE UIs
+# ******************************************************************************
+# ******************************************************************************
+GET /myHelpBootstrapProto_Summary       gui.Search.myHelpBootstrapProto_Summary
+GET /search                             gui.GUISearch.metaSearch
+GET /detailsearch                       gui.GUISearch.detailSearch
+
 # ADMIN Section....
 # ******************************************************************************
 # ******************************************************************************
@@ -44,32 +52,21 @@ GET /search/legacyMetaSearch				gui.GUISearch.legacyMetaSearch
 # ******************************************************************************
 # ******************************************************************************
 GET 	/                				gui.auth.GuiSecure.login
+GET /dashboard                          gui.Main.dashboard
+GET /dashboard/{id}                     gui.Main.single
 GET	/helpunauth						    gui.Application.myHelpUnAuth
 GET	/searchunauth						gui.Application.nonAuthSearch
-GET  /dashboard      					gui.Search.dashboardSide
 POST /login          					gui.auth.GuiSecure.authenticate
 GET  /logout         					gui.auth.GuiSecure.logout
 
 # GUI User Account Pages
 # ******************************************************************************
 # ******************************************************************************
-GET	/accountsSettings					gui.MySettings.mySettings
-GET	/accountsSettings/dashboard			gui.MySettings.myDashboardSettings
-GET	/accountsSettings/charts			gui.MySettings.myChartsSettings
-GET	/accountsSettings/addchart			gui.MySettings.addChartSettings
-POST	/accountsSettings/deleteChart	gui.MySettings.deleteChart
-POST /saveaccountsettings				gui.MySettings.postSaveAccountSettings
-POST /postsaveembeddedchartsettings		gui.MySettings.postSaveEmbeddedChartSettings
-POST /postsavescriptchartsettings		gui.MySettings.postSaveScriptChartSettings
-
 GET  /settings/dashboard                gui.Settings.dashboardSettings
 POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
 GET  /settings/charts                   gui.Settings.charts
 GET  /settings/addchart                 gui.Settings.addChart
-
-
-POST /postsaveembeddedchartsettingsTEMP     gui.Settings.postSaveEmbeddedChartSettings
-POST /postsavescriptchartsettingsTEMP       gui.Settings.postSaveScriptChartSettings
+POST /settings/savechart                gui.Settings.postSaveChart
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************
@@ -183,19 +180,6 @@ GET /search/isSearchableSearch			gui.GUISearch.isSearchableSearch
 GET /search/detailSearch				gui.GUISearch.detailSearch
 GET /search/globalSearch				gui.GUISearch.globalSearch
 GET /search/searchBar					gui.GUISearch.searchBar
-
-
-# PROTOTYPE UIs
-# ******************************************************************************
-# ******************************************************************************
-GET	/prototype1					    	Help.myHelpBootstrapProto1
-GET /prototype2				            gui.Search.dashboardSide
-GET	/myHelpBootstrapProto_Summary		gui.Search.myHelpBootstrapProto_Summary
-GET /dashboard      					gui.Search.dashboardSide
-GET /dashboard2                         gui.Main.dashboard
-GET /search         					gui.GUISearch.metaSearch
-GET /detailsearch   					gui.GUISearch.detailSearch
-
 
 # Databus API calls
 # ******************************************************************************

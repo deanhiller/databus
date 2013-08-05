@@ -77,10 +77,14 @@ public class ChartDbo {
 	}
 
 	public String getSmallChartUrl() {
+		if(url != null)
+			return url;
 		return "/charts/smallchart/"+chartId+"/"+encodedVariables;
 	}
 
 	public String getLargeChartUrl() {
+		if(url != null)
+			return url;
 		return "/charts/largechart/"+chartId+"/"+encodedVariables;
 	}
 

@@ -66,7 +66,7 @@ $(document).ready(function(){
 });
 
 $("#content").empty();
-$.get("@{gui.Search.dashboardSide()}", function(data) {
+$.get("@{gui.Main.dashboard()}", function(data) {
 	$('#content').html(data);
 });
 </script>

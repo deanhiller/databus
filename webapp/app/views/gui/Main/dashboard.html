@@ -4,7 +4,7 @@
 
 
 	       #{if user.settings.dashboardChartCount == 1}
-    			#{dashboardCharts/chartsingle user:user/}
+    			#{dashboardCharts/chartsingle url:user.getChartUrl(0).raw()/}
     		#{/if}
     		#{elseif user.settings.dashboardChartCount == 2}
     			#{dashboardCharts/chartsdual user:user/}

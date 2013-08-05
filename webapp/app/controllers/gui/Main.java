@@ -35,4 +35,23 @@ public class Main extends Controller {
 		List<ChartDbo> charts = user.getCharts();
 		render(user, charts);
 	}
+	
+	public static void single(String id) {
+		EntityUser user = Utility.getCurrentUser(session);
+		ChartDbo selected = null;
+		for(ChartDbo chartDbo : user.getCharts()) {
+			if(chartDbo.getId().equals(id)) {
+				selected = chartDbo;
+				break;
+			}
+				
+		}
+
+		if(selected == null)
+			notFound();
+
+		String url = selected.getLargeChartUrl();
+		List<ChartDbo> charts = user.getCharts();
+		render(charts, url);
+	}
 }

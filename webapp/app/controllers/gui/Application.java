@@ -64,7 +64,7 @@ public class Application extends Controller {
 		}
 
 		//otherwise, let's render the main page
-		renderTemplate("./gui/Search/dashboardSide.html");
+		renderTemplate("./gui/Main/dashboard.html");
 	}
 	
 	public static void myHelpUnAuth() {

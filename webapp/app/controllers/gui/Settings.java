@@ -37,8 +37,6 @@ import controllers.gui.auth.GuiSecure;
 public class Settings extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(Settings.class);
 	
-	private static String currentRedirectTo = "";
-	
 	public static void dashboardSettings() {
 		EntityUser user = Utility.getCurrentUser(session);
 		List<UserChart> userCharts = user.getUserCharts();
@@ -81,7 +79,7 @@ public class Settings extends Controller {
 		dashboardSettings();
 	}
 
-	public static void postSaveEmbeddedChartSettings(String title, String chartUrl) {
+	public static void postSaveChart(String title, String chartUrl) {
 		EntityUser user = Utility.getCurrentUser(session);
 		
 		log.error("\nCHARTNAME: " + title);
