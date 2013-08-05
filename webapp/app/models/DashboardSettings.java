@@ -29,20 +29,36 @@ public class DashboardSettings {
 		this.dashboardChartCount = numberOfCharts;
 	}
 
-	public void setChart1Id(String chart1Id) {
-		this.chart1Id = chart1Id;
+	public void setChart1Id(String chartId) {
+		if("-1".equals(chartId)) {
+			this.chart1Id = null;
+			return;
+		}
+		this.chart1Id = chartId;
 	}
 
-	public void setChart2Id(String chart2Id) {
-		this.chart2Id = chart2Id;
+	public void setChart2Id(String chartId) {
+		if("-1".equals(chartId)) {
+			this.chart2Id = null;
+			return;
+		}
+		this.chart2Id = chartId;
 	}
 
-	public void setChart3Id(String chart3Id) {
-		this.chart3Id = chart3Id;
+	public void setChart3Id(String chartId) {
+		if("-1".equals(chartId)) {
+			this.chart3Id = null;
+			return;
+		}
+		this.chart3Id = chartId;
 	}
 
-	public void setChart4Id(String chart4Id) {
-		this.chart4Id = chart4Id;
+	public void setChart4Id(String chartId) {
+		if("-1".equals(chartId)) {
+			this.chart4Id = null;
+			return;
+		}
+		this.chart4Id = chartId;
 	}
 
 	public String getChart1Id() {
