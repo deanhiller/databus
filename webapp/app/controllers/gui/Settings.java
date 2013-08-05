@@ -56,7 +56,23 @@ public class Settings extends Controller {
 		renderArgs.put("user_chart_4_type", user.getUserSettings().getDashboardChart_4_type());
 		renderArgs.put("user_chart_4_uri", user.getUserSettings().getDashboardChart_4_uri());
 		
-		render(user, userCharts);
+		String chart1Id = user.getSettings().getChart1Id();
+		String chart2Id = user.getSettings().getChart2Id();
+		String chart3Id = user.getSettings().getChart3Id();
+		String chart4Id = user.getSettings().getChart4Id();
+		renderArgs.put("chart1Id", chart1Id);
+		renderArgs.put("chart2Id", chart2Id);
+		renderArgs.put("chart3Id", chart3Id);
+		renderArgs.put("chart4Id", chart4Id);
+
+		List<ChartDbo> charts = user.getCharts();
+		ChartDbo selected = new ChartDbo();
+		selected.setEncodedVariables("eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
+		selected.setChartId("FakeChart-js");
+		selected.setId("-1");
+		charts.add(selected);
+		
+		render(user, userCharts, charts);
 	}
 
 	public static void charts() {

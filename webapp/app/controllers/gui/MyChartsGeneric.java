@@ -158,15 +158,12 @@ public class MyChartsGeneric extends Controller {
 	public static void addChartToDashboard(String chartId, String encoded) {
 		//make sure chart exists...
 		ChartUtil.fetchChart(chartId);
-		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		ChartDbo chart = new ChartDbo();
 		chart.setChartId(chartId);
 		chart.setEncodedVariables(encoded);
 		//he could create multiples of the same chart so just timestamp it as he would not
 		//be fast enough to create ones with an id clash...
 		chart.setId(chartId+System.currentTimeMillis());
-		String title = variables.get("title");
-		chart.setTitle(title);
 
 		EntityUser user = Utility.getCurrentUser(session);
 		List<ChartDbo> charts = user.getCharts();

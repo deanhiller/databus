@@ -36,11 +36,15 @@ public class EntityUser extends Entity {
 	@NoSqlEmbedded
 	private UserSettings userSettings = new UserSettings();
 	
+	@Deprecated
 	@NoSqlEmbedded
 	private List<UserChart> userCharts = new ArrayList<UserChart>();
 	
 	@NoSqlEmbedded
 	private List<ChartDbo> charts = new ArrayList<ChartDbo>();
+	
+	@NoSqlEmbedded
+	private DashboardSettings settings = new DashboardSettings();
 	
 	private boolean isAdmin;
 	
@@ -269,4 +273,42 @@ public class EntityUser extends Entity {
 		this.charts = charts;
 	}
 	
+	public DashboardSettings getSettings() {
+		return settings;
+	}
+
+	public void setSettings(DashboardSettings settings) {
+		this.settings = settings;
+	}
+
+	public String getChartUrl(int index) {
+		String id = settings.getChartId(index);
+		ChartDbo selected = null;
+		for(ChartDbo chart : charts) {
+			if(chart.getId().equals(id)) {
+				selected = chart;
+				break;
+			}
+		}
+		
+		if(selected == null) {
+			selected = new ChartDbo();
+			selected.setEncodedVariables("eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
+			selected.setChartId("FakeChart-js");
+		}
+		
+		if(settings.getDashboardChartCount() == 4) {
+			return selected.getSmallChartUrl();
+		} else if(settings.getDashboardChartCount() == 1) {
+			return selected.getLargeChartUrl();
+		} else if(settings.getDashboardChartCount() == 2) {
+			return selected.getLargeChartUrl();
+		} else if(settings.getDashboardChartCount() == 3) {
+			if(index == 0 || index == 1) 
+				return selected.getSmallChartUrl();
+			return selected.getLargeChartUrl();
+		}
+		return selected.getSmallChartUrl();
+	}
+
 } // User

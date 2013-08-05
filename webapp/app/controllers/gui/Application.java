@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import models.ChartDbo;
 import models.Entity;
 import models.EntityGroup;
 import models.EntityUser;
@@ -30,22 +31,6 @@ import controllers.gui.solrsearch.SolrSearchResult;
 public class Application extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(Application.class);
-
-	public static void dashboard() {
-		EntityUser user = Utility.getCurrentUser(session);
-		UserSettings settings = user.getUserSettings();
-		
-		//<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" 
-		//src="https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;output=embed"
-		//></iframe><br /><small><a href="https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>
-		
-		settings.setDashboardChart_1_uri("https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;output=embed");
-		settings.setDashboardChart_2_uri("https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;output=embed");
-		settings.setDashboardChart_3_uri("https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;output=embed");
-		settings.setDashboardChart_4_uri("https://maps.google.com/?ie=UTF8&amp;ll=39.731144,-105.179849&amp;spn=0.033334,0.059223&amp;t=h&amp;z=14&amp;output=embed");
-		
-		render(settings);
-	}
 
 	public static void pingTest() {
 		EntityUser user = Utility.getCurrentUser(session);

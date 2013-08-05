@@ -1,0 +1,18 @@
+#{extends './dashTemplate.html' /}
+#{set title:'Dashboard' /}
+#{set subtab:'dashboard' /}
+
+
+	       #{if user.settings.dashboardChartCount == 1}
+    			#{dashboardCharts/chartsingle user:user/}
+    		#{/if}
+    		#{elseif user.settings.dashboardChartCount == 2}
+    			#{dashboardCharts/chartsdual user:user/}
+    		#{/elseif}
+    		#{elseif user.settings.dashboardChartCount == 3}
+		    	#{dashboardCharts/chartsthree user:user/}
+		    #{/elseif}
+		    #{else}
+		    	#{dashboardCharts/chartsfour user:user/}
+		    #{/else}
+

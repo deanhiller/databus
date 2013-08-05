@@ -6,6 +6,8 @@ import java.util.Map;
 import com.alvazan.orm.api.base.anno.NoSqlEmbeddable;
 import com.alvazan.orm.api.base.anno.NoSqlId;
 
+import controllers.gui.util.ChartUtil;
+
 @NoSqlEmbeddable
 public class ChartDbo {
 	
@@ -38,6 +40,8 @@ public class ChartDbo {
 
 	public void setEncodedVariables(String encodedVariables) {
 		this.encodedVariables = encodedVariables;
+		Map<String, String> variables = ChartUtil.decodeVariables(encodedVariables);
+		title = variables.get("title");
 	}
 
 	@Override
@@ -66,10 +70,15 @@ public class ChartDbo {
 		return true;
 	}
 
-	public void setTitle(String title) {
-		this.title = title;
-	}
 	public String getTitle() {
 		return title;
+	}
+
+	public String getSmallChartUrl() {
+		return "/charts/smallchart/"+chartId+"/"+encodedVariables;
+	}
+
+	public String getLargeChartUrl() {
+		return "/charts/largechart/"+chartId+"/"+encodedVariables;
 	}
 }

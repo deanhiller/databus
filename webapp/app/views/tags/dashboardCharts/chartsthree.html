@@ -1,13 +1,13 @@
 <div class="row-fluid">
     <div class="span6">
     	<div id="chart_4_area" class="db_summary_chart" style="height: 300px; margin-right: 5px;">
-    	    <iframe width="100%" height="100%" src="${_settings.dashboardChart_1_uri}">
+    	    <iframe style="border: none;" width="100%" height="100%" src="${_user.getChartUrl(0).raw()}">
             </iframe>
     	</div>
     </div>
     <div class="span6" style="margin-left: 5px;">
     	<div id="chart_5_area" class="db_summary_chart" style="height: 300px;">
-    	    <iframe width="100%" height="100%" src="${_settings.dashboardChart_2_uri}">
+    	    <iframe style="border: none;" width="100%" height="100%" src="${_user.getChartUrl(1).raw()}">
             </iframe>
     	</div>
     </div>
@@ -15,7 +15,7 @@
 <div class="row-fluid" style="margin-top: 5px;">
     <div class="span12">
     	<div id="chart_6_area" class="db_summary_chart" style="height: 300px;">
-    	    <iframe width="100%" height="100%" src="${_settings.dashboardChart_3_uri}">
+    	    <iframe style="border: none;" width="100%" height="100%" src="${_user.getChartUrl(2).raw()}">
             </iframe>
     	</div>
     </div>

@@ -22,8 +22,8 @@
 				<li class="divider"></li>
 			</ul>
 			<ul class="nav nav-list dashboard_chart_menu"> 
-				#{list userCharts, as:'chart'}
-					<li class="db_left_nav_item"><a id="${chart_index}" class="db_left_nav_menu_item"><i class="icon-signal "></i> ${chart.chartName}</a></li>
+				#{list charts, as:'chart'}
+					<li class="db_left_nav_item"><a class="db_left_nav_menu_item" href=""><i class="icon-signal "></i> ${chart.title}</a></li>
 				#{/list}
 			</ul>
 	   </div>
@@ -31,17 +31,6 @@
 	   	 #{messages/charts_alert /}
 	   </div>
 	   <div class="span9" id="dashboard_chart_area">
-	       #{if settings.dashboardChartCount == 1}
-    			#{dashboardCharts/chartsingle settings:settings/}
-    		#{/if}
-    		#{elseif settings.dashboardChartCount == 2}
-    			#{dashboardCharts/chartsdual settings:settings/}
-    		#{/elseif}
-    		#{elseif settings.dashboardChartCount == 3}
-		    	#{dashboardCharts/chartsthree settings:settings/}
-		    #{/elseif}
-		    #{else}
-		    	#{dashboardCharts/chartsfour settings:settings/}
-		    #{/else}
+	       #{doLayout/}
 	   </div>
     </div>

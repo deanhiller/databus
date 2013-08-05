@@ -2,14 +2,6 @@
 #{set title:'My Account' /}
 #{set subtab:'dashboard'/}
 
-<!-- FOR DEBUG -->
-<!--<html><body>
-<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
-<link href="/public/bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
-<link href="/public/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
-<script type="text/javascript" src="/public/bootstrap/js/bootstrap.js"></script>-->
-<!-- ********* -->
-
 <script type="text/javascript">
 	%{
 		showDashboard = false;
@@ -85,12 +77,7 @@
 					</legend>
 					<div style="clear: both; margin-left: 300px;" id="choose_charts_option1">
 						Dashboard Chart #1: &nbsp;
-						<select id="dashboard_chart1_select" name="dashboard_chart1_select">
-						<option>BLANK</option>
-						#{list userCharts, as:'chart'}
-							<option>${chart.chartName}</option>
-						#{/list}
-						</select>
+						#{select 'chart1Id', items:charts, valueProperty:'id', labelProperty:'title', value:chart1Id/}
 					</div>
 		    		</div>
 		    		<div id="dual_chart" style="display: none;">
@@ -102,12 +89,7 @@
 						<div class="span12" style="clear: both; margin-left: 25px;">
 							<span class="span6">
 								Dashboard Chart #1: &nbsp;
-								<select id="dashboard_chart2_select" name="dashboard_chart2_select">
-									<option>BLANK</option>
-									#{list userCharts, as:'chart'}
-										<option>${chart.chartName}</option>
-									#{/list}
-								</select>
+								#{select 'chart1Id', items:charts, valueProperty:'id', labelProperty:'title', value:chart1Id/}
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
@@ -130,12 +112,7 @@
 						<div class="span12" style="clear: both; margin-left: 25px;">
 							<span class="span6">
 								Dashboard Chart #1: &nbsp;
-								<select id="dashboard_chart4_select" name="dashboard_chart4_select">
-									<option>BLANK</option>
-									#{list userCharts, as:'chart'}
-										<option>${chart.chartName}</option>
-									#{/list}
-								</select>
+								#{select 'chart1Id', items:charts, valueProperty:'id', labelProperty:'title', value:chart1Id/}
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
@@ -161,7 +138,7 @@
 					</div>
 		    		</div>
 		    		<div id="quadruple_chart" style="display: none;">
-		    			#{dashboardCharts/fourcharts /}
+		    			#{dashboardCharts/chartsfour user:user /}
 		    			<legend style="padding-top:50px;" id="choose_charts_legend_option3">
 						Choose your Charts
 					</legend>
@@ -169,12 +146,7 @@
 						<div class="span12" style="clear: both; margin-left: 25px;">
 							<span class="span6">
 								Dashboard Chart #1: &nbsp;
-								<select id="dashboard_chart7_select" name="dashboard_chart7_select">
-									<option>BLANK</option>
-									#{list userCharts, as:'chart'}
-										<option>${chart.chartName}</option>
-									#{/list}
-								</select>
+								#{select 'chart1Id', items:charts, valueProperty:'id', labelProperty:'title', value:chart1Id/}
 							</span>
 							<span class="span6">
 								Dashboard Chart #2: &nbsp;
@@ -590,7 +562,3 @@
 			});
 		};
 </script>
-
-<!-- FOR DEBUG -->
-<!--</body></html>-->
-<!-- ********* -->

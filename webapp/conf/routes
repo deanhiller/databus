@@ -192,7 +192,7 @@ GET	/prototype1					    	Help.myHelpBootstrapProto1
 GET /prototype2				            gui.Search.dashboardSide
 GET	/myHelpBootstrapProto_Summary		gui.Search.myHelpBootstrapProto_Summary
 GET /dashboard      					gui.Search.dashboardSide
-GET /dashboard2                         gui.Application.dashboard
+GET /dashboard2                         gui.Main.dashboard
 GET /search         					gui.GUISearch.metaSearch
 GET /detailsearch   					gui.GUISearch.detailSearch
 
