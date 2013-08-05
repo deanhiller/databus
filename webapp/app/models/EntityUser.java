@@ -33,9 +33,11 @@ public class EntityUser extends Entity {
 	
 	private String classType = "userImpl";
 	
+	//How do we remove UserSettings????....I don't think it is stored like List<UserChart> though we should have for easier compatibility maybe
+	//but can we just null every field in the object to delete the columns from every user????  we need to do that one
+	@Deprecated
 	@NoSqlEmbedded
 	private UserSettings userSettings = new UserSettings();
-	
 	@Deprecated
 	@NoSqlEmbedded
 	private List<UserChart> userCharts = new ArrayList<UserChart>();

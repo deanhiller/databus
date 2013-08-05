@@ -14,10 +14,14 @@ public class ChartDbo {
 	@NoSqlId
 	private String id = "";
 
+	//ManyToOne chartID
 	private String chartId;
 	private String encodedVariables;
 	private String title;
 
+	//This url is only for embedding other webpages in our dashboard, otherwise the chartId and encodedVariables above are
+	//enough to reform the url (encodedVariables contains the vars for the chart with chartId=chartId.  id is unique in that
+	//two charts can use the same chartId(many to one)
 	private String url;
 	
 	public String getId() {
