@@ -12,11 +12,14 @@ import models.message.ChartPageMeta;
 import models.message.ChartVarMeta;
 
 import org.apache.commons.codec.binary.Base64;
+import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import controllers.gui.MyChartsGeneric;
 
 import play.Play;
 import play.mvc.results.NotFound;
@@ -160,7 +163,7 @@ public class ChartUtil {
 		if(filenameToChart != null)
 			return false;
 		filenameToChart = new HashMap<String, ChartInfo>();
-		ChartInfo chartInfo = new ChartInfo("/chartbasic/createchart", "3-Axis Builtin Chart", "A basic chart with 1 to 3 y axis and can draw up to 5 lines");
+		ChartInfo chartInfo = new ChartInfo(ChartInfo.BUILT_IN_CHART1, "/chartbasic/createchart", "3-Axis Builtin Chart", "A basic chart with 1 to 3 y axis and can draw up to 5 lines");
 		filenameToChart.put(chartInfo.getId(), chartInfo);
 
 		return true;
@@ -169,6 +172,23 @@ public class ChartUtil {
 	public List<ChartInfo> fetchCharts() {
 		reloadChartsIfNeeded();
 		return sortedCharts;
+	}
+
+	public static String encodeVariables(Map<String, String> variablesMap) {
+		String first;
+		try {
+			first = mapper.writeValueAsString(variablesMap);
+		} catch (JsonGenerationException e) {
+			throw new RuntimeException(e);
+		} catch (JsonMappingException e) {
+			throw new RuntimeException(e);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	
+		byte[] bytes = first.getBytes();
+		String encoded = Base64.encodeBase64URLSafeString(bytes);
+		return encoded;
 	}
 
 	public static ChartInfo fetchChart(String chartId) {
@@ -186,6 +206,8 @@ public class ChartUtil {
 	
 	public static Map<String, String> decodeVariables(String encoded) {
 		if("start".equals(encoded))
+			return new HashMap<String, String>();
+		else if(encoded.startsWith("url="))
 			return new HashMap<String, String>();
 		byte[] decoded = Base64.decodeBase64(encoded);
 		String json = new String(decoded);

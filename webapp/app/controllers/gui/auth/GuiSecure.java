@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import controllers.SecurityUtil;
 import controllers.gui.Application;
-import controllers.gui.Main;
+import controllers.gui.MyMain;
 import controllers.gui.Search;
 
 import play.Play;
@@ -92,7 +92,7 @@ public class GuiSecure extends Controller {
         flash.keep("url");
         
         if(session.get(KEY) != null) {
-        	Main.dashboard();
+        	MyMain.dashboard();
         }
         render();
     }

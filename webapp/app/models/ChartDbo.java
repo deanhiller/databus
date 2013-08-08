@@ -6,6 +6,7 @@ import java.util.Map;
 import com.alvazan.orm.api.base.anno.NoSqlEmbeddable;
 import com.alvazan.orm.api.base.anno.NoSqlId;
 
+import controllers.gui.util.ChartInfo;
 import controllers.gui.util.ChartUtil;
 
 @NoSqlEmbeddable
@@ -18,6 +19,7 @@ public class ChartDbo {
 	private String chartId;
 	private String encodedVariables;
 	private String title;
+	private boolean isBuiltin = false;
 
 	//This url is only for embedding other webpages in our dashboard, otherwise the chartId and encodedVariables above are
 	//enough to reform the url (encodedVariables contains the vars for the chart with chartId=chartId.  id is unique in that
@@ -83,12 +85,16 @@ public class ChartDbo {
 	public String getSmallChartUrl() {
 		if(url != null)
 			return url;
+		else if(ChartInfo.BUILT_IN_CHART1.equals(chartId))
+			return "/chartbasic/chart/"+chartId+"/"+encodedVariables;
 		return "/charts/smallchart/"+chartId+"/"+encodedVariables;
 	}
 
 	public String getLargeChartUrl() {
 		if(url != null)
 			return url;
+		else if(ChartInfo.BUILT_IN_CHART1.equals(chartId))
+			return "/chartbasic/chart/"+chartId+"/"+encodedVariables;
 		return "/charts/largechart/"+chartId+"/"+encodedVariables;
 	}
 
@@ -102,5 +108,17 @@ public class ChartDbo {
 
 	public String getUrl() {
 		return url;
+	}
+
+	public void setEncodedVariablesRaw(String encodedChart) {
+		this.encodedVariables = encodedChart;
+	}
+
+	public boolean isBuiltin() {
+		return isBuiltin;
+	}
+
+	public void setBuiltin(boolean isBuiltin) {
+		this.isBuiltin = isBuiltin;
 	}
 }

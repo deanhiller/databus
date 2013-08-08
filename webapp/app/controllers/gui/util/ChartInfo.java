@@ -9,6 +9,7 @@ import models.message.ChartMeta;
 
 public class ChartInfo {
 
+	public static final String BUILT_IN_CHART1 = "databus-built-in1";
 	private ChartMeta chartMeta;
 	private String htmlHeaders;
 	private String largeChart;
@@ -19,8 +20,8 @@ public class ChartInfo {
 	private int chartVersion;
 	private String id;
 	
-	public ChartInfo(String route, String name, String description) {
-		setAndConvertId(route);
+	public ChartInfo(String id, String route, String name, String description) {
+		this.id = id;
 		this.route = route;
 		chartMeta = new ChartMeta();
 		chartMeta.setDescription(description);
@@ -100,10 +101,10 @@ public class ChartInfo {
 		this.id = convert(id);
 	}
 	private static String convert(String name) {
-		name = name.replaceAll("/", "-");
 		name = name.replaceAll("\\.", "-");
 		return name;
 	}
+
 	public String getId() {
 		return id;
 	}

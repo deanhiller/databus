@@ -11,6 +11,7 @@
     var scriptCharts = {};
 	#{list charts, as:'chart'}
 		scriptCharts['${chart.id}'] = {};
+		scriptCharts['${chart.id}'].isBuiltIn = ${chart.builtin};
 		scriptCharts['${chart.id}'].encoding = '${chart.encodedVariables}';
 		scriptCharts['${chart.id}'].chartId = '${chart.chartId}';
 		scriptCharts['${chart.id}'].url = '${chart.url}';
@@ -192,8 +193,14 @@ Any changes are not applied until you click the Save button
 		function loadChart(pulldownIndex, id) {
 			var numCharts = parseInt($("#dashboard_chart_count :selected").text());
 			var chart = scriptCharts[id];
-			
-			if(chart.url == '') {
+
+			*{ this is a HUGE cheat as we should really call server side so we have this code
+			 in one location but I am in a hurry }*
+			if(chart.isBuiltIn) {
+				var encodedVars = chart.encoding;
+                var chartId = chart.chartId;
+                url = '/chartbasic/chart/'+chartId+"/"+encodedVars;
+			} else if(chart.url == '') {
 				var encodedVars = chart.encoding;
 				var chartId = chart.chartId;
 

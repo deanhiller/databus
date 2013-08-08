@@ -2,8 +2,10 @@ package controllers.gui;
 
 import gov.nrel.util.Utility;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +34,11 @@ import play.vfs.VirtualFile;
 import com.alvazan.play.NoSql;
 
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.ChartUtil;
 
 @With(GuiSecure.class)
 public class Settings extends Controller {
+	static final String EMBEDDED_CHART_ID = "databus-embedded";
 	private static final Logger log = LoggerFactory.getLogger(Settings.class);
 	
 	public static void dashboardSettings() {
@@ -87,7 +91,13 @@ public class Settings extends Controller {
 
 		ChartDbo chart = new ChartDbo();
 		chart.setId(title);
-		chart.setTitle(title);
+		//fake the chart id for now to databus-embedded so we can intercept later
+		chart.setChartId(EMBEDDED_CHART_ID);
+		Map<String, String> variablesMap = new HashMap<String, String>();
+		variablesMap.put("url", chartUrl);
+		variablesMap.put("title", title);
+		String encoded = ChartUtil.encodeVariables(variablesMap);
+		chart.setEncodedVariables(encoded);
 		chart.setUrl(chartUrl);
 
 		user.getCharts().add(chart);

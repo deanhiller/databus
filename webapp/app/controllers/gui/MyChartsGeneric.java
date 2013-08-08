@@ -2,7 +2,6 @@ package controllers.gui;
 
 import gov.nrel.util.Utility;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
@@ -19,13 +18,10 @@ import models.message.ChartMeta;
 import models.message.ChartPageMeta;
 import models.message.ChartVarMeta;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.message.BasicNameValuePair;
-import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +44,6 @@ public class MyChartsGeneric extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyChartsGeneric.class);
 
-	private static final ObjectMapper mapper = new ObjectMapper();
 	private static ChartUtil chartUtil = new ChartUtil();
 	
 	public static void selectChart() {
@@ -102,18 +97,7 @@ public class MyChartsGeneric extends Controller {
 			}
 		}
 
-		try {
-			encoded = mapper.writeValueAsString(variablesMap);
-		} catch (JsonGenerationException e) {
-			throw new RuntimeException(e);
-		} catch (JsonMappingException e) {
-			throw new RuntimeException(e);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-
-		byte[] bytes = encoded.getBytes();
-		encoded = Base64.encodeBase64URLSafeString(bytes);
+		encoded = ChartUtil.encodeVariables(variablesMap);
 		
 		page = page+1;
 		if(page >= chart.getChartMeta().getPages().size())

@@ -52,8 +52,8 @@ GET /search/legacyMetaSearch				gui.GUISearch.legacyMetaSearch
 # ******************************************************************************
 # ******************************************************************************
 GET 	/                				gui.auth.GuiSecure.login
-GET /dashboard                          gui.Main.dashboard
-GET /dashboard/{id}                     gui.Main.single
+GET /dashboard                          gui.MyMain.dashboard
+GET /dashboard/{chartId}/{encoded}      gui.MyMain.single
 GET	/helpunauth						    gui.Application.myHelpUnAuth
 GET	/searchunauth						gui.Application.nonAuthSearch
 POST /login          					gui.auth.GuiSecure.authenticate
@@ -128,16 +128,14 @@ GET  /charts/largechart/{chartId}/{encoded}    gui.MyChartsGeneric.largeChart
 GET  /charts/smallchart/{chartId}/{encoded}    gui.MyChartsGeneric.smallChart
 POST /charts/addchart/{chartId}/{encoded}      gui.MyChartsGeneric.addChartToDashboard
 
-GET  /chartbasic/modifychart/{length}/{version}/{encodedChart}   	 gui.MyCharts.modifyChart
+GET  /chartbasic/modifychart/{chartId}/{encoded}                   	 gui.MyCharts.modifyChart
 GET  /chartbasic/createchart                                     	 gui.MyCharts.createChart
 POST /chartbasic/createchart                                     	 gui.MyCharts.postStep1
-GET  /chartbasic/createchart/step2/{length}/{version}/{encodedChart} gui.MyCharts.createStep2
+GET  /chartbasic/createchart/step2/{chartId}/{encoded}               gui.MyCharts.createStep2
 POST /chartbasic/createchart/step2                                 	 gui.MyCharts.postStep2
-GET  /chartbasic/chart/{length}/{version}/{title}/{encodedChart}  	 gui.MyCharts.drawJustChart
-GET  /chartbasic/jschart/{length}/{version}/{title}/{encodedChart}   gui.MyCharts.justJavascript
-GET  /chartbasic/drawchart/{length}/{version}/{encodedChart}       	 gui.MyCharts.drawChart
-GET  /chartbasic/loadChartPage								gui.MyCharts.loadChartPage
-GET  /chartbasic/loadChartDiv								gui.MyCharts.loadChartDiv					
+GET  /chartbasic/chart/{chartId}/{encoded}                           gui.MyCharts.drawJustChart
+GET  /chartbasic/drawchart/{chartId}/{encoded}                       gui.MyCharts.drawChart
+POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyCharts.addChartToDashboard
 
 # GUI Summary Pages
 # ******************************************************************************

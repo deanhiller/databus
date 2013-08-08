@@ -18,12 +18,12 @@
         <div class="span3 dashboard_chart_list">
 		<!-- Need to add a left nav bar now so we can choose between all the different charts -->
 			<ul class="nav nav-list">            
-				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item"><i class="icon-th "></i> Summary</a></li> 
+				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item" href="@{dashboard()}"><i class="icon-th "></i> Summary</a></li> 
 				<li class="divider"></li>
 			</ul>
 			<ul class="nav nav-list dashboard_chart_menu"> 
 				#{list charts, as:'chart'}
-					<li class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{single(chart.id)}"><i class="icon-signal "></i> ${chart.title}</a></li>
+					<li class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{single(chart.chartId, chart.encodedVariables)}"><i class="icon-signal "></i> ${chart.title}</a></li>
 				#{/list}
 			</ul>
 	   </div>
