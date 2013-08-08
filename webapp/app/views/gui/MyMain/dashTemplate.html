@@ -18,12 +18,12 @@
         <div class="span3 dashboard_chart_list">
 		<!-- Need to add a left nav bar now so we can choose between all the different charts -->
 			<ul class="nav nav-list">            
-				<li class="db_left_nav_item active"><a id="SUMMARY" class="db_left_nav_menu_item" href="@{dashboard()}"><i class="icon-th "></i> Summary</a></li> 
+				<li id="subtab_dddSummary" class="db_left_nav_item"><a id="SUMMARY" class="db_left_nav_menu_item" href="@{dashboard()}"><i class="icon-th "></i> Summary</a></li> 
 				<li class="divider"></li>
 			</ul>
 			<ul class="nav nav-list dashboard_chart_menu"> 
 				#{list charts, as:'chart'}
-					<li class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{single(chart.chartId, chart.encodedVariables)}"><i class="icon-signal "></i> ${chart.title}</a></li>
+					<li id="subtab_${chart.title}" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{single(chart.chartId, chart.encodedVariables)}"><i class="icon-signal "></i> ${chart.title}</a></li>
 				#{/list}
 			</ul>
 	   </div>
@@ -34,3 +34,13 @@
 	       #{doLayout/}
 	   </div>
     </div>
+
+        <script type="text/javascript" language="JavaScript">
+            function setClass(id, className) {
+                var obj = document.getElementById(id);
+                     if (obj != null) {
+                    obj.className = className;
+                }
+            }
+            setClass("subtab_${title}", "active");
+        </script>

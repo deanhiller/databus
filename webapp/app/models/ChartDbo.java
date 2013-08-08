@@ -121,4 +121,5 @@ public class ChartDbo {
 	public void setBuiltin(boolean isBuiltin) {
 		this.isBuiltin = isBuiltin;
 	}
+	
 }

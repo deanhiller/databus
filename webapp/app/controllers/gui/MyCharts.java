@@ -162,7 +162,7 @@ public class MyCharts extends Controller {
 		}
 	}
 
-	private static Chart deserialize(String encodedChart) {
+	static Chart deserialize(String encodedChart) {
 		try {
 			byte[] decoded = Base64.decodeBase64(encodedChart);
 			String json = new String(decoded);

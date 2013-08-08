@@ -2,7 +2,6 @@
 #{set title:'Dashboard' /}
 #{set subtab:'dashboard' /}
 
-
 	       #{if user.settings.dashboardChartCount == 1}
     			#{dashboardCharts/chartsingle url:user.getChartUrl(0).raw()/}
     		#{/if}
