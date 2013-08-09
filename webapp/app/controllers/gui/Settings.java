@@ -114,6 +114,7 @@ public class Settings extends Controller {
 		for(ChartDbo chart : user.getCharts()) {
 			if(id.equals(chart.getId())) {
 				user.getCharts().remove(chart);
+				user.getSettings().removeChart(chart.getId());
 				break;
 			}
 		}

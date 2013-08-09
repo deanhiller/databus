@@ -84,5 +84,16 @@ public class DashboardSettings {
 			return "-1";
 		return chart4Id;
 	}
+
+	public void removeChart(String id) {
+		if(id.equals(chart1Id))
+			setChart1Id(null);
+		if(id.equals(chart2Id))
+			setChart2Id(null);
+		if(id.equals(chart3Id))
+			setChart3Id(null);
+		if(id.equals(chart4Id))
+			setChart4Id(null);
+	}
 	
 }
