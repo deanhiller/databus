@@ -67,6 +67,7 @@ POST /settings/dashbaord/save           gui.Settings.postSaveAccountSettings
 GET  /settings/charts                   gui.Settings.charts
 GET  /settings/addchart                 gui.Settings.addChart
 POST /settings/savechart                gui.Settings.postSaveChart
+POST /settings/deletechart/{id}         gui.Settings.postDeleteChart
 
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************

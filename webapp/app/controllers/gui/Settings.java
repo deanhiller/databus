@@ -108,4 +108,19 @@ public class Settings extends Controller {
 		charts();
 	}
 
+	public static void postDeleteChart(String id) {
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		for(ChartDbo chart : user.getCharts()) {
+			if(id.equals(chart.getId())) {
+				user.getCharts().remove(chart);
+				break;
+			}
+		}
+		
+		NoSql.em().put(user);
+		NoSql.em().flush();
+		
+		charts();
+	}
 }

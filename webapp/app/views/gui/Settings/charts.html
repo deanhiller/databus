@@ -14,7 +14,7 @@
         #{list charts, as:'chart'}
             <tr>
                 <td>${chart.title}</td>
-                <td>Delete</td>
+                <td>#{form @postDeleteChart(chart.id), style:'margin: 0px 0px 0px 0px;', id:chart.id}<input id="delete" type="submit" name="submit" value="Delete" class="btn btn-primary" />#{/form}</td>
             </tr>
         #{/list}
         #{else}
