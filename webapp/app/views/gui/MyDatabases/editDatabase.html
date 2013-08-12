@@ -135,23 +135,17 @@
 	<tbody>
 	    #{list tables, as:'table'}
 	        <tr>
+                    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+                    <td>${table.typeOfData}</td>
 		        #{if table?.typeOfData == timeseries}
-					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
-					<td>${table.typeOfData}</td>
 					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
-					<td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
-					<td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
-					<td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
 				#{/if}
 				#{else}
-				    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
-                    <td>${table.typeOfData}</td>
                     <td></td>
+				#{/else}
                     <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
                     <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
-                    <td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
-				#{/else}
-	            
+                    <td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>	            
 	        </tr>
 	    #{/list}    	    
 	</tbody>

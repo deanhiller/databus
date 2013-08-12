@@ -32,20 +32,16 @@
 	<tbody>
 	    #{list tables, as:'table'}
 	        <tr>
-                #{if table?.typeOfData == timeseries}
                     <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
                     <td>${table.typeOfData}</td>
+                #{if table?.typeOfData == timeseries}
                     <td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
-                    <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
-                    <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
                 #{/if}
                 #{else}
-                    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
-                    <td>${table.typeOfData}</td>
                     <td></td>
+                #{/else}
                     <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
                     <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
-                #{/else}
 	        </tr>
 	    #{/list}    	    
 	</tbody>
