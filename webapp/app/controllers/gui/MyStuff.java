@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import models.DataTypeEnum;
 import models.EntityUser;
 import models.KeyToTableName;
+import models.PermissionType;
 import models.RoleMapping;
 import models.SecureResource;
 import models.SecureSchema;
@@ -155,6 +156,10 @@ public class MyStuff extends Controller {
 
 	public static void postTable(String table, String description) {
 		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+		PermissionType permission = SecurityUtil.checkSingleTable2(table);
+		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+			unauthorized("You don't have permission to change this resource");
+
 		targetTable.setDescription(description);
 		NoSql.em().put(targetTable);
 		NoSql.em().flush();
