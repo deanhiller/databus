@@ -47,6 +47,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	private ReadResult lastValue;
 	private long epochOffset;
+	private Long windowFilterSize;
 
 	@Override
 	protected int getNumParams() {
@@ -66,7 +67,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		String uninterpalatedValueMethodString = options.get("uninterpalatedValueMethod");
 		if (StringUtils.equalsIgnoreCase("previous", uninterpalatedValueMethodString))
 			uninterpalatedValueMethod = UninterpalatedValueMethod.PREVIOUS_ROW;
-			
+
 		// param 1: Type: String
 		splineType = params.getParams().get(0);
 		/**
@@ -109,6 +110,12 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
 		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
 		
+		String multipleOfInterval = options.get("window");
+		if(multipleOfInterval != null) {
+			int windowMultiplier = Integer.parseInt(multipleOfInterval);
+			windowFilterSize = interval * windowMultiplier;
+		}
+
 		// setup buffer
 		this.buffer = new CircularFifoBuffer(4);
 		return newPath;
@@ -157,13 +164,13 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 		if(currentTimePointer < timeSecondInBuffer) {
 			//move currentTimePointer PAST the timeSecondInBuffer
-			long range = (timeSecondInBuffer)-currentTimePointer;
-			long multiplier = range / interval;
-			currentTimePointer = currentTimePointer + (interval*multiplier);
-			if(currentTimePointer < timeSecondInBuffer) {
-				//add one more interval for the case where currentTimePointer != timeSecondInBuffer, otherwise, the times now match up exactly
-				currentTimePointer += interval;
+			TSRelational r = new TSRelational();
+			setTime(r, currentTimePointer);
+			for (String colName:columnsToInterpolate) {
+				r.put(colName, null);
 			}
+			currentTimePointer+=interval;
+			return new ReadResult(getUrl(), r);
 		}
 
 		//NOW, we may have moved past the third time in the buffer so may need to read in more data
@@ -206,8 +213,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
-		long time = getTime(row);
-		
 		TSRelational clone = (TSRelational) row.clone();
 		buffer.add(clone);
 		if (buffer.size() == buffer.maxSize()) {
@@ -224,7 +229,12 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	}
 
 	private ReadResult calculate() {
-		if(!isSplineCreated){
+		long difference = timeThirdInBuffer - timeSecondInBuffer;
+		if(difference >= windowFilterSize) {
+			ReadResult res = createNullsForEmptyWindowOfData(currentTimePointer);
+			currentTimePointer += interval;
+			return res;
+		} else if(!isSplineCreated){
 			createSpline();
 			isSplineCreated = true;
 		}
@@ -235,6 +245,15 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		log.debug("-------- returning a point t="+out.getRow().getTime()+" other points are timeSecond="+timeSecondInBuffer+" timeThird="+timeThirdInBuffer);
 		currentTimePointer += interval;
 		return out;
+	}
+
+	private ReadResult createNullsForEmptyWindowOfData(long currentTimePointer2) {
+		TSRelational rowout = figureOutRowToCopy();
+		setTime(rowout, currentTimePointer2);
+		for (String colName:columnsToInterpolate) {
+			rowout.put(colName, null);
+		}
+		return new ReadResult(getUrl(), rowout);
 	}
 
 	private Map<String, BigDecimal> calculateAllValues(long currentTimePointer) {
