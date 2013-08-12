@@ -1,0 +1,42 @@
+
+#{if targetTable != null}
+	%{
+   		dboTable = targetTable.tableMeta;
+	}%
+	#{if dboTable != null}
+		%{
+	   		idCol = dboTable.idColumnMeta;
+		}%		
+		<table class="table">
+			<tr>
+				<td><b>Fields</b></td>
+				<td><b>Indexed?</b></td>
+			</tr>
+			#{if idCol != null}
+			<tr>
+				<td>${idCol.columnName}</td>
+				<td> (primary key) </td>
+			</tr>
+			#{/if}
+			#{else}
+			<tr>
+				<td colspan="2">Corrupt id column..id col not found</td>
+			</tr>
+			#{/else}
+		   	#{list dboTable.getAllColumns(), as:'column'}
+		       <tr>
+		           <td>${column.columnName}</td>
+		           <td>${column.isIndexed ? "true" : "false"}</td>
+		       </tr>
+		   	#{/list} 
+		</table>
+	#{/if}
+	#{else}
+		Corrupt DboTableMeta=${targetTable.tableName}
+	#{/else}
+#{/if}
+#{else}
+
+Corrupt target table=${targetTable.tableName}
+
+#{/else}

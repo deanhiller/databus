@@ -152,4 +152,14 @@ public class MyStuff extends Controller {
 		String agg = aggregationName;
 		render(username, password, baseurl, agg);
 	}
+
+	public static void postTable(String table, String description) {
+		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+		targetTable.setDescription(description);
+		NoSql.em().put(targetTable);
+		NoSql.em().flush();
+		
+		flash.success("Your changes were saved");
+		tableEdit(table);
+	}
 }

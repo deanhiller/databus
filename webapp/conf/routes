@@ -79,7 +79,7 @@ GET  /tables/json/{table}                   gui.MyStuff.tableJson
 GET  /aggData/{aggregationName}     		gui.MyStuff.aggData
 GET  /groups/{group}/addtable           	gui.MyStuff.tableAdd
 GET  /tables/{table}                    	gui.MyStuff.tableEdit
-POST /groups/{group}/savetable          	gui.MyStuff.postTable
+POST /groups/{table}/savetable          	gui.MyStuff.postTable
 GET  /tables/{table}/upload             	gui.Tables.uploadForm
 POST /tables/{table}/specialupload      	gui.Tables.postData
 GET  /tables/{table}/uploadsuccess      	gui.Tables.uploadSuccess

@@ -136,7 +136,7 @@
 	    #{list tables, as:'table'}
 	        <tr>
 		        #{if table?.typeOfData == timeseries}
-					<td>${table.tableName}</td>
+					<td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
 					<td>${table.typeOfData}</td>
 					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
 					<td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
@@ -144,7 +144,7 @@
 					<td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>
 				#{/if}
 				#{else}
-				    <td>${table.tableName}</td>
+				    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
                     <td>${table.typeOfData}</td>
                     <td></td>
                     <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>

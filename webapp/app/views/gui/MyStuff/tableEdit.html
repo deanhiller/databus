@@ -2,20 +2,26 @@
 #{set tab:'home' /}
 #{set title:'Edit Table' /}
 
-#{form @MyStuff.postTable(group), id:'edittable', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+#{form @postTable(targetTable.tableName), id:'edittable', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
     <legend>Edit ${targetTable.typeOfData.prettyName} Table '${targetTable.tableName}'</legend>
     <input type="hidden" name="targetTable.tableName" value="${targetTable?.tableName}">
 
-	#{xfield objectId:'targetTable.description',label:'Table Description', help:'Some help message'}
-		#{textarea field:field, rows:15, cols:100, class:'input-xxlarge'/}
-	#{/xfield}
-	
-	#{include 'Application/singleTableMeta.html'/}
+    #{formfield 'description'}
+    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Y-Axis 1</label>
+        <div class="controls">
+            <textarea name="description" rows="15" cols="100" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${targetTable.description}</textarea>
+            <span class="help-block">${errors.forKey('description')}</span>
+        </div>
+    </div>
+    #{/formfield}
+    
+	#{include './singleTableMeta.html'/}
 
     <div class="control-group">
        <div class="controls">
 		  <input type="submit" name="submit" value="Save" class="btn btn-primary" />
-		  <a href="javascript:history.back()" class="btn">Cancel</a>
+		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
 		</div>
 	</div>
 #{/form}
