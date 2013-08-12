@@ -36,40 +36,6 @@ public class MyStuff extends Controller {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyStuff.class);
 	
-	public static void myTables() {
-		EntityUser user = Utility.getCurrentUser(session);
-		Map<String, TableInfo> loadedTables = new HashMap<String, TableInfo>();
-		
-		int counter = 0;
-		List<RoleMapping> groups = user.getGroups();
-		for(RoleMapping r : groups) {
-			SecurityGroup group = r.getGroup();
-			if (log.isInfoEnabled())
-				log.info("checking group="+group.getName());
-			CursorToMany<SecureTable> tables = group.getTables();
-			while(tables.next() && counter < 50) {
-				SecureTable t = tables.getCurrent();
-				if (log.isInfoEnabled())
-					log.info("checking table="+t.getTableName());
-				TableInfo info = loadedTables.get(t.getId());
-				if(info == null) {
-					if (log.isInfoEnabled())
-						log.info("no other relationship with table="+t.getTableName()+", adding");
-					loadedTables.put(t.getId(), new TableInfo(t, group, r));
-					counter++;
-				} else {
-					if (log.isInfoEnabled())
-						log.info("already related to table though another group..adding group="+group.getId());
-					info.setHighestMapping(r);
-					info.addGroup(group);
-				}
-			}
-		}
-
-		Collection<TableInfo> infos = loadedTables.values();
-		render(infos);
-	}
-	
 	public static void tableEdit(String table) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema group = authTableCheck(table, user);

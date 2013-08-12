@@ -72,7 +72,6 @@ POST /settings/deletechart/{id}         gui.Settings.postDeleteChart
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************
 # ******************************************************************************
-GET  /tables                            	gui.MyStuff.myTables
 GET  /tables/chart/{table}                 	gui.MyStuff.tableChart
 GET  /tables/data/{table}                   gui.MyStuff.tableDataset
 GET  /tables/json/{table}                   gui.MyStuff.tableJson
