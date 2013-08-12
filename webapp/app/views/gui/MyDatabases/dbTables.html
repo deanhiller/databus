@@ -1,0 +1,37 @@
+#{extends './homeTemplate.html' /}
+#{set title:'Database Tables' /}
+#{set subtab:'tables' /}
+
+<h2>Tables in this Schema(first 50 shown)</h2>
+	
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Type</th>
+	        <th>Charts</th>
+	        <th>1000 rows</th>
+	        <th>1000 Json</th>
+	        <th>Upload</th>
+	    </tr>
+	</thead>
+	<tbody>
+	    #{list tables, as:'table'}
+	        <tr>
+                    <td><a href="@{gui.MyStuff.tableEdit(table.tableName)}">${table.tableName}</a></td>
+                    <td>${table.typeOfData}</td>
+		        #{if table?.typeOfData == timeseries}
+					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a></td>
+				#{/if}
+				#{else}
+                    <td></td>
+				#{/else}
+                    <td><a href="@{gui.MyStuff.tableDataset(table.tableName)}">View Csv</a></td>
+                    <td><a href="@{gui.MyStuff.tableJson(table.tableName)}">View Json</a></td>
+                    <td><a href="@{gui.Tables.uploadForm(table.tableName)}">Upload Data</td>	            
+	        </tr>
+	    #{/list}    	    
+	</tbody>
+</table>	
+	
+  	*{ <a href="@{tableAdd(schema.schemaName)}">Add Table</a> }*

@@ -37,7 +37,7 @@ public class MySchemaLogic {
 	
 		if (Validation.current().hasErrors()) {
 			Flash.current().error("This user is already in this schema");
-			MyDatabases.editDatabase(schema.getSchemaName());
+			MyDatabases.dbProperties(schema.getSchemaName());
 		}
 		
 		PermissionType perm = PermissionType.lookup(permission);

@@ -1,5 +1,32 @@
 #{extends '_index.html' /}
+#{set tab:'home' /}
 
-<div class="container-fluid">
-    #{doLayout /}
-</div>
+    <div class="row-fluid">
+
+        <div class="span3 dashboard_chart_list">
+        <!-- Need to add a left nav bar now so we can choose between all the different charts -->
+            <ul class="nav nav-list dashboard_chart_menu"> 
+                <li id="subtab_properties" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{dbProperties(schema.schemaName)}">Properties</a></li>
+                #{if schema.id != null}
+                <li id="subtab_tables" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{dbTables(schema.schemaName)}">Tables</a></li>
+                <li id="subtab_users" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{dbUsers(schema.schemaName)}">Users</a></li>
+                <li id="subtab_cronjobs" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{dbCronJobs(schema.schemaName)}">Cron Jobs</a></li>
+                #{/if}
+            </ul>
+       </div>
+       <div class="span9" id="dashboard_chart_area">
+           <div class="container-fluid">
+               #{doLayout /}
+           </div>
+       </div>
+    </div>
+
+        <script type="text/javascript" language="JavaScript">
+            function setClass(id, className) {
+                var obj = document.getElementById(id);
+                     if (obj != null) {
+                    obj.className = className;
+                }
+            }
+            setClass("subtab_${subtab}", "active");
+        </script>

@@ -1,4 +1,4 @@
-#{extends './homeTemplate.html' /}
+#{extends '_index.html' /}
 #{set title:'My Databases' /}
 #{set tab:'home' /}
 
@@ -38,13 +38,13 @@
 	    #{/list}
 	    #{else}
 	    <tr>
-			<td colspan=2>You do not own to any Schemas yet.  <a href="@{editDatabase(null)}">Add a Schema Now!!!</a></td>
+			<td colspan=2>You do not own to any Schemas yet.  <a href="@{dbProperties(null)}">Add a Schema Now!!!</a></td>
 		</tr>
 	    #{/else}
 	</tbody>
 </table>
   
 <p>
-  	<a href="@{editDatabase(null)}" class="btn btn-primary">Add Database</a>
+  	<a href="@{dbProperties(null)}" class="btn btn-primary">Add Database</a>
 </p>
   

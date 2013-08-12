@@ -16,6 +16,33 @@ contact the group Admin for access.
 There are a total of <span style="color: #001429; font-weight: bold;">${databases.size}</span> Databases currently in this Databus installation.  For access to specific database,
 contact the Admin for that Database.
 </p>
+<h2 class="db_context_header">Databases</h2>
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Admins</th>
+        </tr>
+    </thead>
+    <tbody>
+        #{list databases, as:'db'}
+            <tr>
+                <td>
+                    <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
+                        <a href="@{gui.MyDatabases.dbTables(db.schemaName)}">${db.schemaName}</a>
+                        <div class="tip tipright">${db.description}</div>
+                    </span>
+                </td>
+                <td>
+                #{list db.entitiesWithAccess, as:'user'}
+                    ${user.userOrGroup.name}  
+                #{/list}
+                </td>
+            </tr>
+        #{/list}
+    </tbody>
+</table>
+
 <h2 class="db_context_header">User Groups</h2>
 <table border="1" class="data" cellpadding="5" cellspacing="0">
 	<thead>
@@ -38,32 +65,6 @@ contact the Admin for that Database.
 	            	#{if mapping.groupAdmin}
 		            	${mapping.entity.name} 
 	            	#{/if}
-	            #{/list}
-	            </td>
-	        </tr>
-	    #{/list}
-	</tbody>
-</table>
-<h2 class="db_context_header">Databases</h2>
-<table border="1" class="data" cellpadding="5" cellspacing="0">
-	<thead>
-	    <tr>
-	        <th>Name</th>
-	        <th>Admins</th>
-	    </tr>
-	</thead>
-	<tbody>
-		#{list databases, as:'db'}
-	        <tr>
-	            <td>
-	          	    <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
-	                	<a href="@{gui.MyDatabases.editDatabase(db.schemaName)}">${db.schemaName}</a>
-		            	<div class="tip tipright">${db.description}</div>
-		            </span>
-	            </td>
-	            <td>
-	            #{list db.entitiesWithAccess, as:'user'}
-					${user.userOrGroup.name}  
 	            #{/list}
 	            </td>
 	        </tr>

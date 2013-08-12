@@ -87,7 +87,7 @@ public class MyDatabases extends Controller {
 			schema = SecureSchema.findByName(NoSql.em(), schemaName);
 			Set<PermissionType> roles = fetchRoles(schema, user);
 			if(roles.contains(PermissionType.ADMIN)) {
-				editDatabase(schemaName);
+				dbTables(schemaName);
 			} else if(roles.size() == 0) {
 				notFound("Your user does not have access to this resource");
 			} else {
@@ -98,7 +98,97 @@ public class MyDatabases extends Controller {
 		viewDatabaseImpl(schemaName);
 	}
 	
-	public static void editDatabase(String schemaName) {
+	public static void dbUsers(String schemaName) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		SecureSchema schema = new SecureSchema();
+		schema.setCreator(user);
+		List<SecureTable> tables = new ArrayList<SecureTable>();
+		if (schemaName != null) {
+			schema = SecureSchema.findByName(NoSql.em(), schemaName);
+			Set<PermissionType> roles = fetchRoles(schema, user);
+			if(roles.contains(PermissionType.ADMIN)) {
+				tables = schema.getTables(0, 50);				
+			} else if(roles.size() == 0) {
+				notFound("Your user does not have access to this resource");
+			} else
+				viewDatabase(schemaName);
+		}
+		
+		String oldSchemaName = schema.getSchemaName();
+		List<String> ids = schema.getMonitorIds();
+		CronService svc = CronServiceFactory.getSingleton(null);
+		List<PlayOrmCronJob> mons = svc.getMonitors(ids);
+		List<TableMonitor> monitors = new ArrayList<TableMonitor>();
+		for(PlayOrmCronJob m : mons) {
+			if(m != null)
+				monitors.add(TableMonitor.copy(m));
+		}
+		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
+		render(user, schema, oldSchemaName, tables, monitors, timeseries);
+	}
+	
+	public static void dbCronJobs(String schemaName) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		SecureSchema schema = new SecureSchema();
+		schema.setCreator(user);
+		List<SecureTable> tables = new ArrayList<SecureTable>();
+		if (schemaName != null) {
+			schema = SecureSchema.findByName(NoSql.em(), schemaName);
+			Set<PermissionType> roles = fetchRoles(schema, user);
+			if(roles.contains(PermissionType.ADMIN)) {
+				tables = schema.getTables(0, 50);				
+			} else if(roles.size() == 0) {
+				notFound("Your user does not have access to this resource");
+			} else
+				viewDatabase(schemaName);
+		}
+		
+		String oldSchemaName = schema.getSchemaName();
+		List<String> ids = schema.getMonitorIds();
+		CronService svc = CronServiceFactory.getSingleton(null);
+		List<PlayOrmCronJob> mons = svc.getMonitors(ids);
+		List<TableMonitor> monitors = new ArrayList<TableMonitor>();
+		for(PlayOrmCronJob m : mons) {
+			if(m != null)
+				monitors.add(TableMonitor.copy(m));
+		}
+		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
+		render(user, schema, oldSchemaName, tables, monitors, timeseries);
+	}
+	
+	public static void dbTables(String schemaName) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		SecureSchema schema = new SecureSchema();
+		schema.setCreator(user);
+		List<SecureTable> tables = new ArrayList<SecureTable>();
+		if (schemaName != null) {
+			schema = SecureSchema.findByName(NoSql.em(), schemaName);
+			Set<PermissionType> roles = fetchRoles(schema, user);
+			if(roles.contains(PermissionType.ADMIN)) {
+				tables = schema.getTables(0, 50);				
+			} else if(roles.size() == 0) {
+				notFound("Your user does not have access to this resource");
+			} else
+				viewDatabase(schemaName);
+		}
+		
+		String oldSchemaName = schema.getSchemaName();
+		List<String> ids = schema.getMonitorIds();
+		CronService svc = CronServiceFactory.getSingleton(null);
+		List<PlayOrmCronJob> mons = svc.getMonitors(ids);
+		List<TableMonitor> monitors = new ArrayList<TableMonitor>();
+		for(PlayOrmCronJob m : mons) {
+			if(m != null)
+				monitors.add(TableMonitor.copy(m));
+		}
+		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
+		render(user, schema, oldSchemaName, tables, monitors, timeseries);
+	}
+
+	public static void dbProperties(String schemaName) {
 		EntityUser user = Utility.getCurrentUser(session);
 
 		SecureSchema schema = new SecureSchema();
@@ -232,11 +322,11 @@ public class MyDatabases extends Controller {
 		if (group == null) {
 			flash.error("This group="+targetGroup.getName()+" does not exist");
 			flash.keep();
-			MyDatabases.editDatabase(schema.getSchemaName());
+			MyDatabases.dbProperties(schema.getSchemaName());
 		}
 
 		MySchemaLogic.createXref(schema, permission, group);
-		MyDatabases.editDatabase(schema.getSchemaName());
+		MyDatabases.dbProperties(schema.getSchemaName());
 	}
 	
 	public static void postAddUserToDatabase(SecureSchema schema, EntityUser targetUser, String permission) {
@@ -245,14 +335,14 @@ public class MyDatabases extends Controller {
 			if(targetUser.getName().startsWith("robot")) {
 				flash.error("The user="+targetUser.getName()+" does not exist");
 				flash.keep();
-				MyDatabases.editDatabase(schema.getSchemaName());
+				MyDatabases.dbProperties(schema.getSchemaName());
 			} //TODO: validate with AD that this user exists already before proceeding!!!!
 			targetUser.setApiKey(Utility.getUniqueKey());
 			user = targetUser;
 		}
 
 		MySchemaLogic.createXref(schema, permission, user);
-		MyDatabases.editDatabase(schema.getSchemaName());
+		MyDatabases.dbProperties(schema.getSchemaName());
 	}
 	
 	public static void postAddTableToDatabase(SecureSchema schema, SecureResource targetTable) {
@@ -325,7 +415,7 @@ public class MyDatabases extends Controller {
 		NoSql.em().put(schemaDbo);
 		NoSql.em().flush();
 
-		editDatabase(schema);
+		dbProperties(schema);
 	}
 
 }
