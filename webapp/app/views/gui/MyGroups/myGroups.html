@@ -32,7 +32,7 @@
 	<tbody>
 	    #{list user.parentGroups, as:'mapping'}
 	        <tr>
-	            <td><a href="@{gui.MyGroups.editGroup(mapping.group.name)}">${mapping.group.name}</a></td>
+	            <td><a href="@{gui.MyGroups.groupProperties(mapping.group.name)}">${mapping.group.name}</a></td>
 	        </tr>
 	    #{/list}
 	    #{else}
@@ -44,6 +44,6 @@
 </table>
   
 <p>
-  	<a href="@{gui.MyGroups.editGroup(null)}" class="btn btn-primary">Add Group</a>
+  	<a href="@{gui.MyGroups.groupProperties(null)}" class="btn btn-primary">Add Group</a>
 </p>
   

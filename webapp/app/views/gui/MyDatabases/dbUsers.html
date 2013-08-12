@@ -16,7 +16,7 @@
 	    #{list schema.entitiesWithAccess, as:'xref'}
 	        <tr>
 	        	#{if xref.userOrGroup.classType == "group"}
-		            	<td><a href="@{gui.MyGroups.editGroup(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a></td>
+		            	<td><a href="@{gui.MyGroups.groupProperties(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a></td>
 		            	<td>Group</td> 
 	            #{/if}
 	            #{if xref.userOrGroup.classType == "userImpl"}

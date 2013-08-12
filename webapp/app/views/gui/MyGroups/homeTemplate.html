@@ -1,7 +1,34 @@
 #{extends '_index.html' /}
 #{set tab:'home' /}
 
+    <div class="row-fluid">
 
+        <div class="span3 dashboard_chart_list">
+        <!-- Need to add a left nav bar now so we can choose between all the different charts -->
+            <ul class="nav nav-list dashboard_chart_menu">
+                #{if groupDbo?.id != null} 
+                <li id="subtab_properties" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{groupProperties(groupDbo.name)}">Properties</a></li>
+                <li id="subtab_users" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{groupUsers(groupDbo.name)}">Users</a></li>
+                <li id="subtab_resources" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{groupResources(groupDbo.name)}">Resources</a></li>
+                #{/if}
+                #{else}
+                    <li id="subtab_properties" class="db_left_nav_item active">Properties</li>
+                #{/else}
+            </ul>
+       </div>
+       <div class="span9" id="dashboard_chart_area">
            <div class="container-fluid">
                #{doLayout /}
            </div>
+       </div>
+    </div>
+
+        <script type="text/javascript" language="JavaScript">
+            function setClass(id, className) {
+                var obj = document.getElementById(id);
+                     if (obj != null) {
+                    obj.className = className;
+                }
+            }
+            setClass("subtab_${subtab}", "active");
+        </script>

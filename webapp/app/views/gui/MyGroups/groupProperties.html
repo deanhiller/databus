@@ -1,0 +1,24 @@
+#{extends './homeTemplate.html' /}
+#{set subtab:'properties' /}
+#{set title:'Group Properties' /}
+
+#{form @postGroup(), id:'editproject', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <legend>Group Properties</legend>
+	<input type="hidden" name="groupDbo.id" value="${groupDbo?.id}">
+	<input type="hidden" name="oldGroupName" value="${groupDbo?.name}">
+
+	#{xfield objectId:'groupDbo.name',label:'Group Name', help:'Some help message'}
+		#{text field:field, length:50, class:'input-xlarge'/}
+	#{/xfield}
+	
+	#{xfield objectId:'groupDbo.description',label:'Group Description', help:'Some help message'}
+		#{textarea field:field, rows:12, cols:100, class:'input-xxlarge'/}
+	#{/xfield}
+
+    <div class="control-group">
+        <div class="controls">
+    		<input type="submit" name="submit" value="Save" class="btn btn-primary" />
+    		<a href="javascript:history.back()" class="btn">Cancel</a>
+    	</div>
+	</div>
+#{/form}

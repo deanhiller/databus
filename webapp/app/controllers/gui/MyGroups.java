@@ -53,8 +53,56 @@ public class MyGroups extends Controller {
 		List<SecureResourceGroupXref> resources = groupDbo.getResources();
 		render(user, groupDbo, resources);
 	}
+
+	public static void groupUsers(String group) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		EntityGroup groupDbo = new EntityGroup();
+		List<SecureResourceGroupXref> resources = new ArrayList<SecureResourceGroupXref>();
+		if (group != null) {
+			EntityGroupXref xref = securityUserGroupCheck(group, user);
+			if(!xref.isGroupAdmin())
+				viewGroup(group);
+			
+			groupDbo = xref.getGroup();
+			resources = groupDbo.getResources();
+		}
+
+		List<EntityGroupXref> users = groupDbo.getChildren();
+		for(EntityGroupXref u : users) {
+			Entity entity = u.getEntity();
+			entity.getName();
+		}
+		
+		String oldGroupName = groupDbo.getName();
+		render(user, groupDbo, oldGroupName, resources);
+	}
 	
-	public static void editGroup(String group) {
+	public static void groupResources(String group) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		EntityGroup groupDbo = new EntityGroup();
+		List<SecureResourceGroupXref> resources = new ArrayList<SecureResourceGroupXref>();
+		if (group != null) {
+			EntityGroupXref xref = securityUserGroupCheck(group, user);
+			if(!xref.isGroupAdmin())
+				viewGroup(group);
+			
+			groupDbo = xref.getGroup();
+			resources = groupDbo.getResources();
+		}
+
+		List<EntityGroupXref> users = groupDbo.getChildren();
+		for(EntityGroupXref u : users) {
+			Entity entity = u.getEntity();
+			entity.getName();
+		}
+		
+		String oldGroupName = groupDbo.getName();
+		render(user, groupDbo, oldGroupName, resources);
+	}
+	
+	public static void groupProperties(String group) {
 		EntityUser user = Utility.getCurrentUser(session);
 
 		EntityGroup groupDbo = new EntityGroup();
@@ -151,7 +199,7 @@ public class MyGroups extends Controller {
 		NoSql.em().flush();
 
 		String group = groupDbo.getName();
-		editGroup(group);
+		groupUsers(group);
 	}
 	
 	private static void modifyOldGroup(EntityGroup groupDbo, String oldGroupName) {
@@ -188,7 +236,8 @@ public class MyGroups extends Controller {
 		} else 
 			modifyOldGroup(groupDbo, oldGroupName);
 
-		myGroups();
+		String group = groupDbo.getName();
+		groupUsers(group);
 	}	
 	
 	public static void robotAdd(String group) {
@@ -310,7 +359,7 @@ public class MyGroups extends Controller {
 		NoSql.em().flush();
 
 		String group = groupDbo.getName();
-		editGroup(group);
+		groupUsers(group);
 	}
 
 	private static void postEditUser(EntityGroup groupDbo, EntityUser targetUser, boolean isAdmin) {
@@ -323,6 +372,6 @@ public class MyGroups extends Controller {
 		NoSql.em().flush();
 		
 		String group = groupDbo.getName();
-		editGroup(group);
+		groupUsers(group);
 	}
 }

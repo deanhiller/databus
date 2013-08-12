@@ -89,8 +89,12 @@ GET  /tables/{table}/uploadsuccess      	gui.Tables.uploadSuccess
 # ******************************************************************************
 GET  /groups                            	gui.MyGroups.myGroups
 GET  /groups/{group}                    	gui.MyGroups.viewGroup
-GET  /groups/edit/{group}               	gui.MyGroups.editGroup
-GET  /addgroup                          	gui.MyGroups.editGroup
+
+GET  /groups/{group}/properties             gui.MyGroups.groupProperties
+GET  /groups/{group}/users                  gui.MyGroups.groupUsers
+GET  /groups/{group}/resources              gui.MyGroups.groupResources
+
+GET  /addgroup                          	gui.MyGroups.groupProperties
 POST /savegroup                         	gui.MyGroups.postGroup
 GET  /groups/{group}/{type}/adduser     	gui.MyGroups.userAdd
 GET  /groups/{group}/{type}/{username}  	gui.MyGroups.userEdit
