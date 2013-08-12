@@ -163,14 +163,25 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		}
 
 		if(currentTimePointer < timeSecondInBuffer) {
-			//move currentTimePointer PAST the timeSecondInBuffer
-			TSRelational r = new TSRelational();
-			setTime(r, currentTimePointer);
-			for (String colName:columnsToInterpolate) {
-				r.put(colName, null);
+			if(windowFilterSize != null) {
+				//move currentTimePointer PAST the timeSecondInBuffer
+				TSRelational r = new TSRelational();
+				setTime(r, currentTimePointer);
+				for (String colName:columnsToInterpolate) {
+					r.put(colName, null);
+				}
+				currentTimePointer+=interval;
+				return new ReadResult(getUrl(), r);
+			} else {
+				//move currentTimePointer PAST the timeSecondInBuffer
+				long range = (timeSecondInBuffer)-currentTimePointer;
+				long multiplier = range / interval;
+				currentTimePointer = currentTimePointer + (interval*multiplier);
+				if(currentTimePointer < timeSecondInBuffer) {
+					//add one more interval for the case where currentTimePointer != timeSecondInBuffer, otherwise, the times now match up exactly
+					currentTimePointer += interval;
+				}
 			}
-			currentTimePointer+=interval;
-			return new ReadResult(getUrl(), r);
 		}
 
 		//NOW, we may have moved past the third time in the buffer so may need to read in more data
@@ -230,7 +241,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 	private ReadResult calculate() {
 		long difference = timeThirdInBuffer - timeSecondInBuffer;
-		if(difference >= windowFilterSize) {
+		if(windowFilterSize != null && difference >= windowFilterSize) {
 			ReadResult res = createNullsForEmptyWindowOfData(currentTimePointer);
 			currentTimePointer += interval;
 			return res;
