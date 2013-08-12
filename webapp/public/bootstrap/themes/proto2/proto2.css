@@ -310,7 +310,6 @@ p.db_content_blurb {
 /* DASHBOARD */
 /* ************************************************** */
 .dashboard_chart_list {
-	padding-top: 20px;
 	border-right: 1px solid #aaa !important;
 	min-width: 200px;
 }

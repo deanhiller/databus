@@ -5,6 +5,13 @@
 
         <div class="span3 dashboard_chart_list">
         <!-- Need to add a left nav bar now so we can choose between all the different charts -->
+             #{if groupDbo?.id != null} 
+            <ul class="nav nav-list">
+                <li id="subtab_dddSummary" class="db_left_nav_item"><h2>Group<br/>${groupDbo.name}</h2></li> 
+                <li class="divider"></li>
+            </ul>
+            #{/if}
+
             <ul class="nav nav-list dashboard_chart_menu">
                 #{if groupDbo?.id != null} 
                 <li id="subtab_properties" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{groupProperties(groupDbo.name)}">Properties</a></li>

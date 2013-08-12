@@ -26,22 +26,6 @@ These are additions, twitter bootstrap overrides are below
 TWITTER BOOTSTRAP OVERRIDES
 *****************************/
 
-h2 {
-color:#01355e;
-font-size:16px;
-font-weight:normal;
-line-height:20px;
-padding-bottom:15px;
-/*border-bottom:3px solid #01355e;*/
-}
-
-h3 {
-    color:#01355e;
-    font-size:16px;
-    font-weight:normal;
-    line-height:20px;
-}
-
 .alert-warning {
     margin: auto;
     color: #9F6000;
