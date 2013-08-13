@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import models.DataTypeEnum;
+import models.Entity;
 import models.EntityGroup;
 import models.EntityGroupXref;
 import models.EntityUser;
@@ -314,41 +315,6 @@ public class MyDatabases extends Controller {
 		NoSql.em().flush();
 	}
 	
-	//TODO:  Add user and add group are so similar that they should be one method...
-	public static void postAddGroupToDatabase(SecureSchema schema, EntityGroup targetGroup, String permission) {
-		EntityGroup group = EntityGroup.findByName(NoSql.em(), targetGroup.getName());
-		EntityUser user = Utility.getCurrentUser(session);
-		EntityGroupXref usermapping = null;
-		if (group == null) {
-			flash.error("This group="+targetGroup.getName()+" does not exist");
-			flash.keep();
-			MyDatabases.dbProperties(schema.getSchemaName());
-		}
-
-		MySchemaLogic.createXref(schema, permission, group);
-		MyDatabases.dbProperties(schema.getSchemaName());
-	}
-	
-	public static void postAddUserToDatabase(SecureSchema schema, EntityUser targetUser, String permission) {
-		EntityUser user = EntityUser.findByName(NoSql.em(), targetUser.getName());
-		if(user == null) {
-			if(targetUser.getName().startsWith("robot")) {
-				flash.error("The user="+targetUser.getName()+" does not exist");
-				flash.keep();
-				MyDatabases.dbProperties(schema.getSchemaName());
-			} //TODO: validate with AD that this user exists already before proceeding!!!!
-			targetUser.setApiKey(Utility.getUniqueKey());
-			user = targetUser;
-		}
-
-		MySchemaLogic.createXref(schema, permission, user);
-		MyDatabases.dbProperties(schema.getSchemaName());
-	}
-	
-	public static void postAddTableToDatabase(SecureSchema schema, SecureResource targetTable) {
-		badRequest("We need to implement this");
-	}
-	
 	public static void tableAdd(String schema) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema actualSchema = schemaCheck(schema, user, PermissionType.ADMIN);
@@ -416,6 +382,94 @@ public class MyDatabases extends Controller {
 		NoSql.em().flush();
 
 		dbProperties(schema);
+	}
+
+	public static void dbUserAdd(String schemaName, String type) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		render("@dbUserEdit", schema, type);
+	}
+	
+	public static void dbUserEdit(String schemaName, String type, String id) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+
+		SecureResourceGroupXref xref = null;
+		List<SecureResourceGroupXref> xrefs = schema.getEntitiesWithAccess();
+		for(SecureResourceGroupXref ref : xrefs) {
+			Entity entity = ref.getUserOrGroup();
+			if(entity.getName().equals(id)) {
+				if("group".equals(type) && entity instanceof EntityGroup) {
+					xref = ref;
+					break;
+				} else if("user".equals(type) && entity instanceof EntityUser) {
+					xref = ref;
+					break;
+				}
+			}
+		}
+
+		if(xref == null)
+			notFound("sorry, you might have a bad url or it could be a bug too");
+		
+		String permission = xref.getPermission().value();
+		render(schema, type, xref, permission);
+	}
+	
+	public static void postUserDb(String schemaName, String type, String name, String xrefId, String permission) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+
+		PermissionType p = PermissionType.lookup(permission);
+		SecureResourceGroupXref xref;
+		if(xrefId == null || "".equals(xrefId)) {
+			Entity entity;
+			if("group".equals(type)) {
+				entity = EntityGroup.findByName(NoSql.em(), name);
+				if (entity == null) {
+					flash.error("The group="+name+" does not exist");
+					flash.keep();
+					MyDatabases.dbUserAdd(schemaName, type);
+				}
+			} else {
+				entity = EntityUser.findByName(NoSql.em(), name);
+				if (entity == null) {
+					flash.error("The user="+name+" does not exist.  Please ask them to login to the system once first!!!");
+					flash.keep();
+					MyDatabases.dbUserAdd(schema.getSchemaName(), type);
+				}
+			}
+
+			xref = new SecureResourceGroupXref(entity, schema, p);
+			xref.setPermission(p);
+			NoSql.em().put(xref);
+			NoSql.em().put(schema);
+			NoSql.em().put(user);
+		} else {
+			
+			for(SecureResourceGroupXref ref : schema.getEntitiesWithAccess()) {
+				Entity ent = ref.getUserOrGroup();
+				if(ent.getName().equals(name)) {
+					if(ent instanceof EntityGroup && "group".equals(type)) {
+						flash.error("The group="+name+" already has access to this database");
+						flash.keep();
+						MyDatabases.dbUserAdd(schemaName, type);
+					} else if(ent instanceof EntityUser && "user".equals(type)) {
+						flash.error("The user="+name+" already has access to this database");
+						flash.keep();
+						MyDatabases.dbUserAdd(schemaName, type);
+					}
+				}
+			}
+			
+			xref = NoSql.em().find(SecureResourceGroupXref.class, xrefId);
+			xref.setPermission(p);
+			NoSql.em().put(xref);
+		}
+
+		NoSql.em().flush();
+
+		dbUsers(schemaName);
 	}
 
 }

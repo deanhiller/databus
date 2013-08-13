@@ -1,0 +1,39 @@
+#{extends './homeTemplate.html' /}
+#{set title:'Add/Edit User to Database' /}
+
+#{form @postUserDb(schema.schemaName, type), id:'addusertoschema', class:'form-horizontal', style:'min-width:400px;max-width:500px;margin: 0 auto'}
+    <legend>Add a user</legend>
+	<input type="hidden" name="xrefId" value="${xref?.id}">
+	
+	#{if xref != null}
+	<div class="control-group">
+        <label class="control-label">User name</label>
+        <div class="controls">
+            <input type="text" class="inputtext" name="xref.id" value="${xref.userOrGroup.name}" readonly="readonly">
+        </div>
+    </div>
+    #{/if}
+    #{else}
+    	#{xfield objectId:'name',label:'User Name', help:'Some help message'}
+	       	#{text field:field, length:50/}
+	   #{/xfield}
+	#{/else}
+
+	#{xfield objectId:'permission',label:'Membership Type', help:'IF the user is an Admin he can add/remove users and groups', length:'50'}
+		#{generic field}
+			#{select 'permission', value:permission, id:'select1'}
+				#{option "admin"}Admin#{/option}
+				#{option "readwrite"}Writer/Reader#{/option}
+				#{option "read"}Reader#{/option}
+				
+			#{/select}
+		#{/generic}
+	#{/xfield}
+	<div class="control-group">
+        <div class="controls">
+            <input type="submit" name="submit" value="Save" class="btn btn-primary" />
+            <a href="javascript:history.back()" class="btn">Cancel</a>
+        </div>
+	</div>
+#{/form}
+

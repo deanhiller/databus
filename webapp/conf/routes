@@ -119,11 +119,14 @@ POST /savedatabase                       	gui.MyDatabases.postDatabase
 GET  /databases/{schema}/addmonitor       	gui.MyDatabases.monitorAdd
 GET  /databases/{schema}/monitor/{table}  	gui.MyDatabases.monitorEdit
 POST /databases/{schema}/savemonitor      	gui.MyDatabases.postMonitor
-GET  /databases/{schema}/addtable         	gui.MyDatabases.tableAdd
+
+GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
+GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
+GET  /databases/{schemaName}/edit{type}/{id}          gui.MyDatabases.dbUserEdit
+POST /databases/{schemaName}/{type}/saveuser          gui.MyDatabases.postUserDb
+
+GET  /databases/{schema}/addtable           gui.MyDatabases.tableAdd
 GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase
-POST /addtabletodb                        	gui.MyDatabases.postAddTableToDatabase
-POST /addgrouptodb						    gui.MyDatabases.postAddGroupToDatabase
-POST /addusertodb						    gui.MyDatabases.postAddUserToDatabase
 
 # Charting framework and built in charts as well(currently just the one chartbasic)
 # ******************************************************************************

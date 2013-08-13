@@ -16,11 +16,11 @@
 	    #{list schema.entitiesWithAccess, as:'xref'}
 	        <tr>
 	        	#{if xref.userOrGroup.classType == "group"}
-		            	<td><a href="@{gui.MyGroups.groupProperties(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a></td>
+		            	<td><a href="@{gui.MyGroups.groupProperties(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a> (<a href="@{dbUserEdit(schema.schemaName, 'group', xref.userOrGroup.name)}">edit</a>)</td>
 		            	<td>Group</td> 
 	            #{/if}
 	            #{if xref.userOrGroup.classType == "userImpl"}
-		            	<td>${xref.userOrGroup.name}</td> 
+		            	<td>${xref.userOrGroup.name} (<a href="@{dbUserEdit(schema.schemaName, 'user', xref.userOrGroup.name)}">edit</a>)</td> 
 		            	<td>User</td>
 	            #{/if}
 	            
@@ -30,52 +30,5 @@
 	</tbody>
 </table>
 
-
-#{form @postAddUserToDatabase(), id:'addusertoschema', class:'form-horizontal', style:'min-width:400px;max-width:500px;margin: 0 auto'}
-    <legend>Add a user</legend>
-	<input type="hidden" name="schema.id" value="${schema?.id}">
-	#{xfield objectId:'targetUser.username',label:'User Name', help:'Some help message'}
-		#{text field:field, length:50/}
-	#{/xfield}
-	
-	#{xfield objectId:'permission',label:'Membership Type', help:'IF the user is an Admin he can add/remove users and groups', length:'50'}
-		#{generic field}
-			#{select 'permission', value:"read", id:'select1'}
-				#{option "admin"}Admin#{/option}
-				#{option "readwrite"}Writer/Reader#{/option}
-				#{option "read"}Reader#{/option}
-				
-			#{/select}
-		#{/generic}
-	#{/xfield}
-	<div class="control-group">
-        <div class="controls">
-            <input type="submit" name="submit" value="Add User" class="btn btn-primary" />
-        </div>
-	</div>
-#{/form}
-
-#{form @postAddGroupToDatabase(), id:'addgrouptoschema', class:'form-horizontal', style:'min-width:400px;max-width:500px;margin: 0 auto'}
-	<legend>Add a group</legend>
-	<input type="hidden" name="schema.id" value="${schema?.id}">
-	#{xfield objectId:'targetGroup.name',label:'Group Name', help:'Some help message'}
-		#{text field:field, length:50/}
-	#{/xfield}
-	#{xfield objectId:'permission',label:'Membership Type', help:'IF the group is an Admin anyone in that group can add/remove users and groups', length:'50'}
-		#{generic field}
-			#{select 'permission', value:"read", id:'select1'}
-				#{option "admin"}Admin#{/option}
-				#{option "readwrite"}Writer/Reader#{/option}
-				#{option "read"}Reader#{/option}
-				
-			#{/select}
-		#{/generic}
-	#{/xfield}
-
-    <div class="control-group">
-        <div class="controls">
-		      <input type="submit" name="submit" value="Add Group" class="btn btn-primary" />
-		</div>
-	</div>
-#{/form}
-
+<a href="@{dbUserAdd(schema.schemaName, 'user')}" class="btn btn-primary">Add User</a>
+<a href="@{dbUserAdd(schema.schemaName, 'group')}" class="btn btn-primary">Add Group</a>
