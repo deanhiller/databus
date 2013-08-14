@@ -61,20 +61,22 @@ public class TestSplineV3 {
 
 	@Test
 	public void testWithTimesTooFarApart() {
-		long[] times    =  new long[]    {   11,  21,   31,  41,    51,    61,   71,   81 };
-		Integer[] values = new Integer[] {   10,  20,   30,  40,  null,    60,   70,   80 };
-		Integer[] values2 =new Integer[] {   10,  20,   30,  40,    50,  null,   70,   80 };
+		long[] times    =  new long[]    {   11,  21,   31,  41,    101,    111,   121,   131 };
+		Integer[] values = new Integer[] {   10,  20,   30,  40,    50,    60,   70,   80 };
+		Integer[] values2 =new Integer[] {   10,  20,   30,  40,    50,    60,   70,   80 };
 		String[] fixedVals=new String[]  {   "10", "20", "30", "40", "50", "60", "70", "80"};
 
 		SplinesV3PullProcessor processor = new SplinesV3PullProcessor();
-		String path = "splineV3(interval=10,columnsToInterpolate=temp;volume)/rawdata/TABLE/-20/100";
+		String path = "splineV3(interval=10,columnsToInterpolate=temp;volume)/rawdata/TABLE/0/140";
 
 		List<TSRelational> rows = formRows(times, values, values2, fixedVals);
-		List<TSRelational> realResults;
 		HashMap<String, String> options = new HashMap<String, String>();
 		options.put("interval", "10");
 		options.put("columnsToInterpolate", "temp;volume");
-		realResults = runPullProcessor(rows, processor, path, options);
+		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
+		
+		TSRelational r = realResults.get(0);
+		r.get("time");
 	}
 
 	@Test
@@ -136,11 +138,10 @@ public class TestSplineV3 {
 		String path = "splineV3(interval=10,columnsToInterpolate=temp;volume)/rawdata/TABLE/-20/100";
 
 		List<TSRelational> rows = formRows(times, values, values2, fixedVals);
-		List<TSRelational> realResults;
 		HashMap<String, String> options = new HashMap<String, String>();
 		options.put("interval", "10");
 		options.put("columnsToInterpolate", "temp;volume");
-		realResults = runPullProcessor(rows, processor, path, options);
+		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 		
 		//the beginning points should be null...
 		for(int i = 0; i < 5; i++) {
