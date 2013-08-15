@@ -75,8 +75,33 @@ public class TestSplineV3 {
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 		
-		TSRelational r = realResults.get(0);
-		r.get("time");
+		for(int i = 0; i < 3; i++) {
+			TSRelational r = realResults.get(i);
+			Object volume = r.get("volume");
+			Object temp = r.get("temp");
+			Assert.assertNull(volume);			
+			Assert.assertNull(temp);			
+		}
+
+		for(int i = 0; i < 2; i++) {
+			TSRelational r = realResults.get(i+3);
+			Object volume = r.get("volume");
+			Object temp = r.get("temp");
+			Assert.assertNotNull(volume);			
+			Assert.assertNotNull(temp);
+		}
+		
+		for(int i = 0; i < 6; i++) {
+			TSRelational row = realResults.get(i+5);
+			Object volume = row.get("volume");
+			Object temp = row.get("temp");
+			Assert.assertNull(volume);			
+			Assert.assertNull(temp);
+		}
+		
+		TSRelational last = realResults.get(11);
+		Object v= last.get("volume");
+		Assert.assertNotNull(v);
 	}
 
 	@Test
