@@ -25,6 +25,7 @@ import controllers.modules2.RelationalOperationProcessor;
 import controllers.modules2.RelationalSummaryProcessor;
 import controllers.modules2.SplinesPullProcessor;
 import controllers.modules2.SplinesV1PullProcessor;
+import controllers.modules2.SplinesV3PullProcessor;
 import controllers.modules2.SqlPullProcessor;
 import controllers.modules2.SumStreamProcessor;
 import controllers.modules2.TimeAverageProcessor;
@@ -48,6 +49,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("logV1", LogProcessor.class);
 		nameToClazz.put("splinesV1", SplinesV1PullProcessor.class);
 		nameToClazz.put("splinesV2", SplinesPullProcessor.class);
+		nameToClazz.put("splinesV3", SplinesV3PullProcessor.class);
 		nameToClazz.put("rangecleanV1", RangeCleanProcessor.class);
 		nameToClazz.put("variabilitycleanV1", VariabilityCleanProcessor.class);
 		nameToClazz.put("timeaverageV2", TimeAverageProcessor.class);

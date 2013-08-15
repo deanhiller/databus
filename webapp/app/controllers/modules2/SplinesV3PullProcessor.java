@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import gov.nrel.util.TimeValue;
@@ -40,9 +41,11 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private List<String> columnsToInterpolate;
 
 	private List<ColumnState> columns = new ArrayList<ColumnState>();
-	private UninterpalatedValueMethod uninterpalatedValueMethod = UninterpalatedValueMethod.NEAREST_ROW;
+	private UninterpalatedValueMethod uninterpalatedValueMethod = UninterpalatedValueMethod.PREVIOUS_ROW;
 	private long currentTimePointer;
 	private ReadResult lastValue;
+
+	private CircularFifoBuffer master;
 
 	@Override
 	protected int getNumParams() {
@@ -60,8 +63,8 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			columnsToInterpolate = Arrays.asList(StringUtils.split(columnsToInterpolateString, ";"));
 		}
 		String uninterpalatedValueMethodString = options.get("uninterpalatedValueMethod");
-		if (StringUtils.equalsIgnoreCase("previous", uninterpalatedValueMethodString))
-			uninterpalatedValueMethod = UninterpalatedValueMethod.PREVIOUS_ROW;
+		if (StringUtils.equalsIgnoreCase("nearest", uninterpalatedValueMethodString))
+			uninterpalatedValueMethod = UninterpalatedValueMethod.NEAREST_ROW;
 
 		// param 2: Interval: long
 		String intervalStr = fetchProperty("interval", "60000", options);
@@ -102,6 +105,9 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			throw new BadRequest("bufferSize is too large.  must be less than 1000.  size="+bufferSize);
 		else if(bufferSize < 0)
 			throw new BadRequest("bufferSize is too small. must be 0 or greater. size="+ bufferSize);
+		
+		master = new CircularFifoBuffer(4+bufferSize);
+
 		//USE CASES
 		//#1 What if one columns buffer is A1,A2,A3,NNNNNNN
 		//#2 What is one columns buffer is that of #1 but with an A4 that is 1000 rows away(we don't want to read all the data in)
@@ -204,7 +210,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		//We need at least one of the streams to have currentTimePointer after the 2nd point so can spline that
 		//ONE guy at that time point(and the other ones would have to just return null
 		while(currentTimeLessThan2ndPtAndBufferFull(currentTimePointer)) {
-			currentTimePointer += interval;
+			incrementCurrentTime();
 		}
 
 		//needMoreData is a very tricky method so read the comments in that method
@@ -308,6 +314,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
+		master.add(row);
 		for(ColumnState s : columns) {
 			s.transferRow(row, currentTimePointer);
 		}
@@ -320,21 +327,56 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
 	private ReadResult calculate() {
 		TSRelational row = new TSRelational();
-		setTime(row, currentTimePointer);
+		TSRelational r = findProperRow();
+		//copy the row....(and then we overwrite it with proper values)
+		for(Entry<String, Object> entry : r.entrySet()) {
+			row.put(entry.getKey(), entry.getValue());
+		}
 
+		setTime(row, currentTimePointer);
 		for(ColumnState s : columns) {
 			s.calculate(row, currentTimePointer);
 		}
-		currentTimePointer += interval;
+		incrementCurrentTime();
+		
 		return new ReadResult(getUrl(), row);
+	}
+
+	private void incrementCurrentTime() {
+		currentTimePointer += interval;
+		TSRelational[] rows = (TSRelational[]) master.toArray(new TSRelational[0]);
+		if(rows.length >= 2) {
+			long time = getTime(rows[1]);
+			if(currentTimePointer > time)
+				master.remove(rows[0]); //remove first row, we don't need it if currentTime > row 2's time
+		}
+	}
+
+	private TSRelational findProperRow() {
+		//since in incrementCurrentTime method, we always remove from the master buffer, we "should" be able
+		//to just use the first row and second row!!!
+		TSRelational[] rows = (TSRelational[]) master.toArray(new TSRelational[0]);
+		long t1 = getTime(rows[0]);
+		if(currentTimePointer < t1) {
+			if(uninterpalatedValueMethod == UninterpalatedValueMethod.PREVIOUS_ROW)
+				return new TSRelational();
+			else
+				return rows[0];
+		}
+		
+		if(uninterpalatedValueMethod == UninterpalatedValueMethod.PREVIOUS_ROW)
+			return rows[0];
+
+		long t2 = getTime(rows[1]);
+		long diff1 = currentTimePointer - t1;
+		long diff2 = t2-currentTimePointer;
+		if(diff1 < diff2)
+			return rows[0];
+		return rows[1];
 	}
 
 	private enum UninterpalatedValueMethod {
 		PREVIOUS_ROW,NEAREST_ROW
 	}
 
-	// TSRelational row = new TSRelational();
-	// setValue(row, val);
-	// setTime(row, val);
-	// new ReadResult(getUrl(),row);
 }

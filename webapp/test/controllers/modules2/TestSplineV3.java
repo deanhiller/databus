@@ -37,6 +37,7 @@ public class TestSplineV3 {
 		for(int i = 0; i < times.length; i++) {
 			times[i] = i*10+1;
 			values[i] = i*10;
+			fixedVals[i] = ""+(i*10);
 			if(i > 5 && i < 30) {
 				values2[i] = null;
 			} else
@@ -82,10 +83,10 @@ public class TestSplineV3 {
 
 	@Test
 	public void testWithTimesTooFarApart() {
-		long[] times    =  new long[]    {   11,  21,   31,  41,    101,    111,   121,   131 };
+		long[] times    =  new long[]    {   11,  21,   31,  41,   101,   111,  121,  131 };
 		Integer[] values = new Integer[] {   10,  20,   30,  40,    50,    60,   70,   80 };
 		Integer[] values2 =new Integer[] {   10,  20,   30,  40,    50,    60,   70,   80 };
-		String[] fixedVals=new String[]  {   "10", "20", "30", "40", "50", "60", "70", "80"};
+		String[] fixedVals=new String[]  { "10","20", "30","40",  "50",  "60", "70", "80"};
 
 		SplinesV3PullProcessor processor = new SplinesV3PullProcessor();
 		String path = "splineV3(interval=10,columnsToInterpolate=temp;volume)/rawdata/TABLE/0/140";
