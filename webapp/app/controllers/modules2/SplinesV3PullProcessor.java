@@ -198,19 +198,14 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			}
 		}
 
-		//FIRST is move currentTimePointer so currentTime > 2nd point time(of 4 point spline)
+		//FIRST is move currentTimePointer so currentTime > 2nd point time(of 4 point spline) for ONE
+		//of the columns!!!  We don't want to return any nulls since urls that overlap should always return the 
+		//same values(ie. can't return null here when it is just a fact we don't have enough data)
 		//We need at least one of the streams to have currentTimePointer after the 2nd point so can spline that
 		//ONE guy at that time point(and the other ones would have to just return null
-//		if(currentTimeLessThanAll2ndTimePoints(currentTimePointer))
-//		if(all2ndTimePointsLargerThan(currentTimePointer)) {
-//			TSRelational row = new TSRelational();
-//			setTime(row, currentTimePointer);
-//			for(ColumnState s: columns) {
-//				row.put(s.getColumn(), null);
-//			}
-//			currentTimePointer += interval;
-//			return new ReadResult(getUrl(), row);
-//		}
+		while(currentTimeLessThan2ndPtAndBufferFull(currentTimePointer)) {
+			currentTimePointer += interval;
+		}
 
 		//needMoreData is a very tricky method so read the comments in that method
 		long end = params.getEnd();
@@ -247,15 +242,21 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		}
 		
 		//otherwise we still need to calculate the splines
+		boolean justOneCanSpline = false;
 		for(ColumnState s : columns) {
-			s.prepareBuffer(currentTimePointer);
+			boolean canSpline = s.prepareBuffer(currentTimePointer);
+			if(canSpline)
+				justOneCanSpline = true;
 		}
-		return calculate();
+
+		if(justOneCanSpline)
+			return calculate();
+		return lastValue;
 	}
 
-	private boolean all2ndTimePointsLargerThan(long currentTimePointer2) {
+	private boolean currentTimeLessThan2ndPtAndBufferFull(long currentTimePointer2) {
 		for(ColumnState s : columns) {
-			if(!s.secondPointGreaterThan(currentTimePointer2))
+			if(s.getBuffer().isFull() && !s.secondPointGreaterThan(currentTimePointer2))
 				return false; //If anyone viol
 		}
 		return true;
@@ -308,10 +309,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
 	private void transferRow(TSRelational row) {
 		for(ColumnState s : columns) {
-			s.transferRow(row);
-
-			//I think we can have s.transferRow call prepareBuffer itself?
-			s.prepareBuffer(currentTimePointer);
+			s.transferRow(row, currentTimePointer);
 		}
 	}
 
@@ -319,8 +317,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		PullProcessor ch = getChild();
 		lastValue = ch.read();
 	}
-
-
 
 	private ReadResult calculate() {
 		TSRelational row = new TSRelational();

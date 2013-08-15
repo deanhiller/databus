@@ -52,7 +52,6 @@ public class TestSplineV3 {
 		options.put("maxToStopSplining", "100");//increase so we hit the buffersize limit of 20 before we hit times being too far apart!!!!
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
-		
 
 		TSRelational rowRes = realResults.get(0);
 //		Assert.assertNull(rowRes.get("volume"));
@@ -75,16 +74,8 @@ public class TestSplineV3 {
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 		
-		for(int i = 0; i < 3; i++) {
-			TSRelational r = realResults.get(i);
-			Object volume = r.get("volume");
-			Object temp = r.get("temp");
-			Assert.assertNull(volume);			
-			Assert.assertNull(temp);			
-		}
-
 		for(int i = 0; i < 2; i++) {
-			TSRelational r = realResults.get(i+3);
+			TSRelational r = realResults.get(i);
 			Object volume = r.get("volume");
 			Object temp = r.get("temp");
 			Assert.assertNotNull(volume);			
@@ -92,21 +83,21 @@ public class TestSplineV3 {
 		}
 		
 		for(int i = 0; i < 6; i++) {
-			TSRelational row = realResults.get(i+5);
+			TSRelational row = realResults.get(i+2);
 			Object volume = row.get("volume");
 			Object temp = row.get("temp");
 			Assert.assertNull(volume);			
 			Assert.assertNull(temp);
 		}
 		
-		TSRelational last = realResults.get(11);
+		TSRelational last = realResults.get(realResults.size()-1);
 		Object v= last.get("volume");
 		Assert.assertNotNull(v);
 	}
 
 	@Test
 	public void testNulsAtBeginAndEnd() {
-		long[] times    =  new long[]    {   -21,   -11,    1,  11,  21,   31,  41,    51,    61,   71,   81 };
+		long[] times    =  new long[]    {   -19,   -9,    1,  11,  21,   31,  41,    51,    61,   71,   81 };
 		Integer[] values = new Integer[] {   null, null, null,  10,  20,   30,  40,    50,    60,   70,   80 };
 		Integer[] values2 =new Integer[] {    -20,  -10,    0,  10,  20,   30,  40,    50,    60,   null,   null };
 		String[] fixedVals=new String[]  {    "a",  "b",  "c","10","20", "30","40",  "50",  "60", "70", "80"};
@@ -120,12 +111,8 @@ public class TestSplineV3 {
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 		
-		TSRelational rowRes = realResults.get(0);
-		Assert.assertNull(rowRes.get("volume"));
-		Assert.assertNull(rowRes.get("temp"));
-		
-		for(int i = 0; i < 4; i++) {
-			TSRelational r = realResults.get(i+1);
+		for(int i = 0; i < 3; i++) {
+			TSRelational r = realResults.get(i);
 			Object volume = r.get("volume");
 			Object temp = r.get("temp");
 			Assert.assertNotNull(volume);			
@@ -133,23 +120,21 @@ public class TestSplineV3 {
 		}
 
 		for(int i = 0; i < 3; i++) {
-			TSRelational r = realResults.get(i+5);
+			TSRelational r = realResults.get(i+3);
 			Object volume = r.get("volume");
 			Object temp = r.get("temp");
 			Assert.assertNotNull(volume);			
 			Assert.assertNotNull(temp);
 		}
 		
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < 2; i++) {
 			int index = realResults.size()-i-1;
 			TSRelational row = realResults.get(index);
-			Object val = row.get("volume");
-			Assert.assertNull(val);			
+			Object volume = row.get("volume");
+			Object temp = row.get("temp");
+			Assert.assertNull(volume);			
+			Assert.assertNotNull(temp);
 		}
-
-		TSRelational r = realResults.get(8);
-		Assert.assertNull(r.get("volume"));
-		Assert.assertNotNull(r.get("temp"));
 	}
 
 	@Test
@@ -168,34 +153,21 @@ public class TestSplineV3 {
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 		
-		//the beginning points should be null...
-		for(int i = 0; i < 5; i++) {
-			TSRelational row = realResults.get(i);
-			Object val = row.get("volume");
-			Assert.assertNull(val);
-		}
-		
-		//none of the middle values should be null even though there is nulls in the data
-		for(int i = 5; i < 5+5; i++) {
-			TSRelational row = realResults.get(i);
+		//There should be no nulls since we splined everything...
+		for(TSRelational row : realResults) {
 			Object val = row.get("volume");
 			Object temp = row.get("temp");
 			Assert.assertNotNull(val);			
 			Assert.assertNotNull(temp);
 		}
 		
-		for(int i = 0; i < 3; i++) {
-			int index = realResults.size()-i-1;
-			TSRelational row = realResults.get(index);
-			Object val = row.get("volume");
-			Assert.assertNull(val);			
-		}
-		//The end points should be null
-		
-		TSRelational ts2 = realResults.get(5);
+		TSRelational ts2 = realResults.get(0);
 		Assert.assertEquals(30, ts2.getTime());
 		BigDecimal dec = (BigDecimal) ts2.get("temp");
 		Assert.assertTrue(dec.compareTo(new BigDecimal("29")) == 0);
+		
+		TSRelational last = realResults.get(realResults.size()-1);
+		Assert.assertEquals(70, last.getTime());
 	}
 
 	static List<TSRelational> runPullProcessor(List<TSRelational> rows,

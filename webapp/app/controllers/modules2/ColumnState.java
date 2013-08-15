@@ -40,7 +40,13 @@ public class ColumnState {
 		return buffer;
 	}
 
-	public void transferRow(TSRelational row) {
+	public void transferRow(TSRelational row, long currentTimePointer) {
+		transferRowIn(row);
+		//I think we can have s.transferRow call prepareBuffer itself?
+		prepareBuffer(currentTimePointer);
+	}
+
+	private void transferRowIn(TSRelational row) {
 		Object value = row.get(colName);
 		if(value == null)
 			return; //we don't want this row in this column state as null does not help us spline ;).
@@ -102,17 +108,16 @@ public class ColumnState {
 		spline.setRawDataPoints(times, values);
 	}
 	
-	public void prepareBuffer(long currentTimePointer) {
-		if(!buffer.isFull())
-			return; //only prepare buffer if it is full of values.  If not, we can't do much yet
-
-		long thirdTime = fetchThirdTime();
-		while(currentTimePointer > thirdTime && leftOver.size() > 0) {
+	public boolean prepareBuffer(long currentTimePointer) {
+		while(leftOver.size() > 0 && currentTimePointer > fetchThirdTime()) {
 			TSRelational row = leftOver.remove(0);
 			buffer.add(row);
-			thirdTime = fetchThirdTime();
 			isSplineCreated = false;
 		}
+		
+		if(buffer.isFull() && currentTimePointer < fetchThirdTime())
+			return true;
+		return false;
 	}
 
 	public boolean needMoreData(long currentTimePointer) {

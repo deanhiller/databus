@@ -9,6 +9,7 @@ start_solr
 /webapp/tmp
 /webapp/modules
 /webapp/test-result
+/webapp/test-output
 /webapp/logs
 /webapp/bin/
 /modbus/bin/
