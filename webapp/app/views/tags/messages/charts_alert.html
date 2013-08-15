@@ -1,6 +1,12 @@
+%{
+   if(gov.nrel.util.Utility.isDisplayHighChartsBanner()) {
+}%
 	<div class="alert alert-warning alert-block">
 	  This system does not currently have a license for the <a href="http://www.highcharts.com" target="_blank">HighCharts</a>
 	  Javascript charting library.  In order to continue to use the Databus charting features utilizing
 	  the Highcharts software, you must obtain a <a href="http://shop.highsoft.com" target="_blank">license</a> from 
 	  <a href="http://www.highsoft.com" target="_blank">Highsoft</a>.
 	</div>
+%{
+    }
+}%

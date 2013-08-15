@@ -357,6 +357,13 @@ public class Utility {
 		return false;
 	}
 
+	public static boolean isDisplayHighChartsBanner() {
+		String property = Play.configuration.getProperty("gui.charting.library");
+		if("highcharts_licensed".equals(property) || "highcharts_disabled".equals(property))
+			return false;
+		return true;
+	}
+
 	public static String createCfName(String modelName) {
 		int hashCode = modelName.hashCode();
 		int bucketNumber = Math.abs(hashCode % 10);

@@ -24,9 +24,8 @@ nosql.cassandra.thriftport=9158
 # GUI Charting enabled/disabled
 #   - if enabled, which charting library
 #       OPTIONS:    highcharts
-#               highcharts_licensed
-#               D3.js
-gui.charting.enabled=true
+#                   highcharts_licensed
+#                   highcharts_disabled
 gui.charting.library=highcharts_licensed
 
 #demo.mode=true means populate tons of demo data(slow to startup first time) and ALSO means

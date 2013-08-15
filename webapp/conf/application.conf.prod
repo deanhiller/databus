@@ -24,8 +24,8 @@ nosql.cassandra.thriftport=9158
 # GUI Charting enabled/disabled
 #   - if enabled, which charting library
 #       OPTIONS:    highcharts
-#               highcharts_licensed
-#               D3.js
+#                   highcharts_licensed
+#                   highcharts_disabled
 gui.charting.enabled=true
 gui.charting.library=highcharts_licensed
 
