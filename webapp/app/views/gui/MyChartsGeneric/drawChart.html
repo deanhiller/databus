@@ -2,6 +2,18 @@
 #{set tab:'home' /}
 #{set title:'Your Chart' /}
 
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 27. You can send this url to any of your colleagues with access to the same data to see this chart<br/>
+   Step 28. He or you can modify the chart by clicking the Modify Chart button as well<br/>
+   Step 29. Next, click the button Add to Dashboard<br/>
+</div>
+%{
+    }
+}%
+
 #{if variables.url} 
 We are rendering the chart for dataset url=<a href="${variables.url}" target="_blank">${variables.url}</a> below.  If your chart is
 not displaying, click the url to see if there is any data!!

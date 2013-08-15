@@ -2,6 +2,13 @@
 #{set title:'Dashboard' /}
 #{set subtab:'dashboard' /}
 
+#{set 'script'}
+   Step 1. You are on the customizable dashboard page where you can define which charts show up for this user<br/>
+   Step 3. We will customize the dashboard later<br/>
+   Step 4. BIG NOTE: This system is scalable to millions of sensors..Add more nodes and it can handle more sensors<br/>
+   Step 2. Next, please click on My Databus, then click on Databases
+#{/set}
+
 	       #{if user.settings.dashboardChartCount == 1}
     			#{dashboardCharts/chartsingle url:user.getChartUrl(0).raw()/}
     		#{/if}

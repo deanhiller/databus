@@ -2,11 +2,6 @@
 #{set title:'Add/Edit Database' /}
 #{set subtab:'properties' /}
 
-<style>
-	.apikey { margin: auto; padding: 10px; background-color:#00aa00; max-width: 900px; }
-	.key    { margin: auto; padding: 5px; background-color:#00ff00; }
-</style>
-
 #{form @postDatabase(), id:'editproject', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
     <legend>Database Properties</legend>
    <input type="hidden" name="schema.id" value="${schema?.id}">

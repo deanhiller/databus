@@ -1,6 +1,18 @@
 #{extends '/main_body_container.html' /}
 #{set title:'My Account' /}
 
+#{if script}
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   ${script.raw()}
+</div>
+%{
+    }
+}%
+#{/if}
+
 <!-- JQuery -->
 <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
         

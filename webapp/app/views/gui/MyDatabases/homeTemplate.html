@@ -1,6 +1,18 @@
 #{extends '_index.html' /}
 #{set tab:'home' /}
 
+#{if script}
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   ${script.raw()}
+</div>
+%{
+    }
+}%
+#{/if}
+
     <div class="row-fluid">
 
         <div class="span3 dashboard_chart_list">
