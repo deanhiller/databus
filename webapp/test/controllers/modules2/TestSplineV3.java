@@ -53,9 +53,31 @@ public class TestSplineV3 {
 		options.put("columnsToInterpolate", "temp;volume");
 		List<TSRelational> realResults = runPullProcessor(rows, processor, path, options);
 
-		TSRelational rowRes = realResults.get(0);
-//		Assert.assertNull(rowRes.get("volume"));
-//		Assert.assertNull(rowRes.get("temp"));
+		for(int i = 0; i < 3; i++) {
+			TSRelational r = realResults.get(i);
+			Object volume = r.get("volume");
+			Object temp = r.get("temp");
+			Assert.assertNotNull(volume);			
+			Assert.assertNotNull(temp);
+		}
+		
+		//only 5 can't spline as we don't have the rows yet to perform the spline and buffer size was not quite big enough
+		//since buffer size = 20 and there is a gap of 25 rows, 25-20 = 5 rows that we miss splining
+		for(int i = 0; i < 5; i++) {
+			TSRelational row = realResults.get(i+3);
+			Object volume = row.get("volume");
+			Object temp = row.get("temp");
+			Assert.assertNull(volume);			
+			Assert.assertNotNull(temp);
+		}
+		
+		for(int i = 0; i < 5; i++) {
+			TSRelational row = realResults.get(i+8);
+			Object volume = row.get("volume");
+			Object temp = row.get("temp");
+			Assert.assertNotNull(volume);
+			Assert.assertNotNull(temp);
+		}
 	}
 
 	@Test
