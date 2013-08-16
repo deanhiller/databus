@@ -27,6 +27,7 @@ import com.alvazan.play.NoSql;
 import controllers.SecurityUtil;
 import controllers.TableInfo;
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.ChartUtil;
 import play.mvc.Controller;
 import play.mvc.With;
 import play.mvc.Http.Request;
@@ -90,17 +91,18 @@ public class MyStuff extends Controller {
 		SecureSchema group = authTableCheck(table, user);
 		if(group == null)
 			unauthorized("You have no access to this table");
-		String username = user.getUsername();
-		String password = user.getApiKey();
-		String host = Request.current().host;		
-		String baseurl = "//"+host;
 		
-		SecureResource targetTable = SecureTable.findByName(NoSql.em(), table);
-		if (targetTable == null) {
-			notFound("Page not found");
-		}
+		Map<String, String> variablesMap = new HashMap<String, String>();
+		variablesMap.put("title", table+" Last 1000 Data points");
+		variablesMap.put("url", "/api/firstvaluesV1/1000/rawdataV1/" + table + "?reverse=true");
+		variablesMap.put("timeColumn", "time");
+		variablesMap.put("valueColumn", "value");
+		variablesMap.put("yaxisLabel", "units");
+		variablesMap.put("units", "units");
+		String encoded = ChartUtil.encodeVariables(variablesMap);
+		String chartId = "BasicChart-js";
 		
-		render(username, password, baseurl, targetTable);
+		MyChartsGeneric.drawChart(chartId, encoded);
 	}
 	
 	public static void aggData(String aggregationName) {
