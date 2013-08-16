@@ -56,7 +56,7 @@ public class MyMain extends Controller {
 			chart.setEncodedVariables(encoded);
 			String title = chart.getTitle();
 			String url = chart.getLargeChartUrl();
-			render(charts, url, title);
+			render(charts, url, title, chartId, encoded);
 		}
 	}
 }

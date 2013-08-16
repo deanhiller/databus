@@ -2,5 +2,9 @@
 #{set title:'Dashboard' /}
 #{set subtab:'dashboard' /}
 
+#{if chartId}
+    <a href="@{gui.MyChartsGeneric.chartVariables(chartId, 0, encoded)}" class="btn btn-primary">Copy Chart</a>
+#{/if}
+
 <iframe style="border: none;" width="100%" height="600px" src="${url.raw()}">
 </iframe>
