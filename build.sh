@@ -1,5 +1,5 @@
 #!/bin/bash
-
+#test
 export DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 if [ "$#" -eq "0" ]
