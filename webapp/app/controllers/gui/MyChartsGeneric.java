@@ -48,16 +48,22 @@ public class MyChartsGeneric extends Controller {
 	
 	public static void selectChart() {
 		List<ChartInfo> charts = chartUtil.fetchCharts();
-		render(charts);
+		String encoded = "start";
+		render(charts, encoded);
 	}
-	
-	public static void postSelectedChart(String chartId) {
+
+	public static void modifyChart(String chartId, String encoded) {
+		List<ChartInfo> charts = chartUtil.fetchCharts();
+		render("@selectChart", charts, chartId, encoded);
+	}
+
+	public static void postSelectedChart(String chartId, String encoded) {
 		ChartInfo chart = ChartUtil.fetchChart(chartId);
 		
 		if(chart.isBuiltinChart()) {
 			redirect(chart.getRoute());
 		}
-		String encoded = "start";
+		
 		chartVariables(chartId, 0, encoded);
 	}
 

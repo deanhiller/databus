@@ -73,6 +73,7 @@ POST /settings/deletechart/{id}         gui.Settings.postDeleteChart
 # ******************************************************************************
 # ******************************************************************************
 GET  /tables/chart/{table}                 	gui.MyStuff.tableChart
+GET  /tables/createchart/{table}            gui.MyStuff.createChart
 GET  /tables/data/{table}                   gui.MyStuff.tableDataset
 GET  /tables/json/{table}                   gui.MyStuff.tableJson
 GET  /aggData/{aggregationName}     		gui.MyStuff.aggData
@@ -132,6 +133,7 @@ GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase
 # ******************************************************************************
 # ******************************************************************************
 GET  /charts                                   gui.MyChartsGeneric.selectChart
+GET  /charts/{chartId}/{encoded}               gui.MyChartsGeneric.modifyChart
 POST /charts                                   gui.MyChartsGeneric.postSelectedChart
 GET  /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.chartVariables
 POST /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.postVariables

@@ -104,7 +104,26 @@ public class MyStuff extends Controller {
 		
 		MyChartsGeneric.drawChart(chartId, encoded);
 	}
-	
+
+	public static void createChart(String table) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema group = authTableCheck(table, user);
+		if(group == null)
+			unauthorized("You have no access to this table");
+		
+		Map<String, String> variablesMap = new HashMap<String, String>();
+		variablesMap.put("title", table+" Last 1000 Data points");
+		variablesMap.put("url", "/api/firstvaluesV1/1000/rawdataV1/" + table + "?reverse=true");
+		variablesMap.put("timeColumn", "time");
+		variablesMap.put("valueColumn", "value");
+		variablesMap.put("yaxisLabel", "units");
+		variablesMap.put("units", "units");
+		String encoded = ChartUtil.encodeVariables(variablesMap);
+		String chartId = "BasicChart-js";
+		
+		MyChartsGeneric.modifyChart(chartId, encoded);
+	}
+
 	public static void aggData(String aggregationName) {
 		EntityUser user = Utility.getCurrentUser(session);
 

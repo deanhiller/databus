@@ -19,6 +19,8 @@
 
     <legend>Pick a Chart</legend>
 
+    <input type="hidden" name="encoded" value="${encoded}"/>
+
     The pulldown shows all charts in your webapp/public/Charts directory. Copy and modify charts in that directory to create new charts.  Feed new charts
     back to the community or sell them in the marketplace.
 
@@ -26,7 +28,7 @@
     <div class="control-group ${errors.forKey('chartId') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            #{select 'chartId', items:charts, valueProperty:'id', labelProperty:'name', value:id/}
+            #{select 'chartId', items:charts, valueProperty:'id', labelProperty:'name', value:chartId/}
             <span class="help-block">${errors.forKey('chartId')}</span>
         </div>
     </div>
