@@ -448,7 +448,7 @@ public class MyDatabases extends Controller {
 			xref.setPermission(p);
 			NoSql.em().put(xref);
 			NoSql.em().put(schema);
-			NoSql.em().put(user);
+			NoSql.em().put(entity);
 		} else {
 			
 			for(SecureResourceGroupXref ref : schema.getEntitiesWithAccess()) {
