@@ -2,6 +2,7 @@
 #{set title:'Dashboard' /}
 #{set tab:'dashboard' /}
 
+#{if script}
 %{
    if(gov.nrel.util.Utility.isDemoMode()) {
 }%
@@ -11,6 +12,7 @@
 %{
     }
 }%
+#{/if}
 
     <div class="row-fluid">
 
