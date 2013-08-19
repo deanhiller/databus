@@ -54,7 +54,7 @@ public class ApiPostDataPointsImpl {
 	
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	public static int postDataImpl(String json, Map<String, Object> data, String user, String password) {
+	public static int postDataImpl(String json, Map<String, Object> data, String user, String password, String path) {
 		//temporary version of 'upload module'.
 		//eventually we will have the concept of an upload module just like our current 
 		//modules that run on data retrieval.  For now, lets keep the interface the same 
@@ -63,9 +63,9 @@ public class ApiPostDataPointsImpl {
 		boolean timeIsISOFormat = false;
 		String timeISOFormatColumn = "time";
 		String timeISOStringFormat = "";
-		if (StringUtils.contains(Request.current().path, "dateformatV1")) {
+		if (StringUtils.contains(path, "dateformatV1")) {
 			timeIsISOFormat = true;
-			String utcModString = StringUtils.substringBetween(Request.current().path, "/dateformatV1(", ")/");
+			String utcModString = StringUtils.substringBetween(path, "/dateformatV1(", ")/");
 			if (StringUtils.isNotEmpty(utcModString)) {
 				String[] options = StringUtils.split(utcModString, ",");
 				for (String s:options) {

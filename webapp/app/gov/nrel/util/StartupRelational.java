@@ -54,7 +54,7 @@ public class StartupRelational {
 		Map<String, Object> json = createDataPoint(tableName, guid, name, bldg,
 				numRooms, isUpdate);
 		EntityUser dean = StartupDetailed.DEAN;
-		ApiPostDataPointsImpl.postDataImpl(null, json, dean.getUsername(), dean.getApiKey());
+		ApiPostDataPointsImpl.postDataImpl(null, json, dean.getUsername(), dean.getApiKey(), "");
 	}
 
 	public static Map<String, Object> createDataPoint(String tableName,

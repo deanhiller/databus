@@ -190,7 +190,7 @@ public class StartupDetailed {
 		json.put("_tableName", tableName);
 		json.put("time", time);
 		json.put("value", value);
-		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey());
+		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey(), "");
 	}
 
 	static void createTsRelational(String name, String schemaName, EntityUser user) {
@@ -242,6 +242,6 @@ public class StartupDetailed {
 		json.put("volume", volume);
 		json.put("energy", energy);
 		json.put("number", number);
-		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey());
+		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey(), "");
 	}
 }

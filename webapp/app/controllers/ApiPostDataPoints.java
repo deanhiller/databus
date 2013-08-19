@@ -36,6 +36,7 @@ import org.xml.sax.SAXException;
 import play.Play;
 import play.libs.F.Promise;
 import play.mvc.Controller;
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
@@ -122,7 +123,7 @@ public class ApiPostDataPoints extends Controller {
 				}
 			}
 			
-			int numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password);
+			int numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password, Request.current().path);
 
 			logNoMdc(numPoints);
 		} catch(Exception e) {

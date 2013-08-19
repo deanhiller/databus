@@ -145,6 +145,6 @@ public class StartupUtils {
 		json.put("_tableName", tableName);
 		json.put("time", time);
 		json.put("value", value);
-		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey());
+		ApiPostDataPointsImpl.postDataImpl(null, json, user.getUsername(), user.getApiKey(), "");
 	}
 }
