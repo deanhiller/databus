@@ -60,7 +60,34 @@ specify it to stay consistent.
 </div>	
 <br><br>
 
-<b>The splines module</b> allows users to interpolate data. You choose the interval such that as in the
+<b>The splinesV3 module</b> allows users to interpolate data. The following options exist for the splineV3 module
+<ol>
+   <li>type - either basic or limitderivative (defaults to basic if not specified)</li>
+   <li>interval - The amount of time in ms. to return each datapoint (defaults to 60000ms(1min) if not specified)</li>
+   <li>epochOffset - The initial time to use(we add N intervals to this time point to return values).  This is useful if you want 
+   every value returned to be MST midnight instead of GMT midnight(GMT midnight would be offset of 0).  This will automatically default
+   to a number using the start time and interval however to make sure all times line up by starting with start time returning the first point
+   and start time + interval returning the second point, etc. etc.  epochOffset is for situations you may not want the points returned
+   to line up with start time at all.
+   <li>maxToStopSplining - A multiple of the interval of when to stop splining and return null values instead.  For small cases of missing data like one interval
+   of data was missing, most users want to still spline but for a long outage like 6 hours, users can use this value to make sure we return nulls during 
+   the outage so your graphs still show the outage.  The default for this is 5 intervals of data(ie. 5 * interval setting above)</li>
+   <li>bufferSize - This settings is not used for most users.  This setting is for the case when data coming back has multiple columns and 2 or
+   more of those columns are being splined.  The default of 20 rows.  In the case of one column having an outage(ie. no data) and another having 
+   data, we need to keep buffering the rows due to the outage and can't return a row until we this buffer is full or we get some rows with valid 
+   data such that we can spline the column with the outage(as long as outage time < maxToStopSplining time)</li>
+</ol>
+The format of splinesV3 uses are new url format where the options are now between parenthesis as such below.
+<div class="apikey">
+    <div class="key">
+        <b>usage:</b> https://databus.nrel.gov/api/splinesV3(type={type},interval={interval},epochOffset={epochOffset})/{nextmodule}<br>
+        <b>example:</b> https://databus.nrel.gov/api/splinesV3(type=basic,interval=60000,epochOffset=0)/rawdata/RSF2MAIN/1354738000000/1354824663000
+        <b>example:</b> https://databus.nrel.gov/api/splinesV3(type=limitderivative)/rawdata/RSF2MAIN/1354738000000/1354824663000
+    </div>
+</div>  
+<br><br>
+
+<b>(DEPRECATED - use above splinesV3)The splinesV2 module</b> allows users to interpolate data. You choose the interval such that as in the
 example below, the spline will return a datapoint every 60 seconds since the interval is in milliseconds.  If you want every 24 hours but at
 midnight in Mountain Time, you will also need to provide the epochOffset to line up with that time.   Lastly, for type you can provide basic
 or limit derivative as well.  NOTE: This spline only returns data 2 points in from the edges of start and end as 4 points are needed for each interpolation AND
