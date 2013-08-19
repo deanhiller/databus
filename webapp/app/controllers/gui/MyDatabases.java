@@ -240,12 +240,16 @@ public class MyDatabases extends Controller {
 
 		Set<PermissionType> roles = new HashSet<PermissionType>();
 		user.addResources(roles, resource);
-
+		
 		if(resource instanceof SecureTable) {
 			if(log.isDebugEnabled())
 				log.debug("resource is a table so adding roles for table");
 			SecureTable t = (SecureTable) resource;
 			user.addResources(roles, t.getSchema());
+		}
+		else {
+			if(log.isDebugEnabled())
+				log.debug("resource "+resource.getName()+" is NOT a table so NOT adding roles for table.  Resource.getClass() is "+resource.getClass());
 		}
 
 		if(roles.size() == 0)
