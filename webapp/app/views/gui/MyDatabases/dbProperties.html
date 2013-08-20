@@ -14,7 +14,40 @@
 	#{xfield objectId:'schema.description',label:'Description', help:'Some help message'}
 		#{textarea field:field, rows:12, cols:100, class:'input-xxlarge'/}
 	#{/xfield}
+*{
+    #{formfield 'archive'}
+    <div class="control-group ${field.errorClass}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Archive</label>
+        <div class="controls">
+            <input type="checkbox" id="${field.id}" name="${field.name}" value="${field.value}" class="${field.errorClass}/>
+            <span class="help-block">${field.error}</span>
+        </div>
+    </div>
+    #{/formfield}
 
+	<div id="archivePanel">
+	    #{formfield 'numYears'}
+	    <div class="control-group ${field.errorClass}">
+	        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Keep Last</label>
+	        <div class="controls">
+	            <input type="text" id="${field.id}" name="${field.name}" value="${field.value}" class="${field.errorClass}"/> Years
+	            <span class="help-block">${field.error}</span>
+	        </div>
+	    </div>
+	    #{/formfield}
+	</div>
+	
+	<script type="text/javascript">
+	console.log('fit new divasdfsd');
+	$('#archive').click('change', function(){
+	    if($(this).is(':checked')){
+	        $("#archivePanel").show();
+	    } else {
+	    	$("#archivePanel").hide();
+	    }
+	});
+	</script>
+}*
     <div class="control-group">
         <div class="controls">
             <input type="submit" name="submit" value="Save" class="btn btn-primary" />

@@ -258,7 +258,7 @@ public class MyDatabases extends Controller {
 		return roles;
 	}
 	
-	private static void newDatabase(SecureSchema schema) {
+	private static void postNewDatabase(SecureSchema schema) {
 		schema.setId(null); //playframework set this to "" for some reason(need to fix playframework there for Strings
 		
 		if (log.isInfoEnabled())
@@ -292,7 +292,7 @@ public class MyDatabases extends Controller {
 		myDatabases();
 	}
 	
-	private static void modifyOldDatabase(SecureSchema schema, String oldSchemaName) {
+	private static void postModifyDatabase(SecureSchema schema, String oldSchemaName) {
 
 		if (log.isInfoEnabled())
 			log.info(" schema id=" + schema.getId() + " name=" + schema.getSchemaName());
@@ -330,9 +330,9 @@ public class MyDatabases extends Controller {
 	
 	public static void postDatabase(SecureSchema schema, String oldSchemaName) {
 		if(StringUtils.isEmpty(oldSchemaName)) {
-			newDatabase(schema);
+			postNewDatabase(schema);
 		} else 
-			modifyOldDatabase(schema, oldSchemaName);
+			postModifyDatabase(schema, oldSchemaName);
 
 		//TODO:JSC reindex search data for altered/new schema here!
 		myDatabases();
