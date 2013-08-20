@@ -85,7 +85,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 		//they are doing basic auth so add the user in basic auth to the logs
 		request.args.put("__user", username);
 		MDC.put("user", username);
-		if(username.startsWith("robot") && request.path.startsWith("/api/postdata"))
+		if(username.contains("(robot-") && request.path.startsWith("/api/postdata"))
 			MDC.put("filter", "true");//user is robot AND post so override user			
 	}
 
