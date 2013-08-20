@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import play.Play;
 import play.mvc.Controller;
+import play.mvc.Http.Request;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -50,5 +51,8 @@ public class ModuleController extends Controller {
 				log.debug("firing into ModuleStreamer from splineMod="+path);
 			core.processResponses(info);
 		}
+		
+		Request req = Request.current();
+		req.args.put("__lastCall", true);
 	}
 }

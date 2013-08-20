@@ -12,7 +12,7 @@
 	    </filter>
     
 		<encoder>
-			<pattern>%date{ISO8601} [%X{sessionid}-%X{user}] [%thread] %caller{1} %-4level: %message%n</pattern>
+			<pattern>%date{ISO8601} [%X{txId}-%X{user}] [%thread] %caller{1} %-4level: %message%n</pattern>
 		</encoder>
 	</appender>
 
@@ -22,15 +22,11 @@
     	</filter>
     
 		<encoder>
-			<pattern>%date{ISO8601} [%X{sessionid}-%X{user}] %caller{1} %-4level: %message%n</pattern>
+			<pattern>%date{ISO8601} [%X{txId}-%X{user}] %caller{1} %-4level: %message%n</pattern>
 		</encoder>
 		<target>System.err</target>
 	</appender>
 	
-	<appender name="CASSANDRA" class="com.alvazan.play.logging.CassandraAppender">
-		<appender-ref ref="STDOUT"/>
-	</appender>
-
     <turboFilter class="com.alvazan.play.logging.MDCLevelFilter">
        <MDCKey>filter</MDCKey>
        <Value>true</Value>
@@ -67,6 +63,5 @@
 		<level value="INFO" />
 		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="STDERR"/>
-		<!-- appender-ref ref="CASSANDRA"/-->
 	</root>
 </configuration>
