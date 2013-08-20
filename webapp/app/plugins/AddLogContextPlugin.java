@@ -69,6 +69,13 @@ public class AddLogContextPlugin extends PlayPlugin {
 			username = SecurityUtil.getUser();
 		}
 
+		if(request.user != null) {
+			if(username == null)
+				username = "("+request.user+")";
+			else
+				username += "("+request.user+")";
+		}
+
 		request.args.put("__txId", txId);
 		MDC.put("txId", ""+txId);
 
