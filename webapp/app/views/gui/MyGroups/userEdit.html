@@ -3,14 +3,26 @@
 #{set title:'Add/Edit User' /}
 
 #{form @postUser(group, type, false), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-    <legend>Edit User</legend>
+
+    <input type="hidden" name="previousId" value="${targetUser?.id}">
     
-    <div class="control-group">
-        <label class="control-label">User name</label>
-        <div class="controls">
-        	<input type="text" class="inputtext" name="targetUser.id" value="${targetUser.id}" readonly="readonly">
-        </div>
-	</div>
+    #{if targetUser?.id}
+        <legend>Edit User</legend>
+	    <div class="control-group">
+	        <label class="control-label">User name</label>
+	        <div class="controls">
+	            <input type="text" class="inputtext" name="targetUser.id" value="${targetUser.id}" readonly="readonly">
+	        </div>
+	    </div>
+    #{/if}
+    #{else}
+        <legend>Add User</legend>
+        #{xfield objectId:'targetUser.username',label:'User Name', help:'The NREL Active Directory username used to login to his computer'}
+            #{text field:field, length:50/}
+        #{/xfield}
+    #{/else}
+
+
 
 	#{xfield objectId:'isAdmin',label:'Membership Type', help:'IF the user is an Admin he can add/remove users to/from the group', length:'50'}
 		#{generic field}
@@ -28,49 +40,3 @@
 	   </div>
 	</div>
 #{/form}
-
-<h2>Accessible Resources</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Access is through</th>
-            <th>Schema Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        #{list infos, as:'info'}
-            <tr>
-               <td>${info.resourceName}</td>
-               <td>${info.accessMethod}</td>
-               <td>${info.permission}</td>
-            </tr>
-        #{/list}
-    </tbody>
-</table>
-
-<h2>Members of Groups</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Group Role</th>
-        </tr>
-    </thead>
-    <tbody>
-        #{list groupXRefs, as:'ref'}
-            <tr>
-               <td>${ref.group.name}</td>
-               #{if ref.isGroupAdmin()}
-                   <td>ADMIN</td>
-               #{/if}
-               #{else}
-                   <td>MEMBER</td>
-               #{/else}
-            </tr>
-        #{/list}
-    </tbody>
-</table>
-

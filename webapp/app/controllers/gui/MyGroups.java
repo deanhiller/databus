@@ -5,6 +5,7 @@ import gov.nrel.util.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -249,7 +250,7 @@ public class MyGroups extends Controller {
 		adminUserGroupCheck(group, user);
 		EntityUser targetUser = new EntityUser();
 		boolean isAdmin = false;
-		render(group, type, targetUser, isAdmin);
+		render("@userEdit", group, type, targetUser, isAdmin);
 	}
 	
 	public static void userEdit(String group, String type, String username) {
@@ -268,22 +269,7 @@ public class MyGroups extends Controller {
 		else
 			isAdmin = xref.isGroupAdmin();
 		
-		List<SecureResourceGroupXref> direct = targetUser.getResources();
-		List<AccessInfo> infos = new ArrayList<AccessInfo>();
-		for(SecureResourceGroupXref ref : direct) {
-			infos.add(new AccessInfo("direct", ref));
-		}
-		
-		List<EntityGroupXref> groupXRefs = targetUser.getParentGroups();
-		for(EntityGroupXref m : groupXRefs) {
-			EntityGroup g = m.getGroup();
-			List<SecureResourceGroupXref> resources = g.getResources();
-			for(SecureResourceGroupXref r : resources) {
-				infos.add(new AccessInfo(g.getName(), r));
-			}
-		}
-		
-		render(group, type, targetUser, isAdmin, infos, groupXRefs);
+		render(group, type, targetUser, isAdmin);
 	}
 
 	private static EntityGroupXref findUsersXref(EntityUser targetUser,
@@ -296,11 +282,11 @@ public class MyGroups extends Controller {
 		return null;
 	}
 
-	public static void postUser(String group, String type, boolean isAdd, EntityUser targetUser, boolean isAdmin) {
+	public static void postUser(String group, String type, EntityUser targetUser, boolean isAdmin, String previousId) {
 		EntityUser user = Utility.getCurrentUser(session);
 		EntityGroup groupDbo = adminUserGroupCheck(group, user);
 		
-		if (isAdd) {
+		if(StringUtils.isEmpty(previousId)) {
 			postAddUser(groupDbo, targetUser, isAdmin, type);
 		} else {
 			postEditUser(groupDbo, targetUser, isAdmin);

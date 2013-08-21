@@ -11,12 +11,13 @@
 	        <th>Type</th>
 	        <th>Role</th>
 	        <th>Robot Api Keys</th>
+	        <th>Actions</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    #{list groupDbo.children, as:'mapping'}
 	        <tr>
-	            <td><a href="@{userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">${mapping.entity.name}</a></td>
+	            <td>${mapping.entity.name}</td>
 	            <td>${mapping.entity.typeString}</td>
 	            <td>${mapping.permission}</td>
 	            #{if mapping.entity.typeString == 'Robot' && mapping.ownRobot}
@@ -25,6 +26,8 @@
 	            #{else}
 	            	<td></td>
 	            #{/else}
+	            <td><a href="@{userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">edit</a>&nbsp;&nbsp;|&nbsp;
+	            delete</td>
 	        </tr>
 	    #{/list}
 	</tbody>
