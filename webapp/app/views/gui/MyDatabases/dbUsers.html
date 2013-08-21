@@ -4,31 +4,59 @@
 
  <h4>Users</h4>
 
+#{list schema.entitiesWithAccess, as:'xref'}
+
+<div id="myModal${xref_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete confirmation</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete ${xref.userOrGroup.name} from the ${schema.name} database?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <button class="btn btn-primary">Delete</button>
+  </div>
+</div>
+
+#{/list}
+
 <table class="table">
 	<thead>
 	    <tr>
 	        <th>Name</th>
 	        <th>Type</th>
 	        <th>Role</th>
+	        <th>Actions</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    #{list schema.entitiesWithAccess, as:'xref'}
 	        <tr>
 	        	#{if xref.userOrGroup.classType == "group"}
-		            	<td><a href="@{gui.MyGroups.groupProperties(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a> (<a href="@{dbUserEdit(schema.schemaName, 'group', xref.userOrGroup.name)}">edit</a>)</td>
+		            	<td><a href="@{gui.MyGroups.groupProperties(xref.userOrGroup.name)}">${xref.userOrGroup.name}</a></td>
 		            	<td>Group</td> 
 	            #{/if}
 	            #{if xref.userOrGroup.classType == "userImpl"}
-		            	<td>${xref.userOrGroup.name} (<a href="@{dbUserEdit(schema.schemaName, 'user', xref.userOrGroup.name)}">edit</a>)</td> 
+		            	<td>${xref.userOrGroup.name}</td> 
 		            	<td>User</td>
 	            #{/if}
-	            
 	            <td>${xref.permission}</td>
+	            <td>
+	                #{if xref.userOrGroup.classType == "group"}
+                        <a href="@{dbUserEdit(schema.schemaName, 'group', xref.userOrGroup.name)}">edit</a>&nbsp;&nbsp;|&nbsp;
+                    #{/if}
+                    #{if xref.userOrGroup.classType == "userImpl"}
+                        <a href="@{dbUserEdit(schema.schemaName, 'user', xref.userOrGroup.name)}">edit</a>&nbsp;&nbsp;|&nbsp;
+                    #{/if}
+                    <a href="#myModal${xref_index}" data-toggle="modal">delete</a>
+	            </td>
 	        </tr>
 	    #{/list}
 	</tbody>
 </table>
-
+            
 <a href="@{dbUserAdd(schema.schemaName, 'user')}" class="btn btn-primary">Add User</a>
 <a href="@{dbUserAdd(schema.schemaName, 'group')}" class="btn btn-primary">Add Group</a>
+

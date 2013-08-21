@@ -99,6 +99,21 @@ public class MyDatabases extends Controller {
 		viewDatabaseImpl(schemaName);
 	}
 	
+	public static void postDelete(String schemaName, String xrefId) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		
+		SecureResourceGroupXref ref = NoSql.em().find(SecureResourceGroupXref.class, xrefId);
+		String id = ref.getResource().getId();
+		if(!id.equals(schema.getId()))
+			notFound("this schema and xref ar enot tied together");
+
+//		schema.getEntitiesWithAccess().remove(ref);
+//		Entity entity = ref.getUserOrGroup();
+
+		dbUsers(schemaName);
+	}
+
 	public static void dbUsers(String schemaName) {
 		EntityUser user = Utility.getCurrentUser(session);
 
