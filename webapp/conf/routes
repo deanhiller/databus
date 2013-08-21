@@ -125,6 +125,7 @@ GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/edit{type}/{id}          gui.MyDatabases.dbUserEdit
 POST /databases/{schemaName}/{type}/saveuser          gui.MyDatabases.postUserDb
+POST /databases/deleteuser                            gui.MyDatabases.postDelete
 
 GET  /databases/{schema}/addtable           gui.MyDatabases.tableAdd
 GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase

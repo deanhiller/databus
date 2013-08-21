@@ -6,19 +6,24 @@
 
 #{list schema.entitiesWithAccess, as:'xref'}
 
+#{form @postDelete(), id:'editmonitor'+xref_index}
+<input type="hidden" name="xrefId" value="${xref.id}"/>
+<input type="hidden" name="schemaName" value="${schema.name}"/>
+
 <div id="myModal${xref_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
     <h3 id="myModalLabel">Delete confirmation</h3>
   </div>
   <div class="modal-body">
-    <p>(NOT DONE YET..implementing this feature still)Are you sure you want to delete ${xref.userOrGroup.name} from the ${schema.name} database?</p>
+    <p>Are you sure you want to delete ${xref.userOrGroup.name} from the ${schema.name} database?</p>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <button class="btn btn-primary">Delete</button>
+    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
   </div>
 </div>
+#{/form}
 
 #{/list}
 

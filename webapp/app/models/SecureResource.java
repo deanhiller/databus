@@ -46,4 +46,12 @@ public abstract class SecureResource {
 		return creator;
 	}
 	
+	public List<SecureResourceGroupXref> getAdmins() {
+		List<SecureResourceGroupXref> admins = new ArrayList<SecureResourceGroupXref>();
+		for(SecureResourceGroupXref ref : entitiesWithAccess) {
+			if(ref.isAdminRole())
+				admins.add(ref);
+		}
+		return admins;
+	}
 }

@@ -108,8 +108,15 @@ public class MyDatabases extends Controller {
 		if(!id.equals(schema.getId()))
 			notFound("this schema and xref ar enot tied together");
 
-//		schema.getEntitiesWithAccess().remove(ref);
-//		Entity entity = ref.getUserOrGroup();
+		schema.getEntitiesWithAccess().remove(ref);
+		Entity entity = ref.getUserOrGroup();
+		entity.getResources().remove(ref);
+		
+		NoSql.em().put(schema);
+		NoSql.em().put(entity);
+		NoSql.em().remove(ref);
+
+		NoSql.em().flush();
 
 		dbUsers(schemaName);
 	}

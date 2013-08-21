@@ -29,11 +29,14 @@ public class MySummary extends Controller {
 		List<SecureSchema> databases = SecureSchema.findAll(NoSql.em());
 
 		for (SecureSchema s : databases) {
+			if("bacnet".equals(s.getName())) {
+				log.info("bacnet database");
+			}
 			List<SecureResourceGroupXref> refs = s.getEntitiesWithAccess();
 			for (SecureResourceGroupXref ref : refs) {
 				Entity entity = ref.getUserOrGroup();
-				if (log.isInfoEnabled())
-					log.info("entity=" + entity);
+				if (log.isInfoEnabled() && "bacnet".equals(s.getName()))
+					log.info("entity=" + entity+" perm="+ref.getPermission());
 			}
 		}
 		String sid = session.get("sid");

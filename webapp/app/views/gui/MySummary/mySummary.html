@@ -34,8 +34,8 @@ contact the Admin for that Database.
                     </span>
                 </td>
                 <td>
-                #{list db.entitiesWithAccess, as:'user'}
-                    ${user.userOrGroup.name}  
+                #{list db.admins, as:'ref'}
+                    ${ref.userOrGroup.name}  
                 #{/list}
                 </td>
             </tr>
