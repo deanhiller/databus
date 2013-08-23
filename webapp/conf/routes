@@ -97,6 +97,7 @@ GET  /groups/{group}/resources              gui.MyGroups.groupResources
 
 GET  /addgroup                          	gui.MyGroups.groupProperties
 POST /savegroup                         	gui.MyGroups.postGroup
+POST /groups/deleteuser                     gui.MyGroups.postGroupUserDelete
 GET  /groups/{group}/{type}/adduser     	gui.MyGroups.userAdd
 GET  /groups/{group}/{type}/{username}  	gui.MyGroups.userEdit
 POST /groups/{group}/{type}/saveuser    	gui.MyGroups.postUser
@@ -125,7 +126,7 @@ GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/edit{type}/{id}          gui.MyDatabases.dbUserEdit
 POST /databases/{schemaName}/{type}/saveuser          gui.MyDatabases.postUserDb
-POST /databases/deleteuser                            gui.MyDatabases.postDelete
+POST /databases/deleteuser                            gui.MyDatabases.postDbUserDelete
 
 GET  /databases/{schema}/addtable           gui.MyDatabases.tableAdd
 GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase

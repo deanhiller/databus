@@ -4,14 +4,14 @@
 
 #{form @postUser(group, type, false), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
-    <input type="hidden" name="previousId" value="${targetUser?.id}">
+    <input type="hidden" name="isAdd" value="${isAdd}">
     
-    #{if targetUser?.id}
+    #{if !isAdd}
         <legend>Edit User</legend>
 	    <div class="control-group">
 	        <label class="control-label">User name</label>
 	        <div class="controls">
-	            <input type="text" class="inputtext" name="targetUser.id" value="${targetUser.id}" readonly="readonly">
+	            <input type="text" class="inputtext" name="targetUser.id" value="${targetUser?.id}" readonly="readonly">
 	        </div>
 	    </div>
     #{/if}

@@ -73,6 +73,9 @@ public class MyGroups extends Controller {
 		for(EntityGroupXref u : users) {
 			Entity entity = u.getEntity();
 			entity.getName();
+			boolean ownRobot = u.isOwnRobot();
+			UserType type = entity.getType();
+			log.info("name="+entity.getName()+", t="+type+", r="+ownRobot);
 		}
 		
 		String oldGroupName = groupDbo.getName();
@@ -105,7 +108,7 @@ public class MyGroups extends Controller {
 	
 	public static void groupProperties(String group) {
 		EntityUser user = Utility.getCurrentUser(session);
-
+		
 		EntityGroup groupDbo = new EntityGroup();
 		List<SecureResourceGroupXref> resources = new ArrayList<SecureResourceGroupXref>();
 		if (group != null) {
@@ -168,7 +171,7 @@ public class MyGroups extends Controller {
 		throw new NotFound("You either don't have access or the group does not exist");
 	}
 	
-	private static void newGroup(EntityGroup groupDbo) {
+	private static void postNewGroup(EntityGroup groupDbo) {
 		groupDbo.setId(null); //playframework set this to "" for some reason(need to fix playframework there for Strings
 		
 		if (log.isInfoEnabled())
@@ -203,7 +206,7 @@ public class MyGroups extends Controller {
 		groupUsers(group);
 	}
 	
-	private static void modifyOldGroup(EntityGroup groupDbo, String oldGroupName) {
+	private static void postModifyOldGroup(EntityGroup groupDbo, String oldGroupName) {
 
 		if (log.isInfoEnabled())
 			log.info(" grp id=" + groupDbo.getId() + " name=" + groupDbo.getName());
@@ -231,15 +234,61 @@ public class MyGroups extends Controller {
 		NoSql.em().flush();
 	}
 	
+	public static void postGroupUserDelete(String group, String mappingId) {
+		EntityUser user = Utility.getCurrentUser(session);
+		EntityGroup groupDbo = adminUserGroupCheck(group, user);
+		
+		EntityGroupXref ref = NoSql.em().find(EntityGroupXref.class, mappingId);
+
+		Entity targetUser = ref.getEntity();
+		List<EntityGroupXref> refs = targetUser.getParentGroups();
+		refs.remove(ref);
+		List<EntityGroupXref> children = groupDbo.getChildren();
+		children.remove(ref);
+		
+		//update group to not have reference to xref
+		NoSql.em().put(groupDbo);
+		
+		if(targetUser.getType() == UserType.ROBOT && ref.isOwnRobot()) {
+			//we must remove all other references as well too
+			removeFromAll(targetUser);
+			NoSql.em().remove(targetUser);
+		} else
+			NoSql.em().put(targetUser);
+		
+		NoSql.em().remove(ref);
+		NoSql.em().flush();
+		
+		groupUsers(group);
+	}
+
+	private static void removeFromAll(Entity targetUser) {
+		List<EntityGroupXref> groupRefs = targetUser.getParentGroups();
+		for(EntityGroupXref ref : groupRefs) {
+			EntityGroup group = ref.getGroup();
+			group.getChildren().remove(ref);
+			NoSql.em().put(group);
+			NoSql.em().remove(ref);
+		}
+
+		List<SecureResourceGroupXref> schemas = targetUser.getSchemas();
+		for(SecureResourceGroupXref ref : schemas) {
+			SecureResource res = ref.getResource();
+			res.getEntitiesWithAccess().remove(ref);
+			NoSql.em().put(res);
+			NoSql.em().remove(ref);
+		}
+	}
+
 	public static void postGroup(EntityGroup groupDbo, String oldGroupName) {
 		if("".equals(oldGroupName) || oldGroupName == null) {
-			newGroup(groupDbo);
+			postNewGroup(groupDbo);
 		} else 
-			modifyOldGroup(groupDbo, oldGroupName);
+			postModifyOldGroup(groupDbo, oldGroupName);
 
 		String group = groupDbo.getName();
 		groupUsers(group);
-	}	
+	}
 	
 	public static void robotAdd(String group) {
 		render();
@@ -250,7 +299,8 @@ public class MyGroups extends Controller {
 		adminUserGroupCheck(group, user);
 		EntityUser targetUser = new EntityUser();
 		boolean isAdmin = false;
-		render("@userEdit", group, type, targetUser, isAdmin);
+		boolean isAdd = true;
+		render("@userEdit", group, type, targetUser, isAdmin, isAdd);
 	}
 	
 	public static void userEdit(String group, String type, String username) {
@@ -268,8 +318,9 @@ public class MyGroups extends Controller {
 			notFound("Page not found, user probably doesn't belong in this group");
 		else
 			isAdmin = xref.isGroupAdmin();
-		
-		render(group, type, targetUser, isAdmin);
+
+		boolean isAdd = false;
+		render(group, type, targetUser, isAdmin, isAdd);
 	}
 
 	private static EntityGroupXref findUsersXref(EntityUser targetUser,
@@ -282,11 +333,11 @@ public class MyGroups extends Controller {
 		return null;
 	}
 
-	public static void postUser(String group, String type, EntityUser targetUser, boolean isAdmin, String previousId) {
+	public static void postUser(String group, String type, EntityUser targetUser, boolean isAdmin, boolean isAdd) {
 		EntityUser user = Utility.getCurrentUser(session);
 		EntityGroup groupDbo = adminUserGroupCheck(group, user);
 		
-		if(StringUtils.isEmpty(previousId)) {
+		if(isAdd) {
 			postAddUser(groupDbo, targetUser, isAdmin, type);
 		} else {
 			postEditUser(groupDbo, targetUser, isAdmin);
@@ -295,19 +346,26 @@ public class MyGroups extends Controller {
 
 	private static void postAddUser(EntityGroup groupDbo, EntityUser targetUser, boolean isAdmin, String type) {
 		boolean isRobot = "robot".equals(type);
-		EntityUser user = NoSql.em().find(EntityUser.class, targetUser.getUsername());
-		if (user == null) {
-			//We are NOT attaching an existing user BUT are creating a brand new user we will attach
-			user = targetUser;
+		//We are NOT attaching an existing user BUT are creating a brand new user we will attach
+		EntityUser user = targetUser;
+		if(!isRobot) {
+			EntityUser temp = NoSql.em().find(EntityUser.class, targetUser.getId());
+			if(temp == null)
+				validation.addError("targetUser.username", "The user="+targetUser.getUsername()+" must log into the system before you can add him to a group");
+			else
+				user = temp;
+		}
+		
+		if(user.getApiKey() == null) { //if not initialized, we need to initialize
 			//let's fill in fields that are not in the form...
 			user.setApiKey(Utility.getUniqueKey());			
 			UserType userType = UserType.lookup(type);
 			user.setType(userType);
-			
-			if(isRobot) {
-				//modify name to be prefixed with robot
-				user.setUsername("robot-"+user.getUsername());
-			}
+		}
+
+		if(isRobot) {
+			//modify name to be prefixed with robot
+			user.setUsername("robot-"+user.getUsername());
 		}
 		
 		if(targetUser.getUsername() == null || "".equals(targetUser.getUsername()))
@@ -324,7 +382,8 @@ public class MyGroups extends Controller {
 		if (validation.hasErrors()) {
 			flash.error("You have errors below");
 			String group = groupDbo.getName();
-			render("@userAdd", group, type, true);
+			boolean isAdd = true;
+			render("@userEdit", group, type, targetUser, isAdmin, isAdd);
 			//userAdd(groupDbo.getName(), type);
 		}
 		

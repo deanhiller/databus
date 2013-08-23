@@ -3,7 +3,38 @@
 #{set title:'Groups Users' /}
 	
 <h4>Members</h4>
-    
+
+#{list groupDbo.children, as:'mapping'}
+
+#{form @postGroupUserDelete(), id:'delete'+mapping_index}
+<input type="hidden" name="mappingId" value="${mapping.id}"/>
+<input type="hidden" name="group" value="${groupDbo.name}"/>
+
+<div id="myModal${mapping_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete confirmation</h3>
+  </div>
+  <div class="modal-body">
+  <p>
+     #{if mapping.entity.typeString == 'Robot' && mapping.ownRobot}
+        Are you sure you want to PERMANENTLY delete ${mapping.entity.name}?  If you delete this robot user,
+        it will be deleted from all groups since this group owns the robot.
+     #{/if}
+     #{else}
+          Are you sure you want to delete ${mapping.entity.name} from the ${groupDbo.name} group?
+     #{/else}
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
+  </div>
+</div>
+#{/form}
+
+#{/list}
+
 <table class="table">
 	<thead>
 	    <tr>
@@ -26,8 +57,13 @@
 	            #{else}
 	            	<td></td>
 	            #{/else}
-	            <td><a href="@{userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">edit</a>&nbsp;&nbsp;|&nbsp;
-	            delete</td>
+	            <td>
+	                <a href="@{userEdit(groupDbo.name,mapping.entity.type,mapping.entity.name)}">edit</a>&nbsp;&nbsp;|&nbsp;
+	                <a href="#myModal${mapping_index}" data-toggle="modal">
+                        #{if mapping.entity.typeString == 'Robot' && mapping.ownRobot}delete#{/if}
+                        #{else}remove#{/else}
+	                </a>
+	            </td>
 	        </tr>
 	    #{/list}
 	</tbody>

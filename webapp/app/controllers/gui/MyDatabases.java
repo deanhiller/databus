@@ -99,7 +99,7 @@ public class MyDatabases extends Controller {
 		viewDatabaseImpl(schemaName);
 	}
 	
-	public static void postDelete(String schemaName, String xrefId) {
+	public static void postDbUserDelete(String schemaName, String xrefId) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		
