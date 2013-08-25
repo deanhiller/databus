@@ -118,6 +118,7 @@ GET  /databases/{schemaName}/tables         gui.MyDatabases.dbTables
 
 GET  /adddatabase                         	gui.MyDatabases.dbProperties
 POST /savedatabase                       	gui.MyDatabases.postDatabase
+POST /editdatabase                       	gui.MyDatabases.editDatabase
 GET  /databases/{schema}/addmonitor       	gui.MyDatabases.monitorAdd
 GET  /databases/{schema}/monitor/{table}  	gui.MyDatabases.monitorEdit
 POST /databases/{schema}/savemonitor      	gui.MyDatabases.postMonitor

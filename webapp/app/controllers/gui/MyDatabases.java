@@ -47,8 +47,18 @@ public class MyDatabases extends Controller {
 			for (SecureResourceGroupXref resource : resouceXrefs) {
 				log.info("resource=" + resource.getResource());
 			}
+		
+		List<SecureSchema> databases = new ArrayList<SecureSchema>();
+		for(SecureResourceGroupXref resource: user.getSchemas()) {
+			String dbName = resource.getResource().getName();
+			
+			SecureSchema database = SecureSchema.findByName(NoSql.em(), dbName);
+			databases.add(database);
+			
+			log.info("Added DB: [" + database.getName() + "]");
+		}
 
-		render(user);
+		render(user, databases);
 	}
 
 	public static void viewDatabaseImpl(String schemaName) {
@@ -357,6 +367,33 @@ public class MyDatabases extends Controller {
 			postModifyDatabase(schema, oldSchemaName);
 
 		//TODO:JSC reindex search data for altered/new schema here!
+		myDatabases();
+	}
+	
+	public static void editDatabase(String edit_dbName, String edit_dbDescription) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schemaDbo = schemaCheck(edit_dbName, user, PermissionType.ADMIN);
+		
+		if(schemaDbo == null) {
+			/**
+			 * How to do the field.error code?
+			 */
+			validation.addError("database", "Database [" + edit_dbName + "] does not exist.");
+			//myDatabases();
+		}
+		
+		schemaDbo.setDescription(edit_dbDescription);
+
+		if (log.isInfoEnabled())
+			log.info(" Editing Database id=" + schemaDbo.getId() + " name=" + schemaDbo.getSchemaName());
+
+		if (validation.hasErrors()) {
+			render("@editSchema", user, schemaDbo);
+		}
+
+		NoSql.em().put(schemaDbo);
+		NoSql.em().flush();
+		
 		myDatabases();
 	}
 
