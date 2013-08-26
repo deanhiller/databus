@@ -12,6 +12,7 @@ import models.Entity;
 import models.EntityGroup;
 import models.EntityGroupXref;
 import models.EntityUser;
+import models.KeyToTableName;
 import models.PermissionType;
 import models.SecureResource;
 import models.SecureResourceGroupXref;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.With;
 
+import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
@@ -116,10 +118,14 @@ public class MyDatabases extends Controller {
 		SecureResourceGroupXref ref = NoSql.em().find(SecureResourceGroupXref.class, xrefId);
 		String id = ref.getResource().getId();
 		if(!id.equals(schema.getId()))
-			notFound("this schema and xref ar enot tied together");
+			notFound("this schema and xref are not tied together");
 
-		schema.getEntitiesWithAccess().remove(ref);
+		//First, let's remove all the KeyToTableNames that the user may be in directly
 		Entity entity = ref.getUserOrGroup();
+		Counter c = new Counter();
+		removeKeyToTableRows(schema, entity, c);
+		
+		schema.getEntitiesWithAccess().remove(ref);
 		entity.getResources().remove(ref);
 		
 		NoSql.em().put(schema);
@@ -129,6 +135,43 @@ public class MyDatabases extends Controller {
 		NoSql.em().flush();
 
 		dbUsers(schemaName);
+	}
+
+	private static void removeKeyToTableRows(SecureSchema schema, Entity entity, Counter c) {
+		Set<EntityUser> users = new HashSet<EntityUser>();
+
+		if(entity instanceof EntityUser) {
+			EntityUser entUser = (EntityUser) entity;
+			users.add(entUser);
+		} else {
+			EntityGroup grp = (EntityGroup) entity;
+			addUsersToList(grp, users);
+		}
+		
+		CursorToMany<SecureTable> cursor = schema.getTablesCursor();
+		while(cursor.next()) {
+			SecureTable t = cursor.getCurrent();
+			for(EntityUser user : users) {
+				String key = KeyToTableName.formKey(t.getName(), user.getUsername(), user.getApiKey());
+				KeyToTableName ref = NoSql.em().getReference(KeyToTableName.class, key);
+				NoSql.em().remove(ref);
+				
+				if(c.getCount() % 100 == 0)
+					NoSql.em().flush();
+			}
+		}
+
+		NoSql.em().flush();
+	}
+
+	private static void addUsersToList(EntityGroup grp, Set<EntityUser> users) {
+		for(EntityGroupXref ent : grp.getChildren()) {
+			Entity entity = ent.getEntity();
+			if(entity instanceof EntityGroup)
+				addUsersToList((EntityGroup) entity, users);
+			else
+				users.add((EntityUser) entity);
+		}
 	}
 
 	public static void dbUsers(String schemaName) {
