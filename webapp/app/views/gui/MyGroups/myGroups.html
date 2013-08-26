@@ -21,25 +21,51 @@
 
 <h1 class="db_page_title">My Groups</h1>
 
+#{list user.parentGroups, as:'mapping'}
+
+#{form @postGroupDelete(), id:'delGrpForm'+mapping_index}
+<input type="hidden" name="group" value="${mapping.group.name}"/>
+
+<div id="delGrpPopup${mapping_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete confirmation</h3>
+  </div>
+  <div class="modal-body">
+    <p>
+        Are you sure you want to PERMANENTLY delete the '${mapping.group.name}' group?
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
+  </div>
+</div>
+#{/form}
+
+#{/list}
+
 <p>These are the groups you have access to.  Each group may have access to multiple schemas or tables.</p>
      
 <table class="table">
 	<thead>
 	    <tr>
 	        <th>Name</th>
+	        <th>Actions</th>
 	    </tr>
 	</thead>
 	<tbody>
-	    #{list user.parentGroups, as:'mapping'}
-	        <tr>
-	            <td><a href="@{gui.MyGroups.groupProperties(mapping.group.name)}">${mapping.group.name}</a></td>
-	        </tr>
-	    #{/list}
-	    #{else}
-	    <tr>
-			<td colspan=2>You do not belong to any groups yet.  <a href="@{gui.MyGroups.groupProperties(null)}">Add a Group Now!!!</a></td>
-		</tr>
-	    #{/else}
+	#{list user.parentGroups, as:'mapping'}
+	   <tr>
+	       <td><a href="@{gui.MyGroups.groupProperties(mapping.group.name)}">${mapping.group.name}</a></td>
+	       <td><a href="#delGrpPopup${mapping_index}" data-toggle="modal">delete</a></td>
+	   </tr>
+	#{/list}
+	#{else}
+	   <tr>
+	      <td colspan=2>You do not belong to any groups yet.  <a href="@{gui.MyGroups.groupProperties(null)}">Add a Group Now!!!</a></td>
+	   </tr>
+	       #{/else}
 	</tbody>
 </table>
   

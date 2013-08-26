@@ -280,6 +280,11 @@ public class MyGroups extends Controller {
 		}
 	}
 
+	public static void postGroupDelete(String group) {
+		
+		myGroups();
+	}
+
 	public static void postGroup(EntityGroup groupDbo, String oldGroupName) {
 		if("".equals(oldGroupName) || oldGroupName == null) {
 			postNewGroup(groupDbo);

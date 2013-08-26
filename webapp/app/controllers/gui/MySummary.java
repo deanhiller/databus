@@ -46,4 +46,5 @@ public class MySummary extends Controller {
 				+ " groupscnt=" + groups.size() + " session=" + sid);
 		render(groups, databases);
 	}
+
 }
