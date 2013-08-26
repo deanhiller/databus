@@ -40,6 +40,7 @@ import play.Play;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.results.Unauthorized;
+import play.vfs.VirtualFile;
 
 import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
@@ -373,6 +374,12 @@ public class Utility {
 		return true;
 	}
 
+	public static String getVersion() {
+		VirtualFile verFile = Play.getVirtualFile("/version.txt");
+		String version = verFile.contentAsString();
+		return version;
+	}
+	
 	public static String createCfName(String modelName) {
 		int hashCode = modelName.hashCode();
 		int bucketNumber = Math.abs(hashCode % 10);
