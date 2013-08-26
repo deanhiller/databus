@@ -56,7 +56,7 @@ public class TriggersController extends Controller {
 		String url = msg.getUrl();
 		validateIfLogV1InUrl(url);
 
-		String id = formId(msg.getId());
+		String id = ATriggerListener.formId(msg.getId());
 
 		EntityUser user = Utility.getCurrentUserNew(session);
 
@@ -119,14 +119,9 @@ public class TriggersController extends Controller {
 		if(PermissionType.ADMIN.isHigherRoleThan(permission))
 			unauthorized("You are not authorized as an admin of database for table="+name);
 	}
-
-	private static String formId(String origId) {
-		String id = "_log"+origId;
-		return id;
-	}
 	
 	public static void postDelete(String triggerId) {
-		String id = formId(triggerId);
+		String id = ATriggerListener.formId(triggerId);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob job = svc.getMonitor(id);
 

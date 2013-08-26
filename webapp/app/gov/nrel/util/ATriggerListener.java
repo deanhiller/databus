@@ -139,6 +139,11 @@ public class ATriggerListener {
 		}
 	}
 
+	public static String formId(String origId) {
+		String id = "_log"+origId;
+		return id;
+	}
+	
 	public static PlayOrmCronJob transform(Trigger msg, String id,
 			SecureSchema schemaDbo, EntityUser user) {
 		PlayOrmCronJob job;

@@ -123,6 +123,7 @@ POST /editdatabase                       	gui.MyDatabases.editDatabase
 GET  /databases/{schemaName}/addmonitor       	gui.MyDatabases.monitorAdd
 GET  /databases/{schemaName}/monitor/{table}  	gui.MyDatabases.monitorEdit
 POST /databases/{schemaName}/savemonitor      	gui.MyDatabases.postMonitor
+POST /databases/deletecron                      gui.MyDatabases.postDbTriggerDelete
 
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd

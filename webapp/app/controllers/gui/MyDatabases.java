@@ -441,6 +441,21 @@ public class MyDatabases extends Controller {
 		render(schema, monitor);
 	}
 	
+	public static void postDbTriggerDelete(String schemaName, String cronId) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		
+		String id = ATriggerListener.formId(cronId);
+		schema.getTriggerIds().remove(id);
+		CronService svc = CronServiceFactory.getSingleton(null);
+		svc.deleteMonitor(id);
+
+		NoSql.em().put(schema);
+		NoSql.em().flush();
+
+		dbCronJobs(schemaName);
+	}
+
 	public static void postMonitor(String schemaName, TableMonitor monitor) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
