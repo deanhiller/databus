@@ -122,8 +122,7 @@ public class MyDatabases extends Controller {
 
 		//First, let's remove all the KeyToTableNames that the user may be in directly
 		Entity entity = ref.getUserOrGroup();
-		Counter c = new Counter();
-		removeKeyToTableRows(schema, entity, c);
+		removeKeyToTableRows(schema, entity);
 		
 		schema.getEntitiesWithAccess().remove(ref);
 		entity.getResources().remove(ref);
@@ -137,41 +136,10 @@ public class MyDatabases extends Controller {
 		dbUsers(schemaName);
 	}
 
-	private static void removeKeyToTableRows(SecureSchema schema, Entity entity, Counter c) {
-		Set<EntityUser> users = new HashSet<EntityUser>();
-
-		if(entity instanceof EntityUser) {
-			EntityUser entUser = (EntityUser) entity;
-			users.add(entUser);
-		} else {
-			EntityGroup grp = (EntityGroup) entity;
-			addUsersToList(grp, users);
-		}
-		
-		CursorToMany<SecureTable> cursor = schema.getTablesCursor();
-		while(cursor.next()) {
-			SecureTable t = cursor.getCurrent();
-			for(EntityUser user : users) {
-				String key = KeyToTableName.formKey(t.getName(), user.getUsername(), user.getApiKey());
-				KeyToTableName ref = NoSql.em().getReference(KeyToTableName.class, key);
-				NoSql.em().remove(ref);
-				
-				if(c.getCount() % 100 == 0)
-					NoSql.em().flush();
-			}
-		}
-
-		NoSql.em().flush();
-	}
-
-	private static void addUsersToList(EntityGroup grp, Set<EntityUser> users) {
-		for(EntityGroupXref ent : grp.getChildren()) {
-			Entity entity = ent.getEntity();
-			if(entity instanceof EntityGroup)
-				addUsersToList((EntityGroup) entity, users);
-			else
-				users.add((EntityUser) entity);
-		}
+	private static void removeKeyToTableRows(SecureSchema schema, Entity entity) {
+		Counter c = new Counter();
+		Set<EntityUser> users = Utility.findAllUsers(entity);
+		Utility.removeKeyToTableRows(schema, users, c);
 	}
 
 	public static void dbUsers(String schemaName) {

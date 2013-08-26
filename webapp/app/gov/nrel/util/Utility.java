@@ -6,16 +6,23 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
+import models.Entity;
+import models.EntityGroup;
+import models.EntityGroupXref;
 import models.EntityUser;
+import models.KeyToTableName;
 import models.PermissionType;
 import models.RoleMapping;
 import models.SdiColumn;
 import models.SdiColumnProperty;
 import models.SecureResource;
+import models.SecureSchema;
 import models.SecureTable;
 import models.SecurityGroup;
 import models.message.DatasetColumnModel;
@@ -34,6 +41,7 @@ import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.results.Unauthorized;
 
+import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
@@ -46,6 +54,7 @@ import com.alvazan.orm.layer3.typed.IterableReverseProxy;
 import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
+import controllers.gui.Counter;
 
 public class Utility {
 
@@ -373,4 +382,40 @@ public class Utility {
 		return realCf;
 	}
 
+	public static void removeKeyToTableRows(SecureSchema schema, Set<EntityUser> users, Counter c) {
+		CursorToMany<SecureTable> cursor = schema.getTablesCursor();
+		while(cursor.next()) {
+			SecureTable t = cursor.getCurrent();
+			for(EntityUser user : users) {
+				String key = KeyToTableName.formKey(t.getName(), user.getUsername(), user.getApiKey());
+				KeyToTableName ref = NoSql.em().getReference(KeyToTableName.class, key);
+				NoSql.em().remove(ref);
+				
+				if(c.getCount() % 100 == 0)
+					NoSql.em().flush();
+			}
+		}
+
+		NoSql.em().flush();
+	}
+
+	public static Set<EntityUser> findAllUsers(Entity entity) {
+		Set<EntityUser> users = new HashSet<EntityUser>();
+		if(entity instanceof EntityUser) {
+			users.add((EntityUser) entity);
+		} else {
+			addUsersToList((EntityGroup) entity, users);
+		}
+		return users;
+	}
+	
+	public static void addUsersToList(EntityGroup grp, Set<EntityUser> users) {
+		for(EntityGroupXref ent : grp.getChildren()) {
+			Entity entity = ent.getEntity();
+			if(entity instanceof EntityGroup)
+				addUsersToList((EntityGroup) entity, users);
+			else
+				users.add((EntityUser) entity);
+		}
+	}
 } // Utility

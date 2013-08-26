@@ -241,9 +241,11 @@ public class MyGroups extends Controller {
 		EntityGroup groupDbo = adminUserGroupCheck(group, user);
 		
 		EntityGroupXref ref = NoSql.em().find(EntityGroupXref.class, mappingId);
-
 		Entity targetUser = ref.getEntity();
 		List<EntityGroupXref> refs = targetUser.getParentGroups();
+		
+		removeKeyToTableRows2(ref, targetUser);
+
 		refs.remove(ref);
 		List<EntityGroupXref> children = groupDbo.getChildren();
 		children.remove(ref);
@@ -262,6 +264,17 @@ public class MyGroups extends Controller {
 		NoSql.em().flush();
 		
 		groupUsers(group);
+	}
+
+	private static void removeKeyToTableRows2(EntityGroupXref ref, Entity target) {
+		List<SecureResourceGroupXref> resources = ref.getGroup().getResources();
+		Counter c = new Counter();
+		Set<EntityUser> users = Utility.findAllUsers(target);
+		
+		for(SecureResourceGroupXref xref : resources) {
+			SecureSchema schema = (SecureSchema) xref.getResource();
+			Utility.removeKeyToTableRows(schema, users, c);
+		}
 	}
 
 	private static void removeFromAll(Entity targetUser) {
