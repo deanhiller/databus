@@ -49,29 +49,23 @@ public class TriggersController extends Controller {
 			badRequest("url cannot be null nor empty");
 		else if(msg.getRate() < tenMinutes)
 			badRequest("rate cannot be less than "+tenMinutes+"(10 minutes)");
-
-		String url = msg.getUrl();
-		String logTable = findTableName(url);
+		else if(msg.getDatabase() == null)
+			badRequest("The database attribute must be specified so we know the owning database");
 		
+		String database = msg.getDatabase();
+		String url = msg.getUrl();
+		validateIfLogV1InUrl(url);
+
 		String id = formId(msg.getId());
 
 		EntityUser user = Utility.getCurrentUserNew(session);
 
-		SecureTable table = SecureTable.findByName(NoSql.em(), logTable);
-		if(table == null) {
-			badRequest("This table="+logTable+" does not exist");
-		} else if(!table.isForLogging()) 
-			badRequest("The table="+logTable+" is not registered as a logging table");
-
-		String name = table.getName();
-		permissionCheck(name);
-		
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob job = svc.getMonitor(id);
 		if(job != null)
 			badRequest("id="+id+" is already in use.  please delete and recreate if that is what you want");
-		SecureSchema database = table.getSchema();
-		job = ATriggerListener.transform(msg, id, database, user);
+		SecureSchema db = SecureSchema.findByName(NoSql.em(), database);
+		job = ATriggerListener.transform(msg, id, db, user);
 		
 		//run trigger here as test...
 		ATriggerListener listener = new ATriggerListener(svc, 0, 1);
@@ -85,19 +79,33 @@ public class TriggersController extends Controller {
 		svc.saveMonitor(job);
 
 		//add the job to the schema as well....
-		List<String> ids = database.getTriggerIds();
+		List<String> ids = db.getTriggerIds();
 		ids.add(job.getId());
 
-		NoSql.em().put(database);
+		NoSql.em().put(db);
 		NoSql.em().flush();
 
 		ok();
 	}
 
+	private static void validateIfLogV1InUrl(String url) {
+		String logTable = findTableName(url);
+		if(logTable == null)
+			return;
+		SecureTable table = SecureTable.findByName(NoSql.em(), logTable);
+		if(table == null) {
+			badRequest("This table="+logTable+" does not exist");
+		} else if(!table.isForLogging()) 
+			badRequest("The table="+logTable+" is not registered as a logging table");
+		String name = table.getName();
+		permissionCheck(name);
+	}
+
 	private static String findTableName(String url) {
 		int index = url.indexOf("logV1/");
 		if(index < 0)
-			badRequest("logV1 must be in the url");
+			return null;
+
 		String theRest = url.substring(index+"logV1".length()+1);
 		int index2 = theRest.indexOf("/");
 		if(index2 < 0)

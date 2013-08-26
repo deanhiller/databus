@@ -20,6 +20,10 @@ public class Trigger {
 	@XmlElement(name="id")
     public String id;
 
+	@JsonProperty("database")
+	@XmlElement(name="database")
+    public String database;
+
 	@JsonProperty("url")
     @XmlElement(name="url")
     public String url;	
@@ -75,6 +79,14 @@ public class Trigger {
 
 	public void setRate(long rate) {
 		this.rate = rate;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 
 	public long getOffset() {

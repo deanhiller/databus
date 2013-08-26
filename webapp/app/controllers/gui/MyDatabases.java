@@ -1,5 +1,6 @@
 package controllers.gui;
 
+import gov.nrel.util.ATriggerListener;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import models.SecureResource;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
 import models.SecureTable;
+import models.message.Trigger;
 
 import org.apache.commons.lang.StringUtils;
 import org.playorm.cron.api.CronService;
@@ -198,8 +200,18 @@ public class MyDatabases extends Controller {
 			if(m != null)
 				monitors.add(TableMonitor.copy(m));
 		}
-		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
-		render(user, schema, oldSchemaName, tables, monitors, timeseries);
+		
+		List<String> triggerIds = schema.getTriggerIds();
+		List<PlayOrmCronJob> trigs = svc.getMonitors(triggerIds);
+		List<Trigger> triggers = new ArrayList<Trigger>();
+		for(PlayOrmCronJob m : trigs) {
+			if(m != null) {
+				Trigger trigger = ATriggerListener.transform(m);
+				triggers.add(trigger);
+			}
+		}
+		
+		render(user, schema, monitors, triggers);
 	}
 	
 	public static void dbTables(String schemaName) {
@@ -408,17 +420,17 @@ public class MyDatabases extends Controller {
 		myDatabases();
 	}
 
-	public static void monitorAdd(String schema) {
+	public static void monitorAdd(String schemaName) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
-		render("@monitorEdit", schemaDbo);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		render("@monitorEdit", schema);
 	}
 	
-	public static void monitorEdit(String schema, String table) {
+	public static void monitorEdit(String schemaName, String table) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		
-		String id = TableMonitor.formKey(schema, table);
+		String id = TableMonitor.formKey(schemaName, table);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob mon = svc.getMonitor(id);
 		if(mon == null)
@@ -426,36 +438,36 @@ public class MyDatabases extends Controller {
 		
 		TableMonitor monitor = TableMonitor.copy(mon);
 		
-		render(schemaDbo, monitor);
+		render(schema, monitor);
 	}
 	
-	public static void postMonitor(String schema, TableMonitor monitor) {
+	public static void postMonitor(String schemaName, TableMonitor monitor) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
+		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		
 		SecureTable table = SecureTable.findByName(NoSql.em(), monitor.getTableName());
 		if(table == null) {
 			validation.addError("monitor.tableName", "This table does not exist");
-		} else if(!table.getSchema().getName().equals(schema)) {
+		} else if(!table.getSchema().getName().equals(schemaName)) {
 			validation.addError("monitor.tableName", "This table does not exist in this schema");
 		}
 		
 		if(validation.hasErrors()) {
-			render("@monitorEdit", schemaDbo, monitor);
+			render("@monitorEdit", schema, monitor);
 			return;
 		}
 		
-		PlayOrmCronJob playMonitor = TableMonitor.copy(schema, monitor);
+		PlayOrmCronJob playMonitor = TableMonitor.copy(schemaName, monitor);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		svc.saveMonitor(playMonitor);
 		
-		List<String> ids = schemaDbo.getMonitorIds();
+		List<String> ids = schema.getMonitorIds();
 		ids.add(playMonitor.getId());
 		
-		NoSql.em().put(schemaDbo);
+		NoSql.em().put(schema);
 		NoSql.em().flush();
 
-		dbProperties(schema);
+		dbCronJobs(schemaName);
 	}
 
 	public static void dbUserAdd(String schemaName, String type) {

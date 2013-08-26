@@ -29,3 +29,26 @@ and checks in 10 minutes.
 
 <a href="@{monitorAdd(schema.schemaName)}" class="btn btn-primary">Add Monitor</a><br/>
 
+<h4>Cron Jobs</h4>
+
+Cron Jobs are added through the api and will call a url for a scheduled period
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>URL to call</th>
+            <th>Interval(ms)</th>
+        </tr>
+    </thead>
+    <tbody>
+        #{list triggers, as:'trigger'}
+            <tr>
+                <td>${trigger.id}</td>
+                <td>${trigger.url}</td>
+                <td>${trigger.rate}</td>
+            </tr>
+        #{/list}            
+    </tbody>
+</table>
+
