@@ -53,9 +53,9 @@ public class TestTriggersController {
 		String reg2 = RegisterPostAndGet.createJsonForRequest(tableName2, true);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", reg2, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
-		String createTrigger1 = createTrigger(tableName1);
+		String createTrigger1 = createTrigger(tableName1, StartupDetailed.GROUP1);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/api/triggerV1/add", createTrigger1, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
-		String createTrigger2 = createTrigger(tableName2);
+		String createTrigger2 = createTrigger(tableName2, StartupDetailed.GROUP1);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/api/triggerV1/add", createTrigger2, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
 		String requestUri = "/api/triggerV1/list/"+database;
@@ -77,8 +77,9 @@ public class TestTriggersController {
 		Assert.assertEquals(0, root.getTriggers().size());		
 	}
 
-	private String createTrigger(String tableName) throws JsonGenerationException, JsonMappingException, IOException {
+	private String createTrigger(String tableName, String db) throws JsonGenerationException, JsonMappingException, IOException {
 		Trigger t = new Trigger();
+		t.setDatabase(db);
 		t.setAfter(2000);
 		t.setBefore(2000);
 		t.setId(tableName);
