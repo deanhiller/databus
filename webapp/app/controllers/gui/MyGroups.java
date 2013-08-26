@@ -3,7 +3,9 @@ package controllers.gui;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -277,6 +279,91 @@ public class MyGroups extends Controller {
 			res.getEntitiesWithAccess().remove(ref);
 			NoSql.em().put(res);
 			NoSql.em().remove(ref);
+		}
+	}
+
+	public static void postGroupDelete(String group) {
+		EntityUser user = Utility.getCurrentUser(session);
+		EntityGroup groupDbo = adminUserGroupCheck(group, user);
+
+		//This can take a while...
+		removeKeyToTableRows(groupDbo);
+		
+		List<EntityGroupXref> children = groupDbo.getChildren();
+		for(EntityGroupXref ref : children) {
+			Entity entity = ref.getEntity();
+			entity.getParentGroups().remove(ref);
+			NoSql.em().put(entity);
+			NoSql.em().remove(ref);
+		}
+		
+		for(EntityGroupXref ref : groupDbo.getParentGroups()) {
+			//must be a group if a parent
+			EntityGroup entity = ref.getGroup();
+			entity.getChildren().remove(ref);
+			NoSql.em().put(entity);
+			NoSql.em().remove(ref);
+		}
+
+		NoSql.em().flush();
+
+		for(SecureResourceGroupXref ref : groupDbo.getResources()) {
+			SecureResource resource = ref.getResource();
+			resource.getEntitiesWithAccess().remove(ref);
+			NoSql.em().put(resource);
+			NoSql.em().remove(ref);
+		}
+
+		NoSql.em().remove(groupDbo);
+		NoSql.em().flush();
+
+		myGroups();
+	}
+
+	private static void removeKeyToTableRows(EntityGroup groupDbo) {
+		Set<EntityUser> users = new HashSet<EntityUser>();
+		List<EntityGroupXref> children = groupDbo.getChildren();
+		for(EntityGroupXref ref : children) {
+			Entity entity = ref.getEntity();
+			if(entity instanceof EntityUser) {
+				EntityUser entityUser = (EntityUser) entity;
+				users.add(entityUser);
+			}
+		}
+
+		Counter c = new Counter();
+		List<SecureResourceGroupXref> refs = groupDbo.getResources();
+		for(SecureResourceGroupXref ref : refs) {
+			SecureResource res = ref.getResource();
+			removeKeyToTables(res, users, c);
+		}
+	}
+
+	private static void removeKeyToTables(SecureResource res, Set<EntityUser> users, Counter c) {
+		if(res instanceof SecureSchema) {
+			SecureSchema db = (SecureSchema) res;
+			CursorToMany<SecureTable> cursor = db.getTablesCursor();
+			while(cursor.next()) {
+				SecureTable t = cursor.getCurrent();
+				removeTable(t, users, c);
+			}
+		} else {
+			SecureTable t = (SecureTable) res;
+			removeTable(t, users, c);
+		}
+		NoSql.em().flush();
+	}
+
+	private static void removeTable(SecureTable t, Set<EntityUser> users, Counter c) {
+		for(EntityUser user : users) {
+			String key = KeyToTableName.formKey(t.getName(), user.getUsername(), user.getApiKey());
+			EntityUser proxyUser = NoSql.em().getReference(EntityUser.class, key);
+			NoSql.em().remove(proxyUser);
+			c.increment();
+			if(c.getCount() % 100 == 0) {
+				log.info("flushing first 100 keytotablename removes");
+				NoSql.em().flush();
+			}
 		}
 	}
 

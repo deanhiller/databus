@@ -97,6 +97,7 @@ GET  /groups/{group}/resources              gui.MyGroups.groupResources
 
 GET  /addgroup                          	gui.MyGroups.groupProperties
 POST /savegroup                         	gui.MyGroups.postGroup
+POST /deletegroup                           gui.MyGroups.postGroupDelete
 POST /groups/deleteuser                     gui.MyGroups.postGroupUserDelete
 GET  /groups/{group}/{type}/adduser     	gui.MyGroups.userAdd
 GET  /groups/{group}/{type}/{username}  	gui.MyGroups.userEdit
