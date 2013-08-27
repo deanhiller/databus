@@ -18,73 +18,13 @@
 
 <p>These are the databases you have access to.  Each database may contain multiple tables</p>
 
-#{list databases, as:'database'}
-	<!--=======================================-->
-	<!--The following is the DELETE MODAL BLOCK-->
-	<!--=======================================-->
-	<input type="hidden" name="del_databaseId" value="${database.id}"/>
-	<input type="hidden" name="del_database" value="${database.getSchemaName()}"/>
-	
-	<div id="myDeleteModal${database_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myDeleteModalLabel" aria-hidden="true">
-	  <div class="modal-header">
-	    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-	    <h3 id="myModalLabel">Delete confirmation</h3>
-	  </div>
-	  <div class="modal-body">
-	  	<p>
-	        The action of deleting an entire Database, including all of its' tables and data, is
-	        a very invasive change to the system.  As of right now we do not support removing
-	        entire databases. 
-	    </p>
-	  </div>
-	  <div class="modal-footer">
-	    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-	  </div>
-	</div>
-	<!--=======================================-->
-	<!--End of DELETE MODAL BLOCK-->
-	<!--=======================================-->
-	
-	<!--=======================================-->
-	<!-- The following is the EDIT MODAL BLOCK -->
-	<!--=======================================-->
-	#{form @editDatabase(), id:'editdatabase'+database_index, class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-		<div id="myEditModal${database_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myEditModalLabel" aria-hidden="true">
-		  <div class="modal-header">
-		    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-		    <h3 id="myEditModalLabel">Database Properties</h3>
-		  </div>
-		  <div class="modal-body">  
-		  	#{formfield 'database'}
-			<div class="control-group ${field.errorClass}">
-				<label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a> Name</label>
-				<div class="controls">			
-					<input type="text" name="edit_dbName" value="${database.getSchemaName()}" maxlength="50" class="input-xlarge" readonly="readonly">			 
-					<span class="help-block">${field.error}</span>
-				</div>
-			</div>
-		    #{/formfield}
-			
-			#{formfield 'description'}
-			<div class="control-group">
-				<label class="control-label"><a href="#" rel="tooltip" title="Some help message"><i class="icon-info-sign"></i></a> Description</label>
-				<div class="controls">
-				   	<textarea name="edit_dbDescription" rows="12" cols="100" class="input-xlarge">${database.getDescription()}</textarea>
-					<span class="help-block">${field.error}</span>
-				</div>
-			</div>
-		    #{/formfield}
-		  </div>
-		  <div class="modal-footer">
-		    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		    <input type="submit" name="submit" value="Save" class="btn btn-primary" />
-		  </div>
-		</div>
-	#{/form}
-#{/list}
+<!-- ADD/EDIT MODAL BLOCK -->
 <!--=======================================-->
-<!-- End of EDIT MODAL BLOCK -->
+#{CRUD/dbAddEditPopup /}
+
+<!-- DELETE MODAL BLOCK-->
 <!--=======================================-->
+#{CRUD/dbDeletePopup /}
 
 <div class="span8">
 	<table class="table">
@@ -98,28 +38,61 @@
 		        <tr>
 		            <td><a href="@{viewDatabase(database.schemaName)}">${database.getSchemaName()}</a></td>
 		            <td style="text-align: right;">
-		                <a href="#myEditModal${database_index}" data-toggle="modal">
+		                <a id="dbAddEditModal_${database.getSchemaName()}" href="#myAddEditModal" data-toggle="modal">
 		                	edit
 		                </a>
 		                &nbsp;&nbsp;|&nbsp;
-		                <a href="#myDeleteModal${database_index}" data-toggle="modal">
+		                <a id="dbDeleteModal_${database.getSchemaName()}" href="#myDeleteModal" data-toggle="modal">
 	                        delete
 		                </a>
+		                
+		                <script type="text/javascript">
+		                	$('body').on('click', '#dbAddEditModal_${database.getSchemaName()}', function (e) {
+		                		populateModal('Edit Database', '${database.getSchemaName()}', true, '${database.getDescription().escapeJavaScript()}');
+						});
+		                </script>
 		            </td>
 		        </tr>
 		    #{/list}
 		    #{else}
 		    <tr>
-				<td colspan=2>You do not own to any Databases yet.  <a href="@{dbProperties(null)}">Add a Database Now!!!</a></td>
+				<td colspan=2>
+					You do not own any Databases yet.  <a id="dbAddEditModal_add_none" href="#myAddEditModal" data-toggle="modal">Add a Database Now!!!</a>
+					<script type="text/javascript">
+		                	$('body').on('click', '#dbAddEditModal_add_none', function (e) {
+		                		populateModal('New Database', '', false, '');
+						});
+		               </script>
+				</td>
 			</tr>
 		    #{/else}
 		</tbody>
 	</table>
 </div>
 <div class="span4"></div>
-
   
 <p style="clear: both;">
-  	<a href="@{dbProperties(null)}" class="btn btn-primary">Add Database</a>
+  	<a id="dbAddEditModal_add" href="#myAddEditModal" data-toggle="modal">Add Database</a>
+  	<script type="text/javascript">
+	    	$('body').on('click', '#dbAddEditModal_add', function (e) {
+		     populateModal('New Database', '', false, '');
+		});
+	</script>
 </p>
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		#{if showModal}
+			populateModal('New Database', '', false, '${postedDatabase.getDescription().escapeJavaScript()}');
+			$("#myAddEditModal").modal('show');
+		#{/if}
+	});
+	
+	function populateModal(modalTitle, dbName, dbNameReadonly, dbDescription) {
+		$('#addEditModalLabel').html(modalTitle);
+		$('#addEditDatabase_dbName').val(dbName);
+		$('#addEditDatabase_dbName').attr('readonly', dbNameReadonly);
+		$('#addEditDatabase_dbDescription').val(dbDescription);
+	}
+</script>
   

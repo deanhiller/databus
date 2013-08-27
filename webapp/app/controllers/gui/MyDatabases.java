@@ -1,6 +1,5 @@
 package controllers.gui;
 
-import gov.nrel.util.ATriggerListener;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
@@ -13,13 +12,11 @@ import models.Entity;
 import models.EntityGroup;
 import models.EntityGroupXref;
 import models.EntityUser;
-import models.KeyToTableName;
 import models.PermissionType;
 import models.SecureResource;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
 import models.SecureTable;
-import models.message.Trigger;
 
 import org.apache.commons.lang.StringUtils;
 import org.playorm.cron.api.CronService;
@@ -31,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.With;
 
-import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
 import com.alvazan.play.NoSql;
 
@@ -120,13 +116,10 @@ public class MyDatabases extends Controller {
 		SecureResourceGroupXref ref = NoSql.em().find(SecureResourceGroupXref.class, xrefId);
 		String id = ref.getResource().getId();
 		if(!id.equals(schema.getId()))
-			notFound("this schema and xref are not tied together");
+			notFound("this schema and xref ar enot tied together");
 
-		//First, let's remove all the KeyToTableNames that the user may be in directly
-		Entity entity = ref.getUserOrGroup();
-		removeKeyToTableRows(schema, entity);
-		
 		schema.getEntitiesWithAccess().remove(ref);
+		Entity entity = ref.getUserOrGroup();
 		entity.getResources().remove(ref);
 		
 		NoSql.em().put(schema);
@@ -136,12 +129,6 @@ public class MyDatabases extends Controller {
 		NoSql.em().flush();
 
 		dbUsers(schemaName);
-	}
-
-	private static void removeKeyToTableRows(SecureSchema schema, Entity entity) {
-		Counter c = new Counter();
-		Set<EntityUser> users = Utility.findAllUsers(entity);
-		Utility.removeKeyToTableRows(schema, users, c);
 	}
 
 	public static void dbUsers(String schemaName) {
@@ -200,18 +187,8 @@ public class MyDatabases extends Controller {
 			if(m != null)
 				monitors.add(TableMonitor.copy(m));
 		}
-		
-		List<String> triggerIds = schema.getTriggerIds();
-		List<PlayOrmCronJob> trigs = svc.getMonitors(triggerIds);
-		List<Trigger> triggers = new ArrayList<Trigger>();
-		for(PlayOrmCronJob m : trigs) {
-			if(m != null) {
-				Trigger trigger = ATriggerListener.transform(m);
-				triggers.add(trigger);
-			}
-		}
-		
-		render(user, schema, monitors, triggers);
+		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
+		render(user, schema, oldSchemaName, tables, monitors, timeseries);
 	}
 	
 	public static void dbTables(String schemaName) {
@@ -393,44 +370,98 @@ public class MyDatabases extends Controller {
 		myDatabases();
 	}
 	
-	public static void editDatabase(String edit_dbName, String edit_dbDescription) {
+	public static void addEditDatabase(SecureSchema postedDatabase) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schemaDbo = schemaCheck(edit_dbName, user, PermissionType.ADMIN);
+		SecureSchema databaseToSave = null;
+		String successMsg = "";
 		
-		if(schemaDbo == null) {
-			/**
-			 * How to do the field.error code?
-			 */
-			validation.addError("database", "Database [" + edit_dbName + "] does not exist.");
-			//myDatabases();
+		if((postedDatabase.getSchemaName() == null) || (postedDatabase.getSchemaName().equals(""))) {
+			// We cannot have an empty db name
+			validation.addError("postedDatabase.schemaName", "The database name cannot be empty!");
+		} else {
+			databaseToSave = SecureSchema.findByName(NoSql.em(), postedDatabase.getSchemaName());
+			if (databaseToSave == null) {
+				/**
+				 * This is a new db
+				 */
+				if (log.isInfoEnabled())
+					log.info(" Adding new database: name=" + postedDatabase.getSchemaName());
+				
+				databaseToSave = new SecureSchema();
+				databaseToSave.setId(null);
+				databaseToSave.setSchemaName(postedDatabase.getSchemaName());
+				databaseToSave.setDescription(postedDatabase.getDescription());
+				
+				NoSql.em().fillInWithKey(databaseToSave);
+				SecureResourceGroupXref xref = new SecureResourceGroupXref(user, databaseToSave, PermissionType.ADMIN);		
+				NoSql.em().put(xref);
+				
+				NoSql.em().put(databaseToSave);
+				NoSql.em().put(user);
+				NoSql.em().flush();
+				
+				successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been added.";
+			} else {
+				/**
+				 * This is an edit to an existing db
+				 */
+				Set<PermissionType> roles = fetchRoles(postedDatabase, user);
+				if(!roles.contains(PermissionType.ADMIN)) {
+					/**
+					 * Lack of permissions requires an error that does not bring up the edit modal.  We'll
+					 * just use the flash here and redirect to the myDatabases() controller call.
+					 */
+					flash.error("You do not have permissions to edit the \"" + postedDatabase.getSchemaName() + "\" database.");
+					flash.put("showModal", "true");
+					flash.put("isError", "true");
+					myDatabases();
+					return;
+				}
+				
+				/**
+				 * This edit of a database can ONLY change the description.  So, lets update the databaseToSave object
+				 * with the postedDatabase description since we do NOT save all fields in the html for any given database
+				 */
+				databaseToSave.setDescription(postedDatabase.getDescription());
+				
+				NoSql.em().put(databaseToSave);
+				NoSql.em().flush();
+				
+				successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been updated.";
+			}
 		}
-		
-		schemaDbo.setDescription(edit_dbDescription);
-
-		if (log.isInfoEnabled())
-			log.info(" Editing Database id=" + schemaDbo.getId() + " name=" + schemaDbo.getSchemaName());
 
 		if (validation.hasErrors()) {
-			render("@editSchema", user, schemaDbo);
-		}
+			boolean isError = true;
+			boolean showModal = true;
 
-		NoSql.em().put(schemaDbo);
-		NoSql.em().flush();
+			// Get the databases for the render
+			List<SecureSchema> databases = new ArrayList<SecureSchema>();
+			for(SecureResourceGroupXref resource: user.getSchemas()) {
+				String dbName = resource.getResource().getName();
+				databases.add(SecureSchema.findByName(NoSql.em(), dbName));
+			}
+			
+			render("@myDatabases", databases, postedDatabase, isError, showModal);
+			return;
+		}
+		
+		flash.success(successMsg);
 		
 		myDatabases();
 	}
 
-	public static void monitorAdd(String schemaName) {
+	public static void monitorAdd(String schema) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
-		render("@monitorEdit", schema);
+		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
+		render("@monitorEdit", schemaDbo);
 	}
 	
-	public static void monitorEdit(String schemaName, String table) {
+	public static void monitorEdit(String schema, String table) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
 		
-		String id = TableMonitor.formKey(schemaName, table);
+		String id = TableMonitor.formKey(schema, table);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob mon = svc.getMonitor(id);
 		if(mon == null)
@@ -438,51 +469,36 @@ public class MyDatabases extends Controller {
 		
 		TableMonitor monitor = TableMonitor.copy(mon);
 		
-		render(schema, monitor);
+		render(schemaDbo, monitor);
 	}
 	
-	public static void postDbTriggerDelete(String schemaName, String cronId) {
+	public static void postMonitor(String schema, TableMonitor monitor) {
 		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
-		
-		String id = ATriggerListener.formId(cronId);
-		schema.getTriggerIds().remove(id);
-		CronService svc = CronServiceFactory.getSingleton(null);
-		svc.deleteMonitor(id);
-
-		NoSql.em().put(schema);
-		NoSql.em().flush();
-
-		dbCronJobs(schemaName);
-	}
-
-	public static void postMonitor(String schemaName, TableMonitor monitor) {
-		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
+		SecureSchema schemaDbo = schemaCheck(schema, user, PermissionType.ADMIN);
 		
 		SecureTable table = SecureTable.findByName(NoSql.em(), monitor.getTableName());
 		if(table == null) {
 			validation.addError("monitor.tableName", "This table does not exist");
-		} else if(!table.getSchema().getName().equals(schemaName)) {
+		} else if(!table.getSchema().getName().equals(schema)) {
 			validation.addError("monitor.tableName", "This table does not exist in this schema");
 		}
 		
 		if(validation.hasErrors()) {
-			render("@monitorEdit", schema, monitor);
+			render("@monitorEdit", schemaDbo, monitor);
 			return;
 		}
 		
-		PlayOrmCronJob playMonitor = TableMonitor.copy(schemaName, monitor);
+		PlayOrmCronJob playMonitor = TableMonitor.copy(schema, monitor);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		svc.saveMonitor(playMonitor);
 		
-		List<String> ids = schema.getMonitorIds();
+		List<String> ids = schemaDbo.getMonitorIds();
 		ids.add(playMonitor.getId());
 		
-		NoSql.em().put(schema);
+		NoSql.em().put(schemaDbo);
 		NoSql.em().flush();
 
-		dbCronJobs(schemaName);
+		dbProperties(schema);
 	}
 
 	public static void dbUserAdd(String schemaName, String type) {

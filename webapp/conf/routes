@@ -97,7 +97,6 @@ GET  /groups/{group}/resources              gui.MyGroups.groupResources
 
 GET  /addgroup                          	gui.MyGroups.groupProperties
 POST /savegroup                         	gui.MyGroups.postGroup
-POST /deletegroup                           gui.MyGroups.postGroupDelete
 POST /groups/deleteuser                     gui.MyGroups.postGroupUserDelete
 GET  /groups/{group}/{type}/adduser     	gui.MyGroups.userAdd
 GET  /groups/{group}/{type}/{username}  	gui.MyGroups.userEdit
@@ -119,11 +118,10 @@ GET  /databases/{schemaName}/tables         gui.MyDatabases.dbTables
 
 GET  /adddatabase                         	gui.MyDatabases.dbProperties
 POST /savedatabase                       	gui.MyDatabases.postDatabase
-POST /editdatabase                       	gui.MyDatabases.editDatabase
-GET  /databases/{schemaName}/addmonitor       	gui.MyDatabases.monitorAdd
-GET  /databases/{schemaName}/monitor/{table}  	gui.MyDatabases.monitorEdit
-POST /databases/{schemaName}/savemonitor      	gui.MyDatabases.postMonitor
-POST /databases/deletecron                      gui.MyDatabases.postDbTriggerDelete
+POST /addeditdatabase                       	gui.MyDatabases.addEditDatabase
+GET  /databases/{schema}/addmonitor       	gui.MyDatabases.monitorAdd
+GET  /databases/{schema}/monitor/{table}  	gui.MyDatabases.monitorEdit
+POST /databases/{schema}/savemonitor      	gui.MyDatabases.postMonitor
 
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
