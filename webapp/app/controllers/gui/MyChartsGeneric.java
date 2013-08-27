@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.alvazan.play.NoSql;
 
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.Chart;
 import controllers.gui.util.ChartComparator;
 import controllers.gui.util.ChartInfo;
 import controllers.gui.util.ChartUtil;
@@ -123,10 +124,17 @@ public class MyChartsGeneric extends Controller {
 	}
 
 	public static void drawChart(String chartId, String encoded) {
-		ChartInfo info = ChartUtil.fetchChart(chartId);
+		EntityUser user = Utility.getCurrentUser(session);
+		List<ChartDbo> charts = user.getCharts();
+		//special case for showing remote pages
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
-		String chart = ChartUtil.replaceVariables(info.getLargeChart(), variables);
-		render(info, chart, chartId, variables, encoded);
+		
+		ChartDbo chart = new ChartDbo();
+		chart.setChartId(chartId);
+		chart.setEncodedVariables(encoded);
+		String title = chart.getTitle();
+		String url = chart.getLargeChartUrl();
+		render(charts, variables, url, title, chartId, encoded);
 	}
 
 	public static void largeChart(String chartId, String encoded) {

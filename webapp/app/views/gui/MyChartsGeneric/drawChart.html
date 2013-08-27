@@ -27,10 +27,25 @@ not displaying, click the url to see if there is any data!!
 #{/form}
 <br/>
 
-<div id="theChart"></div>
+<div id="theChart" style="height: 600px;">
+    <iframe style="border: none;" width="100%" height="100%" src="${url.raw()}">
+    </iframe>
+</div>
 
-    ${info.htmlHeaders.raw()}
+        <script type="text/javascript">
+        $(function () {
+            $(window).resize(function () {
+                var height = getHeight();
+                console.log('fit new div container size, width='+$("#theChart").width()+' height='+height+' windowH='+$(window).height());
+                $("#theChart").height(height);
+            });
+            
+            function getHeight() {
+                var height = $(window).height()-300;
+                if(height < 300)
+                    height = 300;
+                return height;
+            }
+        });
+        </script>
 
-    <script type="text/javascript">
-        ${chart.raw()}
-    </script>
