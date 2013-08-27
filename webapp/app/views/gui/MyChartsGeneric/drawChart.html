@@ -18,18 +18,14 @@
 We are rendering the chart for dataset url=<a href="${variables.url}" target="_blank">${variables.url}</a> below.  If your chart is
 not displaying, click the url to see if there is any data!!
 #{/if}
-
+<br/>
 <a href="@{modifyChart(chartId, encoded)}" class="btn btn-primary">Modify Chart</a>
 <a href="@{largeChart(chartId, encoded)}" class="btn btn-primary">Large Chart Only</a>
 <a href="@{smallChart(chartId, encoded)}" class="btn btn-primary">Small Chart Only</a>
-<br/><br/>
-#{form @addChartToDashboard(chartId, encoded), id:'formAddChart'}
-     <div class="control-group">
-       <div class="controls">
+#{form @addChartToDashboard(chartId, encoded), id:'formAddChart', style:'display:inline'}
           <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
-        </div>
-    </div>
 #{/form}
+<br/>
 
 <div id="theChart"></div>
 

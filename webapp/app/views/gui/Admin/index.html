@@ -11,9 +11,16 @@
 	</thead>
 	<tbody>
 	    #{list groups, as:'group'}
+	        #{if group.name}
 	        <tr>
-	            <td><a href="@{gui.MyGroups.editGroup(group.name)}">${group.name}</a></td>
+	            <td><a href="@{gui.MyGroups.groupUsers(group.name)}">${group.name}</a></td>
 	        </tr>
+	        #{/if}
+	        #{else}
+            <tr>
+                <td>${group.id}</td>
+            </tr>	        
+	        #{/else}
 	    #{/list}
 	</tbody>
 </table>

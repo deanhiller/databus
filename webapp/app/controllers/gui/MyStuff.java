@@ -87,10 +87,7 @@ public class MyStuff extends Controller {
 	}
 	
 	public static void tableChart(String table) {
-		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema group = authTableCheck(table, user);
-		if(group == null)
-			unauthorized("You have no access to this table");
+		SecurityUtil.checkSingleTable(table);
 		
 		Map<String, String> variablesMap = new HashMap<String, String>();
 		variablesMap.put("title", table+" Last 1000 Data points");
@@ -106,10 +103,7 @@ public class MyStuff extends Controller {
 	}
 
 	public static void createChart(String table) {
-		EntityUser user = Utility.getCurrentUser(session);
-		SecureSchema group = authTableCheck(table, user);
-		if(group == null)
-			unauthorized("You have no access to this table");
+		SecurityUtil.checkSingleTable(table);
 		
 		Map<String, String> variablesMap = new HashMap<String, String>();
 		variablesMap.put("title", table+" Last 1000 Data points");
