@@ -376,6 +376,10 @@ public class Utility {
 
 	public static String getVersion() {
 		VirtualFile verFile = Play.getVirtualFile("/version.txt");
+		if(verFile == null) {
+			log.warn("version file=/version.txt is missing");
+			return "";
+		}
 		String version = verFile.contentAsString();
 		return version;
 	}

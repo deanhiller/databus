@@ -46,6 +46,10 @@ not displaying, click the url to see if there is any data!!
                     height = 300;
                 return height;
             }
+            
+            var height = getHeight();
+            console.log('111fit new div container size, width='+$("#theChart").width()+' height='+height+' windowH='+$(window).height());
+            $("#theChart").height(height);
         });
         </script>
 
