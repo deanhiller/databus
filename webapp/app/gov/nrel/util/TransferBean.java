@@ -202,11 +202,17 @@ public class TransferBean extends TransferSuper {
 				SecureTable tb = mgr2.find(SecureTable.class, table.getId());
 				SecureTable oldTable = mgr.find(SecureTable.class, table.getId());
 				if(tb == null) {
-					log.warn("Table='"+table.getName()+"' does not exist for some reason.  id looked up='"+table.getId()+"' for schema id="+table.getSchema().getName()+" fromloop="+s.getName());
+					log.warn("Table='"+table.getName()+"' does not exist for some reason.  id looked up='"+table.getId()+" fromloop="+s.getName());
 					if(oldTable == null) {
 						log.warn("WHAT, old table is null");
-					} else
-						log.warn("old table="+oldTable.getId()+" oldname="+oldTable.getName()+" schema="+oldTable.getSchema().getName());
+					} else {
+						String msg = "old table="+oldTable.getId()+" oldname="+oldTable.getName();
+						if(oldTable.getSchema() != null)
+							msg += " schema="+oldTable.getSchema().getName();
+						else 
+							msg += " schema is null on the table";
+						log.warn(msg);
+					}
 
 					continue;
 				}
