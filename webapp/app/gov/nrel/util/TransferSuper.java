@@ -18,6 +18,7 @@ import com.alvazan.orm.api.base.anno.NoSqlEntity;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
 import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.Row;
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 
@@ -73,6 +74,10 @@ public abstract class TransferSuper {
 			columns.addAll(row.getColumns());
 			raw2.put(meta2, row.getKey(), columns);
 
+			if("SdiTable".equals(cf)) {
+				String key = StandardConverters.convertFromBytes(String.class, row.getKey());
+				log.info("ported sdiTable="+key);
+			}
 //debug code to see values of bytes easier...			
 //			ByteArray b = new ByteArray(row.getKey());
 //			int d = 5+6;

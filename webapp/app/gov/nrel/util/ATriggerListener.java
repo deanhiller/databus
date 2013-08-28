@@ -93,7 +93,7 @@ public class ATriggerListener {
 			fireHttpRequestAndWait(m, url, start, end);
 			success = true;
 		} catch(RuntimeException e) {
-			log.warn("Exception on trigger requesting url", e);
+			log.warn("Exception on trigger requesting url. triggerid="+m.getId(), e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			exceptionString = sw.toString();
