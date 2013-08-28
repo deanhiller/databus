@@ -2,17 +2,6 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
-%{
-   if(gov.nrel.util.Utility.isDemoMode()) {
-}%
-<div class="alert alert-info alert-block">
-   Step 8. Fill in "time" for the timeColumn since this table uses the column time<br/>
-   Step 9. Fill in "value" for the Series 1 name and click Create Chart<br/>
-</div>
-%{
-    }
-}%
-
 #{form @postStep2(chartId, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
     <legend>Create Chart Step 2 of 2</legend>
