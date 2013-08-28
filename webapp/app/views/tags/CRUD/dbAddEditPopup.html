@@ -2,6 +2,7 @@
 <!-- The following is the ADD/EDIT MODAL BLOCK -->
 <!--=======================================-->
 #{form @addEditDatabase(), class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+	<input id="addEditDatabase_dbID" type="hidden" name="postedDatabase.id" value="${postedDatabase?.id}">
 	<div id="myAddEditModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel" aria-hidden="true">
 		<div class="modal-header">
 			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

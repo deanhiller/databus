@@ -28,6 +28,7 @@ import org.playorm.cron.api.PlayOrmCronJob;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.data.validation.Validation;
 import play.mvc.Controller;
 import play.mvc.With;
 
@@ -425,9 +426,9 @@ public class MyDatabases extends Controller {
 		SecureSchema databaseToSave = null;
 		String successMsg = "";
 		
-		if((postedDatabase.getSchemaName() == null) || (postedDatabase.getSchemaName().equals(""))) {
+		if((postedDatabase == null) || (postedDatabase.getSchemaName() == null) || (postedDatabase.getSchemaName().equals(""))) {
 			// We cannot have an empty db name
-			validation.addError("postedDatabase.schemaName", "The database name cannot be empty!");
+			Validation.addError("postedDatabase.schemaName", "The database name cannot be empty!");
 		} else {
 			databaseToSave = SecureSchema.findByName(NoSql.em(), postedDatabase.getSchemaName());
 			if (databaseToSave == null) {
@@ -468,20 +469,14 @@ public class MyDatabases extends Controller {
 					return;
 				}
 				
-				/**
-				 * This edit of a database can ONLY change the description.  So, lets update the databaseToSave object
-				 * with the postedDatabase description since we do NOT save all fields in the html for any given database
-				 */
-				databaseToSave.setDescription(postedDatabase.getDescription());
-				
-				NoSql.em().put(databaseToSave);
+				NoSql.em().put(postedDatabase);
 				NoSql.em().flush();
 				
 				successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been updated.";
 			}
 		}
 
-		if (validation.hasErrors()) {
+		if (Validation.hasErrors()) {
 			boolean isError = true;
 			boolean showModal = true;
 
