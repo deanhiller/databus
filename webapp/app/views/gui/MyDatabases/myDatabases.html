@@ -48,7 +48,7 @@
 		                
 		                <script type="text/javascript">
 		                	$('body').on('click', '#dbAddEditModal_${database.getSchemaName()}', function (e) {
-		                		populateModal('Edit Database', '${database.getSchemaName()}', true, '${database.getDescription().escapeJavaScript()}');
+		                		populateModal('Edit Database', '${database.getSchemaName()}', true, '${database?.description?.escapeJavaScript()}');
 						});
 		                </script>
 		            </td>
