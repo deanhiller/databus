@@ -1,6 +1,7 @@
 package gov.nrel.util;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 
@@ -47,7 +48,7 @@ public class StartupBean extends Job {
 	}
 
 	public void doJobImpl() throws Exception {
-		String prop = Play.configuration.getProperty("nosql.db");
+		String prop = Play.configuration.getProperty("nosql.nosqltype");
 		DbTypeEnum db = DbTypeEnum.IN_MEMORY;
 		if("cassandra".equalsIgnoreCase(prop)) {
 			db = DbTypeEnum.CASSANDRA;
@@ -117,8 +118,8 @@ public class StartupBean extends Job {
 			log.info("running in dev mode, now checking if we need to initialize the database of type="+db);
 		
 		NoSqlEntityManager em = NoSql.em();
-		
-		if(EntityUser.findAll(em).size() > 0)
+		List<EntityUser> users = EntityUser.findAll(em);
+		if(users.size() > 0)
 			return; //There is already data so we don't need to populate duplicate data
 		
 		if (log.isInfoEnabled())
