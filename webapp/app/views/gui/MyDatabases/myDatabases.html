@@ -48,7 +48,7 @@
 		                
 		                <script type="text/javascript">
 		                	$('body').on('click', '#dbAddEditModal_${database.getSchemaName()}', function (e) {
-		                		populateModal('Edit Database', '${database.getSchemaName()}', true, '${database?.description?.escapeJavaScript()}');
+		                		populateModal('Edit Database', '${database.getId()}', '${database.getSchemaName()}', true, '${database?.description?.escapeJavaScript()}');
 						});
 		                </script>
 		            </td>
@@ -60,7 +60,7 @@
 					You do not own any Databases yet.  <a id="dbAddEditModal_add_none" href="#myAddEditModal" data-toggle="modal">Add a Database Now!!!</a>
 					<script type="text/javascript">
 		                	$('body').on('click', '#dbAddEditModal_add_none', function (e) {
-		                		populateModal('New Database', '', false, '');
+		                		populateModal('New Database', '', '', false, '');
 						});
 		               </script>
 				</td>
@@ -75,7 +75,7 @@
   	<a id="dbAddEditModal_add" href="#myAddEditModal" data-toggle="modal">Add Database</a>
   	<script type="text/javascript">
 	    	$('body').on('click', '#dbAddEditModal_add', function (e) {
-		     populateModal('New Database', '', false, '');
+		     populateModal('New Database', '', '', false, '');
 		});
 	</script>
 </p>
@@ -83,13 +83,14 @@
 <script type="text/javascript">
 	$(document).ready(function() {
 		#{if showModal}
-			populateModal('New Database', '', false, '${postedDatabase.getDescription().escapeJavaScript()}');
+			populateModal('New Database', '', '', false, '${postedDatabase?.description?.escapeJavaScript()}');
 			$("#myAddEditModal").modal('show');
 		#{/if}
 	});
 	
-	function populateModal(modalTitle, dbName, dbNameReadonly, dbDescription) {
+	function populateModal(modalTitle, dbID, dbName, dbNameReadonly, dbDescription) {
 		$('#addEditModalLabel').html(modalTitle);
+		$('#addEditDatabase_dbID').val(dbID);
 		$('#addEditDatabase_dbName').val(dbName);
 		$('#addEditDatabase_dbName').attr('readonly', dbNameReadonly);
 		$('#addEditDatabase_dbDescription').val(dbDescription);
