@@ -58,6 +58,7 @@ public class SecureTable extends SecureResource {
 	
 	private String typeOfData = DataTypeEnum.TIME_SERIES.getDbCode();
 	
+	@NoSqlIndexed
 	private Boolean isSearchable;
 	
 	private String searchableParentTable;
