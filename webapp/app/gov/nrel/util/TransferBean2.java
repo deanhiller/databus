@@ -56,6 +56,8 @@ public class TransferBean2 extends TransferSuper {
 
 		String cf = "MonitorDbo";
 		portTableToNewCassandra(mgr, mgr2, cf);
+		cf = "StreamAggregation";
+		portTableToNewCassandra(mgr, mgr2, cf);
 	}
 
 
