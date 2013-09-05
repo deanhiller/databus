@@ -4,11 +4,12 @@
 .search_left {
 	/*position: fixed;*/
 	float:left;
-	width: 250px;
 	padding: 0;
 	margin-left: 20px;
 	margin-right: 20px;
-	margin-bottom: 40px;
+	min-height: 310px;
+	min-width: 215px;
+	border-right: 1px solid #aaa;
 }
 
 .search_nav_facet {
@@ -119,18 +120,15 @@
 }
 
 .search_right_placeholder {
-	/*position: fixed;*/
-	/*clear: both;*/
-	position: absolute;
-	margin-left: 270px;
-	width: 75%;
-	min-width: 700px;
-	/*       T   R    B    L            */
-	padding: 0px 20px 10px 20px;
-	text-align: justify;
-	border-left: 1px solid #aaa;
-	height: 410px;
-	min-height: 410px;
+	
+}
+
+
+.search_input_div {
+	margin-top: 155px;
+	margin-right: auto;
+	margin-left: auto;
+	display: table;
 }
 
 .search_right h2 {

@@ -3,6 +3,8 @@ package controllers.gui;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,9 +29,102 @@ import controllers.gui.solrsearch.SolrSearchResult;
 
 @With(GuiSecure.class)
 public class GUISearch extends Controller {
+	private static Map<String, Map<String, List<SearchItem>>> userIndexMapCache = new ConcurrentHashMap<String, Map<String, List<SearchItem>>>();
+	
 	public static void legacyMetaSearch() {
 		EntityUser user = Utility.getCurrentUser(session);
 		render(user);
+	}
+	
+	public static void initiateIndexSearch() {
+		/*
+		String solrURL = Utility.getSolrServer();
+		renderArgs.put("solrURL", solrURL);
+		
+		EntityUser user = Utility.getCurrentUser(session);
+		render(user);
+		*/
+		
+		/**
+		 * Get a full listing of all available indexes and then return them as a list of clickable
+		 * links that then drill down to a search page for that specific index.
+		 * 
+		 * Since the current searchableItems call is so slow, we'll hit it and cache the results
+		 * in a user cache mapping.
+		 */
+		EntityUser user = Utility.getCurrentUser(session);
+		
+		if(!GUISearch.userIndexMapCache.containsKey(user.getId())) {
+			GUISearch.userIndexMapCache.put(user.getId(), GUISearch.getSearchableItems());
+		}
+		
+		Map<String, List<SearchItem>> searchableItems = GUISearch.userIndexMapCache.get(user.getId());
+		List<String> indexes = new ArrayList<String>(searchableItems.keySet());
+		java.util.Collections.sort(indexes);
+		
+		System.out.println("Recieved " + indexes.size() + " indices");
+		
+		render(indexes);
+	}
+	
+	public static void indexSearch(String index, String query) {
+		System.out.println("GUISearch.indexSearch() - index:[" + index + "], query:[" + query + "]");
+		
+		renderArgs.put("searchString", query);
+		renderArgs.put("searchTable", index);
+		
+		String solrURL = Utility.getSolrServer();
+		renderArgs.put("solrURL", solrURL);
+		
+		EntityUser user = Utility.getCurrentUser(session);
+		render(user);	
+	}
+	
+	private static Map<String, List<SearchItem>> getSearchableItems() {
+		Map<String, List<SearchItem>> items = new ConcurrentHashMap<String,List<SearchItem>>();
+		
+		String itemResults = Search.getSearchableItems();
+		//String itemResults = "{\"searchableItems\":[{\"db\": \"modbus\",\"id\": \"modbusdeviceMeta\",\"type\":\"table\"},{\"db\": \"modbus\",\"id\": \"modbusstreamMeta\",\"type\":\"table\"},{\"db\": \"bacnet\",\"id\": \"bacnetdeviceMeta\",\"type\":\"table\"},{\"db\": \"bacnet\",\"id\": \"bacnetstreamMeta\",\"type\":\"table\"},{\"db\": \"databusmeta\",\"id\": \"databusmeta\",\"type\":\"meta\"}]}";
+		
+		ObjectMapper mapper = new ObjectMapper();
+		SearchableItems searchableItems = null;
+		try {
+			searchableItems = mapper.readValue(itemResults, SearchableItems.class);
+		} catch (Exception e) {
+			// Got an error, make the list empty
+			e.printStackTrace();
+			return items;
+		}
+		
+		List<SearchItem> facetItems = searchableItems.getSearchableItems();
+		for(SearchItem item : facetItems) {
+			String db = item.getDb();
+			
+			if(items.containsKey(db)) {
+				items.get(db).add(item);
+			} else {
+				List<SearchItem> dbList = new ArrayList<SearchItem>();
+				dbList.add(item);
+				items.put(db, dbList);
+			}
+		}
+		
+		// DEBUG
+		System.out.println("SearchableItems:\n");
+		for (Map.Entry<String, List<SearchItem>> entry : items.entrySet()) {
+		    String db = entry.getKey();
+		    List<SearchItem> dbEntries = entry.getValue();
+		    
+		    System.out.println("\n");
+		    System.out.println("\t" + db.toUpperCase());
+		    
+		    for(SearchItem item : dbEntries) {
+		    		System.out.println("\t\tNAME: " + item.getId());
+		    		System.out.println("\t\tTYPE: " + item.getType() + "\n");
+		    }
+		}
+		
+		return items;
 	}
 	
 	public static void metaSearch() {
@@ -43,14 +138,6 @@ public class GUISearch extends Controller {
 		} else {
 			renderArgs.put("_globalMetaSearch", false);
 		}
-		
-		EntityUser user = Utility.getCurrentUser(session);
-		render(user);
-	}
-	
-	public static void isSearchableSearch() {
-		String solrURL = Utility.getSolrServer();
-		renderArgs.put("solrURL", solrURL);
 		
 		EntityUser user = Utility.getCurrentUser(session);
 		render(user);

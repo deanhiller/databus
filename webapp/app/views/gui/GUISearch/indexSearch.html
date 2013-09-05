@@ -1,35 +1,29 @@
 #{extends '_index.html' /}
-#{set title:'Search' /}
-#{set tab:'meta_table_search' /}
-
-%{
-   if(gov.nrel.util.Utility.isDemoMode()) {
-}%
-<div class="alert alert-info alert-block">
-   Step 13. Search only is available on production and not on this demo.<br/>
-   Step 14. As you can end up with too many datasets, this is where you can search for datasets<br/>
-   Step 15. This concludes the demo.  Install databus today!!!!
-</div>
-%{
-    }
-}%
+#{set title:'Index Search' /}
+#{set tab:'search' /}
 
 <!-- https://github.com/evolvingweb/ajax-solr -->
 <!-- http://demo.projectblacklight.org/ -->
 <!-- http://searchhub.org/2010/01/14/solr-search-user-interface-examples/ -->
 <!-- http://dartmouth.summon.serialssolutions.com/search?s.q=book -->
 
+
+<!-- ======================================================================= -->
+<!-- Framework variables saved in global scope for JavaScript libraries -->
+<script>
+	var _searchTable = '${searchTable}';
+	var _searchString = '${searchString}';
+	//var _searchTable = 'solrsPinkBlob1363377635798deviceMeta';
+</script>
+<!-- ======================================================================= -->
+
+
+
 <!-- DEBUG -->
 <!-- ======================================================================= -->
  <!-- <head>  -->
 <!-- ======================================================================= -->
 <!-- DEBUG -->
-
-<!-- Framework variables saved in global scope for JavaScript libraries -->
-<script>
-	var _detailURL = '@{gui.GUISearch.detailSearch()}';
-</script>
-<!-- ======================================================================= -->
 
 <!-- JQuery -->
 <script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
@@ -48,13 +42,13 @@
 <script type="text/javascript" src="/public/includes/ajax_solr/core/AbstractTextWidget.js"></script>
 
 <!-- GUISearch -->
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/guiIsSearchableSearch.js"></script>		
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchwidget.js"></script>		
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchtheme.js"></script>
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchtagcloud.js"></script>
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablecurrentfilter.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/index/guiIndexSearch.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/index/indexsearchwidget.js"></script>		
+<script type="text/javascript" src="/public/javascripts/guisearch/index/indexsearchtheme.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/index/indexsearchtagcloud.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/searchcurrentfilter.js"></script>
 <script type="text/javascript" src="/public/javascripts/guisearch/searchinput.js"></script>
-<script type="text/javascript" src="/public/javascripts/guisearch/isSearchable/isSearchablesearchpager.js"></script>
+<script type="text/javascript" src="/public/javascripts/guisearch/index/indexsearchpager.js"></script>
 
 <!-- ICON library -->
 <!--  http://tango.freedesktop.org/Tango_Icon_Library -->
@@ -81,54 +75,48 @@
 <!-- ======================================================================= -->
 <!-- DEBUG -->
 
+
+
 <div id="main_search_div">
-	<div class="search_left" style="margin-bottom: 110px;">		
-		<h2 class="search_nav_title"><i class="icon-search" style="margin: 2px 0px 0px 0px;"></i> Meta Table Search</h2>
-		<ul id="selection" style="margin-top:10px; list-style: circle;"></ul>
+	<div class="search_left" style="margin-bottom: 140px;">		
+		<h2 class="search_nav_title"><i class="icon-search" style="margin: 2px 0px 0px 0px;"></i> Index Search</h2>
+		<ul id="index_search" style="margin-left: 20px; margin-bottom: 0px !important; padding-bottom: 0px !important;">
+			<input type="text" id="index_search_field" name="query" class="search_input">
+		</ul>
+		
+		<h2 class="search_nav_title"><i class="icon-list" style="margin: 2px 0px 0px 0px;"></i> Current Filter</h2>
+		<ul id="selection" style="list-style: circle;"></ul>
 		
 		<p class="nav_divider" style="margin-bottom: 0px !important; padding-bottom: 0px !important;"></p>
 	
-		<div class="search_nav_facet_placeholder">
+		<div class="search_nav_facet">			
+			<div class="accordion" id="dynamic_facets">
+			</div>
 		</div>
 		
 	</div>
 	
-	<div class="search_right_placeholder">
+	<div class="search_right">
+		<div id="navigation" class="pager_top_nav pagination">
+			<div id="pager_top_header"></div>
+			<ul id="pager_top"></ul>
+			<div id="pager_top_footer"></div>
+			<div id="table_name_id" style="clear: both; color: #1a67ad; font-weight: 700; font-size: 20px; margin-bottom: 5px;"></div>
+		</div>
+		<div id="result" class="result">
+			<div id="docs"></div>
+		</div>
+		<div id="navigation" class="pager_bottom_nav pagination">
+			<div id="pager_bottom_header"></div>
+			<ul id="pager_bottom"></ul>
+			<div id="pager_bottom_footer"></div>
+		</div>
 	</div>
 </div>
 
 <script type="text/javascript">
-	$(document).ready(function(){				
-		$('#table_toggle').click(function() {
-			if($('#table_icon').hasClass("icon-chevron-down")) {
-				$('#table_icon').removeClass("icon-chevron-down");
-				$('#table_icon').attr('class', 'icon-chevron-right');
-			} else {
-				$('#table_icon').removeClass("icon-chevron-right");
-				$('#table_icon').attr('class', 'icon-chevron-down');
-			}
-		});
-		
-		$('#database_toggle').click(function() {
-			if($('#database_icon').hasClass("icon-chevron-down")) {
-				$('#database_icon').removeClass("icon-chevron-down");
-				$('#database_icon').attr('class', 'icon-chevron-right');
-			} else {
-				$('#database_icon').removeClass("icon-chevron-right");
-				$('#database_icon').attr('class', 'icon-chevron-down');
-			}
-		});
-		
-		$('#creator_toggle').click(function() {
-			if($('#creator_icon').hasClass("icon-chevron-down")) {
-				$('#creator_icon').removeClass("icon-chevron-down");
-				$('#creator_icon').attr('class', 'icon-chevron-right');
-			} else {
-				$('#creator_icon').removeClass("icon-chevron-right");
-				$('#creator_icon').attr('class', 'icon-chevron-down');
-			}
-		});
-		
+	$(document).ready(function(){
+		$('#table_name_id').html("Indexes for table <span style=\"color: #333 !important;\">" + _searchTable + "</span>");
 	});
 </script>
 
