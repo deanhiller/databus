@@ -34,9 +34,9 @@ import controllers.SecurityUtil;
 import controllers.TableMonitor;
 import play.mvc.Controller;
 
-public class TriggersController extends Controller {
+public class CronJobController extends Controller {
 
-	private static final Logger log = LoggerFactory.getLogger(TriggersController.class);
+	private static final Logger log = LoggerFactory.getLogger(CronJobController.class);
 
 	public static void postAdd() {
 		String json = Parsing.fetchJson();

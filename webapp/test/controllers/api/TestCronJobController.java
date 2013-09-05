@@ -36,7 +36,7 @@ import com.alvazan.play.NoSql;
 import robot.RegisterPostAndGet;
 import robot.Utility;
 
-public class TestTriggersController {
+public class TestCronJobController {
 
 	private int port = Utility.retrievePlayServerPort();
 

@@ -32,7 +32,7 @@ import com.ning.http.client.Realm;
 import com.ning.http.client.RequestBuilder;
 import com.ning.http.client.Realm.AuthScheme;
 
-import controllers.api.TriggersController;
+import controllers.api.CronJobController;
 import controllers.modules2.framework.ProductionModule;
 import controllers.modules2.framework.chain.AHttpChunkingListener;
 import controllers.modules2.framework.http.HttpListener;
@@ -169,9 +169,9 @@ public class ATriggerListener {
 		//trim off the 4 prefix we put on...
 		t.setId(job.getId().substring(4));
 		t.setRate(job.getTimePeriodMillis());
-		t.setOffset(TriggersController.toLong(job.getProperties().get("offset")));
-		t.setBefore(TriggersController.toLong(job.getProperties().get("before")));
-		t.setAfter(TriggersController.toLong(job.getProperties().get("after")));
+		t.setOffset(CronJobController.toLong(job.getProperties().get("offset")));
+		t.setBefore(CronJobController.toLong(job.getProperties().get("before")));
+		t.setAfter(CronJobController.toLong(job.getProperties().get("after")));
 		t.setUrl(job.getProperties().get("url"));
 		t.setRunAsUser(job.getProperties().get("userName"));
 		t.setLastRunSuccess(toBoolean(job.getProperties().get("success")));
