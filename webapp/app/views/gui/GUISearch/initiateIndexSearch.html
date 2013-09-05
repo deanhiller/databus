@@ -1,0 +1,108 @@
+#{extends '_index.html' /}
+#{set title:'Search' /}
+#{set tab:'meta_table_search' /}
+
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   Step 13. Search only is available on production and not on this demo.<br/>
+   Step 14. As you can end up with too many datasets, this is where you can search for datasets<br/>
+   Step 15. This concludes the demo.  Install databus today!!!!
+</div>
+%{
+    }
+}%
+
+<!-- Framework variables saved in global scope for JavaScript libraries -->
+<script>
+	var _indexSearch = '@{gui.GUISearch.indexSearch("_index_", "_query_")}';
+</script>
+<!-- ======================================================================= -->
+
+<!-- JQuery -->
+<script type="text/javascript" src="/public/javascripts/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/public/javascripts/jquery.livequery.js"></script>
+
+<div id="main_search_div">
+	<div class="span3">
+		<div class="search_left">		
+			<h2 class="search_nav_title"><i class="icon-search" style="margin: 2px 0px 0px 0px;"></i> Index Search</h2>			
+			<p class="nav_divider" style="margin-bottom: 20px"></p>
+	
+			<div class="search_nav_facet_placeholder">
+				<ul id="index_selection" class="nav nav-list" style="list-style: circle;">
+				#{list indexes, as:'index'}
+					<li id="index_${index}" ><a href="#" class="searchable_result_li_value">${index}</a></li>
+						<script type="text/javascript">
+			                	$('body').on('click', '#index_${index}', function (e) {
+			                		initiateIndexSearch('${index}');
+							});
+			                </script>
+				#{/list}
+				</ul>
+			</div>			
+		</div>
+	</div>
+	
+	<div class="span9">
+		<div id="main_search_input_div" class="search_right_placeholder">
+			<div class="span12">
+				<div class="search_input_div">
+					<input type="hidden" id="selected_index" name="selected_index" value="">
+					<input id="index_search_text" class="input-xlarge" type="text" placeholder="Index Search..." style="margin-top: 10px;">
+					<button id="index_search_button" class="btn btn-primary" style="margin-left: 5px;">Search</button>
+					<button id="index_search_all_button" class="btn" style="margin-left: 5px;">All Results</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function(){
+		$("#main_search_input_div").hide();
+		
+		$('#index_search_text').bind('keydown', function(e) {
+			if (e.which == 13) {
+				var chosenIndex = $("#selected_index").val();
+				var query = $("#index_search_text").val();
+				
+				launchIndexSearch(chosenIndex, query);
+			}
+		});
+	});
+
+	$('body').on('click', '#index_search_button', function (e) {
+		var chosenIndex = $("#selected_index").val();
+		var query = $("#index_search_text").val();
+		
+		launchIndexSearch(chosenIndex, query);
+	});
+	
+	$('body').on('click', '#index_search_all_button', function (e) {
+		var chosenIndex = $("#selected_index").val();
+		var query = "*";
+		
+		launchIndexSearch(chosenIndex, query);		
+	});
+	
+	function launchIndexSearch(index, query) {
+		var searchString = _indexSearch.replace('_index_', index);
+		searchString = searchString.replace('_query_', query);		
+		window.location = searchString;
+	}
+	
+	function initiateIndexSearch(indexName) {
+		$("#index_search_text").val("");
+		
+		$("#index_selection li" ).each(function() {
+				$(this).removeClass("active");
+		});		
+		$("#index_" + indexName).addClass("active");
+		
+		$("#selected_index").val(indexName);		
+		$("#main_search_input_div").show();
+		$("#index_search_text").attr("placeholder", "Search Index \"" + indexName + "\"...");
+	}
+</script>

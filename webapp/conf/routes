@@ -194,10 +194,11 @@ GET  /helpmodules					gui.Help.myHelpModules
 # ******************************************************************************
 # ******************************************************************************
 GET /search/metaSearch					gui.GUISearch.metaSearch
-GET /search/isSearchableSearch			gui.GUISearch.isSearchableSearch
+GET /search/initiateIndexSearch			gui.GUISearch.initiateIndexSearch
 GET /search/detailSearch				gui.GUISearch.detailSearch
 GET /search/globalSearch				gui.GUISearch.globalSearch
 GET /search/searchBar					gui.GUISearch.searchBar
+GET /search/{index}/{query}			gui.GUISearch.indexSearch
 
 # Databus API calls
 # ******************************************************************************
