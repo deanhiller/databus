@@ -128,8 +128,4 @@ public class TriggerController extends Controller {
 		renderJSON(triggers);
 	}
 
-	public static long toLong(String val) {
-		return Long.parseLong(val);
-	}
-
 }

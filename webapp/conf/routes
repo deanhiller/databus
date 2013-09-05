@@ -221,10 +221,17 @@ GET		/api/search							Search.searchAll
 GET		/api/search/searchableItems			Search.searchableItems
 GET		/api/search/{table}					Search.searchTable
 POST    /api/triggerV1/add                         api.CronJobController.postAdd
+POST    /api/cronjobV1/add                         api.CronJobController.postAdd
 POST    /api/triggerV1/delete/{triggerId}          api.CronJobController.postDelete
+POST    /api/cronjobV1/delete/{triggerId}          api.CronJobController.postDelete
 GET     /api/triggerV1/list/{database}             api.CronJobController.list
+GET     /api/cronjobV1/list/{database}             api.CronJobController.list
 #GET     /api/triggerV1/runall/{time}	           api.CronJobController.runall
 #GET     /api/triggerV1/run/{triggerId}/{time}	   api.CronJobController.runTrigger
+
+POST    /api/posttriggerV1/add                         api.TriggerController.postAdd
+POST    /api/posttriggerV1/delete/{tableName}          api.TriggerController.postDelete
+GET     /api/posttriggerV1/list/{database}             api.TriggerController.list
 
 GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path}         modules.StdDevMod.runStdDev
 GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData
