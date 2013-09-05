@@ -59,6 +59,4 @@ public class TransferBean2 extends TransferSuper {
 		cf = "StreamAggregation";
 		portTableToNewCassandra(mgr, mgr2, cf);
 	}
-
-
 }
