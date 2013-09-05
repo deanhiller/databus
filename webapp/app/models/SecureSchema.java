@@ -43,6 +43,9 @@ public class SecureSchema extends SecureResource {
 	@NoSqlEmbedded
 	private List<String> triggerIds = new ArrayList();
 	
+	@NoSqlEmbedded
+	private List<String> postTriggersIds = new ArrayList<String>();
+	
 	public String getSchemaName() {
 		return schemaName;
 	}
@@ -155,5 +158,10 @@ public class SecureSchema extends SecureResource {
 	public List<String> getTriggerIds() {
 		return triggerIds;
 	}
+
+	public List<String> getPostTriggerIds() {
+		return postTriggersIds;
+	}
+	
 	
 }
