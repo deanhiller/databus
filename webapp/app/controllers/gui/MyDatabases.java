@@ -19,6 +19,7 @@ import models.SecureResource;
 import models.SecureResourceGroupXref;
 import models.SecureSchema;
 import models.SecureTable;
+import models.message.PostTrigger;
 import models.message.Trigger;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,6 +35,9 @@ import play.mvc.With;
 
 import com.alvazan.orm.api.base.CursorToMany;
 import com.alvazan.orm.api.base.spi.UniqueKeyGenerator;
+import com.alvazan.orm.api.z8spi.KeyValue;
+import com.alvazan.orm.api.z8spi.iter.Cursor;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
 import controllers.TableMonitor;
@@ -215,6 +219,27 @@ public class MyDatabases extends Controller {
 		render(user, schema, monitors, triggers);
 	}
 	
+	public static void dbTriggers(String schemaName) {
+		EntityUser user = Utility.getCurrentUser(session);
+
+		SecureSchema schema = SecureSchema.findByName(NoSql.em(), schemaName);
+		Set<PermissionType> roles = fetchRoles(schema, user);
+		if(!roles.contains(PermissionType.ADMIN))
+			notFound("Your user does not have access to this resource");
+		
+		List<PostTrigger> triggers = new ArrayList<PostTrigger>();
+		List<String> ids = schema.getPostTriggerIds();
+		Cursor<KeyValue<DboTableMeta>> cursor = NoSql.em().findAll(DboTableMeta.class, ids);
+		while(cursor.next()) {
+			KeyValue<DboTableMeta> current = cursor.getCurrent();
+			DboTableMeta table = current.getValue();
+			PostTrigger t = PostTrigger.transform(table, schemaName);
+			triggers.add(t);
+		}
+
+		render(user, schema, triggers);
+	}
+
 	public static void dbTables(String schemaName) {
 		EntityUser user = Utility.getCurrentUser(session);
 

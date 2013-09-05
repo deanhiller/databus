@@ -43,6 +43,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.SearchPosting;
 import controllers.TableKey;
+import controllers.gui.util.ExecutorsSingleton;
 
 public class ApiPostDataPointsImpl {
 
@@ -120,20 +121,20 @@ public class ApiPostDataPointsImpl {
 		}
 		
 		s.flush();
-		
+
 		SearchPosting.saveSolr(json, solrDocs, null);
-		
+
 		return dataPoints.size();
 	}
 
 
-	private static void processData(Map<String, String> json,
+	private static void processData(Map<String, String> jsonRow,
 			Collection<SolrInputDocument> solrDocs, KeyValue<KeyToTableName> keyValue, String user, String password, Set<TableKey> keyCheck,
 			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
 		
-		checkSize(json);
+		checkSize(jsonRow);
 		
-		String tableName = json.get("_tableName");
+		String tableName = jsonRow.get("_tableName");
 		KeyToTableName info = keyValue.getValue();
 		if(info == null) {
 			if (log.isInfoEnabled())
@@ -142,19 +143,16 @@ public class ApiPostDataPointsImpl {
 		}
 
 		boolean isUpdate = false;
-		Object updateStr = json.get("_update");
+		Object updateStr = jsonRow.get("_update");
 		if("true".equals(updateStr) || Boolean.TRUE.equals(updateStr))
 			isUpdate = true;
 
 		DboTableMeta table = info.getTableMeta();
-		
-		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();
-		
-		Object pkValue = json.get(table.getIdColumnMeta().getColumnName());
+		Object pkValue = jsonRow.get(table.getIdColumnMeta().getColumnName());
 		if(pkValue == null) {
 			if (log.isWarnEnabled())
-        		log.warn("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
-			throw new BadRequest("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+json);
+        		log.warn("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+jsonRow);
+			throw new BadRequest("The table you are inserting requires column='"+table.getIdColumnMeta().getColumnName()+"' to be set and is not found in json request="+jsonRow);
 		}
 		
 		//part of short term fix to put date formatting in and have it look like 'upload module'
@@ -167,9 +165,17 @@ public class ApiPostDataPointsImpl {
 		keyCheck.add(theKey);
 		
 		if(table.isTimeSeries())
-			postTimeSeries(json, info, table, pkValue, timeIsISOFormat);
+			postTimeSeries(jsonRow, info, table, pkValue, timeIsISOFormat);
 		else
-			postNormalTable(json, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
+			postNormalTable(jsonRow, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
+
+		Map<String, String> extensions = table.getExtensions();
+		String script = extensions.get("databus.script");
+		if(!StringUtils.isEmpty(script)) {
+			String language = extensions.get("databus.lang");
+			TriggerRunnable trigger = new TriggerRunnable(script, language, jsonRow);
+			ExecutorsSingleton.executor.execute(trigger);
+		}
 	}
 
 	private static void postTimeSeries(Map<String, String> json,

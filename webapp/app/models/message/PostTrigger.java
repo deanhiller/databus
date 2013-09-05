@@ -2,6 +2,7 @@ package models.message;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -9,6 +10,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.codehaus.jackson.annotate.JsonProperty;
+
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 
 /**
  */
@@ -62,6 +65,18 @@ public class PostTrigger {
 
 	public void setScript(String script) {
 		this.script = script;
+	}
+
+	public static PostTrigger transform(DboTableMeta table, String database) {
+		Map<String, String> extensions = table.getExtensions();
+		String lang = extensions.get("databus.lang");
+		String script = extensions.get("databus.script");
+		PostTrigger t = new PostTrigger();
+		t.setDatabase(database);
+		t.setTable(table.getColumnFamily());
+		t.setScript(script);
+		t.setScriptLanguage(lang);
+		return t;
 	}
 
 } // Register

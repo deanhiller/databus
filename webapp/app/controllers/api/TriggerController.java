@@ -113,14 +113,8 @@ public class TriggerController extends Controller {
 			DboTableMeta table = current.getValue();
 			
 			String name = table.getColumnFamily();
-			Map<String, String> extensions = table.getExtensions();
-			String lang = extensions.get("databus.lang");
-			String script = extensions.get("databus.script");
-			PostTrigger t = new PostTrigger();
-			t.setDatabase(database);
-			t.setTable(name);
-			t.setScript(script);
-			t.setScriptLanguage(lang);
+			PostTrigger t = PostTrigger.transform(table, database);
+
 			triggers.getTriggers().add(t);
 			
 		}

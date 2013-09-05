@@ -116,6 +116,7 @@ GET  /databases/{schemaName}/properties     gui.MyDatabases.dbProperties
 GET  /databases/{schemaName}/users          gui.MyDatabases.dbUsers
 GET  /databases/{schemaName}/cronjobs       gui.MyDatabases.dbCronJobs
 GET  /databases/{schemaName}/tables         gui.MyDatabases.dbTables
+GET  /databases/{schemaName}/triggers       gui.MyDatabases.dbTriggers
 
 GET  /adddatabase                         	gui.MyDatabases.dbProperties
 POST /savedatabase                       	gui.MyDatabases.postDatabase
