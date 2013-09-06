@@ -1,0 +1,62 @@
+<!--=======================================-->
+<!-- The following is the ADD/EDIT MODAL BLOCK -->
+<!--=======================================-->
+#{form @postAddEditTrigger(_schema.schemaName), class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+	<input id="entityId" type="hidden" name="entity.table" value="${entity?.table}"/>
+	<input id="dbId" type="hidden" name="entity.database" value="${entity?.database}"/>
+
+	<div id="myAddEditModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel" aria-hidden="true">
+		<div class="modal-header">
+			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+			<h3 id="addEditModalLabel">Trigger Properties</h3>
+		</div>
+		<div id="dbAddEditModal_content" class="modal-body" style="max-height:900px">
+		    #{field 'entity.table'}
+            <div class="control-group ${field.errorClass}">
+                <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Table</label>
+                <div class="controls">
+                    <input id="entityName" type="text" name="${field.name}" value="" class="input-xlarge">
+                    <span class="help-block">${field.error}</span>
+                </div>
+            </div>
+            #{/field}
+
+			#{field 'entity.scriptLanguage'}
+            <div class="control-group ${field.errorClass}">
+                <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a> Url</label>
+                <div class="controls">          
+                    <input id="entityName" type="text" name="${field.name}" value="" maxlength="300" class="input-xlarge">
+                    <span class="help-block">${field.error}</span>
+                </div>
+            </div>
+            #{/field}
+            
+            #{field 'entity.scriptLanguage'}
+            <div class="control-group ${field.errorClass}">
+                <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a> Language</label>
+                <div class="controls">          
+                    <input id="entityName" type="text" name="${field.name}" value="" maxlength="50" class="input-xlarge">
+                    <span class="help-block">${field.error}</span>
+                </div>
+            </div>
+            #{/field}
+            
+			#{field 'entity.script'}
+			<div class="control-group">
+				<label class="control-label"><a href="#" rel="tooltip" title="Some help message"><i class="icon-info-sign"></i></a>Script</label>
+				<div class="controls">
+				   	<textarea id="entityDescription" name="${field.name}" rows="12" cols="100" class="input-xlarge"></textarea>
+					<span class="help-block">${field.error}</span>
+				</div>
+			</div>
+			#{/field}
+		</div>
+		<div class="modal-footer">
+			<button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+			<input type="submit" name="submit" value="Save" class="btn btn-primary" />
+		</div>
+	</div>
+#{/form}
+<!--=======================================-->
+<!-- End of EDIT MODAL BLOCK -->
+<!--=======================================-->

@@ -2,28 +2,9 @@
 #{set title:'Add/Edit Database' /}
 #{set subtab:'triggers' /}
 
-#{list triggers, as:'trigger'}
-
-#{form @postDbTriggerDelete(), id:'delete'+trigger_index}
-<input type="hidden" name="cronId" value="${trigger.id}"/>
-<input type="hidden" name="schemaName" value="${schema.schemaName}"/>
-
-<div id="myModal${trigger_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Delete confirmation</h3>
-  </div>
-  <div class="modal-body">
-     <p>Are you sure you want to delete cron job ${trigger.id} in the ${schema.schemaName} database?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
-  </div>
-</div>
-#{/form}
-
-#{/list}
+<!-- ADD/EDIT MODAL BLOCK -->
+<!--=======================================-->
+#{CRUD/triggerAddEditPopup schema:schema/}
 
 <h4>Triggers</h4>
 
@@ -42,9 +23,47 @@ Cron Jobs are added through the api and will call a url for a scheduled period
             <tr>
                 <td>${trigger.url}</td>
                 <td>${trigger.rate}</td>
-                <td><a href="#myModal${trigger_index}" data-toggle="modal">Delete</a></td>
+                <td>
+                        <a id="dbAddEditModal_${trigger.table}" href="#myAddEditModal" data-toggle="modal">
+                            edit
+                        </a>
+                        &nbsp;&nbsp;|&nbsp;
+                        <a id="dbDeleteModal_${trigger.table}" href="#myDeleteModal" data-toggle="modal">
+                            delete
+                        </a>
+                        
+                        <script type="text/javascript">
+                            $('body').on('click', '#dbAddEditModal_${trigger.table}', function (e) {
+                                populateModal('Edit Database', '${database.getId()}', '${database.getSchemaName()}', true, '${database?.description?.escapeJavaScript()}');
+                        });
+                        </script>
+                </td>
             </tr>
         #{/list}            
     </tbody>
 </table>
+
+<a id="dbAddEditModal_add" href="#myAddEditModal" data-toggle="modal" class="btn btn-primary">Add Trigger</a>
+<script type="text/javascript">
+       $('body').on('click', '#dbAddEditModal_add', function (e) {
+             populateModal('New Database', '', '', false, '');
+       });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        #{if showModal}
+            populateModal('New Trigger', '', '', false, '${postedDatabase?.description?.escapeJavaScript()}');
+            $("#myAddEditModal").modal('show');
+        #{/if}
+    });
+    
+    function populateModal(modalTitle, dbID, dbName, dbNameReadonly, dbDescription) {
+        $('#addEditModalLabel').html(modalTitle);
+        $('#addEditDatabase_dbID').val(dbID);
+        $('#entityName').val(dbName);
+        $('#addEditDatabase_dbName').attr('readonly', dbNameReadonly);
+        $('#addEditDatabase_dbDescription').val(dbDescription);
+    }
+</script>
 

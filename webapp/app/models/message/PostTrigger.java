@@ -35,6 +35,10 @@ public class PostTrigger {
     @XmlElement(name="script")
     public String script;
 
+	@JsonProperty("script")
+    @XmlElement(name="script")
+    public String callback;
+	
 	public String getDatabase() {
 		return database;
 	}
@@ -67,16 +71,33 @@ public class PostTrigger {
 		this.script = script;
 	}
 
+	public String getCallback() {
+		return callback;
+	}
+
+	public void setCallback(String callback) {
+		this.callback = callback;
+	}
+
 	public static PostTrigger transform(DboTableMeta table, String database) {
 		Map<String, String> extensions = table.getExtensions();
 		String lang = extensions.get("databus.lang");
 		String script = extensions.get("databus.script");
+		String callback = extensions.get("databus.callback");
 		PostTrigger t = new PostTrigger();
 		t.setDatabase(database);
 		t.setTable(table.getColumnFamily());
 		t.setScript(script);
 		t.setScriptLanguage(lang);
+		t.setCallback(callback);
 		return t;
+	}
+
+	public static void transform(DboTableMeta tableMeta, PostTrigger msg) {
+		Map<String, String> extensions = tableMeta.getExtensions();
+		extensions.put("databus.lang", msg.getScriptLanguage());
+		extensions.put("databus.script", msg.getScript());
+		extensions.put("databus.callback", msg.getCallback());
 	}
 
 } // Register

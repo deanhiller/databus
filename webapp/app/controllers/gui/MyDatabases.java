@@ -219,10 +219,10 @@ public class MyDatabases extends Controller {
 		render(user, schema, monitors, triggers);
 	}
 	
-	public static void dbTriggers(String schemaName) {
+	public static void dbTriggers(String dbName) {
 		EntityUser user = Utility.getCurrentUser(session);
 
-		SecureSchema schema = SecureSchema.findByName(NoSql.em(), schemaName);
+		SecureSchema schema = SecureSchema.findByName(NoSql.em(), dbName);
 		Set<PermissionType> roles = fetchRoles(schema, user);
 		if(!roles.contains(PermissionType.ADMIN))
 			notFound("Your user does not have access to this resource");
@@ -233,11 +233,16 @@ public class MyDatabases extends Controller {
 		while(cursor.next()) {
 			KeyValue<DboTableMeta> current = cursor.getCurrent();
 			DboTableMeta table = current.getValue();
-			PostTrigger t = PostTrigger.transform(table, schemaName);
+			PostTrigger t = PostTrigger.transform(table, dbName);
 			triggers.add(t);
 		}
 
 		render(user, schema, triggers);
+	}
+
+	public static void postAddEditTrigger(String dbName, PostTrigger entity) {
+		
+		dbTriggers(dbName);
 	}
 
 	public static void dbTables(String schemaName) {
@@ -542,7 +547,7 @@ public class MyDatabases extends Controller {
 		render(schema, monitor);
 	}
 	
-	public static void postDbTriggerDelete(String schemaName, String cronId) {
+	public static void postDbCronDelete(String schemaName, String cronId) {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		

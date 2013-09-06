@@ -58,9 +58,7 @@ public class TriggerController extends Controller {
 		if(!name.equals(msg.getDatabase()))
 			badRequest("table="+msg.getTable()+" is not in database="+msg.getDatabase());
 
-		Map<String, String> extensions = tableMeta.getExtensions();
-		extensions.put("databus.lang", msg.getScriptLanguage());
-		extensions.put("databus.script", msg.getScript());
+		PostTrigger.transform(tableMeta, msg);
 		
 		List<String> ids = schema.getPostTriggerIds();
 		ids.add(tableMeta.getColumnFamily());
@@ -86,7 +84,8 @@ public class TriggerController extends Controller {
 		Map<String, String> extensions = tableMeta.getExtensions();
 		extensions.remove("databus.lang");
 		extensions.remove("databus.script");
-		
+		extensions.remove("databus.callback");
+
 		db.getPostTriggerIds().remove(tableName);
 
 		NoSql.em().put(tableMeta);
@@ -111,12 +110,8 @@ public class TriggerController extends Controller {
 		while(tables.next()) {
 			KeyValue<DboTableMeta> current = tables.getCurrent();
 			DboTableMeta table = current.getValue();
-			
-			String name = table.getColumnFamily();
 			PostTrigger t = PostTrigger.transform(table, database);
-
 			triggers.getTriggers().add(t);
-			
 		}
 
 		renderJSON(triggers);

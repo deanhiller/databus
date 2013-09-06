@@ -31,7 +31,7 @@ and checks in 10 minutes.
 
 #{list triggers, as:'trigger'}
 
-#{form @postDbTriggerDelete(), id:'delete'+trigger_index}
+#{form @postDbCronDelete(), id:'delete'+trigger_index}
 <input type="hidden" name="cronId" value="${trigger.id}"/>
 <input type="hidden" name="schemaName" value="${schema.schemaName}"/>
 

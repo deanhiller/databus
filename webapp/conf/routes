@@ -114,18 +114,21 @@ GET  /databases/{schemaName}              	gui.MyDatabases.viewDatabaseImpl
 
 GET  /databases/{schemaName}/properties     gui.MyDatabases.dbProperties
 GET  /databases/{schemaName}/users          gui.MyDatabases.dbUsers
-GET  /databases/{schemaName}/cronjobs       gui.MyDatabases.dbCronJobs
 GET  /databases/{schemaName}/tables         gui.MyDatabases.dbTables
-GET  /databases/{schemaName}/triggers       gui.MyDatabases.dbTriggers
 
 GET  /adddatabase                         	gui.MyDatabases.dbProperties
 POST /savedatabase                       	gui.MyDatabases.postDatabase
 POST /editdatabase                             gui.MyDatabases.editDatabase
+POST /addeditdatabase                          gui.MyDatabases.addEditDatabase
+
+GET  /databases/{schemaName}/cronjobs          gui.MyDatabases.dbCronJobs
 GET  /databases/{schemaName}/addmonitor        gui.MyDatabases.monitorAdd
 GET  /databases/{schemaName}/monitor/{table}   gui.MyDatabases.monitorEdit
 POST /databases/{schemaName}/savemonitor       gui.MyDatabases.postMonitor
-POST /databases/deletecron                     gui.MyDatabases.postDbTriggerDelete
-POST /addeditdatabase                          gui.MyDatabases.addEditDatabase
+POST /databases/deletecron                     gui.MyDatabases.postDbCronDelete
+
+GET  /databases/{dbName}/triggers       gui.MyDatabases.dbTriggers
+POST /databases/{dbName}/savetrigger    gui.MyDatabases.postAddEditTrigger
 
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
