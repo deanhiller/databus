@@ -77,12 +77,16 @@
 		var chosenIndex = $("#selected_index").val();
 		var query = $("#index_search_text").val();
 		
+		if(query === '') {
+			query = '*:*';
+		}
+		
 		launchIndexSearch(chosenIndex, query);
 	});
 	
 	$('body').on('click', '#index_search_all_button', function (e) {
-		var chosenIndex = $("#selected_index").val();
-		var query = "*";
+		var chosenIndex = $('#selected_index').val();
+		var query = '*:*';
 		
 		launchIndexSearch(chosenIndex, query);		
 	});
