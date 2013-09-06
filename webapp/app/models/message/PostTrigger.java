@@ -35,8 +35,8 @@ public class PostTrigger {
     @XmlElement(name="script")
     public String script;
 
-	@JsonProperty("script")
-    @XmlElement(name="script")
+	@JsonProperty("callback")
+    @XmlElement(name="callback")
     public String callback;
 	
 	public String getDatabase() {

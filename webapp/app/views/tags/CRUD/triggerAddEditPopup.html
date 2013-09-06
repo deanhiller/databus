@@ -2,8 +2,7 @@
 <!-- The following is the ADD/EDIT MODAL BLOCK -->
 <!--=======================================-->
 #{form @postAddEditTrigger(_schema.schemaName), class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-	<input id="entityId" type="hidden" name="entity.table" value="${entity?.table}"/>
-	<input id="dbId" type="hidden" name="entity.database" value="${entity?.database}"/>
+	<input id="dbId" type="hidden" name="entity.database" value="${_schema.schemaName}"/>
 
 	<div id="myAddEditModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel" aria-hidden="true">
 		<div class="modal-header">
@@ -21,11 +20,11 @@
             </div>
             #{/field}
 
-			#{field 'entity.scriptLanguage'}
+			#{field 'entity.callback'}
             <div class="control-group ${field.errorClass}">
                 <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a> Url</label>
                 <div class="controls">          
-                    <input id="entityName" type="text" name="${field.name}" value="" maxlength="300" class="input-xlarge">
+                    <input id="entityCallback" type="text" name="${field.name}" value="" maxlength="300" class="input-xlarge">
                     <span class="help-block">${field.error}</span>
                 </div>
             </div>
@@ -35,17 +34,17 @@
             <div class="control-group ${field.errorClass}">
                 <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a> Language</label>
                 <div class="controls">          
-                    <input id="entityName" type="text" name="${field.name}" value="" maxlength="50" class="input-xlarge">
+                    <input id="entityLang" type="text" name="${field.name}" value="" maxlength="50" class="input-xlarge">
                     <span class="help-block">${field.error}</span>
                 </div>
             </div>
             #{/field}
-            
+
 			#{field 'entity.script'}
 			<div class="control-group">
 				<label class="control-label"><a href="#" rel="tooltip" title="Some help message"><i class="icon-info-sign"></i></a>Script</label>
 				<div class="controls">
-				   	<textarea id="entityDescription" name="${field.name}" rows="12" cols="100" class="input-xlarge"></textarea>
+				   	<textarea id="entityScript" name="${field.name}" rows="12" cols="100" class="input-xlarge"></textarea>
 					<span class="help-block">${field.error}</span>
 				</div>
 			</div>

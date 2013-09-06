@@ -40,6 +40,7 @@ import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.play.NoSql;
 
+import controllers.SecurityUtil;
 import controllers.TableMonitor;
 import controllers.gui.auth.GuiSecure;
 
@@ -241,7 +242,19 @@ public class MyDatabases extends Controller {
 	}
 
 	public static void postAddEditTrigger(String dbName, PostTrigger entity) {
+		SecureTable table = SecurityUtil.checkSingleTable(entity.getTable());
+		if(table == null)
+			badRequest("This table="+entity.getTable()+" is not found");
+		SecureSchema schema = table.getSchema();
+		if(!dbName.equals(schema.getSchemaName()))
+			badRequest("This table="+entity.getTable()+" is not in database="+dbName);
 		
+		DboTableMeta t = table.getTableMeta();
+		PostTrigger.transform(t, entity);
+
+		NoSql.em().put(t);
+		NoSql.em().flush();
+
 		dbTriggers(dbName);
 	}
 
