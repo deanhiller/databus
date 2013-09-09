@@ -1,7 +1,7 @@
 <!--=======================================-->
 <!-- The following is the ADD/EDIT MODAL BLOCK -->
 <!--=======================================-->
-#{form @postAddEditTrigger(_schema.schemaName), class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+#{form @postAddEditTrigger(), class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 	<input id="dbId" type="hidden" name="entity.database" value="${_schema.schemaName}"/>
 
 	<div id="myAddEditModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="addEditModalLabel" aria-hidden="true">

@@ -241,29 +241,50 @@ public class MyDatabases extends Controller {
 		render(user, schema, triggers);
 	}
 
-	public static void postAddEditTrigger(String dbName, PostTrigger entity) {
-		EntityUser user = Utility.getCurrentUser(session);
-
-		SecureTable table = SecureTable.findByName(NoSql.em(), entity.getTable());
-		SecureSchema schema = table.getSchema();
-		Set<PermissionType> roles = fetchRoles(schema, user);
-		if(!roles.contains(PermissionType.ADMIN))
-			notFound("Your user does not have access to this resource");
-		else if(!dbName.equals(schema.getSchemaName()))
-			badRequest("This table="+entity.getTable()+" is not in database="+dbName);
+	public static void postAddEditTrigger(PostTrigger entity) {
+		String dbName = entity.getDatabase();
+		String tableName = entity.getTable();
+		SecureTable table = trigSecureCheck(dbName, tableName);
 
 		DboTableMeta t = table.getTableMeta();
 		PostTrigger.transform(t, entity);
 
-		schema.getPostTriggerIds().add(entity.getTable());
+		SecureSchema schema2 = table.getSchema();
+		schema2.getPostTriggerIds().add(entity.getTable());
 		
 		NoSql.em().put(t);
-		NoSql.em().put(schema);
+		NoSql.em().put(schema2);
 		NoSql.em().flush();
 
 		dbTriggers(dbName);
 	}
 
+	private static SecureTable trigSecureCheck(String dbName, String tableName) {
+		EntityUser user = Utility.getCurrentUser(session);
+		SecureTable table = SecureTable.findByName(NoSql.em(), tableName);
+		SecureSchema schema = table.getSchema();
+		Set<PermissionType> roles = fetchRoles(schema, user);
+		if(!roles.contains(PermissionType.ADMIN))
+			notFound("Your user does not have access to this resource");
+		else if(!dbName.equals(schema.getSchemaName()))
+			badRequest("This table="+tableName+" is not in database="+dbName);
+		return table;
+	}
+
+	public static void postDeleteTrigger(String dbName, String tableName) {
+		SecureTable table = trigSecureCheck(dbName, tableName);
+		SecureSchema schema = table.getSchema();
+		
+		PostTrigger.delete(table.getTableMeta());
+
+		schema.getPostTriggerIds().remove(tableName);
+		NoSql.em().put(schema);
+		NoSql.em().put(table);
+		NoSql.em().flush();
+
+		dbTriggers(dbName);
+	}
+	
 	public static void dbTables(String schemaName) {
 		EntityUser user = Utility.getCurrentUser(session);
 

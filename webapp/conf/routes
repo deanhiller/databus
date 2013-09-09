@@ -128,7 +128,8 @@ POST /databases/{schemaName}/savemonitor       gui.MyDatabases.postMonitor
 POST /databases/deletecron                     gui.MyDatabases.postDbCronDelete
 
 GET  /databases/{dbName}/triggers       gui.MyDatabases.dbTriggers
-POST /databases/{dbName}/savetrigger    gui.MyDatabases.postAddEditTrigger
+POST /databases/savetrigger             gui.MyDatabases.postAddEditTrigger
+POST /databases/deletetrigger           gui.MyDatabases.postDeleteTrigger
 
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd
 GET  /databases/{schemaName}/add{type}                gui.MyDatabases.dbUserAdd

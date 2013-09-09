@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import models.SecureTable;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -98,6 +100,13 @@ public class PostTrigger {
 		extensions.put("databus.lang", msg.getScriptLanguage());
 		extensions.put("databus.script", msg.getScript());
 		extensions.put("databus.callback", msg.getCallback());
+	}
+
+	public static void delete(DboTableMeta tableMeta) {
+		Map<String, String> extensions = tableMeta.getExtensions();
+		extensions.remove("databus.lang");
+		extensions.remove("databus.script");
+		extensions.remove("databus.callback");		
 	}
 
 } // Register

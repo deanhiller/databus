@@ -6,6 +6,10 @@
 <!--=======================================-->
 #{CRUD/triggerAddEditPopup schema:schema/}
 
+<!-- DELETE MODAL BLOCK -->
+<!--=======================================-->
+#{CRUD/triggerDeletePopup schema:schema, triggers:triggers/}
+
 <h4>Triggers</h4>
 
 Cron Jobs are added through the api and will call a url for a scheduled period
@@ -30,7 +34,7 @@ Cron Jobs are added through the api and will call a url for a scheduled period
                             edit
                         </a>
                         &nbsp;&nbsp;|&nbsp;
-                        <a id="dbDeleteModal_${trigger.table}" href="#myDeleteModal" data-toggle="modal">
+                        <a href="#deleteModal_${trigger_index}" data-toggle="modal">
                             delete
                         </a>
                         
