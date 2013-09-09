@@ -68,6 +68,8 @@ public class ATriggerListener {
 		String exceptionString = "none";
 		//synchronously call the url awaiting a result here
 
+		String db = trigger.getDatabase();
+		String id = trigger.getId();
 		Long start = startOverride;
 		Long end = endOverride;
 		if(startOverride == null) {
@@ -76,7 +78,7 @@ public class ATriggerListener {
 			long multiplier = range / trigger.getRate();
 			long endLastPeriod = trigger.getOffset()+multiplier*trigger.getRate();
 			if(endLastPeriod > time) {
-				log.warn("WE have a problem in that the window is in the future...this is our bug in that our trigger fired tooooo early then", new RuntimeException("trigger fired too early.  look next log"));
+				log.warn("WE have a problem in that the window is in the future...this is our bug in that our trigger fired tooooo early then. db="+db+" cronjob="+id, new RuntimeException("trigger fired too early.  look next log"));
 			}
 			long beginLastPeriod = endLastPeriod - trigger.getRate();
 			start = beginLastPeriod - trigger.getBefore();
@@ -85,7 +87,7 @@ public class ATriggerListener {
 				start -= trigger.getRate();
 				end -= trigger.getRate();
 				if(log.isInfoEnabled())
-					log.info("time="+time+" range="+range+" multiplier="+multiplier+" endLastPeriod="+endLastPeriod+" beginLastPer="+beginLastPeriod+" start="+start+" end="+end+" trigger="+trigger);
+					log.info("db="+db+" cron="+id+"time="+time+" range="+range+" multiplier="+multiplier+" endLastPeriod="+endLastPeriod+" beginLastPer="+beginLastPeriod+" start="+start+" end="+end+" trigger="+trigger);
 			}
 		}
 
@@ -93,7 +95,7 @@ public class ATriggerListener {
 			fireHttpRequestAndWait(m, url, start, end);
 			success = true;
 		} catch(RuntimeException e) {
-			log.warn("Exception on trigger requesting url. triggerid="+m.getId(), e);
+			log.warn("Exception on trigger requesting url. triggerid="+m.getId()+" db="+db, e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			exceptionString = sw.toString();
@@ -161,6 +163,7 @@ public class ATriggerListener {
 		job.getProperties().put("userId", user.getId());
 		job.getProperties().put("userName", user.getUsername());
 		job.getProperties().put("apiKey", user.getApiKey());
+		job.getProperties().put("database", schemaDbo.getSchemaName());
 		return job;
 	}
 
@@ -175,6 +178,7 @@ public class ATriggerListener {
 		t.setUrl(job.getProperties().get("url"));
 		t.setRunAsUser(job.getProperties().get("userName"));
 		t.setLastRunSuccess(toBoolean(job.getProperties().get("success")));
+		t.setDatabase(job.getProperties().get("database"));
 		if (StringUtils.isNotBlank(job.getProperties().get("startTime")))
 			t.setLastRunTime(Long.parseLong(job.getProperties().get("startTime")));
 		if (StringUtils.isNotBlank(job.getProperties().get("duration")))
