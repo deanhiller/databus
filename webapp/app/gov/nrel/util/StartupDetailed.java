@@ -53,7 +53,6 @@ public class StartupDetailed {
 		JUSTIN.setPassword("nreliscool");
 		
 		ADMIN = new EntityUser();
-		ADMIN.setAdmin(true);
 		ADMIN.setApiKey("adminregkey");
 		ADMIN.setUsername("admin");
 		ADMIN.setPassword("nreliscool");

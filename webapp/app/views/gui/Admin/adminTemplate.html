@@ -1,21 +1,48 @@
 #{extends '_index.html' /}
-#{set title:'Admin' /}
-#{set tab:'admin' /}
+#{set tab:'home' /}
 
-<ul id="subnav">
-	<li><a href="@{index()}" id="subtab_groups">Groups</a></li>
-	<li><a href="@{meta()}" id="subtab_meta">Meta Info</a></li>
-	<li><a href="@{users()}" id="subtab_users">Users</a></li>
-</ul>
+#{if script}
+%{
+   if(gov.nrel.util.Utility.isDemoMode()) {
+}%
+<div class="alert alert-info alert-block">
+   ${script.raw()}
+</div>
+%{
+    }
+}%
+#{/if}
 
-<script type="text/javascript" language="JavaScript">
-	function setClass(id, className) {
-		var obj = document.getElementById(id);
-   		if (obj != null) {
-    		obj.className = className;
-    	}
-	}
-	setClass("subtab_" + "#{get 'subtab' /}", "selected");
-</script>
-  		
-#{doLayout /}
+    <div class="row-fluid">
+
+        <div class="span3 dashboard_chart_list">
+            #{if schema?.id != null} 
+            <ul class="nav nav-list">
+                <li id="subtab_dddSummary" class="db_left_nav_item"><h2>Database<br/>${schema.schemaName}</h2></li> 
+                <li class="divider"></li>
+            </ul>
+            #{/if}
+        <!-- Need to add a left nav bar now so we can choose between all the different charts -->
+            <ul class="nav nav-list dashboard_chart_menu">
+                <li id="subtab_index" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{index()}">Groups</a></li> 
+                <li id="subtab_users" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{users()}">Users</a></li>
+                <li id="subtab_meta" class="db_left_nav_item"><a class="db_left_nav_menu_item" href="@{meta()}">Meta</a></li>
+            </ul>
+       </div>
+       <div class="span9" id="dashboard_chart_area">
+           <div class="container-fluid">
+               #{doLayout /}
+           </div>
+       </div>
+    </div>
+
+        <script type="text/javascript" language="JavaScript">
+            function setClass(id, className) {
+                var obj = document.getElementById(id);
+                     if (obj != null) {
+                    obj.className = className;
+                }
+            }
+            setClass("subtab_${subtab}", "active");
+        </script>
+

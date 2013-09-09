@@ -48,6 +48,14 @@
 									Search
 								</a>
 							</li>
+							
+							#{if session.get('age') != null}
+                                <li id="tab_search" class="db_main_nav_item" style="margin-left: 25px;">
+                                    <a class="brand db_main_nav_bar_item" href="@{gui.Admin.users()}">
+                                        Admin
+                                    </a>
+                                </li>							 
+							#{/if}
 						#{/else} 								
 								
 						<span class="nav pull-right" style="margin-right: 5px;">

@@ -1,5 +1,7 @@
 package controllers.gui;
 
+import gov.nrel.util.StartupBean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +71,9 @@ public class Security extends GuiSecure.Security {
 		} else if (user == null) {
 			user = EntityUser.create(username);
 		} // if
+
+		if(StartupBean.listAdmins.contains(username))
+			user.setAdmin(true);
 
 		// Update the user in the sb
 		mgr.put(user);

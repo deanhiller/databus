@@ -1,13 +1,17 @@
 package gov.nrel.util;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 
 import models.AppProperty;
 import models.EntityUser;
 
+import org.apache.commons.lang.StringUtils;
 import org.playorm.cron.api.CronService;
 import org.playorm.cron.api.CronServiceFactory;
 import org.slf4j.LoggerFactory;
@@ -29,6 +33,7 @@ public class StartupBean extends Job {
 
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(StartupBean.class);
 	private static CronService svc;
+	public static Set<String> listAdmins;
 
 	@Override
 	public void doJob() {
@@ -81,6 +86,24 @@ public class StartupBean extends Job {
 		
 		TransferBean2 b2 = new TransferBean2();
 		b2.transfer();
+		
+		//THIS SHOULD BE DONE LAST!!!
+		String admins = Play.configuration.getProperty("admins");
+		if(StringUtils.isEmpty(admins))
+			throw new RuntimeException("The property 'admins' in application.conf is now required and is a list of usernames that should be the administrator of databus..usually IT/operations people");
+
+		String[] c = admins.split(",");
+		List<String> list = Arrays.asList(c);
+		listAdmins = new HashSet<String>(list);
+		for(String admin : listAdmins) {
+			EntityUser entity = EntityUser.findByName(NoSql.em(), admin);
+			if(entity != null) {
+				entity.setAdmin(true);
+				NoSql.em().put(entity);
+			}
+		}
+
+		NoSql.em().flush();
 	}
 	
 	private void startMonitorService() {

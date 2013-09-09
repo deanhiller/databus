@@ -1,4 +1,5 @@
 #{extends './adminTemplate.html' /}
+#{set title:'Become a User' /}
 #{set subtab:'users' /}
 
 <h2>Users</h2>
@@ -15,39 +16,6 @@ Click a name AND you BECOME that user so you can reproduce their issue as that u
 	    #{list users, as:'user'}
 	        <tr>
 	            <td><a href="@{becomeUser(user.username)}">${user.username}</a></td>
-	        </tr>
-	    #{/list}
-	</tbody>
-</table>
-
-<h2>Tables</h2>
-
-Tables are filed under groups.  If you want access to a table, talk to one of the administrators of the actual group.  He can add that table to another group to give you access or just give you access to the group giving you access to all tables in that group.
-<br /><br />
-
-<table border="1" class="data" cellpadding="5" cellspacing="0">
-	<thead>
-	    <tr>
-	        <th>Name</th>
-	        <th>Creator</th>
-	        <th>Owning Groups</th>
-	    </tr>
-	</thead>
-	<tbody>
-		#{list tables, as:'table'}
-	        <tr>
-	            <td>
-	                <span class="help" onmouseover="showTip(this)" onmouseout="hideTip(this)">
-	                	<a href="@{MyStuff.tableEdit(table.tableName)}">${table.tableName}</a>
-		            	<div class="tip tipright">${table.description}</div>
-		            </span>
-	            </td>
-	            <td>${table.creator}</td>
-	            <td>
-	            #{list table.owningGroups, as:'g'}
-					${g.name}  
-	            #{/list}
-	            </td>
 	        </tr>
 	    #{/list}
 	</tbody>
