@@ -23,6 +23,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
+import org.playorm.cron.impl.db.WebNodeDbo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,7 @@ import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.action.Column;
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
+import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedColumn;
@@ -114,11 +116,23 @@ public class ApiPostDataPointsImpl {
 		//Now find all keys in one shot...
 		List<KeyValue<KeyToTableName>> info = s.findAllList(KeyToTableName.class, rowKeys);
 		
+		Cursor<KeyValue<WebNodeDbo>> cursor = WebNodeDbo.findAllNodes(NoSql.em());
+		List<WebNodeDbo> nodes = new ArrayList<WebNodeDbo>();
+		int upNodeCount = 0;
+		while(cursor.next()) {
+			KeyValue<WebNodeDbo> kv = cursor.getCurrent();
+			WebNodeDbo node = kv.getValue();
+			if(node.isUp()) {
+				upNodeCount++;
+				nodes.add(node);
+			}
+		}
+
 		Set<TableKey> keyCheck = new HashSet<TableKey>();
 		for(int i = 0; i < dataPts.size(); i++) {
 			KeyValue<KeyToTableName> keyValue = info.get(i);
 			Map<String, String> row = dataPts.get(i);
-			processData(row, solrDocs, keyValue, user, password, keyCheck, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
+			processData(row, solrDocs, keyValue, user, password, keyCheck, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat, nodes, upNodeCount);
 		}
 		
 		s.flush();
@@ -131,7 +145,7 @@ public class ApiPostDataPointsImpl {
 
 	private static void processData(Map<String, String> jsonRow,
 			Collection<SolrInputDocument> solrDocs, KeyValue<KeyToTableName> keyValue, String user, String password, Set<TableKey> keyCheck,
-			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat) {
+			boolean timeIsISOFormat, String timeISOFormatColumn, String timeISOStringFormat, List<WebNodeDbo> nodes, int upNodeCount) {
 		
 		checkSize(jsonRow);
 		
@@ -172,7 +186,7 @@ public class ApiPostDataPointsImpl {
 
 		PostTrigger trig = PostTrigger.transform(table);
 		if(!StringUtils.isEmpty(trig.getScriptLanguage())) {
-			TriggerRunnable trigger = new TriggerRunnable(trig, jsonRow);
+			TriggerRunnable trigger = new TriggerRunnable(trig, jsonRow, nodes, upNodeCount);
 			ExecutorsSingleton.executor.execute(trigger);
 		}
 	}
