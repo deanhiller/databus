@@ -59,10 +59,10 @@ public class TriggerController extends Controller {
 			badRequest("table="+msg.getTable()+" is not in database="+msg.getDatabase());
 
 		PostTrigger.transform(tableMeta, msg);
-		
+
 		List<String> ids = schema.getPostTriggerIds();
 		ids.add(tableMeta.getColumnFamily());
-		
+
 		NoSql.em().put(tableMeta);
 		NoSql.em().put(schema);
 		NoSql.em().flush();
@@ -75,16 +75,13 @@ public class TriggerController extends Controller {
 //		if(PermissionType.ADMIN.isHigherRoleThan(permission))
 //			unauthorized("You are not authorized as an admin of database for table="+name);
 //	}
-	
+
 	public static void postDelete(String tableName) {
 		SecureTable table = SecurityUtil.checkSingleTable(tableName);
 		SecureSchema db = table.getSchema();
-		
+
 		DboTableMeta tableMeta = table.getTableMeta();
-		Map<String, String> extensions = tableMeta.getExtensions();
-		extensions.remove("databus.lang");
-		extensions.remove("databus.script");
-		extensions.remove("databus.callback");
+		PostTrigger.delete(tableMeta);
 
 		db.getPostTriggerIds().remove(tableName);
 
@@ -110,7 +107,7 @@ public class TriggerController extends Controller {
 		while(tables.next()) {
 			KeyValue<DboTableMeta> current = tables.getCurrent();
 			DboTableMeta table = current.getValue();
-			PostTrigger t = PostTrigger.transform(table, database);
+			PostTrigger t = PostTrigger.transform(table);
 			triggers.getTriggers().add(t);
 		}
 

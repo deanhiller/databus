@@ -81,13 +81,14 @@ public class PostTrigger {
 		this.callback = callback;
 	}
 
-	public static PostTrigger transform(DboTableMeta table, String database) {
+	public static PostTrigger transform(DboTableMeta table) {
 		Map<String, String> extensions = table.getExtensions();
 		String lang = extensions.get("databus.lang");
 		String script = extensions.get("databus.script");
 		String callback = extensions.get("databus.callback");
+		String db = extensions.get("databus.db");
 		PostTrigger t = new PostTrigger();
-		t.setDatabase(database);
+		t.setDatabase(db);
 		t.setTable(table.getColumnFamily());
 		t.setScript(script);
 		t.setScriptLanguage(lang);
@@ -100,13 +101,15 @@ public class PostTrigger {
 		extensions.put("databus.lang", msg.getScriptLanguage());
 		extensions.put("databus.script", msg.getScript());
 		extensions.put("databus.callback", msg.getCallback());
+		extensions.put("databus.db", msg.getDatabase());
 	}
 
 	public static void delete(DboTableMeta tableMeta) {
 		Map<String, String> extensions = tableMeta.getExtensions();
 		extensions.remove("databus.lang");
 		extensions.remove("databus.script");
-		extensions.remove("databus.callback");		
+		extensions.remove("databus.callback");
+		extensions.remove("databus.db");
 	}
 
 } // Register

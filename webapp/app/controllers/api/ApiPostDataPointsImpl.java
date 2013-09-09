@@ -13,6 +13,7 @@ import java.util.Set;
 
 import models.KeyToTableName;
 import models.SecureTable;
+import models.message.PostTrigger;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
@@ -169,11 +170,9 @@ public class ApiPostDataPointsImpl {
 		else
 			postNormalTable(jsonRow, solrDocs, info, isUpdate, table, pkValue, timeIsISOFormat, timeISOFormatColumn, timeISOStringFormat);
 
-		Map<String, String> extensions = table.getExtensions();
-		String script = extensions.get("databus.script");
-		if(!StringUtils.isEmpty(script)) {
-			String language = extensions.get("databus.lang");
-			TriggerRunnable trigger = new TriggerRunnable(script, language, jsonRow);
+		PostTrigger trig = PostTrigger.transform(table);
+		if(!StringUtils.isEmpty(trig.getScriptLanguage())) {
+			TriggerRunnable trigger = new TriggerRunnable(trig, jsonRow);
 			ExecutorsSingleton.executor.execute(trigger);
 		}
 	}

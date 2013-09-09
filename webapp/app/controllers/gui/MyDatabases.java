@@ -234,7 +234,7 @@ public class MyDatabases extends Controller {
 		while(cursor.next()) {
 			KeyValue<DboTableMeta> current = cursor.getCurrent();
 			DboTableMeta table = current.getValue();
-			PostTrigger t = PostTrigger.transform(table, dbName);
+			PostTrigger t = PostTrigger.transform(table);
 			triggers.add(t);
 		}
 
