@@ -15,14 +15,16 @@ Cron Jobs are added through the api and will call a url for a scheduled period
         <tr>
             <th>Table Name</th>
             <th>Script Language</th>
+            <th>Callback</th>
             <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         #{list triggers, as:'trigger'}
             <tr>
-                <td>${trigger.url}</td>
-                <td>${trigger.rate}</td>
+                <td>${trigger.table}</td>
+                <td>${trigger.scriptLanguage}</td>
+                <td>${trigger.callback}</td>
                 <td>
                         <a id="dbAddEditModal_${trigger.table}" href="#myAddEditModal" data-toggle="modal">
                             edit
@@ -34,36 +36,40 @@ Cron Jobs are added through the api and will call a url for a scheduled period
                         
                         <script type="text/javascript">
                             $('body').on('click', '#dbAddEditModal_${trigger.table}', function (e) {
-                                populateModal('Edit Database', '${database.getId()}', '${database.getSchemaName()}', true, '${database?.description?.escapeJavaScript()}');
+                                populateModal('Edit Trigger', true, '${trigger.table}', 
+                                		'${trigger.scriptLanguage?.escapeJavaScript()}', 
+                                		'${trigger.callback?.escapeJavaScript()}',
+                                		'${trigger.script?.escapeJavaScript()}');
                         });
                         </script>
                 </td>
             </tr>
-        #{/list}            
+        #{/list}
     </tbody>
 </table>
 
 <a id="dbAddEditModal_add" href="#myAddEditModal" data-toggle="modal" class="btn btn-primary">Add Trigger</a>
 <script type="text/javascript">
        $('body').on('click', '#dbAddEditModal_add', function (e) {
-             populateModal('New Database', '', '', false, '');
+             populateModal('New Trigger', false, '', '', '', '');
        });
 </script>
 
 <script type="text/javascript">
     $(document).ready(function() {
         #{if showModal}
-            populateModal('New Trigger', '', '', false, '${postedDatabase?.description?.escapeJavaScript()}');
+            populateModal('New Trigger', true, '', '', '', '');
             $("#myAddEditModal").modal('show');
         #{/if}
     });
     
-    function populateModal(modalTitle, dbID, dbName, dbNameReadonly, dbDescription) {
+    function populateModal(modalTitle, tableReadOnly, id, lang, callback, script) {
         $('#addEditModalLabel').html(modalTitle);
-        $('#addEditDatabase_dbID').val(dbID);
-        $('#entityName').val(dbName);
-        $('#addEditDatabase_dbName').attr('readonly', dbNameReadonly);
-        $('#addEditDatabase_dbDescription').val(dbDescription);
+        $('#entityTable').val(id);
+        $('#entityTable').attr('readonly', tableReadOnly);
+        $('#entityLang').val(lang);
+        $('#entityCallback').val(callback);
+        $('#entityScript').val(script);
     }
 </script>
 

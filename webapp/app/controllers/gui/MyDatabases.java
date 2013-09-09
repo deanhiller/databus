@@ -242,17 +242,23 @@ public class MyDatabases extends Controller {
 	}
 
 	public static void postAddEditTrigger(String dbName, PostTrigger entity) {
-		SecureTable table = SecurityUtil.checkSingleTable(entity.getTable());
-		if(table == null)
-			badRequest("This table="+entity.getTable()+" is not found");
+		EntityUser user = Utility.getCurrentUser(session);
+
+		SecureTable table = SecureTable.findByName(NoSql.em(), entity.getTable());
 		SecureSchema schema = table.getSchema();
-		if(!dbName.equals(schema.getSchemaName()))
+		Set<PermissionType> roles = fetchRoles(schema, user);
+		if(!roles.contains(PermissionType.ADMIN))
+			notFound("Your user does not have access to this resource");
+		else if(!dbName.equals(schema.getSchemaName()))
 			badRequest("This table="+entity.getTable()+" is not in database="+dbName);
-		
+
 		DboTableMeta t = table.getTableMeta();
 		PostTrigger.transform(t, entity);
 
+		schema.getPostTriggerIds().add(entity.getTable());
+		
 		NoSql.em().put(t);
+		NoSql.em().put(schema);
 		NoSql.em().flush();
 
 		dbTriggers(dbName);

@@ -23,6 +23,7 @@ import play.mvc.Http.Request;
 import play.mvc.Scope.Session;
 import play.mvc.Util;
 import play.mvc.results.BadRequest;
+import play.mvc.results.Forbidden;
 import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
@@ -186,13 +187,21 @@ public class SecurityUtil {
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
 				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
-			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
+			throwForbidden("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} else if(schemaIds.get(sdiTable.getSchema().getId()) == null) {
 			if (log.isInfoEnabled())
 				log.info("table="+cf+" is not accessible from this user="+username);
-			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
+			throwForbidden("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return sdiTable;
+	}
+
+	private static void throwForbidden(String msg) {
+		Session current = Session.current();
+		String username = current.get("key");
+		if(!StringUtils.isEmpty(username))
+			throw new Forbidden(msg);
+		throw new Unauthorized(msg);
 	}
 
 	@Util
@@ -209,14 +218,14 @@ public class SecurityUtil {
 		if(sdiTable == null) {
 			if (log.isInfoEnabled())
 				log.info("table="+cf+" does not exist or is not in meta.  user="+username);
-			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
+			throwForbidden("Either table does not exist OR you are unauthorized to use this table="+cf);
 		} 
 		
 		SecureResourceGroupXref xref = schemaIds.get(sdiTable.getSchema().getId());
 		if(xref == null) {
 			if (log.isInfoEnabled())
 				log.info("table="+cf+" is not accessible from this user="+username);
-			throw new Unauthorized("Either table does not exist OR you are unauthorized to use this table="+cf);
+			throwForbidden("Either table does not exist OR you are unauthorized to use this table="+cf);
 		}
 		return xref.getPermission();
 	}
