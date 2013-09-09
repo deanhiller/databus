@@ -108,7 +108,9 @@ public class Admin extends Controller {
 		List<DboTableMeta> tables = new ArrayList<DboTableMeta>();
 		int counter = 0;
 		while(cursor.next()) {
-			tables.add(cursor.getCurrent().getValue());
+			DboTableMeta meta = cursor.getCurrent().getValue();
+			if(!meta.isEmbeddable())
+				tables.add(meta);
 			counter++;
 			if(counter >= 50)
 				break;
