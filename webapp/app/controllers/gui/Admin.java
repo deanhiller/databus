@@ -87,7 +87,8 @@ public class Admin extends Controller {
 	public static void postUser(EntityUser entity) {
 		EntityUser currentUser = Utility.getCurrentUser(session);
 		authCheck(currentUser);
-
+		
+		entity.setApiKey(Utility.getUniqueKey());
 		NoSql.em().put(entity);
 		NoSql.em().flush();
 		
