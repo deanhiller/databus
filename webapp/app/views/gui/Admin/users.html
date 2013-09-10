@@ -6,6 +6,10 @@
 <!--=======================================-->
 #{CRUD/adminUserAddEditPopup/}
 
+<!-- DELETE MODAL BLOCK -->
+<!--=======================================-->
+#{CRUD/adminDeleteUserPopup users:users/}
+
 <h2>Users</h2>
 
 Click a name AND you BECOME that user so you can reproduce their issue as that user
@@ -21,7 +25,12 @@ Click a name AND you BECOME that user so you can reproduce their issue as that u
 	    #{list users, as:'user'}
 	        <tr>
 	            <td>${user.username}</td>
-	            <td><a href="@{becomeUser(user.username)}">Become User</a></td>
+	            <td>
+	               <a href="@{becomeUser(user.username)}">Become User</a>&nbsp;&nbsp;|&nbsp;
+                   <a href="#deleteModal_${user_index}" data-toggle="modal">
+                       delete
+                   </a>
+	            </td>
 	        </tr>
 	    #{/list}
 	</tbody>

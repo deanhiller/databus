@@ -11,7 +11,10 @@ import java.util.List;
 import javax.xml.parsers.ParserConfigurationException;
 
 import models.EntityGroup;
+import models.EntityGroupXref;
 import models.EntityUser;
+import models.SecureResource;
+import models.SecureResourceGroupXref;
 import models.SecureSchema;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -90,6 +93,34 @@ public class Admin extends Controller {
 		
 		entity.setApiKey(Utility.getUniqueKey());
 		NoSql.em().put(entity);
+		NoSql.em().flush();
+		
+		users();
+	}
+
+	public static void postDeleteUser(String username) {
+		EntityUser currentUser = Utility.getCurrentUser(session);
+		authCheck(currentUser);
+
+		EntityUser user = NoSql.em().find(EntityUser.class, username);
+		List<SecureResourceGroupXref> resources = user.getResources();
+		for(SecureResourceGroupXref ref : resources) {
+			SecureResource res = ref.getResource();
+			res.getEntitiesWithAccess().remove(ref);
+			NoSql.em().put(res);
+			NoSql.em().remove(ref);
+		}
+		
+		List<EntityGroupXref> parentGroups = user.getParentGroups();
+		for(EntityGroupXref ref : parentGroups) {
+			EntityGroup group = ref.getGroup();
+			group.getChildren().remove(ref);
+			NoSql.em().put(group);
+			NoSql.em().remove(ref);
+		}
+		
+		EntityUser ref = NoSql.em().getReference(EntityUser.class, username);
+		NoSql.em().remove(ref);
 		NoSql.em().flush();
 		
 		users();
