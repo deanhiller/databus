@@ -2,6 +2,10 @@
 #{set title:'Become a User' /}
 #{set subtab:'users' /}
 
+<!-- ADD/EDIT MODAL BLOCK -->
+<!--=======================================-->
+#{CRUD/adminUserAddEditPopup/}
+
 <h2>Users</h2>
 
 Click a name AND you BECOME that user so you can reproduce their issue as that user
@@ -10,13 +14,46 @@ Click a name AND you BECOME that user so you can reproduce their issue as that u
 	<thead>
 	    <tr>
 	        <th>Users</th>
+	        <th>Actions</th>
 	    </tr>
 	</thead>
 	<tbody>
 	    #{list users, as:'user'}
 	        <tr>
-	            <td><a href="@{becomeUser(user.username)}">${user.username}</a></td>
+	            <td>${user.username}</td>
+	            <td><a href="@{becomeUser(user.username)}">Become User</a></td>
 	        </tr>
 	    #{/list}
 	</tbody>
 </table>
+
+%{
+   if(!gov.nrel.util.Utility.isActiveDirectory()) {
+}%
+<a id="dbAddEditModal_add" href="#myAddEditModal" data-toggle="modal" class="btn btn-primary">Add User</a>
+%{
+}
+}%
+
+<script type="text/javascript">
+       $('body').on('click', '#dbAddEditModal_add', function (e) {
+             populateModal('New User', false, '', '');
+       });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        #{if showModal}
+            populateModal('New User', true, '', '');
+            $("#myAddEditModal").modal('show');
+        #{/if}
+    });
+
+    function populateModal(modalTitle, readOnly, id, password) {
+        $('#addEditModalLabel').html(modalTitle);
+        $('#entityUsername').val(id);
+        $('#entityUsername').attr('readonly', readOnly);
+        ${'#entityPassword'}.val(password);
+    }
+</script>
+

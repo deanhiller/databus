@@ -29,6 +29,7 @@ import models.message.DatasetColumnModel;
 import models.message.DatasetColumnSemanticModel;
 import models.message.RegisterMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -370,6 +371,14 @@ public class Utility {
 	public static boolean isDisplayHighChartsBanner() {
 		String property = Play.configuration.getProperty("gui.charting.library");
 		if("highcharts_licensed".equals(property) || "highcharts_disabled".equals(property))
+			return false;
+		return true;
+	}
+	public static boolean isActiveDirectory() {
+		String property = Play.configuration.getProperty("domain");
+		if(StringUtils.isEmpty(property))
+			return false;
+		else if("none".equals(property))
 			return false;
 		return true;
 	}

@@ -35,6 +35,7 @@ GET /detailsearch                       gui.GUISearch.detailSearch
 GET  /admin                                 gui.Admin.index
 GET  /admin/sanity                          gui.Admin.sanity
 GET  /admin/users                           gui.Admin.users
+POST /admin/adduser                         gui.Admin.postUser
 GET  /admin/user/{username}                 gui.Admin.becomeUser
 GET  /admin/meta                            gui.Admin.meta
 GET  /admin/meta/{tableName}                gui.Admin.metaTable

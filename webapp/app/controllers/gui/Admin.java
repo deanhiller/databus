@@ -84,6 +84,16 @@ public class Admin extends Controller {
 		render(users);
 	}
 	
+	public static void postUser(EntityUser entity) {
+		EntityUser currentUser = Utility.getCurrentUser(session);
+		authCheck(currentUser);
+
+		NoSql.em().put(entity);
+		NoSql.em().flush();
+		
+		users();
+	}
+
 	public static void becomeUser(String username) {
 		EntityUser user = Utility.getCurrentUser(session);
 		authCheck(user);
