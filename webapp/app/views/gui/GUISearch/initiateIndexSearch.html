@@ -68,6 +68,10 @@
 				var chosenIndex = $("#selected_index").val();
 				var query = $("#index_search_text").val();
 				
+				if(query === '') {
+					query = '*:*';
+				}
+				
 				launchIndexSearch(chosenIndex, query);
 			}
 		});
