@@ -40,8 +40,8 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	protected DboTableMeta meta;
 	protected byte[] endBytes;
 	protected byte[] startBytes;
-	protected long start;
-	protected long end;
+	protected Long start;
+	protected Long end;
 	protected AbstractCursor<Column> cursor;
 	protected Long partitionSize;
 	private DboColumnMeta colMeta;
@@ -53,17 +53,18 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
 		this.meta = meta;
 		this.url = url;
-		if(start == null || end == null)
-			throw new IllegalArgumentException("start and end must be filled in for raw processor...upstream can fill in with MAX_LONG and MIN_LONG+1 if desired");
 		
 		this.start = start;
 		this.end = end;
 		loadPartitions(meta);
 		partitionSize = meta.getTimeSeriesPartionSize();
 		currentIndex = partition(partitionSize);
-			
-		this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
-		this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
+
+		if(start != null)
+			this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
+		if(end != null)
+			this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
+
 		colMeta = meta.getAllColumns().iterator().next();
 		if (log.isInfoEnabled())
 			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
@@ -85,6 +86,9 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	}
 
 	protected int partition(long partitionSize) {
+		if(existingPartitions.size() > 0 && start == null)
+			return 0;
+		
 		for(int i = 0; i < existingPartitions.size();i++) {
 			long partId = existingPartitions.get(i);
 			if(start < partId+partitionSize)
