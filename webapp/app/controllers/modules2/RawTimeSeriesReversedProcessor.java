@@ -14,6 +14,9 @@ public class RawTimeSeriesReversedProcessor extends RawTimeSeriesProcessor
 		implements RawSubProcessor {
 
 	protected int partition(long partitionSize) {
+		if(existingPartitions.size() > 0 && end == null) 
+			return existingPartitions.size()-1;
+
 		for(int i = existingPartitions.size()-1; i >= 0;i--) {
 			long partId = existingPartitions.get(i);
 			if(end >= partId)

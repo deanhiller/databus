@@ -35,8 +35,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 		//first values may have no start and end times here
 		if(params.getOriginalStart() == null && params.getOriginalEnd() == null) {
 			long end= System.currentTimeMillis();
-			//long start  = Long.MIN_VALUE;
-			long start  = BEGIN_OF_TIME;
+			Long start  = null;
 			String previousPath = params.getPreviousPath()+"/"+start+"/"+end;
 			String leftOver = params.getLeftOverPath()+"/"+start+"/"+end;
 			params = new Path(params.getParams(), previousPath, leftOver, start, end, visitor.isReversed());
@@ -54,7 +53,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 				leftOver = leftOver+"/"+params.getOriginalEnd()+"/"+end;
 				params = new Path(params.getParams(), previousPath, leftOver, params.getOriginalEnd(), end, visitor.isReversed());
 			} else {
-				long start  = BEGIN_OF_TIME;
+				Long start  = null;
 				previousPath = previousPath+"/"+start+"/"+params.getOriginalEnd();
 				leftOver = leftOver+"/"+start+"/"+params.getOriginalEnd();
 				params = new Path(params.getParams(), previousPath, leftOver, start, params.getOriginalEnd(), visitor.isReversed());

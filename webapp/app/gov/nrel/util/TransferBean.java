@@ -112,18 +112,24 @@ public class TransferBean extends TransferSuper {
 			}
 			
 			DboTableMeta tableMeta = table.getTableMeta();
+			String modelName = tableMeta.getRealVirtual();
 			List<String> names = tableMeta.getColumnNameList();
 			if(names.size() == 2 && timeSeriesNames.contains(names.get(0)) && timeSeriesNames.contains(names.get(1))) {
 				long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+				String realCf = Utility.createCfName(modelName);
+				tableMeta.setup(modelName, realCf, false, null);
 				tableMeta.setTimeSeries(true);
 				tableMeta.setTimeSeriesPartionSize(partitionSize);
+				tableMeta.setColNameType(long.class);
+
 				table.setTypeOfData(DataTypeEnum.TIME_SERIES);
-				mgr2.put(tableMeta);
-				mgr2.put(table);
 			} else {
 				table.setTypeOfData(DataTypeEnum.RELATIONAL);
-				mgr2.put(table);
+				tableMeta.setup(modelName, "relational", false, null);
 			}
+
+			mgr2.put(tableMeta);
+			mgr2.put(table);
 			
 			if(counter % 50 == 0) {
 				mgr2.flush();
