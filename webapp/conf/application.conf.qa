@@ -12,6 +12,8 @@
 #Supplying this domain allows us to use DNS to lookup the SRV record and find your Active Directory. 
 domain=nrel.gov
 
+admins=dhiller2,jcollins
+
 # Database configuration
 nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
