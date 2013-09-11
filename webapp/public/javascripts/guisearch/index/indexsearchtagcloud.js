@@ -50,9 +50,12 @@
 				});
 				
 				/**
-				 * We need to make these facet fields look like the rest of our search UI:
-				 * 
-				 * 
+				 * DYNAMIC FACET DISCOVERY:
+				 * 	The following code allows the UI to show facets in a solr result even if
+				 * 	the solr query did not specify facets.  The ajax_solr library will only
+				 * 	show the facet code when you specify facets on the search.  This will allow
+				 * 	Justin's engine to return searchable facets w/out us knowing what they are
+				 * 	prior to submitting the search.
 				 * 
 				 * 	<div class="accordion" id="accordion_column_texts">
 				 * 		<div class="accordion-group search_nav_group">
