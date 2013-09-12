@@ -54,6 +54,7 @@ project(':webapp') {
 	        include 'webapp/conf/**'
 	        include 'webapp/play-1.2.5/**'
 	        include 'webapp/public/**'
+			include 'webapp/version.txt'
 	    }
         rename '(.*)prod.(.*)', '$1$2'
 	}
