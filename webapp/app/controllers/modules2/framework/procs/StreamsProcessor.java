@@ -61,8 +61,8 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
-		long start = params.getOriginalStart();
-		long end = params.getOriginalEnd();
+		Long start = params.getOriginalStart();
+		Long end = params.getOriginalEnd();
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);
@@ -72,7 +72,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		return null;
 	}
 
-	private String addTimeStamps(String url, long start, long end) {
+	private String addTimeStamps(String url, Long start, Long end) {
 		if(url.startsWith("/"))
 			url = url.substring(1);
 		return url+"/"+start+"/"+end;
