@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.results.BadRequest;
+import sun.font.LayoutPathImpl.EndType;
 import controllers.modules.SplinesBigDec;
 import controllers.modules.SplinesBigDecBasic;
 import controllers.modules.SplinesBigDecLimitDerivative;
@@ -48,6 +49,7 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 	private ReadResult lastValue;
 	private long epochOffset;
 	private Long windowFilterSize;
+	private long end;
 
 	@Override
 	protected int getNumParams() {
@@ -100,12 +102,13 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 
 		epochOffset = calculateOffset();
 
-		if(params.getStart() == null || params.getEnd() == null) {
-			String msg = "splinesV2 must have a start and end (if you want it to work, request it)";
-			throw new BadRequest(msg);
-		}
-		
-		Long startTime = params.getStart();
+		long startTime = Long.MIN_VALUE;
+		if(params.getStart() != null)
+			startTime = params.getStart();
+		end = Long.MAX_VALUE;
+		if(params.getEnd() != null)
+			end = params.getEnd();
+
 		if(log.isInfoEnabled())
 			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
 		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
@@ -140,7 +143,10 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
 		}
 
-		long result = startTime+offsetFromStart; 
+		long result = startTime+offsetFromStart;
+		if(startTime == Long.MIN_VALUE) {
+			result = interval+offsetFromStart+startTime;
+		}
 		if(log.isInfoEnabled())
 			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
 		return result;
@@ -185,7 +191,6 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 		}
 
 		//NOW, we may have moved past the third time in the buffer so may need to read in more data
-		long end = params.getEnd();
 		while ((currentTimePointer > timeThirdInBuffer)
 				&& (currentTimePointer <= end)) {
 			pull();
