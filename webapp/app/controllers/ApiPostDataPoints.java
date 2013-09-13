@@ -67,21 +67,20 @@ public class ApiPostDataPoints extends Controller {
 
 	private static int counter = 0;
 	private static int dataPointCounter = 0;
-	private static Long firstTime = null;
+	private static long firstTime = System.currentTimeMillis();
 	
 	//temporarily remove MDC for this one log so it does not get filtered
 	private synchronized static void logNoMdc(int numPoints) {
-		if(firstTime == null)
-			firstTime = System.currentTimeMillis();
-		
 		counter++;
 		dataPointCounter += numPoints;
 		if(counter % 100 == 0) {
 			Object old = MDC.get("filter");
 			MDC.remove("filter");
-			long timeSinceStart = (System.currentTimeMillis()-firstTime)/1000;
+			double range = (System.currentTimeMillis()-firstTime)/1000;
+			double postPerSec = counter / range;
+			double ptsPerSec = dataPointCounter / range;
 			if (log.isInfoEnabled())
-				log.info("Processing request number="+counter+" numPointsPosted="+dataPointCounter+" in total time="+timeSinceStart+" seconds");
+				log.info("Processing request number="+counter+" numPointsPosted="+dataPointCounter+" in total time="+range+" seconds.  ptPerSec="+ptsPerSec+" postsPerSec="+postPerSec);
 			MDC.put("filter", old);
 		}
 	}
