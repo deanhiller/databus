@@ -11,7 +11,6 @@ import models.StreamAggregation;
 
 import com.alvazan.play.NoSql;
 
-import controllers.modules.mocks.MockProcessor;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -25,7 +24,7 @@ public abstract class StreamsProcessor2 extends PullProcessorAbstract {
 	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
 
-	public void addChild(MockProcessor mock) {
+	public void addChild(ProcessorSetup mock) {
 		children.add((PullProcessor) mock);
 		processors.add(new ProxyProcessor((PullProcessor)mock));
 	}
