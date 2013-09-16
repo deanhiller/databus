@@ -16,8 +16,8 @@ public class SplinesLinear implements SplinesBigDec {
 		else if(x > xaxis[xaxis.length-1])
 			throw new IllegalArgumentException("The x you provided is more than the last value in our xaxis array so we cannot interpolate(that is extrapolating)");
 		Integer index = null;
-		for(int i = 0; i < xaxis.length; i++) {
-			if(x < xaxis[i]) {
+		for(int i = 1; i < xaxis.length; i++) {
+			if(x <= xaxis[i]) {
 				index = i-1;
 				break;
 			}
