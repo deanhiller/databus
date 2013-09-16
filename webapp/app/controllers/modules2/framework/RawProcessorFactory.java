@@ -29,6 +29,7 @@ import controllers.modules2.SplinesV1PullProcessor;
 import controllers.modules2.SplinesV3PullProcessor;
 import controllers.modules2.SqlPullProcessor;
 import controllers.modules2.SumStreamProcessor;
+import controllers.modules2.SumStreamProcessor2;
 import controllers.modules2.TimeAverageProcessor;
 import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
@@ -63,6 +64,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("minmaxV1", MinMaxProcessor.class);
 		nameToClazz.put("multiplyV1", MultiplyProcessor.class);
 		nameToClazz.put("sumstreamsV1", SumStreamProcessor.class);
+		nameToClazz.put("sumstreamsV2", SumStreamProcessor2.class);
 		nameToClazz.put("csv", FTranslatorValuesToCsv.class);
 		nameToClazz.put("json", FTranslatorValuesToJson.class);
 		nameToClazz.put("relational", RelationalOperationProcessor.class);
