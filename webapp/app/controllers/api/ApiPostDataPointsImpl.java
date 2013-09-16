@@ -83,9 +83,8 @@ public class ApiPostDataPointsImpl {
 
 				}
 			}
-		}		
+		}
 		
-				
 		NoSqlEntityManager s = NoSql.em();
 		List dataPoints = (List) data.get("_dataset");
 		if(dataPoints == null) {

@@ -32,7 +32,6 @@ public class SplinesBigDecBasic implements SplinesBigDec {
 		return(getValue(BigDecimal.valueOf(x).setScale(20)));
 	}
 
-	@Override
 	public BigDecimal getValue(BigDecimal x) {
 		BigDecimal ynew = new BigDecimal(0);
 		ynew.setScale(scaleY*2);
@@ -86,7 +85,6 @@ public class SplinesBigDecBasic implements SplinesBigDec {
 		return ynew;
 	}
 
-	@Override
 	public BigDecimal[] getXrange() {
 		return this.x;
 	}
@@ -100,7 +98,6 @@ public class SplinesBigDecBasic implements SplinesBigDec {
 		setRawDataPoints(xcon, y);
 	}
 
-	@Override
 	public void setRawDataPoints(BigDecimal[] x, BigDecimal[] y) {
 		if(x.length != 4){
 			throw new IllegalArgumentException("Must have 4 data points, instead has: " + x.length);
@@ -162,17 +159,14 @@ public class SplinesBigDecBasic implements SplinesBigDec {
 		m[1] = mCalculated[1];
 	}
 
-	@Override
 	public BigDecimal[] getDerivatives() {
 		return this.m;
 	}
 
-	@Override
 	public BigDecimal[] getCalculatedDerivatives() {
 		return this.mCalculated;
 	}
 
-	@Override
 	public BigDecimal[] getInputData(int index) {
 		return this.inputData.get(index).getPoint();
 	}

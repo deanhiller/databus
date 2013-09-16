@@ -140,9 +140,12 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		} else if ("limitderivative".equals(splineType)) {
 			for (String colname:columnsToInterpolate)
 				columns.add(new ColumnState(new SplinesBigDecLimitDerivative(), timeColumn, colname, bufferSize, maxTimeToStopSplining));
+		} else if ("linear".equals(splineType)) {
+			for (String colname:columnsToInterpolate)
+				columns.add(new ColumnState(new SplinesLinear(), timeColumn, colname, bufferSize, maxTimeToStopSplining));
 		} else {
 			// fix this bad request line
-			String msg = "/splinesV3(type="+splineType+")/ ; type must be basic or limitderivative";
+			String msg = "/splinesV3(type="+splineType+")/ ; type must be basic or limitderivative or linear";
 			throw new BadRequest(msg);
 		}
 
