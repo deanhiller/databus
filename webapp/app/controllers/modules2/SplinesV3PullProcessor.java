@@ -46,6 +46,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private ReadResult lastValue;
 
 	private CircularFifoBuffer master;
+	private long end;
 
 	@Override
 	protected int getNumParams() {
@@ -85,12 +86,13 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		} else
 			epochOffset = parseOffset(epoch);
 
-		if(params.getStart() == null || params.getEnd() == null) {
-			String msg = "splinesV3 must have a start and end (if you want it to work, request it)";
-			throw new BadRequest(msg);
-		}
+		long startTime = Long.MIN_VALUE;
+		if(params.getStart() != null)
+			startTime = params.getStart();
+		end = Long.MAX_VALUE;
+		if(params.getEnd() != null)
+			end = params.getEnd();
 
-		Long startTime = params.getStart();
 		if(log.isInfoEnabled())
 			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
 		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
@@ -185,6 +187,9 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		}
 
 		long result = startTime+offsetFromStart; 
+		if(startTime == Long.MIN_VALUE) {
+			result = interval+offsetFromStart+startTime;
+		}
 		if(log.isInfoEnabled())
 			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
 		return result;
@@ -217,7 +222,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		}
 
 		//needMoreData is a very tricky method so read the comments in that method
-		long end = params.getEnd();
 		while(needMoreData() && currentTimePointer <= end) {
 			pull();
 			if (lastValue == null) {
@@ -245,7 +249,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	private ReadResult calculateLastRows(ReadResult lastValue) {
-		long end = params.getEnd();
 		if(currentTimePointer > end) {
 			return lastValue;
 		}
