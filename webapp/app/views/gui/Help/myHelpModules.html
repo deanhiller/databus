@@ -77,7 +77,7 @@ specify it to stay consistent.
    data, we need to keep buffering the rows due to the outage and can't return a row until we this buffer is full or we get some rows with valid 
    data such that we can spline the column with the outage(as long as outage time < maxToStopSplining time)</li>
 </ol>
-The format of splinesV3 uses are new url format where the options are now between parenthesis as such below.
+The format of splinesV3 uses our new url format where the options are now between parenthesis as such below.
 <div class="apikey">
     <div class="key">
         <b>usage:</b> https://databus.nrel.gov/api/splinesV3(type={type},interval={interval},epochOffset={epochOffset})/{nextmodule}<br>
@@ -113,6 +113,25 @@ so you can specify when to not interpolate).
 		<b>example:</b> https://databus.nrel.gov/api/splinesV1/60000/rawdata/RSF2MAIN/1354738000000/1354824663000
 	</div>
 </div>	
+<br><br>
+
+<b>The linearV1 module</b> allows users to do linear interpolation. The following options exist for the linearV1 module
+<ol>
+   <li>interval - The amount of time in ms. to return each datapoint (defaults to 60000ms(1min) if not specified)</li>
+   <li>epochOffset - The initial time to use(we add N intervals to this time point to return values).  This is useful if you want 
+   every value returned to be MST midnight instead of GMT midnight(GMT midnight would be offset of 0).  This will automatically default
+   to a number using the start time and interval however to make sure all times line up by starting with start time returning the first point
+   and start time + interval returning the second point, etc. etc.  epochOffset is for situations you may not want the points returned
+   to line up with start time at all.
+</ol>
+The format of linearV1 uses our new url format where the options are now between parenthesis as such below.
+<div class="apikey">
+    <div class="key">
+        <b>usage:</b> https://databus.nrel.gov/api/splinesV3(interval={interval},epochOffset={epochOffset})/{nextmodule}<br>
+        <b>example:</b> https://databus.nrel.gov/api/splinesV3(interval=60000,epochOffset=300)/rawdata/RSF2MAIN/1354738000000/1354824663000
+        <b>example:</b> https://databus.nrel.gov/api/splinesV3(interval=60000)/rawdata/RSF2MAIN/1354738000000/1354824663000
+    </div>
+</div>  
 <br><br>
 
 <b>The rangeclean module</b> allows users to remove data points that
@@ -225,7 +244,21 @@ The next step is to use the aggregation.  You can do that by getting data from t
 
 If you would like to view an aggregation you already created, just use view an aggregation
 <br/>
-<b>Viewing an existing aggregation:</b>
+<b>Viewing an existing aggregation(sumstreamsV2):</b>
+<ol>
+   <li>aggregation - The name of the aggregation to lookup and use</li>
+   <li>enableNulls - If set to true, the module will return nulls in the case where one of the streams has no data.  If
+   set to false(the default), then it will return all streams added up except for the stream with no data.  This enables your
+   whole graph to go to null when one stream is out of commission which is sometimes desired 
+</ol>
+<div class="apikey">
+    <div class="key">
+    <b>usage:</b>GET https://databus.nrel.gov/api/sumstreamsV2(aggregation={AggregationID},enableNulls={true or false})
+<br><b>example:</b>GET https://databus.nrel.gov/api/sumstreamsV2(aggregation=RSF_DATACENTER, enableNulls=true)
+</div>
+</div>
+<br><br>
+<b>Viewing an existing aggregation(sumstreamsV1):</b>
 <div class="apikey">
 	<div class="key">
 	<b>usage:</b>GET https://databus.nrel.gov/api/sumstreamsV1/aggregation/{AggregationID}
