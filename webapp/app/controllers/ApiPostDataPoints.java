@@ -65,14 +65,24 @@ public class ApiPostDataPoints extends Controller {
 	public static ExecutorService executor = Executors.newFixedThreadPool(20);
 	private static AsyncHttpClient client = ProductionModule.createSingleton();
 
-	private static int counter = 0;
-	private static int dataPointCounter = 0;
+	private static long counter = 0;
+	private static long dataPointCounter = 0;
 	private static long firstTime = System.currentTimeMillis();
-	
-	//temporarily remove MDC for this one log so it does not get filtered
-	private synchronized static void logNoMdc(int numPoints) {
+	private static int numFailures = 0;
+	private static long numSuccess = 0;
+
+	private static void incrementCounters(int numPoints) {
 		counter++;
-		dataPointCounter += numPoints;
+		dataPointCounter += numPoints;		
+	}
+
+	//temporarily remove MDC for this one log so it does not get filtered
+	private synchronized static void logNoMdc(boolean success) {
+		if(success)
+			numSuccess++;
+		else
+			numFailures++;
+		
 		if(counter % 100 == 0) {
 			Object old = MDC.get("filter");
 			MDC.remove("filter");
@@ -80,7 +90,7 @@ public class ApiPostDataPoints extends Controller {
 			double postPerSec = counter / range;
 			double ptsPerSec = dataPointCounter / range;
 			if (log.isInfoEnabled())
-				log.info("Processing request number="+counter+" numPointsPosted="+dataPointCounter+" in total time="+range+" seconds.  ptPerSec="+ptsPerSec+" postsPerSec="+postPerSec);
+				log.info("Processing request number="+counter+"(double posted="+numSuccess+") numPointsPosted="+dataPointCounter+" in total time="+range+" seconds.  ptPerSec="+ptsPerSec+" postsPerSec="+postPerSec+" failureDouble="+numFailures);
 			MDC.put("filter", old);
 		}
 	}
@@ -92,6 +102,7 @@ public class ApiPostDataPoints extends Controller {
 			requestUrl = mode;
 		}
 
+		int numPoints = 0;
 		String json = Parsing.fetchJson();
 		ListenableFuture<Response> future = null;
 		try {
@@ -122,15 +133,16 @@ public class ApiPostDataPoints extends Controller {
 				}
 			}
 			
-			int numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password, Request.current().path);
+			numPoints = ApiPostDataPointsImpl.postDataImpl(json, data, user, password, Request.current().path);
 
-			logNoMdc(numPoints);
 		} catch(Exception e) {
 			if (log.isWarnEnabled())
         		log.warn("Exception on posting json="+json);
 			throw new RuntimeException(e);
 		}
-		
+
+		incrementCounters(numPoints);
+		boolean success = false;
 		if(future != null) {
 			try {
 				Response response = future.get();
@@ -138,13 +150,22 @@ public class ApiPostDataPoints extends Controller {
 					RuntimeException e = new RuntimeException("status code="+response.getStatusCode());
 					e.fillInStackTrace();
 					log.warn("Exception on second request", e);
+					numFailures++;
 					throw e;
 				}
+				success = true;
 			} catch (InterruptedException e) {
+				numFailures++;
+				log.warn("B.  Exception on second request", e);
 				throw new RuntimeException(e);
 			} catch (ExecutionException e) {
+				numFailures++;
+				log.warn("C. Exception on second request", e);
 				throw new RuntimeException(e);
 			}
 		}
+
+		logNoMdc(success);
 	}
+
 }
