@@ -135,6 +135,14 @@ public class StartupBean extends Job {
 		if("prod".equals(mode) && !"true".equals(demomode)) {
 			if (log.isInfoEnabled())
 				log.info("running in production so skipping the rest of startup bean that sets up a mock database");
+			
+			String domain = Play.configuration.getProperty("domain");
+			if("none".equals(domain)) {
+				//In the case with no Active Directory, we at least need to add the very first user here
+				NoSql.em().put(StartupDetailed.ADMIN);
+				NoSql.em().flush();
+			}
+			
 			return;
 		}		
 		if (log.isInfoEnabled())
