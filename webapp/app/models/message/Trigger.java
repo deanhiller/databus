@@ -167,8 +167,8 @@ public class Trigger {
 				+ ", offset=" + offset + ", before=" + before + ", after="
 				+ after + ", runAsUser=" + runAsUser + ", lastRunSuccess="
 				+ lastRunSuccess + ", lastRunTime=" + lastRunTime
-				+ ", lastRunDuration=" + lastRunDuration + ", lastException="
-				+ lastError + "]";
+				+ ", lastRunDuration=" + lastRunDuration + ", lastError="
+				+ lastException + "]";
 	}
 
 } // Register
