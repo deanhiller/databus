@@ -333,7 +333,8 @@ public class SplinesPullProcessor extends PullProcessorAbstract {
 			for (int i = 0; i < buffer.maxSize(); i++) {
 				TSRelational tv = (TSRelational) array[i];
 				times[i] = tv.getTime();
-				values[i] = (BigDecimal) (tv.get(colName) == null ? BigDecimal.valueOf(0.0) :tv.get(colName));
+				Object val = tv.get(colName);
+				values[i] = (BigDecimal) (val == null ? BigDecimal.valueOf(0.0) :val);
 			}
 			spline.get(colName).setRawDataPoints(times, values);
 		}

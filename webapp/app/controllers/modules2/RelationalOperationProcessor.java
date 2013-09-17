@@ -14,6 +14,8 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.mvc.results.BadRequest;
 import controllers.modules2.framework.TSRelational;
@@ -23,6 +25,7 @@ import controllers.modules2.framework.procs.PushOrPullProcessor;
 
 public class RelationalOperationProcessor extends PushOrPullProcessor {
 
+	private static final Logger log = LoggerFactory.getLogger(RelationalOperationProcessor.class);
 	private CompiledScript script;
 	private ScriptEngine engine;
 	private RelationalContext relationalContext;
@@ -99,6 +102,10 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			result = script.eval();
 		} catch (ScriptException e) {
 			throw new BadRequest("Your script failed to evaluate for "+tv+" with exception "+e);
+		}
+		if(resultingColumnForcedDataType == null && result instanceof Double) {
+			log.warn("This should not be happening but a double is returned in this one case where BigDecimal returned in other places");
+			result = new BigDecimal(result+"");
 		}
 		tv.put(resultingColumn,  result);
 		relationalContext.incRowNum();

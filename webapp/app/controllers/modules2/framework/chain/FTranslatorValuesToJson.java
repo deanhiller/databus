@@ -83,6 +83,7 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 
 	@Override
 	public void onFailure(String url, Throwable exception, String errorMsg) {
+		log.warn("Exception", exception);
 		writeFooter(exception, errorMsg);
 		throw new SuccessfulAbort(errorMsg, exception);
 	}
