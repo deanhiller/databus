@@ -95,7 +95,7 @@ public class ATriggerListener {
 			fireHttpRequestAndWait(m, url, start, end);
 			success = true;
 		} catch(RuntimeException e) {
-			log.warn("Exception on trigger requesting url. triggerid="+m.getId()+" db="+db, e);
+			log.warn("Exception on cron job requesting url. triggerid="+m.getId()+" db="+db, e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			exceptionString = sw.toString();
@@ -121,7 +121,7 @@ public class ATriggerListener {
 		String fullUrl = url+"/"+start+"/"+end;
 
 		if (log.isInfoEnabled())
-			log.info("TRIGGER-sending request to url=" + fullUrl);
+			log.info("CRON JOB-sending request to url=" + fullUrl);
 		RequestBuilder b = new RequestBuilder("GET").setUrl(fullUrl)
 				.setRealm(realm);
 		com.ning.http.client.Request httpReq = b.build();
