@@ -36,7 +36,8 @@ public class GapProcessor extends PullProcessorAbstract {
 
 	private static final Logger log = LoggerFactory.getLogger(SplinesPullProcessor.class);
 
-	private int maxBeforeInsertingNull;
+	private Long maxBeforeInsertingNull;
+	private Integer maxMultiple;
 	private Long previousTime;
 
 	private ReadResult toReturnNext;
@@ -50,8 +51,12 @@ public class GapProcessor extends PullProcessorAbstract {
 		String newPath = super.init(path, nextInChain, visitor, options);
 
 		reversed = visitor.isReversed();
-		String max = fetchProperty("maxGap", "1200", options);
-		maxBeforeInsertingNull = 1000*Integer.parseInt(max);
+		String maxG = options.get("maxGap");
+		if(maxG == null) {
+			String maxM = fetchProperty("maxMultiple", "5", options);
+			maxMultiple = Integer.parseInt(maxM);
+		} else
+			maxBeforeInsertingNull = 1000*Long.parseLong(maxG);
 
 		return newPath;
 	}
@@ -84,7 +89,13 @@ public class GapProcessor extends PullProcessorAbstract {
 		if(previousTime == null) {
 			return value;
 		} 
-		
+
+		if(maxMultiple != null && maxBeforeInsertingNull == null) {
+			long t2 = getTime(row);
+			long range = Math.abs(t2-previousTime);
+			maxBeforeInsertingNull = maxMultiple * range;
+		}
+
 		long abs = Math.abs(time-previousTime);
 		if(abs > maxBeforeInsertingNull) {
 			//okay, cache this row to return next and for now return a row with a time

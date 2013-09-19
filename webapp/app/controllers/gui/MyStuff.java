@@ -91,7 +91,7 @@ public class MyStuff extends Controller {
 		
 		Map<String, String> variablesMap = new HashMap<String, String>();
 		variablesMap.put("title", table+" Last 1000 Data points");
-		variablesMap.put("url", "/api/firstvaluesV1/1000/rawdataV1/" + table + "?reverse=true");
+		variablesMap.put("url", "/api/firstvaluesV1/1000/gapV1/rawdataV1/" + table + "?reverse=true");
 		variablesMap.put("timeColumn", "time");
 		variablesMap.put("valueColumn", "value");
 		variablesMap.put("yaxisLabel", "units");
