@@ -33,6 +33,7 @@ public class TriggerRunnable implements Runnable {
 	private List<WebNodeDbo> nodes;
 	
 	public TriggerRunnable(PostTrigger trig, Map<String, String> jsonRow2, List<WebNodeDbo> nodes, int upNodeCount) {
+		this.jsonRow = jsonRow2;
 		this.trigger = trig;
 		this.upNodeCount = upNodeCount;
 		this.nodes = nodes;

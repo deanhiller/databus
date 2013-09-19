@@ -77,7 +77,7 @@ public class TestPostTriggerController {
 		PostTrigger t = new PostTrigger();
 		t.setDatabase(db);
 		t.setTable(tableName);
-		t.setScript("myscript");
+		t.setScript("function trigger(context) { var t = context.getRow(); var val = t.get('temp'); return true;}");
 		t.setScriptLanguage("javascript");
 		
 		ObjectMapper mapper = new ObjectMapper();
