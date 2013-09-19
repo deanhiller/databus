@@ -41,12 +41,15 @@ public class GapProcessor extends PullProcessorAbstract {
 
 	private ReadResult toReturnNext;
 
+	private boolean reversed;
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		if(log.isInfoEnabled())
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
 
+		reversed = visitor.isReversed();
 		String max = fetchProperty("maxGap", "1200", options);
 		maxBeforeInsertingNull = 1000*Integer.parseInt(max);
 
@@ -89,7 +92,12 @@ public class GapProcessor extends PullProcessorAbstract {
 			//chart
 			toReturnNext = value;
 			TSRelational emptyRow = new TSRelational();
-			setTime(emptyRow, previousTime+1);
+			long newTime = previousTime+1;
+			if(reversed)
+				newTime = previousTime-1;
+			setTime(emptyRow, newTime);
+			//at least for hicharts, this value HAS to be set to null so in the json
+			//we end up with "value" : null which is required or ALL data points do not draw in hicharts
 			setValue(emptyRow, null);
 			ReadResult r = new ReadResult(null, emptyRow);
 			return r;
