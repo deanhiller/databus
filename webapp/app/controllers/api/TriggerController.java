@@ -3,6 +3,7 @@ package controllers.api;
 import gov.nrel.util.ATriggerListener;
 import gov.nrel.util.Utility;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -60,6 +61,18 @@ public class TriggerController extends Controller {
 
 		PostTrigger.transform(tableMeta, msg);
 
+		Map<String, String> fakeRow = new HashMap<String, String>();
+		fakeRow.put("time", "0");
+		fakeRow.put("value", "0");
+		fakeRow.put("test", "true");
+		TriggerRunnable r= new TriggerRunnable(msg, fakeRow , null, 0);
+		try {
+			r.execute();
+		} catch(Exception e) {
+			log.warn("Script did not execute="+msg,e);
+			badRequest("Script did not execute successfully.  msg="+e.getMessage());
+		}
+		
 		List<String> ids = schema.getPostTriggerIds();
 		ids.add(tableMeta.getColumnFamily());
 

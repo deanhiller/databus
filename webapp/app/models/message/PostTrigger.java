@@ -37,10 +37,6 @@ public class PostTrigger {
     @XmlElement(name="script")
     public String script;
 
-	@JsonProperty("callback")
-    @XmlElement(name="callback")
-    public String callback;
-	
 	public String getDatabase() {
 		return database;
 	}
@@ -73,26 +69,16 @@ public class PostTrigger {
 		this.script = script;
 	}
 
-	public String getCallback() {
-		return callback;
-	}
-
-	public void setCallback(String callback) {
-		this.callback = callback;
-	}
-
 	public static PostTrigger transform(DboTableMeta table) {
 		Map<String, String> extensions = table.getExtensions();
 		String lang = extensions.get("databus.lang");
 		String script = extensions.get("databus.script");
-		String callback = extensions.get("databus.callback");
 		String db = extensions.get("databus.db");
 		PostTrigger t = new PostTrigger();
 		t.setDatabase(db);
 		t.setTable(table.getColumnFamily());
 		t.setScript(script);
 		t.setScriptLanguage(lang);
-		t.setCallback(callback);
 		return t;
 	}
 
@@ -100,7 +86,6 @@ public class PostTrigger {
 		Map<String, String> extensions = tableMeta.getExtensions();
 		extensions.put("databus.lang", msg.getScriptLanguage());
 		extensions.put("databus.script", msg.getScript());
-		extensions.put("databus.callback", msg.getCallback());
 		extensions.put("databus.db", msg.getDatabase());
 	}
 
@@ -108,8 +93,14 @@ public class PostTrigger {
 		Map<String, String> extensions = tableMeta.getExtensions();
 		extensions.remove("databus.lang");
 		extensions.remove("databus.script");
-		extensions.remove("databus.callback");
 		extensions.remove("databus.db");
+	}
+
+	@Override
+	public String toString() {
+		return "PostTrigger [database=" + database + ", table=" + table
+				+ ", scriptLanguage=" + scriptLanguage + ", script=" + script
+				+ "]";
 	}
 
 } // Register

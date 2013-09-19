@@ -6,8 +6,10 @@ import java.util.Map;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
+import javax.script.Invocable;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
+import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
@@ -45,7 +47,7 @@ public class TriggerRunnable implements Runnable {
 		}
 	}
 	
-	public void runImpl() throws ScriptException {
+	public void runImpl() throws ScriptException, NoSuchMethodException {
 		//BIG NOTE: We should change this eventually to forward the trigger request to the node for this trigger so we
 		//can implement caching on a scalable level such that each node does not have that large of a cache resulting in many cache hits
 		//step 1. hash the table name!!
@@ -54,26 +56,29 @@ public class TriggerRunnable implements Runnable {
 		int index = generator.generate(hash, upNodeCount);
 		//step 3. lookup the node we should be sending the request to(this node would have a cache for just these tables and the tables of a failed node)
 		WebNodeDbo node = nodes.get(index);
+		//step 4. fire an asynchronous request to the node that deals with this trigger(on failure, perhaps fire to one of the other nodes responsible)
+		
 
-		String script = trigger.getScript();
 		//NOTE: for now, the above code is useless and we just run the stuff ourselves until we have issues...ie. speed of dev is more important right now then
-		//getting this perfect
+		//getting this perfect		
+		execute();
+	}
+
+	public void execute() throws ScriptException, NoSuchMethodException {
+		String script = trigger.getScript();
 		TriggerContext ctx = new TriggerContext(jsonRow, trigger);
 		ScriptEngine engine;
 		if("javascript".equals(trigger.getScriptLanguage())) {
 			ScriptEngineManager manager = new ScriptEngineManager();
 			engine = manager.getEngineByName("javascript");
-
 		} else {
-			log.warn("we do not run this language yet="+trigger.getScriptLanguage()+" triggerdb="+trigger.getDatabase()+" table="+trigger.getTable());
-			return;
+			throw new RuntimeException("we do not run this language yet="+trigger.getScriptLanguage()+" triggerdb="+trigger.getDatabase()+" table="+trigger.getTable());
 		}
 
-		//Now for whatever language we are in, compile the script, bind variables and run the script
-		CompiledScript compiledScript = ((Compilable) engine).compile(script);		
-		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-		bindings.put("context", ctx);
-		Object result = compiledScript.eval();
+		engine.eval(script);
+		Invocable inv = (Invocable) engine;
+        // invoke the global function named "trigger"
+        inv.invokeFunction("trigger", ctx );
 	}
 
 }
