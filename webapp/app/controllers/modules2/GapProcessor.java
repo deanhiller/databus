@@ -43,7 +43,8 @@ public class GapProcessor extends PullProcessorAbstract {
 	private ReadResult toReturnNext;
 
 	private boolean reversed;
-
+	private TSRelational firstDataPt;
+	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		if(log.isInfoEnabled())
@@ -85,6 +86,9 @@ public class GapProcessor extends PullProcessorAbstract {
 			return value;
 		
 		TSRelational row = value.getRow();
+		if(firstDataPt == null)
+			firstDataPt = row;
+
 		long time = getTime(row);
 		if(previousTime == null) {
 			return value;
@@ -106,10 +110,14 @@ public class GapProcessor extends PullProcessorAbstract {
 			long newTime = previousTime+1;
 			if(reversed)
 				newTime = previousTime-1;
-			setTime(emptyRow, newTime);
+			
 			//at least for hicharts, this value HAS to be set to null so in the json
 			//we end up with "value" : null which is required or ALL data points do not draw in hicharts
-			setValue(emptyRow, null);
+			for(Entry<String, Object> kv : firstDataPt.entrySet()) {
+				String key = kv.getKey();
+				emptyRow.put(key, null);
+			}
+			setTime(emptyRow, newTime);
 			ReadResult r = new ReadResult(null, emptyRow);
 			return r;
 		}
