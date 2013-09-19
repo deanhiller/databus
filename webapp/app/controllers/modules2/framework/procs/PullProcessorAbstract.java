@@ -1,5 +1,7 @@
 package controllers.modules2.framework.procs;
 
+import java.util.HashMap;
+
 import controllers.modules2.framework.Direction;
 
 
@@ -30,5 +32,12 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 
 	public void setChild(ProcessorSetup mock) {
 		this.child = mock;
+	}
+	
+	protected String fetchProperty(String key, String defaultVal, HashMap<String, String> options) {
+		String s = options.get(key);
+		if(s != null)
+			return s;
+		return defaultVal;
 	}
 }

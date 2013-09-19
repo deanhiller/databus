@@ -14,6 +14,7 @@ import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.DataFillerProcessor;
 import controllers.modules2.DateFormatMod;
 import controllers.modules2.FirstValuesProcessor;
+import controllers.modules2.GapProcessor;
 import controllers.modules2.InvertProcessor;
 import controllers.modules2.LinearProcessor;
 import controllers.modules2.LogProcessor;
@@ -52,6 +53,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("splinesV1", SplinesV1PullProcessor.class);
 		nameToClazz.put("splinesV2", SplinesPullProcessor.class);
 		nameToClazz.put("splinesV3", SplinesV3PullProcessor.class);
+		nameToClazz.put("gapV1", GapProcessor.class);
 		nameToClazz.put("linearV1", LinearProcessor.class);
 		nameToClazz.put("rangecleanV1", RangeCleanProcessor.class);
 		nameToClazz.put("variabilitycleanV1", VariabilityCleanProcessor.class);

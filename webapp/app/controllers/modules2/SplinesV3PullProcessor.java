@@ -169,13 +169,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		}
 	}
 
-	private String fetchProperty(String key, String defaultVal, HashMap<String, String> options) {
-		String s = options.get(key);
-		if(s != null)
-			return s;
-		return defaultVal;
-	}
-
 	public static long calculateStartTime(long startTime, long interval, Long epochOffset) {
 		if(epochOffset == null)
 			return startTime;
