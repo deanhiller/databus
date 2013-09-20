@@ -32,9 +32,9 @@ public class ProxyProcessor {
 		return res;
 	}
 	
-	public List<ReadResult> peekThree() {
+	public List<ReadResult> peekAhead(int count) {
 		List<ReadResult> results = new ArrayList<ReadResult>();
-		for(int i = 0; i < 3; i++) {
+		for(int i = 0; i < count; i++) {
 			ReadResult res = child.read();
 			results.add(res);
 			cached.add(res);

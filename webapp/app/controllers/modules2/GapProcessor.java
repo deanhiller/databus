@@ -85,7 +85,7 @@ public class GapProcessor extends PullProcessorAbstract {
 	private void readForMaxMultiple() {
 		//read 3 values but they may all be end of streams
 		boolean endOfStream = false;
-		List<ReadResult> firstThree = readAheadProc.peekThree();
+		List<ReadResult> firstThree = readAheadProc.peekAhead(3);
 		for(ReadResult value1 : firstThree) {
 			if(value1.isEndOfStream())
 				endOfStream = true;
