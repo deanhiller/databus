@@ -164,10 +164,10 @@ public class ApiRegistrationImpl {
 		t.setCreator(user);
 		t.setIsForLogging(msg.getIsForLogging());
 		t.setSearchable(msg.getIsSearchable());
-		if (schema != null)
-			schema.addTable(t);
 		NoSql.em().fillInWithKey(t);
-		
+
+		schema.addTable(t);
+
 		tm.setForeignKeyToExtensions(t.getId());
 
 		setupEachColumn(msg, t, type);
