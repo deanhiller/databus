@@ -29,6 +29,7 @@ import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.ProxyProcessor;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
 
@@ -44,7 +45,17 @@ public class GapProcessor extends PullProcessorAbstract {
 
 	private boolean reversed;
 	private TSRelational firstDataPt;
-	
+
+	private ProxyProcessor readAheadProc;
+
+	@Override
+	public ProcessorSetup createPipeline(String path, VisitorInfo visitor,
+			ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
+		ProcessorSetup setup = super.createPipeline(path, visitor, useThisChild, alreadyAddedInverter);
+		readAheadProc = new ProxyProcessor((PullProcessor) child);
+		return setup;
+	}
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
 		if(log.isInfoEnabled())
@@ -64,13 +75,46 @@ public class GapProcessor extends PullProcessorAbstract {
 
 	@Override
 	public ReadResult read() {
+		//maxBeforeInsertingNull will be null until we use maxMultiple * smallest interval of first 3 points
+		//and then readForMaxGap takes over for us
+		if(maxBeforeInsertingNull == null)
+			readForMaxMultiple();
+		return readForMaxGap();
+	}
+
+	private void readForMaxMultiple() {
+		//read 3 values but they may all be end of streams
+		boolean endOfStream = false;
+		List<ReadResult> firstThree = readAheadProc.peekThree();
+		for(ReadResult value1 : firstThree) {
+			if(value1.isEndOfStream())
+				endOfStream = true;
+		}
+
+		if(!endOfStream) {
+			long t1 = fetchTime(firstThree.get(0));
+			long t2 = fetchTime(firstThree.get(1));
+			long t3 = fetchTime(firstThree.get(2));
+			long diff1 = Math.abs(t2 - t1);
+			long diff2 = Math.abs(t3 - t2);
+			long min = Math.min(diff1, diff2);
+			maxBeforeInsertingNull = min * maxMultiple;
+		}
+	}
+	
+	private long fetchTime(ReadResult readResult) {
+		TSRelational row = readResult.getRow();
+		return getTime(row);
+	}
+
+	private ReadResult readForMaxGap() {
 		ReadResult res = readImpl();
 		TSRelational row = res.getRow();
 		if(row != null)
 			previousTime = getTime(row);
 		return res;
 	}
-
+	
 	public ReadResult readImpl() {
 		if(toReturnNext != null) {
 			ReadResult retVal = toReturnNext;
@@ -78,8 +122,7 @@ public class GapProcessor extends PullProcessorAbstract {
 			return retVal;
 		}
 
-		PullProcessor ch = getChild();
-		ReadResult value = ch.read();
+		ReadResult value = readAheadProc.read();
 		if(value.isEndOfStream())
 			return value;
 		else if(value.isMissingData())
@@ -93,12 +136,6 @@ public class GapProcessor extends PullProcessorAbstract {
 		if(previousTime == null) {
 			return value;
 		} 
-
-		if(maxMultiple != null && maxBeforeInsertingNull == null) {
-			long t2 = getTime(row);
-			long range = Math.abs(t2-previousTime);
-			maxBeforeInsertingNull = maxMultiple * range;
-		}
 
 		long abs = Math.abs(time-previousTime);
 		if(abs > maxBeforeInsertingNull) {
