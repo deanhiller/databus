@@ -71,8 +71,6 @@ public class ApiPostDataPoints extends Controller {
 	private static int numFailures = 0;
 	private static long numSuccess = 0;
 
-	private static boolean firstRun = true;
-
 	private static void incrementCounters(int numPoints) {
 		counter++;
 		dataPointCounter += numPoints;		
@@ -100,14 +98,9 @@ public class ApiPostDataPoints extends Controller {
 	public static void postData() throws SolrServerException, IOException, ParserConfigurationException, SAXException {
 		String mode = (String) Play.configuration.get("upgrade.mode");
 		String requestUrl = null;
-		if(firstRun)
-			log.info("posting...mode="+mode);
 		if(mode != null && mode.startsWith("http")) {
 			requestUrl = mode;
 		}
-
-		if(firstRun)
-			log.info("request url="+requestUrl);
 
 		int numPoints = 0;
 		String json = Parsing.fetchJson();
@@ -118,9 +111,6 @@ public class ApiPostDataPoints extends Controller {
 			String password = request.password;
 			
 			if(requestUrl != null) {
-				if(firstRun)
-					log.info("BBBrequest url="+requestUrl);
-
 				// fix this so it is passed in instead....
 				Realm realm = new Realm.RealmBuilder()
 						.setPrincipal(user)
@@ -138,8 +128,6 @@ public class ApiPostDataPoints extends Controller {
 
 				try {
 					future = client.executeRequest(httpReq);
-					if(firstRun)
-						log.info("fired request to="+httpReq);
 				} catch (IOException e) {
 					throw new RuntimeException(e);
 				}
@@ -155,8 +143,6 @@ public class ApiPostDataPoints extends Controller {
 
 		incrementCounters(numPoints);
 		boolean success = false;
-		if(firstRun)
-			log.info("future="+future);
 		if(future != null) {
 			try {
 				Response response = future.get();
@@ -167,8 +153,6 @@ public class ApiPostDataPoints extends Controller {
 					numFailures++;
 					throw e;
 				}
-				if(firstRun)
-					log.info("setting success=true");
 				success = true;
 			} catch (InterruptedException e) {
 				numFailures++;
