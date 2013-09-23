@@ -139,7 +139,7 @@ public class ModuleTests {
 		
 		String resultBody = Utility.sendRequest(httpclient, "http://localhost:" + port + "/api/sumstreamsV1/aggregation/"+request.getName(), StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
-		Assert.assertEquals("{\"name\":\"mysum\",\"group\":\"supa\",\"database\":\"supa\",\"urls\":[\"splineV1/20/5/rawdataV1/fakeTimeSeries\",\"splineV1/20/5/rawdataV1/fakeTimeSeries2\"]}", resultBody);
+		Assert.assertEquals("{\"name\":\"mysum\",\"group\":\"supa\",\"database\":\"supa\",\"urls\":[\"splinesV3(interval=20,epochOffset=5)/rawdataV1/fakeTimeSeries\",\"splinesV3(interval=20,epochOffset=5)/rawdataV1/fakeTimeSeries2\"]}", resultBody);
 		
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/api/sumstreamsV1/deleteagg/"+request.getName(), json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
@@ -181,8 +181,8 @@ public class ModuleTests {
 
 	private RegisterAggregation createAggRequest2() {
 		List<String> urls = new ArrayList<String>();
-		urls.add("splineV1/20/5/rawdataV1/fakeTimeSeries");
-		urls.add("splineV1/20/5/rawdataV1/fakeTimeSeries2");
+		urls.add("splinesV3(interval=20,epochOffset=5)/rawdataV1/fakeTimeSeries");
+		urls.add("splinesV3(interval=20,epochOffset=5)/rawdataV1/fakeTimeSeries2");
 		RegisterAggregation agg = new RegisterAggregation();
 		agg.setName("mysum");
 		agg.setUrls(urls);

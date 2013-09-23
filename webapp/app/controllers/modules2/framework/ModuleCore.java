@@ -92,8 +92,8 @@ public class ModuleCore {
 			lastOne.init("negation/"+path, toOutput, visitor, new HashMap<String, String>());
 		}
 
-		lastOne.createPipeline(path, visitor, null, false);
 		try {
+			lastOne.createPipeline(path, visitor, null, false);
 			log.info("starting the pipeline="+lastOne);
 			//start them all up now....
 			lastOne.start(visitor);

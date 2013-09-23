@@ -272,8 +272,6 @@ GET     /api/sumstreamsV1/aggregation/{name}       modules.SumStreamsMod.getAggr
 GET     /api/sumstreamsV1/listaggregations/      modules.SumStreamsMod.getAllAggregations
 POST    /api/sumstreamsV1/register                 modules.SumStreamsMod.postAggregation
 POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDelete
-GET     /api/splineV1/{interval}/{windowSize}/{<.*>path} modules.SplinesMod.runSplinesDepricated
-GET     /api/splineV1/{<.*>path}                   modules.SplinesMod.error2
 
 #GET     /api/sumstreamsV1/{<.*>path}               modules.SumStreamsMod.error
 GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
