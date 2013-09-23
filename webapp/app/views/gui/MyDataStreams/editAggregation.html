@@ -1,0 +1,30 @@
+#{extends '/main_body_container.html' /}
+#{set tab:'home' /}
+
+#{if path}
+    ${path}
+#{/if}
+
+<h1 class="db_page_title">Create Aggregation</h1>
+
+#{form @postAggregation(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+
+    <input type="hidden" name="isAdd" value="${isAdd}">
+    
+	#{field 'name'}
+	<div class="control-group ${field.errorClass}">
+	    <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Name</label>
+	    <div class="controls">
+	         <input id="moduleNameId" type="text" name="${field.name}" value="" class="input-xlarge">
+	        <span class="help-block">${field.error}</span>
+	    </div>
+	</div>
+    #{/field}
+
+    <div class="control-group">
+       <div class="controls">
+          <input type="submit" name="submit" value="Next" class="btn btn-primary" />
+          <a href="javascript:history.back()" class="btn">Cancel</a>
+       </div>
+    </div>
+#{/form}

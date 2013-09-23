@@ -164,6 +164,19 @@ GET  /chartbasic/chart/{chartId}/{encoded}                           gui.MyChart
 GET  /chartbasic/drawchart/{chartId}/{encoded}                       gui.MyCharts.drawChart
 POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyCharts.addChartToDashboard
 
+# Datastream creation Pages
+# ******************************************************************************
+# ******************************************************************************
+GET  /datastreams/edit/{encoded}                  gui.MyDataStreams.editAggregation
+POST /datastreams/postaggregation                 gui.MyDataStreams.postAggregation
+GET  /datastreams/view/{encoded}                  gui.MyDataStreams.viewAggregation
+GET  /datastreams/complete/{encoded}              gui.MyDataStreams.aggregationComplete
+GET  /datastreams/stream/{action}/{encoded}       gui.MyDataStreams.editStream
+
+GET  /datastreams/module/{encoded}         gui.MyDataStreams.chooseModule
+
+POST /datastreams/postmodule/{encoded}     gui.MyDataStreams.postModule
+
 # GUI Summary Pages
 # ******************************************************************************
 # ******************************************************************************

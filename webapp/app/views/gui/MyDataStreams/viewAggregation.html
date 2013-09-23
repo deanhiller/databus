@@ -1,0 +1,35 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Groups' /}
+#{set tab:'home' /}
+
+${path}
+
+<h1 class="db_page_title">Aggregation ${stream.name}</h1>
+
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Actions</th>
+	    </tr>
+	</thead>
+	<tbody>
+	#{list stream.streams, as:'stream'}
+	   <tr>
+	       <td>${stream.name}</a></td>
+	       <td>delete</td>
+	   </tr>
+	#{/list}
+	#{else}
+	   <tr>
+	      <td colspan=2>Click Add Stream or Add Aggregation below to start creating a stream from other streams</td>
+	   </tr>
+    #{/else}
+	</tbody>
+</table>
+
+<p>
+  	<a href="@{gui.MyDataStreams.chooseModule(encoded, 'add')}" class="btn btn-primary">Add Stream</a>
+  	<a href="@{gui.MyDataStreams.editAggregation(encoded)}" class="btn btn-primary">Add Aggregation</a>
+  	<a href="@{gui.MyDataStreams.aggregationComplete(encoded)}" class="btn btn-primary">Aggregation Complete</a>
+</p>

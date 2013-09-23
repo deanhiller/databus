@@ -1,8 +1,11 @@
 package controllers.modules2.framework;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.inject.Provider;
@@ -36,6 +39,7 @@ import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
 import controllers.modules2.framework.chain.FTranslatorValuesToJson;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.RemoteProcessor;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
@@ -46,6 +50,8 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	private Map<String, Class<?>> nameToClazz = new HashMap<String, Class<?>>();
 	private Set<String> moduleNamesToForward = new HashSet<String>();
 	private Injector injector;
+
+	private Map<String, Class<?>> pullProcessors = new HashMap<String, Class<?>>();
 
 	public RawProcessorFactory() {
 		nameToClazz.put("getdataV1", SqlPullProcessor.class);
@@ -78,9 +84,12 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
 		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);
 		
-
-		
-
+		for(Entry<String, Class<?>> entry : nameToClazz.entrySet()) {
+			String key = entry.getKey();
+			Class<?> value = entry.getValue();
+			if(PullProcessor.class.isAssignableFrom(value))
+				pullProcessors.put(key, value);
+		}
 
 		//moduleNamesToForward.add("passthroughV1");
 		//moduleNamesToForward.add("invertV1");
@@ -127,5 +136,15 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	public void setInjector(Injector injector) {
 		this.injector = injector;
 	}
-	
+
+	public Map<String, Class<?>> fetchProcessors() {
+		return pullProcessors;
+	}
+
+	public List<String> fetchProcessorNames() {
+		List<String> keys = new ArrayList<String>();
+		for(String key : pullProcessors.keySet())
+			keys.add(key);
+		return keys;
+	}
 }

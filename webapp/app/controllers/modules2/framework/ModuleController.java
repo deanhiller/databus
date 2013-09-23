@@ -17,6 +17,8 @@ public class ModuleController extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(ModuleController.class);
 	
 	private static ModuleCore core;
+
+	private static RawProcessorFactory theFactory;
 	
 	static {
 		core = createCore();
@@ -28,9 +30,14 @@ public class ModuleController extends Controller {
 		Injector injector = Guice.createInjector(productionModule);
 		ModuleCore core1 = injector.getInstance(ModuleCore.class);
 		factory.setInjector(injector);
+		theFactory = factory;
 		return core1;
 	}
 	
+	public static RawProcessorFactory fetchFactory() {
+		return theFactory;
+	}
+
 	public static void startModules(String path) {
 		//Because of the on-demand development recompile, dev mode has to recreate the core or changes won't be there
 		String mode = Play.configuration.getProperty("application.mode");
