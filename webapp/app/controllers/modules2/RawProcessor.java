@@ -8,11 +8,13 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import models.EntityUser;
 import models.SecureTable;
+import models.message.ChartVarMeta;
 
 import org.apache.cassandra.db.SuperColumn;
 import org.apache.commons.lang.StringUtils;
@@ -67,7 +69,16 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 
 	private BigDecimal maxInt = new BigDecimal(Integer.MAX_VALUE);
 	private RawSubProcessor subprocessor;
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
+	static {
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Table");
+		meta.setNameInJavascript("table");
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+
 	@Override
 	protected int getNumParams() {
 		return 1;
@@ -79,6 +90,11 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	}
 	
 	
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		return parameterMeta ;
+	}
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
 			VisitorInfo visitor, HashMap<String, String> options) {

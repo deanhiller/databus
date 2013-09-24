@@ -51,7 +51,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	private Set<String> moduleNamesToForward = new HashSet<String>();
 	private Injector injector;
 
-	private Map<String, Class<?>> pullProcessors = new HashMap<String, Class<?>>();
+	private Map<String, PullProcessor> pullProcessors = new HashMap<String, PullProcessor>();
 
 	public RawProcessorFactory() {
 		nameToClazz.put("getdataV1", SqlPullProcessor.class);
@@ -67,7 +67,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("invertV1", InvertProcessor.class);
 		nameToClazz.put("passthroughV1", PassthroughProcessor.class);
 		nameToClazz.put("rawdataV1", RawProcessor.class);
-		nameToClazz.put("demux", StreamsProcessor.class);
+		//nameToClazz.put("demux", StreamsProcessor.class);
 		nameToClazz.put("firstvaluesV1", FirstValuesProcessor.class);
 		nameToClazz.put("minmaxV1", MinMaxProcessor.class);
 		nameToClazz.put("multiplyV1", MultiplyProcessor.class);
@@ -87,8 +87,18 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		for(Entry<String, Class<?>> entry : nameToClazz.entrySet()) {
 			String key = entry.getKey();
 			Class<?> value = entry.getValue();
-			if(PullProcessor.class.isAssignableFrom(value))
-				pullProcessors.put(key, value);
+			if(PullProcessor.class.isAssignableFrom(value)) {
+				PullProcessor pullProc;
+				try {
+					pullProc = (PullProcessor) value.newInstance();
+				} catch (InstantiationException e) {
+					throw new RuntimeException("module failed to load="+value, e);
+				} catch (IllegalAccessException e) {
+					throw new RuntimeException("module failed to load="+value, e);
+				}
+				if(pullProc.getParameterMeta() != null)
+					pullProcessors.put(key, pullProc);
+			}
 		}
 
 		//moduleNamesToForward.add("passthroughV1");
@@ -137,10 +147,9 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		this.injector = injector;
 	}
 
-	public Map<String, Class<?>> fetchProcessors() {
+	public Map<String, PullProcessor> fetchPullProcessors() {
 		return pullProcessors;
 	}
-
 	public List<String> fetchProcessorNames() {
 		List<String> keys = new ArrayList<String>();
 		for(String key : pullProcessors.keySet())

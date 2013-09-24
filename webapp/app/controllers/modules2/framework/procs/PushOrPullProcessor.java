@@ -1,5 +1,8 @@
 package controllers.modules2.framework.procs;
 
+import java.util.Map;
+
+import models.message.ChartVarMeta;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
@@ -7,6 +10,13 @@ import controllers.modules2.framework.TSRelational;
 
 
 public abstract class PushOrPullProcessor extends PushProcessorAbstract implements PullProcessor {
+
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		//returning null means don't display this module in the GUI.  returning an empty hashmap
+		//means display this module in the GUI and he has no parameters(hmmmmm, our wizard will actually show a blank page with a next button right now but oh well)
+		return null;
+	}
 
 	public void startEngine() {
 		if(nextInChain instanceof PullProcessor) {

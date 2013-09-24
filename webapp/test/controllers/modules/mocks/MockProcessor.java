@@ -2,6 +2,9 @@ package controllers.modules.mocks;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import models.message.ChartVarMeta;
 
 import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
@@ -16,6 +19,13 @@ public class MockProcessor extends PushProcessorAbstract implements PullProcesso
 	@Override
 	public void incomingChunk(String url, TSRelational row, ProcessedFlag flag) {
 		rows.add(row);
+	}
+
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		//returning null means don't display this module in the GUI.  returning an empty hashmap
+		//means display this module in the GUI and he has no parameters(hmmmmm, our wizard will actually show a blank page with a next button right now but oh well)
+		return null;
 	}
 
 	@Override

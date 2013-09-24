@@ -1,7 +1,12 @@
 package controllers.gui;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import models.message.ChartVarMeta;
 import models.message.StreamEditor;
 import models.message.StreamModule;
 
@@ -11,8 +16,10 @@ import org.slf4j.LoggerFactory;
 import play.mvc.Controller;
 import play.mvc.With;
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.ChartUtil;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
+import controllers.modules2.framework.procs.PullProcessor;
 
 @With(GuiSecure.class)
 public class MyDataStreams extends Controller {
@@ -152,13 +159,39 @@ public class MyDataStreams extends Controller {
 		StreamModule parent = tuple.getStream();
 		StreamModule module = parent.getStreams().get(index);
 		
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> nameToProc = factory.fetchPullProcessors();
+		PullProcessor proc = nameToProc.get(module.getModule());
+		Map<String, ChartVarMeta> paramMeta = proc.getParameterMeta();
+		List<ChartVarMeta> meta = new ArrayList<ChartVarMeta>();
+		//here we add variables. to distinguish it from any other parameters that may be coming in like "encoded" above or "index", etc....
+		for(Entry<String, ChartVarMeta> entry : paramMeta.entrySet()) {
+			meta.add(entry.getValue());
+		}
 		//We need to lookup the parameters here and form a dynamic form just like we do in the charting wizard
 		
-		render(encoded, index, module, path);
+		render(encoded, index, module, path, meta);
 	}
 	
 	public static void postModuleParams(String encoded, int index) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
+		StreamModule parent = tuple.getStream();
+		StreamModule module = parent.getStreams().get(index);
+		
 		//apply parameters here...decode and re-encode StreamEditor
+		Map<String, String[]> paramMap = params.all();
+		
+		for(String key : paramMap.keySet()) {
+			if(key.startsWith("variables.")) {
+				String[] values = paramMap.get(key);
+				String value = values[0];
+				String javascriptKey = key.substring("variables.".length());
+				module.getParams().put(javascriptKey, value);
+			}
+		}
+
+		encoded = DataStreamUtil.encode(editor);
 		viewStream(encoded);
 	}
 }

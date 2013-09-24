@@ -13,6 +13,8 @@ import java.util.Set;
 
 import gov.nrel.util.TimeValue;
 
+import models.message.ChartVarMeta;
+
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -47,6 +49,36 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
 	private CircularFifoBuffer master;
 	private long end;
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	
+	static {
+		ChartVarMeta meta1 = new ChartVarMeta();
+		meta1.setLabel("Interval");
+		meta1.setNameInJavascript("interval");
+		meta1.setDefaultValue("60000");
+		ChartVarMeta meta2 = new ChartVarMeta();
+		meta2.setLabel("Epoch Offset");
+		meta2.setNameInJavascript("epochOffset");
+		ChartVarMeta meta3 = new ChartVarMeta();
+		meta3.setLabel("Max To Stop Splining");
+		meta3.setNameInJavascript("maxToStopSplining");
+		meta3.setDefaultValue("5");
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Buffer Size");
+		meta.setNameInJavascript("bufferSize");
+		meta.setDefaultValue("20");
+		parameterMeta.put(meta1.getNameInJavascript(), meta1);
+		parameterMeta.put(meta2.getNameInJavascript(), meta2);
+		parameterMeta.put(meta3.getNameInJavascript(), meta3);
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+
+	
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		return parameterMeta;
+	}
 
 	@Override
 	protected int getNumParams() {
