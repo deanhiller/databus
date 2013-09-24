@@ -11,6 +11,7 @@ import javax.persistence.Column;
 
 import models.SecureSchema;
 import models.SecureTable;
+import models.StreamAggregation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,5 +59,13 @@ public class TransferBean2 extends TransferSuper {
 		portTableToNewCassandra(mgr, mgr2, cf);
 		cf = "StreamAggregation";
 		portTableToNewCassandra(mgr, mgr2, cf);
+		
+		Cursor<KeyValue<StreamAggregation>> cursor = StreamAggregation.findAll(mgr2);
+		while(cursor.next()) {
+			KeyValue<StreamAggregation> kv = cursor.getCurrent();
+			StreamAggregation agg = kv.getValue();
+			SecureSchema schema = agg.getSchema();
+			log.info("sc="+schema.getName()+" agg="+agg.getName());
+		}
 	}
 }
