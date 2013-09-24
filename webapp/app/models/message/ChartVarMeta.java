@@ -36,6 +36,17 @@ public class ChartVarMeta {
 
 	public String value;
 
+	public ChartVarMeta copy() {
+		ChartVarMeta copy = new ChartVarMeta();
+		copy.setDefaultValue(this.getDefaultValue());
+		copy.setLabel(this.getLabel());
+		copy.setNameInJavascript(this.getNameInJavascript());
+		copy.setHelp(this.getHelp());
+		copy.setType(this.getType());
+		copy.setValue(this.getValue());
+		return copy;
+	}
+
 	public String getNameInJavascript() {
 		return nameInJavascript;
 	}
@@ -84,6 +95,5 @@ public class ChartVarMeta {
 		this.defaultValue = defaultValue;
 	}
 
-	
 }
 

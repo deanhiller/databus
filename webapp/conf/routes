@@ -167,15 +167,19 @@ POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyChart
 # Datastream creation Pages
 # ******************************************************************************
 # ******************************************************************************
-GET  /datastreams/edit/{encoded}                  gui.MyDataStreams.editAggregation
-POST /datastreams/postaggregation                 gui.MyDataStreams.postAggregation
-GET  /datastreams/view/{encoded}                  gui.MyDataStreams.viewAggregation
-GET  /datastreams/complete/{encoded}              gui.MyDataStreams.aggregationComplete
-GET  /datastreams/stream/{action}/{encoded}       gui.MyDataStreams.editStream
+GET  /datastreams/agg/edit/{encoded}              gui.MyDataStreams.editAggregation
+POST /datastreams/agg/post/{encoded}              gui.MyDataStreams.postAggregation
+GET  /datastreams/agg/view/{encoded}              gui.MyDataStreams.viewAggregation
+GET  /datastreams/agg/complete/{encoded}          gui.MyDataStreams.aggregationComplete
+GET  /datastreams/stream/edit/{encoded}           gui.MyDataStreams.editStream
+POST /datastreams/stream/post/{encoded}           gui.MyDataStreams.postStream
+GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
+GET  /datastreams/stream/complete/{encoded}       gui.MyDataStreams.streamComplete
 
-GET  /datastreams/module/{encoded}         gui.MyDataStreams.chooseModule
-
+GET  /datastreams/module/{encoded}         gui.MyDataStreams.editModule
 POST /datastreams/postmodule/{encoded}     gui.MyDataStreams.postModule
+GET  /datastreams/moduleparams/{encoded}    gui.MyDataStreams.editModuleParams
+POST /datastreams/postparams/{encoded}     gui.MyDataStreams.postModuleParams
 
 # GUI Summary Pages
 # ******************************************************************************

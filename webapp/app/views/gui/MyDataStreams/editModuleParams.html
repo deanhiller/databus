@@ -1,0 +1,30 @@
+#{extends '/main_body_container.html' /}
+#{set tab:'home' /}
+
+#{if path}
+    ${path}
+#{/if}
+
+<h1 class="db_page_title">Fill in Module Parameters</h1>
+
+#{form @postModuleParams(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+
+    <input type="hidden" name="index" value="${index}">
+    
+    #{list items:meta, as:'v'}
+        <div class="control-group ${errors.forKey('v') ? 'error' : ''}">
+            <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>${v.label}</label>
+            <div class="controls">
+                <input type="text" name="variables.${v.nameInJavascript}" value="${v.value}" placeholder="Name(required)" class="${errors.forKey('v') ? 'has_error' : ''}">
+                <span class="help-block">${errors.forKey('v')}</span>
+            </div>
+        </div>
+    #{/list}
+
+    <div class="control-group">
+       <div class="controls">
+          <input type="submit" name="submit" value="Next" class="btn btn-primary" />
+          <a href="javascript:history.back()" class="btn">Cancel</a>
+       </div>
+    </div>
+#{/form}

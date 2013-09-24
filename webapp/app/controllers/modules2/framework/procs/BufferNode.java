@@ -3,6 +3,9 @@ package controllers.modules2.framework.procs;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import models.message.ChartVarMeta;
 
 import org.mortbay.log.Log;
 import org.slf4j.Logger;
@@ -28,6 +31,13 @@ public class BufferNode extends ProcessorSetupAbstract implements PullProcessor,
 			VisitorInfo visitor, HashMap<String, String> options) {
 		super.init(path, nextInChain, visitor, options);
 		return path;
+	}
+
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		//returning null means don't display this module in the GUI.  returning an empty hashmap
+		//means display this module in the GUI and he has no parameters(hmmmmm, our wizard will actually show a blank page with a next button right now but oh well)
+		return null;
 	}
 
 	@Override
