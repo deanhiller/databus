@@ -194,4 +194,12 @@ public class MyDataStreams extends Controller {
 		encoded = DataStreamUtil.encode(editor);
 		viewStream(encoded);
 	}
+	
+	public static void streamComplete(String encoded) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		List<Integer> locs = editor.getLocation();
+		locs.remove(locs.size()-1);
+		encoded = DataStreamUtil.encode(editor);
+		viewAggregation(encoded);
+	}
 }
