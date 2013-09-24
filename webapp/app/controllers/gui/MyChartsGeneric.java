@@ -98,7 +98,7 @@ public class MyChartsGeneric extends Controller {
 				String[] values = paramMap.get(key);
 				String value = values[0];
 				String javascriptKey = key.substring("chart.".length());
-				if(javascriptKey.equals("url"))
+				if(javascriptKey.endsWith("url"))
 					value = stripOffHost(value);
 				variablesMap.put(javascriptKey, value);
 			}
