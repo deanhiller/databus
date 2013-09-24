@@ -1,0 +1,37 @@
+#{extends '/main_body_container.html' /}
+#{set title:'My Groups' /}
+#{set tab:'home' /}
+
+<h1 class="db_page_title">Create Datastream</h1>
+
+<p>Data goes from top to bottom in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
+ data from and then you can add splines, range cleaners or other modules to that incoming data</p>
+
+<table class="table">
+	<thead>
+	    <tr>
+	        <th>Name</th>
+	        <th>Parameters</th>
+	        <th>Actions</th>
+	    </tr>
+	</thead>
+	<tbody>
+	#{list stream.streams, as:'module'}
+	   <tr>
+	       <td>${module.module}</td>
+	       <td>${module.params}</td>
+	       <td>delete</td>
+	   </tr>
+	#{/list}
+	#{else}
+	   <tr>
+	      <td colspan=2>Please add a Data Module</td>
+	   </tr>
+    #{/else}
+	</tbody>
+</table>
+
+<p>
+  	<a href="@{gui.MyDataStreams.editModule(encoded, -1)}" class="btn btn-primary">Add Module</a>
+
+</p>

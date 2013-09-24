@@ -1,37 +1,28 @@
 #{extends '/main_body_container.html' /}
-#{set title:'My Groups' /}
 #{set tab:'home' /}
 
-<h1 class="db_page_title">Create Datastream</h1>
+#{if path}
+    ${path}
+#{/if}
 
-<p>Data goes from top to bottom in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
- data from and then you can add splines, range cleaners or other modules to that incoming data</p>
+<h1 class="db_page_title">Create Aggregation</h1>
 
-<table class="table">
-	<thead>
-	    <tr>
-	        <th>Name</th>
-	        <th>Parameters</th>
-	        <th>Actions</th>
-	    </tr>
-	</thead>
-	<tbody>
-	#{list modules, as:'module'}
-	   <tr>
-	       <td>${module.module}</td>
-	       <td>${module.params}</td>
-	       <td>delete</td>
-	   </tr>
-	#{/list}
-	#{else}
-	   <tr>
-	      <td colspan=2>Please add a Data Module</td>
-	   </tr>
-    #{/else}
-	</tbody>
-</table>
+#{form @postStream(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
-<p>
-  	<a href="@{gui.MyDataStreams.chooseModule(encoded)}" class="btn btn-primary">Add Module</a>
-  	<a href="@{gui.MyDataStreams.modifyAggregation(encoded)}" class="btn btn-primary">Next</a>
-</p>
+	#{field 'name'}
+	<div class="control-group ${field.errorClass}">
+	    <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Name</label>
+	    <div class="controls">
+	         <input id="moduleNameId" type="text" name="${field.name}" value="${stream.name}" class="input-xlarge">
+	        <span class="help-block">${field.error}</span>
+	    </div>
+	</div>
+    #{/field}
+
+    <div class="control-group">
+       <div class="controls">
+          <input type="submit" name="submit" value="Next" class="btn btn-primary" />
+          <a href="javascript:history.back()" class="btn">Cancel</a>
+       </div>
+    </div>
+#{/form}
