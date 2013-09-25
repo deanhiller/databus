@@ -125,6 +125,9 @@ public class CronJobController extends Controller {
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob job = svc.getMonitor(id);
 
+		if(job == null)
+			badRequest("Trigger id="+triggerId+" does not exist");
+
 		String tableName = findTableName(job.getProperties().get("url"));
 		permissionCheck(tableName);
 		svc.deleteMonitor(id);
