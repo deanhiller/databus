@@ -80,6 +80,9 @@ public class StartupBean extends Job {
 		
 		startMonitorService();
 		
+		String mode = (String) Play.configuration.get("upgrade.mode");
+		log.info("upgrade mode="+mode);
+
 		Upgrade8Bean up = new Upgrade8Bean();
 		//up.readOnlyTest();
 		up.upgrade();
