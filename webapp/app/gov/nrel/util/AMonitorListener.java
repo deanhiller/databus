@@ -14,14 +14,14 @@ public class AMonitorListener implements CronListener {
 
 	private static final Logger log = LoggerFactory.getLogger(AMonitorListener.class);
 	private ATableMonitorListener monitorListener;
-	private ATriggerListener triggerListener;
+	private ACronJobListener cronJobListener;
 	private NoSqlEntityManagerFactory factory;
 	
 	public AMonitorListener(NoSqlEntityManagerFactory factory) {
 		this.factory = factory;
 		this.monitorListener = new ATableMonitorListener();
 		CronService svc = CronServiceFactory.getSingleton(null);
-		this.triggerListener = new ATriggerListener(svc);
+		this.cronJobListener = new ACronJobListener(svc);
 	}
 
 	@Override
@@ -29,9 +29,10 @@ public class AMonitorListener implements CronListener {
 		if(log.isInfoEnabled())
 			log.info("firing monitor="+m.getId()+" type="+m.getType());
 		NoSqlEntityManager mgr = factory.createEntityManager();
-		if("trigger".equals(m.getType()))
-			triggerListener.monitorFired(m);
-		else
+		if("trigger".equals(m.getType()) || "cronjob".equals(m.getType())) {
+			m.setType("cronjob");
+			cronJobListener.monitorFired(m);
+		} else
 			monitorListener.monitorFired(mgr, m);
 	}
 

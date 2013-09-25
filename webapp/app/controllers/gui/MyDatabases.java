@@ -1,6 +1,6 @@
 package controllers.gui;
 
-import gov.nrel.util.ATriggerListener;
+import gov.nrel.util.ACronJobListener;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
@@ -212,7 +212,7 @@ public class MyDatabases extends Controller {
 		List<Trigger> triggers = new ArrayList<Trigger>();
 		for(PlayOrmCronJob m : trigs) {
 			if(m != null) {
-				Trigger trigger = ATriggerListener.transform(m);
+				Trigger trigger = ACronJobListener.transform(m);
 				triggers.add(trigger);
 			}
 		}
@@ -591,7 +591,7 @@ public class MyDatabases extends Controller {
 		EntityUser user = Utility.getCurrentUser(session);
 		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		
-		String id = ATriggerListener.formId(cronId);
+		String id = ACronJobListener.formId(cronId);
 		schema.getTriggerIds().remove(id);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		svc.deleteMonitor(id);

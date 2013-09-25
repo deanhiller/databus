@@ -10,10 +10,13 @@ import java.util.concurrent.Executors;
 
 import models.AppProperty;
 import models.EntityUser;
+import models.SecureSchema;
+import models.message.Trigger;
 
 import org.apache.commons.lang.StringUtils;
 import org.playorm.cron.api.CronService;
 import org.playorm.cron.api.CronServiceFactory;
+import org.playorm.cron.api.PlayOrmCronJob;
 import org.slf4j.LoggerFactory;
 
 import play.Play;
@@ -81,6 +84,20 @@ public class StartupBean extends Job {
 		//up.readOnlyTest();
 		up.upgrade();
 
+		List<SecureSchema> findAll = SecureSchema.findAll(NoSql.em());
+		CronService svc = CronServiceFactory.getSingleton(null);
+		for(SecureSchema s : findAll) {
+			List<String> triggerIds = s.getTriggerIds();
+			List<PlayOrmCronJob> jobs = svc.getMonitors(triggerIds);
+			for(PlayOrmCronJob job : jobs) {
+				job.getProperties().put("schemaId", s.getId());
+				job.getProperties().put("database", s.getSchemaName());
+				svc.saveMonitor(job);
+				Trigger trigger = ACronJobListener.transform(job);
+				log.info("transformed trigger="+trigger);
+			}
+		}
+		
 		TransferBean b = new TransferBean();
 		b.transfer();
 		

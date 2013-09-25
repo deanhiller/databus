@@ -1,7 +1,7 @@
 package controllers.api;
 
 import gov.nrel.util.AMonitorListener;
-import gov.nrel.util.ATriggerListener;
+import gov.nrel.util.ACronJobListener;
 import gov.nrel.util.StartupDetailed;
 import gov.nrel.util.StartupGroups;
 
@@ -105,7 +105,7 @@ public class TestCronJobController {
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json1, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		
 		CronService mockSvc = new MockCronSvc();
-		ATriggerListener l = new ATriggerListener(mockSvc, 3400, 4300);
+		ACronJobListener l = new ACronJobListener(mockSvc, 3400, 4300);
 		PlayOrmCronJob job = new PlayOrmCronJob();
 		job.setId("_logMyLoggingTable");
 		job.setEpochOffset(30L);

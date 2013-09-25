@@ -1,6 +1,6 @@
 package controllers.api;
 
-import gov.nrel.util.ATriggerListener;
+import gov.nrel.util.ACronJobListener;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
@@ -56,7 +56,7 @@ public class CronJobController extends Controller {
 		String url = msg.getUrl();
 		validateIfLogV1InUrl(url);
 
-		String id = ATriggerListener.formId(msg.getId());
+		String id = ACronJobListener.formId(msg.getId());
 
 		EntityUser user = Utility.getCurrentUserNew(session);
 
@@ -65,10 +65,10 @@ public class CronJobController extends Controller {
 		if(job != null)
 			badRequest("id="+id+" is already in use.  please delete and recreate if that is what you want");
 		SecureSchema db = SecureSchema.findByName(NoSql.em(), database);
-		job = ATriggerListener.transform(msg, id, db, user);
+		job = ACronJobListener.transform(msg, id, db, user);
 		
 		//run trigger here as test...
-		ATriggerListener listener = new ATriggerListener(svc, 0, 1);
+		ACronJobListener listener = new ACronJobListener(svc, 0, 1);
 		try {
 			listener.monitorFired(job);
 		} catch(Exception e) {
@@ -121,7 +121,7 @@ public class CronJobController extends Controller {
 	}
 	
 	public static void postDelete(String triggerId) {
-		String id = ATriggerListener.formId(triggerId);
+		String id = ACronJobListener.formId(triggerId);
 		CronService svc = CronServiceFactory.getSingleton(null);
 		PlayOrmCronJob job = svc.getMonitor(id);
 
@@ -154,7 +154,7 @@ public class CronJobController extends Controller {
 		Triggers triggers = new Triggers();
 
 		for(PlayOrmCronJob job : jobs) {
-			Trigger trigger = ATriggerListener.transform(job);
+			Trigger trigger = ACronJobListener.transform(job);
 			triggers.getTriggers().add(trigger);
 		}
 

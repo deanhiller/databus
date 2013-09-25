@@ -1,6 +1,6 @@
 package controllers.api;
 
-import gov.nrel.util.ATriggerListener;
+import gov.nrel.util.ACronJobListener;
 import gov.nrel.util.Utility;
 
 import java.util.HashMap;

@@ -40,19 +40,19 @@ import controllers.modules2.framework.procs.PushProcessor;
 import controllers.modules2.framework.procs.RemoteProcessor.AuthInfo;
 import controllers.modules2.framework.translate.TranslationFactory;
 
-public class ATriggerListener {
+public class ACronJobListener {
 
-	private static final Logger log = LoggerFactory.getLogger(ATriggerListener.class);
+	private static final Logger log = LoggerFactory.getLogger(ACronJobListener.class);
 	private Long startOverride;
 	private Long endOverride;
 	private CronService svc;
 	private AsyncHttpClient client = ProductionModule.createSingleton();
 
-	public ATriggerListener(CronService svc) {
+	public ACronJobListener(CronService svc) {
 		this.svc = svc;
 	}
 
-	public ATriggerListener(CronService svc, long startOverride, long endOverride) {
+	public ACronJobListener(CronService svc, long startOverride, long endOverride) {
 		this.svc = svc;
 		this.startOverride = startOverride;
 		this.endOverride = endOverride;

@@ -1,7 +1,7 @@
 package controllers.api;
 
 import gov.nrel.util.AMonitorListener;
-import gov.nrel.util.ATriggerListener;
+import gov.nrel.util.ACronJobListener;
 import gov.nrel.util.StartupDetailed;
 import gov.nrel.util.StartupGroups;
 
