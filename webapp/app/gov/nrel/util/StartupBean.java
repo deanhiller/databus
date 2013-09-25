@@ -87,20 +87,6 @@ public class StartupBean extends Job {
 		//up.readOnlyTest();
 		up.upgrade();
 
-		List<SecureSchema> findAll = SecureSchema.findAll(NoSql.em());
-		CronService svc = CronServiceFactory.getSingleton(null);
-		for(SecureSchema s : findAll) {
-			List<String> triggerIds = s.getTriggerIds();
-			List<PlayOrmCronJob> jobs = svc.getMonitors(triggerIds);
-			for(PlayOrmCronJob job : jobs) {
-				job.getProperties().put("schemaId", s.getId());
-				job.getProperties().put("database", s.getSchemaName());
-				svc.saveMonitor(job);
-				Trigger trigger = ACronJobListener.transform(job);
-				log.info("transformed trigger="+trigger);
-			}
-		}
-		
 		TransferBean b = new TransferBean();
 		b.transfer();
 		
