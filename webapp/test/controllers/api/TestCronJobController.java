@@ -110,7 +110,7 @@ public class TestCronJobController {
 		job.setId("_logMyLoggingTable");
 		job.setEpochOffset(30L);
 		job.setTimePeriodMillis(50);
-		job.setType("trigger");
+		job.setType("cronjob");
 		job.getProperties().put("offset", ""+job.getEpochOffset());
 		job.getProperties().put("after", "20");
 		job.getProperties().put("before", "20");

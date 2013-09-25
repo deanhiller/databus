@@ -60,8 +60,8 @@ public class Trigger {
     @XmlElement(name="lastRunDuration")
 	private long lastRunDuration;
 	
-	@JsonProperty("lastException")
-    @XmlElement(name="lastException")
+	@JsonProperty("lastError")
+    @XmlElement(name="lastError")
 	private String lastError;
 	
 
