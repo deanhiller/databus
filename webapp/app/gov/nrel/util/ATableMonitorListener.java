@@ -100,12 +100,13 @@ public class ATableMonitorListener {
 		if (log.isInfoEnabled())
 			log.info("monitor firing(new version)=" + tableMon);
 
+		String tableName = tableMon.getTableName();
 		RawProcessor p = new RawProcessor(mgr, true);
 		VisitorInfo visitor = new VisitorInfo(null, null, true);
-		String path = "rawdataV1/mytable/0/null";
+		String path = "rawdataV1/"+tableName+"/0/null";
 		HashMap<String, String> options = new HashMap<String, String>();
 		p.init(path, null, visitor , options);
-		
+
 		DateTime now = new DateTime();
 		ReadResult res = p.read();
 		if(res.isEndOfStream()) {
