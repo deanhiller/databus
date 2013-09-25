@@ -47,7 +47,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private String url;
 	protected int currentIndex;
 	protected List<Long> existingPartitions = new ArrayList<Long>();
-	private NoSqlEntityManager mgr;
+	protected NoSqlEntityManager mgr;
 
 	@Override
 	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {

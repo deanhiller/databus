@@ -6,7 +6,6 @@ import com.alvazan.orm.api.z3api.NoSqlTypedSession;
 import com.alvazan.orm.api.z5api.NoSqlSession;
 import com.alvazan.orm.api.z8spi.action.Column;
 import com.alvazan.orm.api.z8spi.iter.AbstractCursor;
-import com.alvazan.play.NoSql;
 
 import controllers.api.ApiPostDataPointsImpl;
 
@@ -37,7 +36,7 @@ public class RawTimeSeriesReversedProcessor extends RawTimeSeriesProcessor
 
 		do {
 			Long currentPartId = existingPartitions.get(currentIndex);
-			NoSqlTypedSession em = NoSql.em().getTypedSession();
+			NoSqlTypedSession em = mgr.getTypedSession();
 			NoSqlSession raw = em.getRawSession();
 
 			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartId));
