@@ -95,7 +95,7 @@ public class ACronJobListener {
 			fireHttpRequestAndWait(m, url, start, end);
 			success = true;
 		} catch(RuntimeException e) {
-			log.warn("Exception on cron job requesting url. triggerid="+m.getId()+" db="+db, e);
+			log.warn("Exception on cron job requesting url. triggerid="+m.getId()+" trigger="+trigger, e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			exceptionString = sw.toString();
