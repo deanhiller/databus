@@ -101,8 +101,8 @@ public class ATableMonitorListener {
 			log.info("monitor firing(new version)=" + tableMon);
 
 		String tableName = tableMon.getTableName();
-		RawProcessor p = new RawProcessor(mgr, true);
-		VisitorInfo visitor = new VisitorInfo(null, null, true);
+		RawProcessor p = new RawProcessor(true);
+		VisitorInfo visitor = new VisitorInfo(null, null, true, mgr);
 		String path = "rawdataV1/"+tableName+"/0/null";
 		HashMap<String, String> options = new HashMap<String, String>();
 		p.init(path, null, visitor , options);

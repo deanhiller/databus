@@ -71,8 +71,6 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	private RawSubProcessor subprocessor;
 	private boolean skipSecurity;
 
-	private NoSqlEntityManager mgr;
-
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
 	static {
@@ -84,8 +82,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 
 	public RawProcessor() {
 	}
-	public RawProcessor(NoSqlEntityManager mgr, boolean skipSecurity) {
-		this.mgr = mgr;
+	public RawProcessor(boolean skipSecurity) {
 		this.skipSecurity = skipSecurity;
 	}
 
@@ -118,7 +115,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 
 		SecureTable sdiTable = null;
 		if(skipSecurity) {
-			sdiTable = SecureTable.findByName(mgr, colFamily);
+			sdiTable = SecureTable.findByName(visitor.getMgr(), colFamily);
 		} else
 			sdiTable = SecurityUtil.checkSingleTable(colFamily);
 		

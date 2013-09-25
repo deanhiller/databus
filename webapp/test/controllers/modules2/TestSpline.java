@@ -73,7 +73,7 @@ public class TestSpline {
 		MockProcessor mock = new MockProcessor();
 		mock.setRows(rows);
 		processor.setChild(mock);
-		VisitorInfo visitor = new VisitorInfo(null, null, false);
+		VisitorInfo visitor = new VisitorInfo(null, null, false, null);
 		processor.init(path, mock, visitor, new HashMap<String, String>());
 		
 		List<TSRelational> realResults = new ArrayList<TSRelational>();

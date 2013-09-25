@@ -35,7 +35,7 @@ public class TestModuleHookup {
 		Injector injector = Guice.createInjector(productionModule);
 		factory.setInjector(injector);
 
-		VisitorInfo visitor = new VisitorInfo(null, null, false);
+		VisitorInfo visitor = new VisitorInfo(null, null, false, null);
 		FTranslatorValuesToJson proc2 = injector.getInstance(FTranslatorValuesToJson.class);
 		proc2.createPipeline("doubleV1/invertV1Beta/rawdataInnerV1/name/50/2000", visitor, null, false);
 		

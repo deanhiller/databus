@@ -66,7 +66,7 @@ public class TestMinMaxProcessor {
 		MockProcessor mock = new MockProcessor();
 		mock.setRows(rows);
 		processor.setChild(mock);
-		VisitorInfo visitor = new VisitorInfo(null, null, false);
+		VisitorInfo visitor = new VisitorInfo(null, null, false, null);
 		processor.init(path, mock, visitor, new HashMap<String, String>());
 		
 		List<TSRelational> realResults = new ArrayList<TSRelational>();
@@ -84,7 +84,7 @@ public class TestMinMaxProcessor {
 			PushProcessor processor, String path) {
 		EmptyFlag flag = new EmptyFlag();
 		MockProcessor mock = new MockProcessor();
-		VisitorInfo visitor = new VisitorInfo(null, null, false);
+		VisitorInfo visitor = new VisitorInfo(null, null, false, null);
 		processor.init(path, mock, visitor, new HashMap<String, String>());
 
 		for(TSRelational row : rows) {

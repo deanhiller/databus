@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
 
+import com.alvazan.play.NoSql;
 import com.ning.http.client.ListenableFuture;
 
 import controllers.modules2.framework.chain.DNegationProcessor;
@@ -86,7 +87,7 @@ public class ModuleCore {
 			isReversed = true;
 		}
 
-		VisitorInfo visitor = new VisitorInfo(promise, factory, isReversed);
+		VisitorInfo visitor = new VisitorInfo(promise, factory, isReversed, NoSql.em());
 		if(visitor.isReversed() && !StringUtils.contains(path, "dateformatV")) {
 			lastOne = negationProcessors.get();
 			lastOne.init("negation/"+path, toOutput, visitor, new HashMap<String, String>());

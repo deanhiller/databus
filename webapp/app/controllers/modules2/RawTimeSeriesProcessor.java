@@ -26,7 +26,6 @@ import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
-import com.alvazan.play.NoSql;
 
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.modules2.framework.ReadResult;
@@ -48,9 +47,11 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private String url;
 	protected int currentIndex;
 	protected List<Long> existingPartitions = new ArrayList<Long>();
+	private NoSqlEntityManager mgr;
 
 	@Override
 	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
+		mgr = visitor.getMgr();
 		this.meta = meta;
 		this.url = url;
 		
@@ -71,8 +72,8 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	}
 
 	private void loadPartitions(DboTableMeta meta2) {
-		DboTableMeta tableMeta = NoSql.em().find(DboTableMeta.class, "partitions");
-		NoSqlSession session = NoSql.em().getSession();
+		DboTableMeta tableMeta = mgr.find(DboTableMeta.class, "partitions");
+		NoSqlSession session = mgr.getSession();
 		byte[] rowKey = StandardConverters.convertToBytes(meta2.getColumnFamily());
 		Cursor<Column> results = session.columnSlice(tableMeta, rowKey, null, null, 1000, BigInteger.class);
 		
@@ -116,7 +117,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		int count = 0;
 		do {
 			Long currentPartId = existingPartitions.get(currentIndex);
-			NoSqlTypedSession em = NoSql.em().getTypedSession();
+			NoSqlTypedSession em = mgr.getTypedSession();
 			NoSqlSession raw = em.getRawSession();
 
 			byte[] rowKeyPostFix = meta.getIdColumnMeta().convertToStorage2(new BigInteger(""+currentPartId));

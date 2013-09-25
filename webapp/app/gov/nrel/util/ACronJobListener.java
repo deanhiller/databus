@@ -58,8 +58,8 @@ public class ACronJobListener {
 		this.endOverride = endOverride;
 	}
 
-	public void monitorFired(PlayOrmCronJob m) {
-		Trigger trigger = transform(m);
+	public void monitorFired(PlayOrmCronJob cronJob) {
+		Trigger trigger = transform(cronJob);
 		if(log.isInfoEnabled())
 			log.info("monitor firing for url="+trigger.getUrl());
 		String url = trigger.getUrl();
@@ -92,19 +92,19 @@ public class ACronJobListener {
 		}
 
 		try {
-			fireHttpRequestAndWait(m, url, start, end);
+			fireHttpRequestAndWait(cronJob, url, start, end);
 			success = true;
 		} catch(RuntimeException e) {
-			log.warn("Exception on cron job requesting url. triggerid="+m.getId()+" trigger="+trigger, e);
+			log.warn("Exception on cron job requesting url. triggerid="+cronJob.getId()+" trigger="+trigger, e);
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			exceptionString = sw.toString();
 			//MUST be thrown as this is called from controller and we must give user exception if his url does not work at all
 			throw e;
 		} finally {
-			m.getProperties().put("success", success+"");
-			m.getProperties().put("lastException", exceptionString);
-			svc.saveMonitor(m);
+			cronJob.getProperties().put("success", success+"");
+			cronJob.getProperties().put("lastException", exceptionString);
+			svc.saveMonitor(cronJob);
 		}
 	}
 
