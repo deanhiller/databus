@@ -62,7 +62,7 @@ public class Trigger {
 	
 	@JsonProperty("lastException")
     @XmlElement(name="lastException")
-	private String lastException;
+	private String lastError;
 	
 
 	public String getId() {
@@ -153,22 +153,22 @@ public class Trigger {
 		this.lastRunDuration = lastRunDuration;
 	}
 
-	public String getLastException() {
-		return lastException;
+	public String getLastError() {
+		return lastError;
 	}
 
-	public void setLastException(String lastException) {
-		this.lastException = lastException;
+	public void setLastError(String lastException) {
+		this.lastError = lastException;
 	}
 
 	@Override
 	public String toString() {
-		return "Trigger [id=" + id + ", url=" + url + ", rate=" + rate
-				+ ", offset=" + offset + ", before=" + before + ", after="
-				+ after + ", runAsUser=" + runAsUser + ", lastRunSuccess="
-				+ lastRunSuccess + ", lastRunTime=" + lastRunTime
-				+ ", lastRunDuration=" + lastRunDuration + ", lastError="
-				+ lastException + "]";
+		return "Trigger [id=" + id + ", database=" + database + ", url=" + url
+				+ ", rate=" + rate + ", offset=" + offset + ", before="
+				+ before + ", after=" + after + ", runAsUser=" + runAsUser
+				+ ", lastRunSuccess=" + lastRunSuccess + ", lastRunTime="
+				+ lastRunTime + ", lastRunDuration=" + lastRunDuration
+				+ ", lastError=" + lastError + "]";
 	}
 
 } // Register

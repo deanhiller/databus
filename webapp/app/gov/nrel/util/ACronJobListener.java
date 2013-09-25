@@ -183,7 +183,7 @@ public class ACronJobListener {
 			t.setLastRunTime(Long.parseLong(job.getProperties().get("startTime")));
 		if (StringUtils.isNotBlank(job.getProperties().get("duration")))
 			t.setLastRunDuration(Long.parseLong(job.getProperties().get("duration")));
-		t.setLastException(job.getProperties().get("lastException"));
+		t.setLastError(job.getProperties().get("lastException"));
 		return t;
 	}
 
