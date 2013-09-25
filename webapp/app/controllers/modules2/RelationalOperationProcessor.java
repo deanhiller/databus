@@ -104,7 +104,6 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			throw new BadRequest("Your script failed to evaluate for "+tv+" with exception "+e);
 		}
 		if(resultingColumnForcedDataType == null && result instanceof Double) {
-			log.warn("This should not be happening but a double is returned in this one case where BigDecimal returned in other places");
 			result = new BigDecimal(result+"");
 		}
 		tv.put(resultingColumn,  result);
