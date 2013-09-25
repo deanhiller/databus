@@ -69,6 +69,9 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 
 	private BigDecimal maxInt = new BigDecimal(Integer.MAX_VALUE);
 	private RawSubProcessor subprocessor;
+	private boolean skipSecurity;
+
+	private NoSqlEntityManager mgr;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
@@ -77,6 +80,13 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		meta.setLabel("Table");
 		meta.setNameInJavascript("table");
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+
+	public RawProcessor() {
+	}
+	public RawProcessor(NoSqlEntityManager mgr, boolean skipSecurity) {
+		this.mgr = mgr;
+		this.skipSecurity = skipSecurity;
 	}
 
 	@Override
@@ -106,10 +116,15 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
 
-		SecureTable sdiTable = SecurityUtil.checkSingleTable(colFamily);
+		SecureTable sdiTable = null;
+		if(skipSecurity) {
+			sdiTable = SecureTable.findByName(mgr, colFamily);
+		} else
+			sdiTable = SecurityUtil.checkSingleTable(colFamily);
+		
 		if(sdiTable == null)
 			throw new BadRequest("table="+colFamily+" does not exist");
-		
+
 		DboTableMeta meta = sdiTable.getTableMeta();
 		
 		if(meta.isTimeSeries()) {
