@@ -84,4 +84,10 @@ public class TableMonitor {
 		}
 		return new ArrayList<String>();
 	}
+	@Override
+	public String toString() {
+		return "TableMonitor [id=" + id + ", schema=" + schema + ", tableName="
+				+ tableName + ", emails=" + emails + ", updatePeriod="
+				+ updatePeriod + "]";
+	}
 }
