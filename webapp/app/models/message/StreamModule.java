@@ -32,7 +32,7 @@ public class StreamModule {
 
 	@JsonProperty("params")
     @XmlElement(name="params")
-    public Map<String, Object> params = new HashMap<String, Object>();
+    public Map<String, String> params = new HashMap<String, String>();
 
 	//I want to do the composite pattern and push this field down into the "Container" while StreamModule is the "Component" of that pattern
 	//but that would not work as unmarshalling the json would break since parser does not know to parse to StreamModule or the Container type which
@@ -49,11 +49,11 @@ public class StreamModule {
 		this.module = module;
 	}
 
-	public Map<String, Object> getParams() {
+	public Map<String, String> getParams() {
 		return params;
 	}
 
-	public void setParams(Map<String, Object> params) {
+	public void setParams(Map<String, String> params) {
 		this.params = params;
 	}
 

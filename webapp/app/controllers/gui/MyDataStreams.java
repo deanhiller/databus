@@ -163,14 +163,20 @@ public class MyDataStreams extends Controller {
 		Map<String, PullProcessor> nameToProc = factory.fetchPullProcessors();
 		PullProcessor proc = nameToProc.get(module.getModule());
 		Map<String, ChartVarMeta> paramMeta = proc.getParameterMeta();
-		List<ChartVarMeta> meta = new ArrayList<ChartVarMeta>();
+		Map<String, String> params2 = module.getParams();
+		List<VarWrapper> paramList = new ArrayList<VarWrapper>();
 		//here we add variables. to distinguish it from any other parameters that may be coming in like "encoded" above or "index", etc....
 		for(Entry<String, ChartVarMeta> entry : paramMeta.entrySet()) {
-			meta.add(entry.getValue());
+			VarWrapper var = new VarWrapper(entry.getValue());
+			String value = params2.get(entry.getKey());
+			if(value == null)
+				value = entry.getValue().getDefaultValue();
+			var.setValue(value);
+			paramList.add(var);
 		}
 		//We need to lookup the parameters here and form a dynamic form just like we do in the charting wizard
 		
-		render(encoded, index, module, path, meta);
+		render(encoded, index, module, path, paramList);
 	}
 	
 	public static void postModuleParams(String encoded, int index) {
