@@ -20,6 +20,7 @@ import controllers.gui.util.ChartUtil;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
 import controllers.modules2.framework.procs.PullProcessor;
+import controllers.modules2.framework.procs.StreamsProcessor;
 
 @With(GuiSecure.class)
 public class MyDataStreams extends Controller {
@@ -150,9 +151,22 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void postModule(String encoded, String moduleName, int index) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> pullProcs = factory.fetchPullProcessors();
+		PullProcessor pullProcessor = pullProcs.get(moduleName);
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
+		
+		if(pullProcessor instanceof StreamsProcessor) {
+			//here, they are adding an aggregation so we need to switch to aggregations page now instead(and allow them to name the aggregation as well)
+			StreamModule module = new StreamModule();
+			module.setModule(moduleName);
+			parent.getStreams().add(module);
+			editor.getLocation().add(parent.getStreams().size()-1);
+			encoded = DataStreamUtil.encode(editor);
+			viewAggregation(encoded);
+		}
 		
 		if(index >= 0) {
 			StreamModule module = parent.getStreams().get(index-1);
@@ -166,7 +180,50 @@ public class MyDataStreams extends Controller {
 		encoded = DataStreamUtil.encode(editor);
 		editModuleParams(encoded, index);
 	}
-	
+
+	public static void fetchJsonTree(String encoded) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamModule root = editor.getStream();
+		Map<String, Object> root2 = new HashMap<String, Object>();
+		copyTree(root, root2);
+		
+		renderJSON(root2);
+	}
+
+	private static void copyTree(StreamModule current, Map<String, Object> current2) {
+		transfer(current, current2);
+		if("stream".equals(current.getModule())) {
+			//modify current to the node with no children (or with the real children)
+			//the first child is always the one that is the aggregation or rawdata
+			if(current.getStreams().size() > 0)
+				current = current.getStreams().get(0);
+		}
+		
+		if(current.getStreams().size() == 0)
+			return;
+
+		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+		current2.put("children", list);
+		for(StreamModule child : current.getStreams()) {
+			HashMap<String, Object> child2 = new HashMap<String, Object>();
+			list.add(child2);
+			copyTree(child, child2);
+		}
+	}
+
+	private static void transfer(StreamModule now, Map<String, Object> now2) {
+		if("stream".equals(now.getModule())) {
+			String name = now.getName()+"(";
+			for(StreamModule m : now.getStreams()) {
+				name+="<-"+m.getModule();
+			}
+			name += ")";
+			now2.put("name", name);
+		} else {
+			now2.put("name", now.getName());
+		}
+	}
+
 	public static void editModuleParams(String encoded, int index) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);

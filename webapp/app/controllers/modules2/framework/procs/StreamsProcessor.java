@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import play.mvc.results.NotFound;
 
 import models.StreamAggregation;
+import models.message.ChartVarMeta;
 
 import com.alvazan.play.NoSql;
 
@@ -23,6 +25,15 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
 	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	
+	@Override
+	public Map<String, ChartVarMeta> getParameterMeta() {
+		//This needs to be an EMPTY map since there are a few subclasses....if you need stuff in the Map, create your
+		//own in the subclass so you don't screw up the other modules subclassing this StreamsProcessor
+		return parameterMeta ;
+	}
 
 	@Override
 	public String toString() {
