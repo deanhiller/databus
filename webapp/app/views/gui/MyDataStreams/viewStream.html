@@ -20,7 +20,9 @@
 	   <tr>
 	       <td>${module.module}</td>
 	       <td>${module.params}</td>
-	       <td>delete</td>
+	       <td>delete
+	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>
+	       </td>
 	   </tr>
 	#{/list}
 	#{else}

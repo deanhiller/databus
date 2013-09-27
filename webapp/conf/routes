@@ -176,7 +176,7 @@ POST /datastreams/stream/post/{encoded}           gui.MyDataStreams.postStream
 GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
 GET  /datastreams/stream/complete/{encoded}       gui.MyDataStreams.streamComplete
 
-GET  /datastreams/module/{encoded}         gui.MyDataStreams.editModule
+GET  /datastreams/module/{index}/{encoded}         gui.MyDataStreams.editModule
 POST /datastreams/postmodule/{encoded}     gui.MyDataStreams.postModule
 GET  /datastreams/moduleparams/{encoded}    gui.MyDataStreams.editModuleParams
 POST /datastreams/postparams/{encoded}     gui.MyDataStreams.postModuleParams

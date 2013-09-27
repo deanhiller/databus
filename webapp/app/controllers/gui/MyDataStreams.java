@@ -132,7 +132,7 @@ public class MyDataStreams extends Controller {
 
 		StreamModule module = null;
 		if(index >= 0) {
-			module = parent.getStreams().get(index);
+			module = parent.getStreams().get(index-1);
 		}
 		encoded = DataStreamUtil.encode(editor);
 		render(modules, module, encoded, index);
@@ -144,13 +144,13 @@ public class MyDataStreams extends Controller {
 		StreamModule parent = tuple.getStream();
 		
 		if(index >= 0) {
-			StreamModule module = parent.getStreams().get(index);
+			StreamModule module = parent.getStreams().get(index-1);
 			module.setModule(moduleName);
 		} else {
 			StreamModule module = new StreamModule();
 			module.setModule(moduleName);
 			parent.getStreams().add(module);
-			index = parent.getStreams().size()-1; //the one we just added
+			index = parent.getStreams().size(); //the one we just added
 		}
 		
 		encoded = DataStreamUtil.encode(editor);
@@ -162,7 +162,7 @@ public class MyDataStreams extends Controller {
 		StreamTuple tuple = findCurrentStream(editor);
 		String path = tuple.getPath();
 		StreamModule parent = tuple.getStream();
-		StreamModule module = parent.getStreams().get(index);
+		StreamModule module = parent.getStreams().get(index-1);
 		
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		Map<String, PullProcessor> nameToProc = factory.fetchPullProcessors();
@@ -188,7 +188,7 @@ public class MyDataStreams extends Controller {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
-		StreamModule module = parent.getStreams().get(index);
+		StreamModule module = parent.getStreams().get(index-1);
 		
 		//apply parameters here...decode and re-encode StreamEditor
 		Map<String, String[]> paramMap = params.all();
