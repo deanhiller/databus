@@ -31,7 +31,21 @@
 	</tbody>
 </table>
 
+<div id="saveModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Save For Later</h3>
+  </div>
+  <div class="modal-body">
+    <p>Saving where you are is simple, just bookmark the url and come back to this url and it is saved</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
 <p>
     <a href="@{gui.MyDataStreams.editModule(encoded, -1)}" class="btn btn-primary">Add Module</a>
     <a href="@{gui.MyDataStreams.streamComplete(encoded)}" class="btn btn-primary">Stream Complete</a>
+    <a href="#saveModal" role="button" class="btn btn-primary" data-toggle="modal">Save to Edit Later</a>
 </p>
