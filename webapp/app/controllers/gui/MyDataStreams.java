@@ -86,16 +86,21 @@ public class MyDataStreams extends Controller {
 		return new StreamTuple(currentStr, path);
 	}
 
-	public static void editStream(String encoded) {
+	public static void editStream(String encoded, int index) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule stream = tuple.getStream();
-		if(!"stream".equals(stream.getModule())) {
+		if(index < 0) {
+			//add
 			StreamModule child = new StreamModule();
 			child.setModule("stream");
 			stream.getStreams().add(child);
 			editor.getLocation().add(stream.getStreams().size()-1);
 			stream = child;
+		} else {
+			//edit
+			stream = stream.getStreams().get(index-1);
+			editor.getLocation().add(index-1);
 		}
 		encoded = DataStreamUtil.encode(editor);
 		render(stream, encoded);

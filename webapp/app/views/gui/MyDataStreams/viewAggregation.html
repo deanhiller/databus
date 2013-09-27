@@ -17,7 +17,8 @@ ${path}
 	#{list stream.streams, as:'stream'}
 	   <tr>
 	       <td>${stream.name}</a></td>
-	       <td>delete</td>
+	       <td>delete
+	       <a href="@{gui.MyDataStreams.editStream(encoded, stream_index)}">Edit</a></td>
 	   </tr>
 	#{/list}
 	#{else}
@@ -29,7 +30,7 @@ ${path}
 </table>
 
 <p>
-  	<a href="@{gui.MyDataStreams.editStream(encoded)}" class="btn btn-primary">Add Stream</a>
+  	<a href="@{gui.MyDataStreams.editStream(encoded, -1)}" class="btn btn-primary">Add Stream</a>
   	<a href="@{gui.MyDataStreams.editAggregation(encoded)}" class="btn btn-primary">Add Aggregation</a>
   	<a href="@{gui.MyDataStreams.aggregationComplete(encoded)}" class="btn btn-primary">Aggregation Complete</a>
 </p>
