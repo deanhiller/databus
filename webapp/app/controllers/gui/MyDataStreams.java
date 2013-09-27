@@ -1,6 +1,7 @@
 package controllers.gui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +70,10 @@ public class MyDataStreams extends Controller {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		List<Integer> locs = editor.getLocation();
 		locs.remove(locs.size()-1);
+		StreamTuple str = findCurrentStream(editor);
 		encoded = DataStreamUtil.encode(editor);
+		if("stream".equals(str.getStream().getModule()))
+			viewStream(encoded);
 		viewAggregation(encoded);
 	}
 
@@ -157,64 +161,83 @@ public class MyDataStreams extends Controller {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
-		
-		if(pullProcessor instanceof StreamsProcessor) {
-			//here, they are adding an aggregation so we need to switch to aggregations page now instead(and allow them to name the aggregation as well)
-			StreamModule module = new StreamModule();
-			module.setModule(moduleName);
-			parent.getStreams().add(module);
-			editor.getLocation().add(parent.getStreams().size()-1);
-			encoded = DataStreamUtil.encode(editor);
-			viewAggregation(encoded);
-		}
-		
+
 		if(index >= 0) {
 			StreamModule module = parent.getStreams().get(index-1);
+			String prevModule = module.getModule();
 			module.setModule(moduleName);
+			
+			PullProcessor prevProc = pullProcs.get(prevModule);
+			if(prevProc instanceof StreamsProcessor && !(pullProcessor instanceof StreamsProcessor)) {
+				//we are changing from StreamsProc to NOT streams proc so wipe the children out
+				module.getStreams().clear();
+				module.setName(null);
+			} else if(pullProcessor instanceof StreamsProcessor){
+				if(!(prevProc instanceof StreamsProcessor)) {
+					//going from normal proc to an aggregation processor so wipe out parameters and go to aggregation page
+					module.getParams().clear();
+					module.setName(parent.getName()+"("+moduleName+")");
+				}
+				editor.getLocation().add(index-1);
+				encoded = DataStreamUtil.encode(editor);
+				viewAggregation(encoded);
+			}
 		} else {
 			StreamModule module = new StreamModule();
 			module.setModule(moduleName);
 			parent.getStreams().add(module);
 			index = parent.getStreams().size(); //the one we just added
+			
+			if(pullProcessor instanceof StreamsProcessor) {
+				module.setName(parent.getName()+"("+moduleName+")");
+				editor.getLocation().add(parent.getStreams().size()-1);
+				encoded = DataStreamUtil.encode(editor);
+				viewAggregation(encoded);
+			}
 		}
+		
 		encoded = DataStreamUtil.encode(editor);
 		editModuleParams(encoded, index);
 	}
 
 	public static void fetchJsonTree(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule root = editor.getStream();
 		Map<String, Object> root2 = new HashMap<String, Object>();
-		copyTree(root, root2);
+		copyTree(root, root2, tuple.getStream(), root);
 		
 		renderJSON(root2);
 	}
 
-	private static void copyTree(StreamModule current, Map<String, Object> current2) {
-		transfer(current, current2);
+	private static void copyTree(StreamModule current, Map<String, Object> current2, StreamModule selectedStream, StreamModule root) {
+		transfer(current, current2, selectedStream, root);
 		if("stream".equals(current.getModule())) {
 			//modify current to the node with no children (or with the real children)
 			//the first child is always the one that is the aggregation or rawdata
 			if(current.getStreams().size() > 0)
 				current = current.getStreams().get(0);
 		}
-		
-		if(current.getStreams().size() == 0)
+
+		List<StreamModule> streams = current.getStreams();
+		if(streams.size() == 0)
 			return;
 
 		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 		current2.put("children", list);
-		for(StreamModule child : current.getStreams()) {
+		for(StreamModule child : streams) {
 			HashMap<String, Object> child2 = new HashMap<String, Object>();
 			list.add(child2);
-			copyTree(child, child2);
+			copyTree(child, child2, selectedStream, root);
 		}
 	}
 
-	private static void transfer(StreamModule now, Map<String, Object> now2) {
+	private static void transfer(StreamModule now, Map<String, Object> now2, StreamModule selectedStream, StreamModule root) {
 		if("stream".equals(now.getModule())) {
 			String name = now.getName()+"(";
-			for(StreamModule m : now.getStreams()) {
+			List<StreamModule> streams = now.getStreams();
+			for(int i = streams.size()-1; i >=0 ; i--) {
+				StreamModule m = streams.get(i);
 				name+="<-"+m.getModule();
 			}
 			name += ")";
@@ -222,6 +245,15 @@ public class MyDataStreams extends Controller {
 		} else {
 			now2.put("name", now.getName());
 		}
+		
+		//now == selectedStream is obvious but if the selectedStream is a module inside the stream, we select the stream
+		//since modules cannot be selected
+		if(now == selectedStream || 
+				("stream".equals(now.getModule()) && now.getStreams().contains(selectedStream)))
+			now2.put("selected", true);
+		
+		if(now == root)
+			now2.put("root", true);
 	}
 
 	public static void editModuleParams(String encoded, int index) {

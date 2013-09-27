@@ -27,7 +27,7 @@ ${path}
 
 #{/list}
 
-<h1 class="db_page_title">Aggregation ${aggregation.name}</h1>
+<h1 class="db_page_title">Aggregation '${aggregation.name}'</h1>
 
 <table class="table">
 	<thead>
@@ -131,13 +131,15 @@ d3.json("/datastreams/json/${encoded}", function(error, root) {
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
   node.append("circle")
-      .attr("r", 4.5);
+      .attr("r", function(d) { return d.selected ? 10 : 4.5; });
 
   node.append("text")
-      .attr("dx", function(d) { return -8; })
-      .attr("dy", -4)
-      .style("text-anchor", function(d) { return "end"; })
-      .text(function(d) { return d.name; });
+  .attr("dx", function(d) { return -8; })
+  .attr("dy", -4)
+  .style("text-anchor", function(d) { return d.root ? "start" : "end"; })
+  .style("font-size", function(d) { return d.selected ? "16px" : "10px"; })
+  .style("font-weight", function(d) { return d.selected ? "bold" : ""; })
+  .text(function(d) { return d.name; });
 });
 
 d3.select(self.frameElement).style("height", height + "px");

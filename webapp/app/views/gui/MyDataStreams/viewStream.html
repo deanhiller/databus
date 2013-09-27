@@ -2,7 +2,7 @@
 #{set title:'My Groups' /}
 #{set tab:'home' /}
 
-<h1 class="db_page_title">Create Datastream</h1>
+<h1 class="db_page_title">Datastream '${stream.name}'</h1>
 
 <p>Data goes from top to bottom in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
  data from and then you can add splines, range cleaners or other modules to that incoming data</p>
@@ -110,12 +110,14 @@ d3.json("/datastreams/json/${encoded}", function(error, root) {
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
 
   node.append("circle")
-      .attr("r", 4.5);
+      .attr("r", function(d) { return d.selected ? 10 : 4.5; });
 
   node.append("text")
       .attr("dx", function(d) { return -8; })
-      .attr("dy", -4)
-      .style("text-anchor", function(d) { return "end"; })
+      .attr("dy", -8)
+      .style("text-anchor", function(d) { return d.root ? "start" : "end"; })
+      .style("font-size", function(d) { return d.selected ? "16px" : "10px"; })
+      .style("font-weight", function(d) { return d.selected ? "bold" : ""; })
       .text(function(d) { return d.name; });
 });
 

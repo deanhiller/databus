@@ -73,4 +73,9 @@ public class StreamModule {
 		this.name = name;
 	}
 
+	@Override
+	public String toString() {
+		return "StreamModule [name=" + name + ", module=" + module + "]";
+	}
+
 } // Register
