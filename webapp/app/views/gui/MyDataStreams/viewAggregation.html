@@ -4,7 +4,30 @@
 
 ${path}
 
-<h1 class="db_page_title">Aggregation ${stream.name}</h1>
+#{list aggregation.streams, as:'child'}
+
+#{form @postDeleteStream(), id:'removeStream'+child_index}
+<input type="hidden" name="index" value="${child_index}"/>
+<input type="hidden" name="encoded" value="${encoded}"/>
+
+<div id="deleteModal${child_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete confirmation</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete ${child.name} from the ${aggregation.name} aggregation?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
+  </div>
+</div>
+#{/form}
+
+#{/list}
+
+<h1 class="db_page_title">Aggregation ${aggregation.name}</h1>
 
 <table class="table">
 	<thead>
@@ -14,11 +37,13 @@ ${path}
 	    </tr>
 	</thead>
 	<tbody>
-	#{list stream.streams, as:'stream'}
+	#{list aggregation.streams, as:'child'}
 	   <tr>
-	       <td>${stream.name}</a></td>
-	       <td>delete
-	       <a href="@{gui.MyDataStreams.editStream(encoded, stream_index)}">Edit</a></td>
+	       <td>${child.name}</a></td>
+	       <td>
+	       <a href="@{gui.MyDataStreams.editStream(encoded, child_index)}">Edit</a>&nbsp;&nbsp;|&nbsp;
+	       <a href="#deleteModal${child_index}" role="button" data-toggle="modal">Delete</a>
+	       </td>
 	   </tr>
 	#{/list}
 	#{else}

@@ -58,10 +58,10 @@ public class MyDataStreams extends Controller {
 	public static void viewAggregation(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
-		StreamModule stream = tuple.getStream();
+		StreamModule aggregation = tuple.getStream();
 		String path = tuple.getPath();
 
-		render(stream, path, encoded);
+		render(aggregation, path, encoded);
 	}
 
 	public static void aggregationComplete(String encoded) {
@@ -84,6 +84,17 @@ public class MyDataStreams extends Controller {
 			path += " -> "+currentStr.getName();
 		}
 		return new StreamTuple(currentStr, path);
+	}
+
+	public static void postDeleteStream(String encoded, int index) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
+		StreamModule stream = tuple.getStream();
+		
+		stream.getStreams().remove(index-1);
+		
+		encoded = DataStreamUtil.encode(editor);
+		viewAggregation(encoded);
 	}
 
 	public static void editStream(String encoded, int index) {
@@ -152,7 +163,6 @@ public class MyDataStreams extends Controller {
 			parent.getStreams().add(module);
 			index = parent.getStreams().size(); //the one we just added
 		}
-		
 		encoded = DataStreamUtil.encode(editor);
 		editModuleParams(encoded, index);
 	}

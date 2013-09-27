@@ -6,7 +6,8 @@
 #{form @postModule(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
     <input type="hidden" name="index" value="${index}">
-    
+    <input type="hidden" name="encoded" value="${encoded}"/>
+
 	#{field 'moduleName'}
 	<div class="control-group ${field.errorClass}">
 	    <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Module</label>

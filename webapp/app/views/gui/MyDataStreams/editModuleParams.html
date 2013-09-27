@@ -10,7 +10,8 @@
 #{form @postModuleParams(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
     <input type="hidden" name="index" value="${index}">
-    
+    <input type="hidden" name="encoded" value="${encoded}"/>
+
     #{list items:paramList, as:'v'}
         <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
             <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>

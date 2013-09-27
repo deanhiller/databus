@@ -8,6 +8,8 @@
 <h1 class="db_page_title">Create Aggregation</h1>
 
 #{form @postStream(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    
+    <input type="hidden" name="encoded" value="${encoded}"/>
 
 	#{field 'name'}
 	<div class="control-group ${field.errorClass}">
