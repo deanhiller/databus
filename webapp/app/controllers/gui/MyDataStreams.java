@@ -192,13 +192,14 @@ public class MyDataStreams extends Controller {
 		
 		//apply parameters here...decode and re-encode StreamEditor
 		Map<String, String[]> paramMap = params.all();
-		
+		Map<String, String> params = module.getParams();
+		params.clear(); //clear whatever the previous module was before
 		for(String key : paramMap.keySet()) {
 			if(key.startsWith("variables.")) {
 				String[] values = paramMap.get(key);
 				String value = values[0];
 				String javascriptKey = key.substring("variables.".length());
-				module.getParams().put(javascriptKey, value);
+				params.put(javascriptKey, value);
 			}
 		}
 
