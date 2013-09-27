@@ -236,8 +236,7 @@ public class MyDataStreams extends Controller {
 		if("stream".equals(now.getModule())) {
 			String name = now.getName()+"(";
 			List<StreamModule> streams = now.getStreams();
-			for(int i = streams.size()-1; i >=0 ; i--) {
-				StreamModule m = streams.get(i);
+			for(StreamModule m : streams) {
 				name+="<-"+m.getModule();
 			}
 			name += ")";
