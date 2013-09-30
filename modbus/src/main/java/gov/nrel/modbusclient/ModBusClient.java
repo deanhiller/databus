@@ -426,7 +426,7 @@ public class ModBusClient {
 
 		log.info("Going to post data: "
 				+ meter.getModel() + "," + meter.getBuilding()
-				+ " " + meter.getName() + "," + value);
+				+ " " + meter.getName() + "," + meter.getSerial()+","+ value);
 	}
 
 	public static void registerWithDatabus(Meter meter, DatabusSender sender) {
