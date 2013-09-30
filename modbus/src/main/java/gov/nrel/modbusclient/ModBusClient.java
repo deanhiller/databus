@@ -13,8 +13,8 @@ import gov.nrel.consumer.beans.Stream;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -34,8 +34,6 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.LogManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,7 +46,6 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 import com.serotonin.modbus4j.ModbusFactory;
 import com.serotonin.modbus4j.ModbusMaster;
 import com.serotonin.modbus4j.ip.IpParameters;
-import java.io.*;
 
 /**
  * Simple example how to configure a MODBUS/TCP protocol and read values.
@@ -387,9 +384,11 @@ public class ModBusClient {
 
 		Long value = 0l;
 
+		List<Info> valuesAndMultipliers = new ArrayList<Info>();
 		if (streamType.equals("direct")) {
 			JSONObject reg = registerArray.getJSONObject(0);
 			value = meter.read(master, reg);
+			valuesAndMultipliers.add(new Info(value));
 		} else {
 			if (streamType.equals("multiply")) {
 				value = 1l;
@@ -399,8 +398,10 @@ public class ModBusClient {
 				JSONObject reg = registerArray.getJSONObject(0);
 				if (streamType.equals("add")) {
 					value += meter.read(master, reg);
+					valuesAndMultipliers.add(new Info("add", value));
 				} else if (streamType.equals("multiply")) {
 					value *= meter.read(master, reg);
+					valuesAndMultipliers.add(new Info("multiplier", value));
 				}
 			}
 		}
@@ -412,14 +413,14 @@ public class ModBusClient {
 		DatabusBean point = null;
 		if(value == Integer.MAX_VALUE ||
 				value == Integer.MIN_VALUE) {
-			log.info("posting null at time="+time+" stream="+meter.getSerial()+""+stream);
+			log.info("Aposting null at time="+time+" stream="+meter.getSerial()+""+stream);
 			// send null
 			point = databusPoint(meter.getSerial()
-					+ stream, time, null);
+					+ stream, time, null, valuesAndMultipliers);
 		} else {
-			log.info("posting value="+value+" at time="+time+" stream="+meter.getSerial()+""+stream);
+			//log.info("Bposting value="+value+" at time="+time+" stream="+meter.getSerial()+""+stream);
 			point = databusPoint(meter.getSerial()
-					+ stream, time, value.doubleValue());
+					+ stream, time, value.doubleValue(), valuesAndMultipliers);
 		}							
 		
 		data.add(point);
@@ -507,11 +508,14 @@ public class ModBusClient {
 		}
 	}
 
-	public DatabusBean databusPoint(String id, Long time, Double value) {
+	public DatabusBean databusPoint(String id, Long time, Double value, List<Info> valuesAndMultipliers) {
 		DatabusBean point = new DatabusBean();
 		point.setTableName(id);
 		point.setTime(time);
 		point.setValue(value);
+		if(value > Integer.MAX_VALUE || value < Integer.MIN_VALUE) {
+			log.warn("value seems to be out of range="+value+" at time="+time+" table="+id+" registerstuff="+valuesAndMultipliers);
+		}
 		return point;
 	}
 
