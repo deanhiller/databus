@@ -179,23 +179,28 @@ public class Meter {
                 master.setRetries(0);
 
                 // No GE489 meter not showing current?
-                return Long.MAX_VALUE;
+                //return Long.MAX_VALUE;
 
-                /*return (Integer) master.getValue(this.slave, 3, 1089,
-                DataType.TWO_BYTE_INT_UNSIGNED);*/
+                return (Integer) master.getValue(this.slave, 3, 1089,
+                DataType.TWO_BYTE_INT_UNSIGNED);
             } else if (this.model.equals("GERMS9D")) {
                 master.setTimeout(2000);
                 master.setRetries(0);
                 return new Float(1000f * (Float) master.getValue(this.slave, 4, 1028,
                         DataType.FOUR_BYTE_FLOAT_SWAPPED)).longValue();
-            }
+            } else
+            	throw new RuntimeException("we don't seem to support this model.  meter="+this);
         } catch (ModbusTransportException ex) {
-            return Integer.MAX_VALUE;
+        	throw new RuntimeException("problem reading, meter="+this, ex);
         } catch (ErrorResponseException ex) {
-            System.out.println(this.model + ","
-                    + this.serial + "," + this.ip + "\n" + ex.getLocalizedMessage());
+        	throw new RuntimeException("problem reading, meter="+this, ex);
         }
-
-        return Integer.MIN_VALUE;
     }
+
+	@Override
+	public String toString() {
+		return "Meter [serial=" + serial + ", name=" + name + ", building="
+				+ building + ", ip=" + ip + ", model=" + model + "]";
+	}
+    
 }

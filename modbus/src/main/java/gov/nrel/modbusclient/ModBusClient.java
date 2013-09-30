@@ -275,11 +275,9 @@ public class ModBusClient {
 							newMeter);
 					registerWithDatabus(newMeter, sender);
 				}
-
 			}
 
 		} catch (Exception e) {
-
 			log.warn( "Exception while reading csv file: " + e, e);
 		}
 	}
@@ -430,6 +428,14 @@ public class ModBusClient {
 	}
 
 	public static void registerWithDatabus(Meter meter, DatabusSender sender) {
+		
+		try {
+			registerWithDatabusImpl(meter, sender);
+		} catch(Exception e) {
+			log.warn("issue registering with Databus, ignoring.  meter="+meter);
+		}
+	}
+	public static void registerWithDatabusImpl(Meter meter, DatabusSender sender) {
 
 		log.info("Registering Device serial#=" + meter.getSerial()
 				+ " if MeterMeta has " + meterMetadata.has(meter.getModel()));
