@@ -91,11 +91,11 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		List<String> aggregationList = parent.getAggregationList();
 		if (aggregationList.contains(aggName)) {
 			aggregationList.add(aggName);
-			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+visitor.getAggregationList());
+			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+aggregationList);
 		}
 		else if (aggregationList.size() > 5) {
 			aggregationList.add(aggName);
-			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+visitor.getAggregationList());
+			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+aggregationList);
 		}
 
 		for(String url : urls) {
