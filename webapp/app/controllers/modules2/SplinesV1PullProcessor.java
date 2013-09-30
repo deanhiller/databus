@@ -10,6 +10,8 @@ public class SplinesV1PullProcessor extends SplinesPullProcessor {
 
 	protected long calculateOffset() {
 		Long startTime = params.getStart();
+		if(startTime == null)
+			return 0;
 		long offset = startTime % interval;
 		return offset;
 	}
