@@ -76,13 +76,16 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
-		visitor.getAggregationList().add(aggName);
 		if (visitor.getAggregationList().contains(aggName)) {
+			visitor.getAggregationList().add(aggName);
 			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+visitor.getAggregationList());
 		}
 		else if (visitor.getAggregationDepth() > 5) {
+			visitor.getAggregationList().add(aggName);
 			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+visitor.getAggregationList());
 		}
+		visitor.getAggregationList().add(aggName);
+
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);
