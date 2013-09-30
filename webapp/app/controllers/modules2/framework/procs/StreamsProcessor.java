@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import play.mvc.results.BadRequest;
 import play.mvc.results.NotFound;
 
 import models.StreamAggregation;
@@ -25,6 +26,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
 	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
+	private String aggName;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
@@ -58,14 +60,14 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 			VisitorInfo visitor, HashMap<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		List<String> params2 = params.getParams();
-		String name = params2.get(0);
+		aggName = params2.get(0);
 		
-		StreamAggregation agg = NoSql.em().find(StreamAggregation.class, name);
+		StreamAggregation agg = NoSql.em().find(StreamAggregation.class, aggName);
 		if(agg == null)
-			throw new NotFound("Aggregation named="+name+" was not found");
+			throw new NotFound("Aggregation named="+aggName+" was not found");
 		urls = agg.getUrls();
 		if(urls.size() == 0)
-			throw new NotFound("Aggregation named="+name+" has not paths that we can read from");
+			throw new NotFound("Aggregation named="+aggName+" has not paths that we can read from");
 		
 		return newPath;
 	}
@@ -74,6 +76,13 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
+		visitor.getAggregationList().add(aggName);
+		if (visitor.getAggregationList().contains(aggName)) {
+			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+visitor.getAggregationList());
+		}
+		else if (visitor.getAggregationDepth() > 5) {
+			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+visitor.getAggregationList());
+		}
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);
