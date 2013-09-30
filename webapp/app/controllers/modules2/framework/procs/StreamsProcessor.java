@@ -1,16 +1,18 @@
 package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import play.mvc.results.BadRequest;
-import play.mvc.results.NotFound;
-
 import models.StreamAggregation;
 import models.message.ChartVarMeta;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import play.mvc.results.BadRequest;
+import play.mvc.results.NotFound;
 
 import com.alvazan.play.NoSql;
 
@@ -20,6 +22,8 @@ import controllers.modules2.framework.VisitorInfo;
 
 
 public abstract class StreamsProcessor extends PullProcessorAbstract {
+
+	static final Logger log = LoggerFactory.getLogger(StreamsProcessor.class);
 
 	protected Long currentTimePointer;
 	protected List<PullProcessor> children = new ArrayList<PullProcessor>();
@@ -95,8 +99,9 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		}
 		else if (aggregationList.size() > 5) {
 			aggregationList.add(aggName);
-			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+aggregationList);
+			log.info("Your aggregation is very deep, consider restructuring it!  List of urls: "+aggregationList);
 		}
+		
 
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
