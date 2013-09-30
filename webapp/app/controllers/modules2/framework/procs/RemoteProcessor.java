@@ -86,7 +86,7 @@ public class RemoteProcessor extends ProcessorSetupAbstract implements EndOfChai
 		com.ning.http.client.Request httpReq = b.build();
 
 		TranslationFactory factory = visitor.getTranslator();
-		HttpListener listener = factory.get((PushProcessor) nextInChain);
+		HttpListener listener = factory.get((PushProcessor) parent);
 		
 		AHttpChunkingListener handler = listeners.get();
 		handler.setPromise(visitor.getPromise());

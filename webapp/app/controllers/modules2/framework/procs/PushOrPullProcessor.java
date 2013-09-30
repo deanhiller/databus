@@ -19,11 +19,11 @@ public abstract class PushOrPullProcessor extends PushProcessorAbstract implemen
 	}
 
 	public void startEngine() {
-		if(nextInChain instanceof PullProcessor) {
-			PullProcessor next = (PullProcessor) nextInChain;
+		if(parent instanceof PullProcessor) {
+			PullProcessor next = (PullProcessor) parent;
 			next.startEngine();
-		} else if(nextInChain instanceof EngineProcessor) {
-			EngineProcessor engine = (EngineProcessor) nextInChain;
+		} else if(parent instanceof EngineProcessor) {
+			EngineProcessor engine = (EngineProcessor) parent;
 			engine.startEngine();
 		}
 	}
@@ -66,7 +66,7 @@ public abstract class PushOrPullProcessor extends PushProcessorAbstract implemen
 	@Override
 	public Direction getSinkDirection() {
 		//our direction is determined by our parents direction(since we do either way)
-		return nextInChain.getSinkDirection();
+		return parent.getSinkDirection();
 	}
 
 	@Override

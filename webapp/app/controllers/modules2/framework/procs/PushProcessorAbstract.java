@@ -27,7 +27,7 @@ public abstract class PushProcessorAbstract extends ProcessorSetupAbstract imple
 	}
 
 	protected PushProcessor getNextInChain() {
-		return (PushProcessor) nextInChain;
+		return (PushProcessor) parent;
 	}
 	
 	@Override

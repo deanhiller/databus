@@ -28,6 +28,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	private List<ReadResult> results = new ArrayList<ReadResult>();
 	private String aggName;
 
+
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
 	@Override
@@ -71,20 +72,31 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		
 		return newPath;
 	}
+	
+	@Override
+	public List<String> getAggregationList() {
+		List<String> aggregationList;
+		if (parent != null) 
+			aggregationList = parent.getAggregationList();
+		else 
+			aggregationList = new ArrayList<String>();
+		aggregationList.add(aggName);
+		return aggregationList;
+	}
 
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
-		if (visitor.getAggregationList().contains(aggName)) {
-			visitor.getAggregationList().add(aggName);
+		List<String> aggregationList = parent.getAggregationList();
+		if (aggregationList.contains(aggName)) {
+			aggregationList.add(aggName);
 			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+visitor.getAggregationList());
 		}
-		else if (visitor.getAggregationDepth() > 5) {
-			visitor.getAggregationList().add(aggName);
+		else if (aggregationList.size() > 5) {
+			aggregationList.add(aggName);
 			throw new BadRequest("Your aggregation is trying to do too deep a reference stack.  List of urls:"+visitor.getAggregationList());
 		}
-		visitor.getAggregationList().add(aggName);
 
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);

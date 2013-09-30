@@ -1,6 +1,7 @@
 package controllers.modules2.framework.procs;
 
 import java.util.HashMap;
+import java.util.List;
 
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.VisitorInfo;
@@ -27,6 +28,9 @@ public interface ProcessorSetup {
     //remoteproces - Sink-NONE,       src-PUSH
 	Direction getSinkDirection();
 	Direction getSourceDirection();
+
+	
+	List<String> getAggregationList();
 	
 	// Y Y N N N
 	// N Y Y Y Y

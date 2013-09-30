@@ -45,7 +45,7 @@ public class EngineProcessor extends ProcessorSetupAbstract {
 
 		child.start(visitor);
 		promise = visitor.getPromise();
-		ourRunnable = new TheRunnablePromise((PullProcessor) child, (PushProcessor) nextInChain, promise);
+		ourRunnable = new TheRunnablePromise((PullProcessor) child, (PushProcessor) parent, promise);
 		promise.addResponse(ourRunnable);
 		isRunning = true;
 	}

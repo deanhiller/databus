@@ -12,11 +12,11 @@ import controllers.modules2.framework.ReadResult;
 public abstract class PullProcessorAbstract extends ProcessorSetupAbstract implements PullProcessor {
 
 	public void startEngine() {
-		if(nextInChain instanceof PullProcessor) {
-			PullProcessor next = (PullProcessor) nextInChain;
+		if(parent instanceof PullProcessor) {
+			PullProcessor next = (PullProcessor) parent;
 			next.startEngine();
-		} else if(nextInChain instanceof EngineProcessor) {
-			EngineProcessor engine = (EngineProcessor) nextInChain;
+		} else if(parent instanceof EngineProcessor) {
+			EngineProcessor engine = (EngineProcessor) parent;
 			engine.startEngine();
 		}
 	}
