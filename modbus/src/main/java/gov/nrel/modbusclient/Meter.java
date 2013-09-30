@@ -11,10 +11,10 @@ import com.serotonin.modbus4j.exception.ModbusTransportException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -22,6 +22,8 @@ import org.json.JSONObject;
  */
 public class Meter {
 
+	private static final Logger log = LoggerFactory.getLogger(Meter.class);
+	
     private static final Map<String, Integer> regTypeMap = new HashMap<String, Integer>();
 
     static {
@@ -150,13 +152,10 @@ public class Meter {
             
             return new Double(regModifier * reading).longValue();
         } catch (ModbusTransportException ex) {
-            return Integer.MAX_VALUE;
+        	throw new RuntimeException("model="+this.model+", serial="+this.serial+",ip="+this.ip, ex);
         } catch (ErrorResponseException ex) {
-            System.out.println(this.model + ","
-                    + this.serial + "," + this.ip + "\n" + ex.getLocalizedMessage());
+        	throw new RuntimeException("model="+this.model+", serial="+this.serial+",ip="+this.ip, ex);
         }
-        
-        return Integer.MIN_VALUE;
     }
 
     // return watts

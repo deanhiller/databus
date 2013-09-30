@@ -410,18 +410,8 @@ public class ModBusClient {
 				meter.getSerial() + "_" + stream,
 				time.toString(), value.toString());*/
 
-		DatabusBean point = null;
-		if(value == Integer.MAX_VALUE ||
-				value == Integer.MIN_VALUE) {
-			log.info("Aposting null at time="+time+" stream="+meter.getSerial()+""+stream);
-			// send null
-			point = databusPoint(meter.getSerial()
-					+ stream, time, null, valuesAndMultipliers);
-		} else {
-			//log.info("Bposting value="+value+" at time="+time+" stream="+meter.getSerial()+""+stream);
-			point = databusPoint(meter.getSerial()
+		DatabusBean point = databusPoint(meter.getSerial()
 					+ stream, time, value.doubleValue(), valuesAndMultipliers);
-		}							
 		
 		data.add(point);
 		if (data.size() >= pointsPerSend) {
@@ -434,7 +424,7 @@ public class ModBusClient {
 			}
 		}
 
-		log.info(new Date(time).toString() + ": "
+		log.info("Going to post data: "
 				+ meter.getModel() + "," + meter.getBuilding()
 				+ " " + meter.getName() + "," + value);
 	}
