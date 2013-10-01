@@ -20,6 +20,7 @@ import controllers.gui.auth.GuiSecure;
 import controllers.gui.util.ChartUtil;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
@@ -262,10 +263,9 @@ public class MyDataStreams extends Controller {
 		StreamModule parent = tuple.getStream();
 		StreamModule module = parent.getStreams().get(index-1);
 		
-		RawProcessorFactory factory = ModuleController.fetchFactory();
-		Map<String, PullProcessor> nameToProc = factory.fetchPullProcessors();
-		PullProcessor proc = nameToProc.get(module.getModule());
-		Map<String, ChartVarMeta> paramMeta = proc.getParameterMeta();
+		Map<String, String[]> paramMap = params.all();
+		
+		Map<String, ChartVarMeta> paramMeta = fetchMeta(module).getParameterMeta();
 		Map<String, String> params2 = module.getParams();
 		List<VarWrapper> paramList = new ArrayList<VarWrapper>();
 		//here we add variables. to distinguish it from any other parameters that may be coming in like "encoded" above or "index", etc....
@@ -281,27 +281,44 @@ public class MyDataStreams extends Controller {
 		
 		render(encoded, index, module, path, paramList);
 	}
+
+	private static MetaInformation fetchMeta(StreamModule module) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> nameToProc = factory.fetchPullProcessors();
+		PullProcessor proc = nameToProc.get(module.getModule());
+		return proc.getGuiMeta();
+	}
 	
 	public static void postModuleParams(String encoded, int index) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
 		StreamModule module = parent.getStreams().get(index-1);
-		
+		MetaInformation meta = fetchMeta(module);
+
 		//apply parameters here...decode and re-encode StreamEditor
 		Map<String, String[]> paramMap = params.all();
-		Map<String, String> params = module.getParams();
-		params.clear(); //clear whatever the previous module was before
+		Map<String, String> moduleParams = module.getParams();
+		moduleParams.clear(); //clear whatever the previous module was before
 		for(String key : paramMap.keySet()) {
 			if(key.startsWith("variables.")) {
 				String[] values = paramMap.get(key);
 				String value = values[0];
 				String javascriptKey = key.substring("variables.".length());
-				params.put(javascriptKey, value);
+				if("".equals(value.trim()))
+					value = null; //null out the value if it is an empty string
+				moduleParams.put(javascriptKey, value);
 			}
 		}
 
+		meta.validate(validation, moduleParams);
+
 		encoded = DataStreamUtil.encode(editor);
+		if(validation.hasErrors()) {
+			validation.keep();
+			editModuleParams(encoded, index);
+		}
+		
 		viewStream(encoded);
 	}
 	

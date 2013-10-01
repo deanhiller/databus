@@ -56,6 +56,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.chain.AHttpChunkingListener;
 import controllers.modules2.framework.http.HttpListener;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.ProcessorSetupAbstract;
 import controllers.modules2.framework.procs.PullProcessor;
@@ -72,11 +73,14 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	private boolean skipSecurity;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, true);
+
 	static {
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Table");
 		meta.setNameInJavascript("table");
+		meta.setRequired(true);
+		meta.setHelp("The table that we read data from");
 		parameterMeta.put(meta.getNameInJavascript(), meta);
 	}
 
@@ -96,10 +100,9 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		return null;
 	}
 	
-	
 	@Override
-	public Map<String, ChartVarMeta> getParameterMeta() {
-		return parameterMeta ;
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
 	}
 
 	@Override

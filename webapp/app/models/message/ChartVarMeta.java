@@ -28,13 +28,18 @@ public class ChartVarMeta {
 	
 	@JsonProperty("type")
     @XmlElement(name="type")
-    public String type;
+    public String type = "java.lang.String";
 
 	@JsonProperty("defaultValue")
     @XmlElement(name="defaultValue")
     public String defaultValue;
 
-	public String value;
+	@JsonProperty("isRequired")
+    @XmlElement(name="isRequired")
+	public boolean isRequired = false;
+
+	public transient String value;
+	private transient Class<?> clazzType;
 
 	public ChartVarMeta copy() {
 		ChartVarMeta copy = new ChartVarMeta();
@@ -95,5 +100,25 @@ public class ChartVarMeta {
 		this.defaultValue = defaultValue;
 	}
 
+	public boolean isRequired() {
+		return isRequired;
+	}
+
+	public void setRequired(boolean isRequired) {
+		this.isRequired = isRequired;
+	}
+
+	public void setTransientClass(Class<?> clazzType) {
+		this.clazzType = clazzType;
+	}
+
+	public Class<?> getClazzType() {
+		return clazzType;
+	}
+
+	public void setClazzType(Class<?> clazzType) {
+		this.clazzType = clazzType;
+	}
+	
 }
 

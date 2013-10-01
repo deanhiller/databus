@@ -12,6 +12,5 @@ public interface PullProcessor extends ProcessorSetup {
 
 	void startEngine();
 
-	Map<String, ChartVarMeta> getParameterMeta();
-
+	MetaInformation getGuiMeta();
 }

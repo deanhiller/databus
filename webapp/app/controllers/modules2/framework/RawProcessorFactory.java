@@ -97,7 +97,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 				} catch (IllegalAccessException e) {
 					throw new RuntimeException("module failed to load="+value, e);
 				}
-				if(pullProc.getParameterMeta() != null)
+				if(pullProc.getGuiMeta() != null)
 					pullProcessors.put(key, pullProc);
 			}
 		}

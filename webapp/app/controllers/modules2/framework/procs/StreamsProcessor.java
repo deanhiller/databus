@@ -34,12 +34,11 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, true);
+
 	@Override
-	public Map<String, ChartVarMeta> getParameterMeta() {
-		//This needs to be an EMPTY map since there are a few subclasses....if you need stuff in the Map, create your
-		//own in the subclass so you don't screw up the other modules subclassing this StreamsProcessor
-		return parameterMeta ;
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
 	}
 
 	@Override

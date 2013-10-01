@@ -14,7 +14,7 @@
 
     #{list items:paramList, as:'v'}
         <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
-            <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>
+            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>
             <div class="controls">
                 <input type="text" name="variables.${v.meta.nameInJavascript}" value="${v.value}" class="${errors.forKey(v.meta.nameInJavascript) ? 'has_error' : ''}">
                 <span class="help-block">${errors.forKey(v.meta.nameInJavascript)}</span>

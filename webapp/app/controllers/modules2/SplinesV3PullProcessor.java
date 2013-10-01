@@ -30,6 +30,7 @@ import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
@@ -51,33 +52,37 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false);
 	
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");
 		meta1.setNameInJavascript("interval");
 		meta1.setDefaultValue("60000");
+		meta1.setClazzType(Integer.class);
 		ChartVarMeta meta2 = new ChartVarMeta();
 		meta2.setLabel("Epoch Offset");
 		meta2.setNameInJavascript("epochOffset");
+		meta2.setClazzType(Integer.class);
 		ChartVarMeta meta3 = new ChartVarMeta();
 		meta3.setLabel("Max To Stop Splining");
 		meta3.setNameInJavascript("maxToStopSplining");
 		meta3.setDefaultValue("5");
+		meta3.setClazzType(Integer.class);
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Buffer Size");
 		meta.setNameInJavascript("bufferSize");
 		meta.setDefaultValue("20");
+		meta.setClazzType(Integer.class);
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
 		parameterMeta.put(meta2.getNameInJavascript(), meta2);
 		parameterMeta.put(meta3.getNameInJavascript(), meta3);
 		parameterMeta.put(meta.getNameInJavascript(), meta);
 	}
 
-	
 	@Override
-	public Map<String, ChartVarMeta> getParameterMeta() {
-		return parameterMeta;
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
 	}
 
 	@Override

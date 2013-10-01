@@ -33,8 +33,9 @@ public class BufferNode extends ProcessorSetupAbstract implements PullProcessor,
 		return path;
 	}
 
+	
 	@Override
-	public Map<String, ChartVarMeta> getParameterMeta() {
+	public MetaInformation getGuiMeta() {
 		//returning null means don't display this module in the GUI.  returning an empty hashmap
 		//means display this module in the GUI and he has no parameters(hmmmmm, our wizard will actually show a blank page with a next button right now but oh well)
 		return null;
