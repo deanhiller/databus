@@ -16,6 +16,8 @@ public class VisitorInfo {
 	private TranslationFactory translator;
 	private boolean isReversed;
 	private NoSqlEntityManager mgr; 
+	private List<String> aggregationList = new ArrayList<String>();
+
 	
 	public VisitorInfo(OurPromise<Object> promise, TranslationFactory translator, boolean isReversed, NoSqlEntityManager mgr) {
 		this.promise = promise;
@@ -51,5 +53,19 @@ public class VisitorInfo {
 	public NoSqlEntityManager getMgr() {
 		return mgr;
 	}
+	
+	public int getAggregationDepth() {
+		return getAggregationList().size();
+	}
+
+	public List<String> getAggregationList() {
+		return aggregationList;
+	}
+
+	public void setAggregationList(List<String> aggregationList) {
+		this.aggregationList = aggregationList;
+	}
+
+	
 	
 }

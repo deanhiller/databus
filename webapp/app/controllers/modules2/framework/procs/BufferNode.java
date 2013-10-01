@@ -75,7 +75,7 @@ public class BufferNode extends ProcessorSetupAbstract implements PullProcessor,
 	private void addToBufferAndKick(ReadResult res) {
 		buffer.add(res);
 		
-		PullProcessor pull = (PullProcessor) nextInChain;
+		PullProcessor pull = (PullProcessor) parent;
 		pull.startEngine();
 	}
 

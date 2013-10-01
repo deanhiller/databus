@@ -1,15 +1,18 @@
 package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import play.mvc.results.NotFound;
-
 import models.StreamAggregation;
 import models.message.ChartVarMeta;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import play.mvc.results.BadRequest;
+import play.mvc.results.NotFound;
 
 import com.alvazan.play.NoSql;
 
@@ -20,11 +23,15 @@ import controllers.modules2.framework.VisitorInfo;
 
 public abstract class StreamsProcessor extends PullProcessorAbstract {
 
+	static final Logger log = LoggerFactory.getLogger(StreamsProcessor.class);
+
 	protected Long currentTimePointer;
 	protected List<PullProcessor> children = new ArrayList<PullProcessor>();
 	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
 	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
+	private String aggName;
+
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	
@@ -58,22 +65,44 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 			VisitorInfo visitor, HashMap<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		List<String> params2 = params.getParams();
-		String name = params2.get(0);
+		aggName = params2.get(0);
 		
-		StreamAggregation agg = NoSql.em().find(StreamAggregation.class, name);
+		StreamAggregation agg = NoSql.em().find(StreamAggregation.class, aggName);
 		if(agg == null)
-			throw new NotFound("Aggregation named="+name+" was not found");
+			throw new NotFound("Aggregation named="+aggName+" was not found");
 		urls = agg.getUrls();
 		if(urls.size() == 0)
-			throw new NotFound("Aggregation named="+name+" has not paths that we can read from");
+			throw new NotFound("Aggregation named="+aggName+" has not paths that we can read from");
 		
 		return newPath;
+	}
+	
+	@Override
+	public List<String> getAggregationList() {
+		List<String> aggregationList;
+		if (parent != null) 
+			aggregationList = parent.getAggregationList();
+		else 
+			aggregationList = new ArrayList<String>();
+		aggregationList.add(aggName);
+		return aggregationList;
 	}
 
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
+		List<String> aggregationList = parent.getAggregationList();
+		if (aggregationList.contains(aggName)) {
+			aggregationList.add(aggName);
+			throw new BadRequest("Your aggregation is trying to do an infinite loop back to itself.  List of urls:"+aggregationList);
+		}
+		else if (aggregationList.size() > 5) {
+			aggregationList.add(aggName);
+			log.info("Your aggregation is very deep, consider restructuring it!  List of urls: "+aggregationList);
+		}
+		
+
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);

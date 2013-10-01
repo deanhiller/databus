@@ -29,7 +29,7 @@ import play.mvc.results.BadRequest;
 
 public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 
-	protected ProcessorSetup nextInChain;
+	protected ProcessorSetup parent;
 	protected Path params;
 	private Map<String, String> options;
 	protected ProcessorSetup child;
@@ -171,7 +171,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		Path pathInfo = parsePath(path, visitor);
 		this.options = options;
 		this.params = pathInfo;
-		this.nextInChain = nextInChain;
+		this.parent = nextInChain;
 		//for now, hard code these until we know how we will pass them in
 		timeColumn = "time";
 		valueColumn = "value";
@@ -243,5 +243,15 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 
 	public void setOptions(Map<String, String> options) {
 		this.options = options;
+	}
+	
+	@Override
+	public List<String> getAggregationList() {
+		List<String> aggregationList;
+		if (parent != null) 
+			aggregationList = parent.getAggregationList();
+		else 
+			aggregationList = new ArrayList<String>();
+		return aggregationList;
 	}
 }
