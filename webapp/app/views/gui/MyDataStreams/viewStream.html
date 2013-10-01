@@ -4,7 +4,7 @@
 
 <h1 class="db_page_title">Datastream '${stream.name}'</h1>
 
-<p>Data goes from top to bottom in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
+<p>Data goes from bottom to top in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
  data from and then you can add splines, range cleaners or other modules to that incoming data</p>
 
 <table class="table">
@@ -22,7 +22,9 @@
 	       <td>${module.params}</td>
 	       <td>
 	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>&nbsp;&nbsp;|&nbsp;
-	       Move Up &nbsp;&nbsp;|&nbsp; Move Down &nbsp;&nbsp;|&nbsp; Delete
+	       <a href="@{gui.MyDataStreams.moveModuleUp(encoded, module_index)}">Move Up</a>&nbsp;&nbsp;|&nbsp;
+	       <a href="@{gui.MyDataStreams.moveModuleDown(encoded, module_index)}">Move Down</a>&nbsp;&nbsp;|&nbsp;
+	       Delete
 	       </td>
 	   </tr>
 	#{/list}

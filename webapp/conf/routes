@@ -183,6 +183,9 @@ GET  /datastreams/module/params/{index}/{encoded}  gui.MyDataStreams.editModuleP
 POST /datastreams/module/postparams                gui.MyDataStreams.postModuleParams
 POST /datastreams/module/delete                    gui.MyDataStreams.postDeleteModule
 
+GET  /datastreams/module/moveup/{index}/{encoded}   gui.MyDataStreams.moveModuleUp
+GET  /datastreams/module/movedown/{index}/{encoded} gui.MyDataStreams.moveModuleDown
+
 GET  /datastreams/json/{encoded}                   gui.MyDataSTreams.fetchJsonTree
 
 # GUI Summary Pages

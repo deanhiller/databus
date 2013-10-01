@@ -312,4 +312,52 @@ public class MyDataStreams extends Controller {
 		encoded = DataStreamUtil.encode(editor);
 		viewAggregation(encoded);
 	}
+	
+	public static void moveModuleUp(String encoded, int index) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
+		StreamModule str = tuple.getStream();
+		List<StreamModule> streams = str.getStreams();
+		int realIndex = index-1;
+		if(realIndex == 0 || realIndex > streams.size()-1) {
+			viewStream(encoded);
+		}
+		
+		StreamModule moveDown = streams.get(realIndex-1);
+		StreamModule moveUp = streams.get(realIndex);
+		
+		//remove both from list and re-insert them
+		streams.remove(realIndex-1);
+		streams.remove(realIndex-1);
+		
+		streams.add(realIndex-1, moveUp);
+		streams.add(realIndex, moveDown);
+		
+		encoded = DataStreamUtil.encode(editor);
+		viewStream(encoded);
+	}
+	
+	public static void moveModuleDown(String encoded, int index) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
+		StreamModule str = tuple.getStream();
+		List<StreamModule> streams = str.getStreams();
+		int realIndex = index-1;
+		if(realIndex < 0 || realIndex >= streams.size()-1) {
+			viewStream(encoded);
+		}
+		
+		StreamModule moveDown = streams.get(realIndex);
+		StreamModule moveUp = streams.get(realIndex+1);
+		
+		//remove both from list and re-insert them
+		streams.remove(realIndex);
+		streams.remove(realIndex);
+		
+		streams.add(realIndex, moveUp);
+		streams.add(realIndex+1, moveDown);
+		
+		encoded = DataStreamUtil.encode(editor);
+		viewStream(encoded);
+	}
 }
