@@ -305,6 +305,17 @@ public class MyDataStreams extends Controller {
 		viewStream(encoded);
 	}
 	
+	public static void postDeleteModule(String encoded, int index) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple tuple = findCurrentStream(editor);
+		StreamModule stream = tuple.getStream();
+		
+		stream.getStreams().remove(index-1);
+		
+		encoded = DataStreamUtil.encode(editor);
+		viewStream(encoded);
+	}
+	
 	public static void streamComplete(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		List<Integer> locs = editor.getLocation();

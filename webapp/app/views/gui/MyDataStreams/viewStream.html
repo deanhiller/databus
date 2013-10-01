@@ -2,6 +2,29 @@
 #{set title:'My Groups' /}
 #{set tab:'home' /}
 
+#{list stream.streams, as:'module'}
+
+#{form @postDeleteModule(), id:'removeModule'+module_index}
+<input type="hidden" name="index" value="${module_index}"/>
+<input type="hidden" name="encoded" value="${encoded}"/>
+
+<div id="deleteModal${module_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h3 id="myModalLabel">Delete confirmation</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to delete ${module.module} from the ${stream.name} stream?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
+  </div>
+</div>
+#{/form}
+
+#{/list}
+
 <h1 class="db_page_title">Datastream '${stream.name}'</h1>
 
 <p>Data goes from bottom to top in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
@@ -24,7 +47,7 @@
 	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>&nbsp;&nbsp;|&nbsp;
 	       <a href="@{gui.MyDataStreams.moveModuleUp(encoded, module_index)}">Move Up</a>&nbsp;&nbsp;|&nbsp;
 	       <a href="@{gui.MyDataStreams.moveModuleDown(encoded, module_index)}">Move Down</a>&nbsp;&nbsp;|&nbsp;
-	       Delete
+	       <a href="#deleteModal${module_index}" role="button" data-toggle="modal">Delete</a>
 	       </td>
 	   </tr>
 	#{/list}
