@@ -57,7 +57,7 @@ d3.json("/datastreams/json/${_encoded}", function(error, root) {
       .attr("r", function(d) { return d.selected ? 10 : 4.5; });
 
   var text = node.append("text")
-  .attr("dx", function(d) { return -8; })
+  .attr("dx", function(d) { return d.root ? 8 : -8; })
   .attr("dy", -4)
   .style("text-anchor", function(d) { return d.root ? "start" : "end"; });
   
