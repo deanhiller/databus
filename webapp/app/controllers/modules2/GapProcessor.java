@@ -13,6 +13,8 @@ import java.util.Set;
 
 import gov.nrel.util.TimeValue;
 
+import models.message.ChartVarMeta;
+
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.ProxyProcessor;
 import controllers.modules2.framework.procs.PullProcessor;
@@ -47,6 +50,28 @@ public class GapProcessor extends PullProcessorAbstract {
 	private TSRelational firstDataPt;
 
 	private ProxyProcessor readAheadProc;
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false);
+
+	static {
+		ChartVarMeta meta1 = new ChartVarMeta();
+		meta1.setLabel("Max Gap");
+		meta1.setNameInJavascript("maxgap");
+		meta1.setHelp("If specified, this module inserts null between points that are Max Gap or more apart from each other so graphs show a line break(otherwise graphs connect the dots)");
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Max Multiple");
+		meta.setNameInJavascript("offset");
+		meta.setDefaultValue("5");
+		meta.setHelp("If specified, Max Gap is calculated from the first 3 data points as the minimum distance between point 1 and 2 OR point 2 and 3 and then multiplied by maxMultiple");
+		parameterMeta.put(meta1.getNameInJavascript(), meta1);
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+	
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
 
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor,

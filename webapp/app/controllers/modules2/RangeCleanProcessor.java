@@ -2,9 +2,13 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.Map;
+
+import models.message.ChartVarMeta;
 
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PushOrPullProcessor;
 
@@ -12,6 +16,29 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 
 	private BigDecimal min;
 	private BigDecimal max;
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false);
+
+	static {
+		ChartVarMeta meta1 = new ChartVarMeta();
+		meta1.setLabel("Min Value");
+		meta1.setNameInJavascript("min");
+		meta1.setRequired(true);
+		meta1.setHelp("Any value below min value is dropped.  Values matching min value are kept");
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Max Value");
+		meta.setNameInJavascript("max");
+		meta.setRequired(true);
+		meta.setHelp("Any value above max value is dropped.  Values matching max value are kept");
+		parameterMeta.put(meta1.getNameInJavascript(), meta1);
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+	
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
 
 	@Override
 	protected int getNumParams() {

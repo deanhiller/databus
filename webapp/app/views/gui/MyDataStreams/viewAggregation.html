@@ -2,8 +2,6 @@
 #{set title:'My Groups' /}
 #{set tab:'home' /}
 
-${path}
-
 #{list aggregation.streams, as:'child'}
 
 #{form @postDeleteStream(), id:'removeStream'+child_index}
@@ -48,7 +46,7 @@ ${path}
 	#{/list}
 	#{else}
 	   <tr>
-	      <td colspan=2>Click Add Stream or Add Aggregation below to start creating a stream from other streams</td>
+	      <td colspan=2>Click Add Stream below to start creating a stream from other streams</td>
 	   </tr>
     #{/else}
 	</tbody>
@@ -133,13 +131,14 @@ d3.json("/datastreams/json/${encoded}", function(error, root) {
   node.append("circle")
       .attr("r", function(d) { return d.selected ? 10 : 4.5; });
 
-  node.append("text")
+  var temp = node.append("text")
   .attr("dx", function(d) { return -8; })
   .attr("dy", -4)
   .style("text-anchor", function(d) { return d.root ? "start" : "end"; })
   .style("font-size", function(d) { return d.selected ? "16px" : "10px"; })
   .style("font-weight", function(d) { return d.selected ? "bold" : ""; })
   .text(function(d) { return d.name; });
+  
 });
 
 d3.select(self.frameElement).style("height", height + "px");

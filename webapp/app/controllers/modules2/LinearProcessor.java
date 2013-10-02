@@ -13,6 +13,8 @@ import java.util.Set;
 
 import gov.nrel.util.TimeValue;
 
+import models.message.ChartVarMeta;
+
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
@@ -45,6 +48,30 @@ public class LinearProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private boolean isSplineCreated;
+
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false);
+
+	static {
+		ChartVarMeta meta1 = new ChartVarMeta();
+		meta1.setLabel("Interval");
+		meta1.setNameInJavascript("interval");
+		meta1.setRequired(true);
+		meta1.setDefaultValue("60000");
+		meta1.setHelp("The interval we return data at(so for 60000, we return you data points that are 60 seconds apart");
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Epoch Offset");
+		meta.setNameInJavascript("offset");
+		meta.setHelp("The offset from the epoch that the initial time will match.  After that, every datapoint is Interval apart.  " +
+				"If left blank, we use the start time as the offset");
+		parameterMeta.put(meta1.getNameInJavascript(), meta1);
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+	
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
 
 	@Override
 	protected int getNumParams() {

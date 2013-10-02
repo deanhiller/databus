@@ -29,6 +29,10 @@ public class MyDataStreams extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyDataStreams.class);
 
+	public static void start() {
+		render();
+	}
+
 	public static void editAggregation(String encoded) {
 		if("start".equals(encoded)) {
 			render(null, null, encoded);
@@ -69,6 +73,12 @@ public class MyDataStreams extends Controller {
 
 	public static void aggregationComplete(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
+		StreamTuple module = findCurrentStream(editor);
+		if(module.getStream().getStreams().size() == 0) {
+			flash.error("An aggregation must have at least one stream");
+			viewAggregation(encoded);
+		}
+		
 		List<Integer> locs = editor.getLocation();
 		locs.remove(locs.size()-1);
 		StreamTuple str = findCurrentStream(editor);
@@ -243,7 +253,10 @@ public class MyDataStreams extends Controller {
 			String name = now.getName()+"(";
 			List<StreamModule> streams = now.getStreams();
 			for(StreamModule m : streams) {
-				name+="<-"+m.getModule();
+				String value = m.getModule();
+				if("rawdataV1".equals(m.getModule()))
+					value = m.getParams().get("table");
+				name+="<-"+value;
 			}
 			name += ")";
 			now2.put("name", name);
@@ -346,7 +359,7 @@ public class MyDataStreams extends Controller {
 		List<StreamModule> modules = stream.getStreams();
 		if(modules.size() == 0) {
 			validation.addError("somefield", "error");
-			flash.error("You must add some modules before finishing this stream");
+			flash.error("A stream must have at least one module");
 		} else {
 			StreamModule module = modules.get(modules.size()-1);
 			if(!"rawdataV1".equals(module.getModule())) {

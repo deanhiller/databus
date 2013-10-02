@@ -167,6 +167,7 @@ POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyChart
 # Datastream creation Pages
 # ******************************************************************************
 # ******************************************************************************
+GET  /datastreams                                 gui.MyDataStreams.start
 GET  /datastreams/agg/edit/{encoded}              gui.MyDataStreams.editAggregation
 POST /datastreams/agg/post                        gui.MyDataStreams.postAggregation
 GET  /datastreams/agg/view/{encoded}              gui.MyDataStreams.viewAggregation
