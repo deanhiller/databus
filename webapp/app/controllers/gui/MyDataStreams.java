@@ -142,7 +142,7 @@ public class MyDataStreams extends Controller {
 
 	public static void editModule(String encoded, int index) {
 		RawProcessorFactory factory = ModuleController.fetchFactory();
-		List<String> modules = factory.fetchProcessorNames();
+		List<String> modules = factory.fetchNonTerminalModules();
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
@@ -151,6 +151,11 @@ public class MyDataStreams extends Controller {
 		if(index >= 0) {
 			module = parent.getStreams().get(index-1);
 		}
+		
+		if(index < 0 && parent.getStreams().size() == 0 || index == parent.getStreams().size()) {
+			modules = factory.fetchTerminalModules();
+		}
+
 		encoded = DataStreamUtil.encode(editor);
 		render(modules, module, encoded, index);
 	}
@@ -186,14 +191,13 @@ public class MyDataStreams extends Controller {
 		} else {
 			StreamModule module = new StreamModule();
 			module.setModule(moduleName);
-			parent.getStreams().add(module);
-			index = parent.getStreams().size(); //the one we just added
+			parent.getStreams().add(0, module);
+			index = 0+1; //the one we just added
 			
 			if(pullProcessor instanceof StreamsProcessor) {
 				module.setName(parent.getName()+"("+moduleName+")");
-				editor.getLocation().add(parent.getStreams().size()-1);
 				encoded = DataStreamUtil.encode(editor);
-				viewAggregation(encoded);
+				viewStream(encoded);
 			}
 		}
 		
@@ -216,8 +220,9 @@ public class MyDataStreams extends Controller {
 		if("stream".equals(current.getModule())) {
 			//modify current to the node with no children (or with the real children)
 			//the first child is always the one that is the aggregation or rawdata
-			if(current.getStreams().size() > 0)
-				current = current.getStreams().get(0);
+			int size = current.getStreams().size();
+			if(size > 0)
+				current = current.getStreams().get(size-1);
 		}
 
 		List<StreamModule> streams = current.getStreams();
@@ -335,6 +340,45 @@ public class MyDataStreams extends Controller {
 	
 	public static void streamComplete(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
+		
+		StreamTuple str = findCurrentStream(editor);
+		StreamModule stream = str.getStream();
+		List<StreamModule> modules = stream.getStreams();
+		if(modules.size() == 0) {
+			validation.addError("somefield", "error");
+			flash.error("You must add some modules before finishing this stream");
+		} else {
+			StreamModule module = modules.get(modules.size()-1);
+			if(!"rawdataV1".equals(module.getModule())) {
+				List<StreamModule> children = module.getStreams();
+				if(children.size() == 0) {
+					validation.addError("somefield", "error");
+					flash.error("You must click edit on the aggregation and finish filling in his children first.");
+				}
+			}
+		}
+			
+		for(int i = 0; i < modules.size(); i++) {
+			StreamModule module = modules.get(i);
+			MetaInformation meta = fetchMeta(module);
+			if(i == modules.size()-1) {
+				if(!meta.isStreamTerminator()) {
+					validation.addError("somefield", "error");
+					flash.error("The very last module in a stream must be a rawdataV1 or an aggregation");
+				}
+			} else {
+				if(meta.isStreamTerminator()) {
+					validation.addError("somefield", "error");
+					flash.error("Only the very last module can be rawdataV1 or an aggregation");
+				}
+			}
+		}
+
+		if(validation.hasErrors()) {
+			flash.keep();
+			viewStream(encoded);
+		}
+		
 		List<Integer> locs = editor.getLocation();
 		locs.remove(locs.size()-1);
 		encoded = DataStreamUtil.encode(editor);

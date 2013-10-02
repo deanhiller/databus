@@ -44,10 +44,16 @@
 	       <td>${module.module}</td>
 	       <td>${module.params}</td>
 	       <td>
-	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>&nbsp;&nbsp;|&nbsp;
-	       <a href="@{gui.MyDataStreams.moveModuleUp(encoded, module_index)}">Move Up</a>&nbsp;&nbsp;|&nbsp;
-	       <a href="@{gui.MyDataStreams.moveModuleDown(encoded, module_index)}">Move Down</a>&nbsp;&nbsp;|&nbsp;
-	       <a href="#deleteModal${module_index}" role="button" data-toggle="modal">Delete</a>
+	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>
+	       #{if module_index < stream.streams.size()}
+           &nbsp;|&nbsp;&nbsp;<a href="#deleteModal${module_index}" role="button" data-toggle="modal">Delete</a>
+           #{/if}
+	       #{if module_index < stream.streams.size() && module_index > 1}
+	       &nbsp;|&nbsp;&nbsp;<a href="@{gui.MyDataStreams.moveModuleUp(encoded, module_index)}">Move Up</a>
+	       #{/if}
+	       #{if module_index < stream.streams.size()-1}
+	       &nbsp;|&nbsp;&nbsp;<a href="@{gui.MyDataStreams.moveModuleDown(encoded, module_index)}">Move Down</a>
+	       #{/if}
 	       </td>
 	   </tr>
 	#{/list}
@@ -103,7 +109,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var width = 960,
+var width = $("#graph").width(),
     height = 200;
 
 var cluster = d3.layout.cluster()

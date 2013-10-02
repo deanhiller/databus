@@ -151,10 +151,22 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	public Map<String, PullProcessor> fetchPullProcessors() {
 		return pullProcessors;
 	}
-	public List<String> fetchProcessorNames() {
+
+	public List<String> fetchTerminalModules() {
 		List<String> keys = new ArrayList<String>();
-		for(String key : pullProcessors.keySet())
-			keys.add(key);
+		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
+			if(entry.getValue().getGuiMeta().isStreamTerminator())
+				keys.add(entry.getKey());
+		}
+		return keys;
+	}
+	
+	public List<String> fetchNonTerminalModules() {
+		List<String> keys = new ArrayList<String>();
+		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
+			if(!entry.getValue().getGuiMeta().isStreamTerminator())
+				keys.add(entry.getKey());
+		}
 		return keys;
 	}
 }
