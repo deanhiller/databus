@@ -1,0 +1,98 @@
+### BEGIN INIT INFO
+# Provides:          databus
+# Required-Start:    cassandra networking
+# Required-Stop:     
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: DataBus (cassandra management and I/O)
+# Description:       The DataBus application provides web-based access to a cassandra data store.
+### END INIT INFO
+
+# This script written by M. Hopcroft, Sep2013
+#  hopcroft@hp.com
+
+
+# Using the lsb functions to perform the operations.
+. /lib/lsb/init-functions
+
+# Process name (for display)
+NAME=DataBus
+
+# Daemon name (the executable for this service)
+#  Note: you must set the value for the pid file to be the same as in the
+#   DataBus startup script)
+DAEMON=/opt/databus/webapp/startService.sh
+
+# pid file for the system service (note: you must create this directory)
+PIDFILE=/var/run/databus/databus.pid
+if [ ! -d /var/run/databus ]; then
+  echo "Cannot create pid file in \"/var/run/databus\". Cannot start."
+  exit 6
+fi
+
+# Switch for the service commands
+case "$1" in
+	start)
+		if [ ! -e $PIDFILE ]; then
+			# If the daemon is not there, then exit.
+			if [ ! -x $DAEMON ]; then
+				echo "Cannot execute \"$DAEMON\""
+				exit 5
+			fi
+			log_daemon_msg "Starting $NAME"
+			# Start the daemon using start-stop-daemon
+			start-stop-daemon --start --verbose --pidfile $PIDFILE --exec $DAEMON
+			# it takes a few seconds to start up
+			echo "[Expect a delay of 10 seconds or so before web services start]"
+			sleep 10
+ 			log_success_msg "Started $NAME"
+  		else
+  			isRunning=`pgrep -cf /opt/databus`
+  			echo "$NAME is already running ($isRunning) or the pid file is invalid"
+			log_failure_msg "Cannot start $NAME" 
+ 		fi
+		;;
+
+	stop)
+		if [ -e $PIDFILE ]; then
+			status_of_proc -p $PIDFILE $DAEMON "$NAME webapp" && status="0" || status="$?"
+			if [ "$status" = 0 ]; then
+			echo "   Stopping $NAME webapp..."
+				start-stop-daemon --stop --quiet --oknodo --pidfile $PIDFILE
+				/bin/rm -rf $PIDFILE
+				log_success_msg "$NAME stopped."
+			fi
+		else
+			log_daemon_msg "$NAME webapp is not running"
+			exit 1
+		fi
+		;;
+
+	restart)
+		echo "Restarting " $0
+		$0 stop
+		echo "pause to ensure DataBus has terminated (5s)"
+		sleep 5s
+		$0 start
+		;;
+
+	status)
+		#myIP=`ifconfig eth0 | sed -rn 's/.*r:([^ ]+) .*/\1/p'`
+  		# Check the status of the process
+		isRunning=`pgrep -cf /opt/databus`
+  		if [ -e $PIDFILE ]; then
+			if [ $isRunning -ge 1 ]; then
+				echo "`date` | $isRunning $NAME processes are running"
+			fi
+   			status_of_proc -p $PIDFILE $DAEMON "$NAME webapp" && exit 0 || exit $?
+  		else
+   			log_daemon_msg "$NAME webapp is not running"
+  		fi
+		;;
+
+	*)
+	# For invalid arguments, print the usage message.
+	echo "Usage: $0 {start|stop|restart|status}"
+	exit 2
+	;;
+esac
