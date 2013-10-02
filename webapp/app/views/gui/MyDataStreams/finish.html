@@ -1,0 +1,12 @@
+#{extends '/main_body_container.html' /}
+#{set tab:'home' /}
+
+<h1 class="db_page_title">Your Stream Aggregation</h1>
+
+<a href="" class="btn btn-primary">Create Chart</a>
+<a href="" class="btn btn-primary">Download Csv</a>
+<a href="" class="btn btn-primary">Download Json</a>
+
+<div id="graph"></div>
+
+#{directedgraph encoded:encoded/}

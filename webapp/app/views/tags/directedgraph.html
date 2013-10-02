@@ -56,14 +56,32 @@ d3.json("/datastreams/json/${_encoded}", function(error, root) {
   node.append("circle")
       .attr("r", function(d) { return d.selected ? 10 : 4.5; });
 
-  var temp = node.append("text")
+  var text = node.append("text")
   .attr("dx", function(d) { return -8; })
   .attr("dy", -4)
-  .style("text-anchor", function(d) { return d.root ? "start" : "end"; })
-  .style("font-size", function(d) { return d.selected ? "16px" : "10px"; })
-  .style("font-weight", function(d) { return d.selected ? "bold" : ""; })
-  .text(function(d) { return d.name; });
+  .style("text-anchor", function(d) { return d.root ? "start" : "end"; });
   
+  text.append("tspan")
+     .style("font-size", function(d) { return d.selected && !d.isLastModule ? "16px" : "10px"; })
+     .style("font-weight", function(d) { return d.selected && !d.isLastModule ? "bold" : ""; })
+     .text(function(d) { return d.name; });
+  
+  text.append("tspan")
+  .style("font-size", function(d) { return "10px"; })
+  .text(function(d) { return "("; });
+  
+  text.append("tspan")
+  .style("font-size", function(d) { return "10px"; })
+  .text(function(d) { return d.moduleList; });
+  
+  text.append("tspan")
+  .style("font-size", function(d) { return d.selected && d.isLastModule ? "16px" : "10px"; })
+  .style("font-weight", function(d) { return d.selected && d.isLastModule ? "bold" : ""; })
+  .text(function(d) { return d.lastModule; });
+
+  text.append("tspan")
+  .style("font-size", function(d) { return "10px"; })
+  .text(function(d) { return ")"; });
 });
 
 d3.select(self.frameElement).style("height", height + "px");

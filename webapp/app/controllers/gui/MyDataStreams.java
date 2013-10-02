@@ -73,9 +73,16 @@ public class MyDataStreams extends Controller {
 
 	public static void aggregationComplete(String encoded) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
-		StreamTuple module = findCurrentStream(editor);
-		if(module.getStream().getStreams().size() == 0) {
+		StreamTuple tuple = findCurrentStream(editor);
+		if(tuple.getStream().getStreams().size() == 0) {
+			validation.addError("somefield", "error");
 			flash.error("An aggregation must have at least one stream");
+		} else if(!streamsAligned(tuple.getStream().getStreams())) {
+			validation.addError("somefield", "error");
+			flash.error("Streams must be aligned so each stream needs to be splined or time averaged or linearly interpolated so times match up");
+		}
+		
+		if(validation.hasErrors()) {
 			viewAggregation(encoded);
 		}
 		
@@ -83,9 +90,30 @@ public class MyDataStreams extends Controller {
 		locs.remove(locs.size()-1);
 		StreamTuple str = findCurrentStream(editor);
 		encoded = DataStreamUtil.encode(editor);
-		if("stream".equals(str.getStream().getModule()))
-			viewStream(encoded);
-		viewAggregation(encoded);
+		viewStream(encoded);
+	}
+
+	private static boolean streamsAligned(List<StreamModule> streams) {
+		//my code was wrong since streams could be aligned even further down in the tree....we need to go deeper
+		return true;
+//		RawProcessorFactory factory = ModuleController.fetchFactory();
+//		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+//		
+//		for(StreamModule m : streams) {
+//			if(!isStreamAligned(m, modules)) 
+//				return false;
+//		}
+//		return true;
+	}
+
+	private static boolean isStreamAligned(StreamModule m, Map<String, PullProcessor> modules) {
+		//we are looking for one child that is aligning the times
+		for(StreamModule child : m.getStreams()) {
+			PullProcessor proc = modules.get(child.getModule());
+			if(proc.getGuiMeta().isTimeAligning())
+				return true;
+		}
+		return false;
 	}
 
 	private static StreamTuple findCurrentStream(StreamEditor editor) {
@@ -264,25 +292,33 @@ public class MyDataStreams extends Controller {
 
 	private static void transfer(StreamModule now, Map<String, Object> now2, StreamModule selectedStream, StreamModule root) {
 		if("stream".equals(now.getModule())) {
-			String name = now.getName()+"(";
+			String name = now.getName();
 			List<StreamModule> streams = now.getStreams();
-			for(StreamModule m : streams) {
-				String value = m.getModule();
-				if("rawdataV1".equals(m.getModule()))
-					value = m.getParams().get("table");
-				name+="<-"+value;
+			String moduleList = "";
+			for(int i = 0; i < streams.size()-1; i++) {
+				StreamModule m = streams.get(i);
+				moduleList+="<-"+m.getModule();
 			}
-			name += ")";
+
+			StreamModule m = streams.get(streams.size()-1);
+			String value = m.getModule();
+			if("rawdataV1".equals(m.getModule()))
+				value = m.getParams().get("table");
 			now2.put("name", name);
+			now2.put("moduleList", moduleList);
+			now2.put("lastModule", "<-"+value);
 		} else {
 			now2.put("name", now.getName());
 		}
 		
 		//now == selectedStream is obvious but if the selectedStream is a module inside the stream, we select the stream
 		//since modules cannot be selected
-		if(now == selectedStream || 
-				("stream".equals(now.getModule()) && now.getStreams().contains(selectedStream)))
+		if(now == selectedStream) {
 			now2.put("selected", true);
+		} else if("stream".equals(now.getModule()) && now.getStreams().contains(selectedStream)) {
+			now2.put("selected", true);
+			now2.put("isLastModule", true);
+		}
 		
 		if(now == root)
 			now2.put("root", true);
@@ -407,9 +443,19 @@ public class MyDataStreams extends Controller {
 		}
 		
 		List<Integer> locs = editor.getLocation();
+		if(locs.size() == 0) {
+			//we are at the root element so they are finished now
+			encoded = DataStreamUtil.encode(editor);
+			finish(encoded);
+		}
+
 		locs.remove(locs.size()-1);
 		encoded = DataStreamUtil.encode(editor);
 		viewAggregation(encoded);
+	}
+	
+	public static void finish(String encoded) {
+		render(encoded);
 	}
 	
 	public static void moveModuleUp(String encoded, int index) {

@@ -52,7 +52,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false, true);
 	
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

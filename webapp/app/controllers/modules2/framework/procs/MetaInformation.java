@@ -14,10 +14,12 @@ public class MetaInformation {
 
 	private Map<String, ChartVarMeta> parameterMeta;
 	private boolean isStreamTerminator;
+	private boolean isTimeAligning;
 	
-	public MetaInformation(Map<String, ChartVarMeta> paramMeta, boolean isStreamTerminator) {
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, boolean isStreamTerminator, boolean isTimeAligning) {
 		this.parameterMeta = paramMeta;
-		this.isStreamTerminator = isStreamTerminator;	
+		this.isStreamTerminator = isStreamTerminator;
+		this.isTimeAligning = isTimeAligning;
 	}
 	
 	public final void validate(Validation validation, Map<String, String> variableValues) {
@@ -60,4 +62,9 @@ public class MetaInformation {
 	public boolean isStreamTerminator() {
 		return isStreamTerminator;
 	}
+
+	public boolean isTimeAligning() {
+		return isTimeAligning;
+	}
+
 }

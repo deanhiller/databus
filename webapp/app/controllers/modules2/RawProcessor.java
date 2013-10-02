@@ -73,7 +73,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	private boolean skipSecurity;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, true);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, true, false);
 
 	static {
 		ChartVarMeta meta = new ChartVarMeta();
