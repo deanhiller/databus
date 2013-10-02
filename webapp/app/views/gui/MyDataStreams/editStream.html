@@ -15,7 +15,7 @@
 	<div class="control-group ${field.errorClass}">
 	    <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Name</label>
 	    <div class="controls">
-	         <input id="moduleNameId" type="text" name="${field.name}" value="${stream.name}" class="input-xlarge">
+	         <input id="moduleNameId" type="text" name="${field.name}" value="${stream?.name}" class="input-xlarge">
 	        <span class="help-block">${field.error}</span>
 	    </div>
 	</div>
@@ -28,3 +28,7 @@
        </div>
     </div>
 #{/form}
+
+<div id="graph"></div>
+
+#{directedgraph encoded:encoded/}

@@ -114,6 +114,10 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void editStream(String encoded, int index) {
+		if("start".equals(encoded)) {
+			render(null, encoded);
+		}
+
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule stream = tuple.getStream();
@@ -134,10 +138,20 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void postStream(String encoded, String name) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
-		StreamTuple tuple = findCurrentStream(editor);
-		StreamModule stream = tuple.getStream();
-		stream.setName(name);
+		StreamEditor editor;
+		if("start".equals(encoded)) {
+			StreamModule stream = new StreamModule();
+			stream.setName(name);
+			stream.setModule("stream");
+			editor = new StreamEditor();
+			editor.setStream(stream);
+		} else {
+			editor = DataStreamUtil.decode(encoded);
+			StreamTuple tuple = findCurrentStream(editor);
+			StreamModule stream = tuple.getStream();
+			stream.setName(name);
+		}
+
 		encoded = DataStreamUtil.encode(editor);
 		viewStream(encoded);
 	}
@@ -366,7 +380,7 @@ public class MyDataStreams extends Controller {
 				List<StreamModule> children = module.getStreams();
 				if(children.size() == 0) {
 					validation.addError("somefield", "error");
-					flash.error("You must click edit on the aggregation and finish filling in his children first.");
+					flash.error("You must click 'Edit' on the aggregation and finish filling in his children first.");
 				}
 			}
 		}
