@@ -94,24 +94,27 @@ public class MyDataStreams extends Controller {
 	}
 
 	private static boolean streamsAligned(List<StreamModule> streams) {
-		//my code was wrong since streams could be aligned even further down in the tree....we need to go deeper
+		//let's first fine all modules with "stream".equals(getModule()) as they have all the relevant children
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+		
+		for(StreamModule m : streams) {
+			if(!isStreamAligned(m, modules)) 
+				return false;
+		}
 		return true;
-//		RawProcessorFactory factory = ModuleController.fetchFactory();
-//		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
-//		
-//		for(StreamModule m : streams) {
-//			if(!isStreamAligned(m, modules)) 
-//				return false;
-//		}
-//		return true;
 	}
 
 	private static boolean isStreamAligned(StreamModule m, Map<String, PullProcessor> modules) {
 		//we are looking for one child that is aligning the times
 		for(StreamModule child : m.getStreams()) {
 			PullProcessor proc = modules.get(child.getModule());
-			if(proc.getGuiMeta().isTimeAligning())
+			MetaInformation meta = proc.getGuiMeta();
+			if(meta.isTimeAligning())
 				return true;
+			else if(meta.isStreamTerminator() && child.getStreams().size() > 0) {
+				return streamsAligned(child.getStreams());
+			}
 		}
 		return false;
 	}
