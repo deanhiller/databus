@@ -1,0 +1,20 @@
+Installing DataBus as a system service
+
+M. Hopcroft, Sep2013
+  hopcroft@hp.com
+
+
+DataBus is an open-source database management system. It is typically used with cassandra to manage building management data.
+This file describes a method of using DataBus as a "System V"-style system service on Ubuntu GNU/Linux. There are many possible configurations of a system service, and you should be prepared to modify the files here to suit your needs.
+
+After the service files are installed, you can manage DataBus with system service commands start,stop,status,restart. For example:
+
+  $ service databus status
+  Wed Oct  2 12:48:06 PDT 2013 | 1 DataBus processes are running
+   * DataBus webapp is running
+  $
+
+
+To install, run the script "databus_service_install.sh" as root (sudo) to create the necessary folders and files. This script assumes that DataBus is installed at /opt/databus, and that cassandra is already installed on the same system. This script will only add files to your system and DataBus installation, and will not otherwise modify the DataBus files.
+ 
+
