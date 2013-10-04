@@ -123,6 +123,12 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		if(rows == null)
 			return null;
 		
+		ReadResult res = fetchBadIndexAndRemove(rows);
+		if(res != null) {
+			results.clear();
+			return res;
+		}
+		
 		long min = calculate(rows);
 		
 		List<TSRelational> toProcess = find(rows, min);
@@ -130,6 +136,18 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		return process(toProcess);
 	}
 	
+	private ReadResult fetchBadIndexAndRemove(List<ReadResult> rows) {
+		for(int i = 0; i < rows.size(); i++) {
+			ReadResult res = rows.get(i);
+			if(res.isMissingData()) {
+				ProxyProcessor proc = processors.get(i);
+				proc.read(); //make sure we read and discard the value
+				return res;
+			}
+		}
+		return null;
+	}
+
 	protected void clearResults() {
 		results.clear();
 	}
