@@ -195,22 +195,40 @@ public class MyDataStreams extends Controller {
 		render(encoded, stream, path);
 	}
 
-	public static void editModule(String encoded, int index) {
+	public static void insertModule(String encoded) {
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		List<String> modules = factory.fetchNonTerminalModules();
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+
+		int index = -2;
+		StreamModule module = null;
+		encoded = DataStreamUtil.encode(editor);
+		render("@editModule", modules, module, encoded, index);
+	}
+
+	public static void editModule(String encoded, int index) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		List<String> modules = factory.fetchAllModules();
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamTuple tuple = findCurrentStream(editor);
 		StreamModule parent = tuple.getStream();
 
+		int size = parent.getStreams().size();
 		StreamModule module = null;
 		if(index >= 0) {
 			module = parent.getStreams().get(index-1);
+		} else if(size > 0) {
+			StreamModule mod = parent.getStreams().get(size - 1);
+			PullProcessor proc = factory.fetchPullProcessors().get(mod.getModule());
+			if(proc.getGuiMeta().isStreamTerminator()) {
+				if(mod.getModule().startsWith("rawdata"))
+					flash.error("The module="+mod.getModule()+" is the last source.  Insert modules instead");
+				else
+					flash.error("The module="+mod.getModule()+" is a source....You can edit the module to add stuff to it.");
+				viewStream(encoded);
+			}
 		}
 		
-		if(index < 0 && parent.getStreams().size() == 0 || index == parent.getStreams().size()) {
-			modules = factory.fetchTerminalModules();
-		}
-
 		encoded = DataStreamUtil.encode(editor);
 		render(modules, module, encoded, index);
 	}
@@ -243,17 +261,23 @@ public class MyDataStreams extends Controller {
 				encoded = DataStreamUtil.encode(editor);
 				viewAggregation(encoded);
 			}
-		} else {
+		} else if(index == -1) {
 			StreamModule module = new StreamModule();
 			module.setModule(moduleName);
-			parent.getStreams().add(0, module);
-			index = 0+1; //the one we just added
+			parent.getStreams().add(module);
+			index = parent.getStreams().size();
 			
 			if(pullProcessor instanceof StreamsProcessor) {
 				module.setName(parent.getName()+"("+moduleName+")");
 				encoded = DataStreamUtil.encode(editor);
 				viewStream(encoded);
 			}
+		} else if(index == -2) {
+			//-2 is insert...kind of a hack really
+			StreamModule module = new StreamModule();
+			module.setModule(moduleName);
+			parent.getStreams().add(0, module);
+			index = 0+1; //the one we just added
 		}
 		
 		encoded = DataStreamUtil.encode(editor);
@@ -303,13 +327,16 @@ public class MyDataStreams extends Controller {
 				moduleList+="<-"+m.getModule();
 			}
 
-			StreamModule m = streams.get(streams.size()-1);
-			String value = m.getModule();
-			if("rawdataV1".equals(m.getModule()))
-				value = m.getParams().get("table");
+			String value = "";
+			if(streams.size() > 0) {
+				StreamModule m = streams.get(streams.size()-1);
+				value = "<-"+m.getModule();
+				if("rawdataV1".equals(m.getModule()))
+					value = "<-"+m.getParams().get("table");
+			}
 			now2.put("name", name);
 			now2.put("moduleList", moduleList);
-			now2.put("lastModule", "<-"+value);
+			now2.put("lastModule", value);
 		} else {
 			now2.put("name", now.getName());
 		}

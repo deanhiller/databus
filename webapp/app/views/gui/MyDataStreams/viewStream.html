@@ -81,6 +81,9 @@
 <div id="graph"></div>
 
 <p>
+#{if stream.streams.size() != 0}
+    <a href="@{gui.MyDataStreams.insertModule(encoded)}" class="btn btn-primary">Insert Module</a>
+#{/if}
     <a href="@{gui.MyDataStreams.editModule(encoded, -1)}" class="btn btn-primary">Add Module</a>
     <a href="@{gui.MyDataStreams.streamComplete(encoded)}" class="btn btn-primary">Stream Complete</a>
     <a href="#saveModal" role="button" class="btn btn-primary" data-toggle="modal">Save to Edit Later</a>

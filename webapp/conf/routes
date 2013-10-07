@@ -178,6 +178,7 @@ GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
 GET  /datastreams/stream/complete/{encoded}       gui.MyDataStreams.streamComplete
 POST /datastreams/stream/delete                   gui.MyDataStreams.postDeleteStream
 
+GET  /datastreams/module/{encoded}                 gui.MyDataStreams.insertModule
 GET  /datastreams/module/{index}/{encoded}         gui.MyDataStreams.editModule
 POST /datastreams/module/post                      gui.MyDataStreams.postModule
 GET  /datastreams/module/params/{index}/{encoded}  gui.MyDataStreams.editModuleParams
