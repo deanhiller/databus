@@ -33,13 +33,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	private String aggName;
 
 
-	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false);
-
-	@Override
-	public MetaInformation getGuiMeta() {
-		return metaInfo;
-	}
+	protected static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 
 	@Override
 	public String toString() {

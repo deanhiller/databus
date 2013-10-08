@@ -14,6 +14,8 @@ import org.apache.commons.lang.StringUtils;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
@@ -27,6 +29,17 @@ public class AggregationProcessor extends StreamsProcessor {
 	private boolean lookaheadSatisfied = false;
 	private int largestRowWidth = -1;
 	private List<ReadResult> lookaheadBuffer;
+	
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation Module");
+
+	static {
+		metaInfo.setDescription("This module takes many streams that are already aligned on time(time, value pairs) and condenses it to time, value1, value2, value3 passing that to the next module");
+	}
+
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
 	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,

@@ -53,7 +53,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Spline(version 3)");
 	
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
@@ -79,6 +79,8 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		parameterMeta.put(meta2.getNameInJavascript(), meta2);
 		parameterMeta.put(meta3.getNameInJavascript(), meta3);
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+		
+		metaInfo.setDescription("This module takes data from the source module and translates the time/value pairs into aligning with a specific time interval using spline interpolation(so you can add values with same timestamp, etc)");
 	}
 
 	@Override

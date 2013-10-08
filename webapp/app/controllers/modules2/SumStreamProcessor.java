@@ -5,10 +5,23 @@ import java.util.List;
 
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
 public class SumStreamProcessor extends StreamsProcessor {
+
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Sum Stream");
+
+	static {
+		metaInfo.setDescription("This module takes many streams and adds them up");
+	}
+
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
 
 	@Override
 	protected ReadResult process(List<TSRelational> rows) {

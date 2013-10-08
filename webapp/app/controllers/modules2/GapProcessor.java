@@ -53,7 +53,7 @@ public class GapProcessor extends PullProcessorAbstract {
 	private ProxyProcessor readAheadProc;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false, "Line Break Module");
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
@@ -67,6 +67,8 @@ public class GapProcessor extends PullProcessorAbstract {
 		meta.setHelp("If specified, Max Gap is calculated from the first 3 data points as the minimum distance between point 1 and 2 OR point 2 and 3 and then multiplied by maxMultiple");
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+		
+		metaInfo.setDescription("Normal charting software connects all the dots while we sometimes we want to show an outage.  This module inserts null values so it will break up the line on the chart and you visually see the outages");
 	}
 	
 	@Override

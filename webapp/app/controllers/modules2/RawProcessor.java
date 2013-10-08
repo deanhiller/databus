@@ -87,12 +87,14 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		meta.setRequired(true);
 		meta.setHelp("The table that we read data from");
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+		
+		metaInfo.setDescription("This module reads the raw data from the database and feeds it to the next module");
 	}
 
 	private static class LocalMetaInformation extends MetaInformation {
 
 		public LocalMetaInformation(Map<String, ChartVarMeta> parameterMeta) {
-			super(parameterMeta, NumChildren.NONE, false);
+			super(parameterMeta, NumChildren.NONE, false, "Table Data Source");
 		}
 
 		@Override

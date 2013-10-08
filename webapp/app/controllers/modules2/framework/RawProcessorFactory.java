@@ -165,7 +165,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 	public List<String> fetchAllModules() {
 		List<String> keys = new ArrayList<String>();
 		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
-			keys.add(entry.getKey());
+			keys.add(entry.getValue().getGuiMeta().getGuiLabel());
 		}
 		return keys;
 	}

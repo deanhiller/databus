@@ -51,7 +51,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 	private boolean isSplineCreated;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Linear Interpolation");
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
@@ -67,6 +67,8 @@ public class LinearProcessor extends PullProcessorAbstract {
 				"If left blank, we use the start time as the offset");
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+		
+		metaInfo.setDescription("This module takes data from the source module and translates the time/value pairs into aligning with a specific time interval using linear interpolation(so you can add values with same timestamp, etc)");
 	}
 	
 	@Override

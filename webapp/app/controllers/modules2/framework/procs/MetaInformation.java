@@ -15,11 +15,14 @@ public class MetaInformation {
 	private Map<String, ChartVarMeta> parameterMeta;
 	private NumChildren numChildren;
 	private boolean isTimeAligning;
+	private String guiLabel;
+	private String description;
 	
-	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning) {
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel) {
 		this.parameterMeta = paramMeta;
 		this.numChildren = num;
 		this.isTimeAligning = isTimeAligning;
+		this.guiLabel = guiLabel;
 	}
 	
 	public final void validate(Validation validation, Map<String, String> variableValues) {
@@ -73,4 +76,16 @@ public class MetaInformation {
 		return false;
 	}
 
+	public String getGuiLabel() {
+		return guiLabel;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+	
 }
