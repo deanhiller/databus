@@ -317,6 +317,12 @@ public class MyDataStreams extends Controller {
 
 		if(proc != null) {
 			MetaInformation meta = proc.getGuiMeta();
+			
+			if(meta.getNumChildren() == NumChildren.NONE) {
+				String name = now.getParams().get("table");
+				now2.put("module", name);
+			}
+			
 			boolean canAddChild = false;
 			switch(meta.getNumChildren()) {
 			case MANY:
