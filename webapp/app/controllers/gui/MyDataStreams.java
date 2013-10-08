@@ -36,6 +36,9 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void viewStream(String encoded) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		editor.getLocation().clear();
+		encoded = DataStreamUtil.encode(editor);
 		render(encoded);
 	}
 
