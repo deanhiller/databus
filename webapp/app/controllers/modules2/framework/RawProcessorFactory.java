@@ -13,6 +13,7 @@ import javax.inject.Provider;
 import com.google.inject.Injector;
 
 import controllers.modules2.AggregationProcessor;
+import controllers.modules2.AggregationProcessorOld;
 import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.DataFillerProcessor;
 import controllers.modules2.DateFormatMod;
