@@ -78,7 +78,7 @@ public class MyDataStreams extends Controller {
 			NumChildren childNum = findNum(module);
 			
 			
-			if((parentNum == NumChildren.ONE && childNum == NumChildren.MANY)
+			if((parentNum == NumChildren.ONE && module.getStreams().size() > 1)
 				|| childNum == NumChildren.NONE) {
 				//there is nogood answer here and we must delete the whole subtree
 				deleteSubTree(parent, module);
@@ -188,7 +188,7 @@ public class MyDataStreams extends Controller {
 			paramList.add(var);
 		}
 		//We need to lookup the parameters here and form a dynamic form just like we do in the charting wizard
-		
+
 		render(encoded, module, paramList);
 	}
 	
@@ -226,32 +226,83 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void finish(String encoded) {
+		StreamEditor editor = DataStreamUtil.decode(encoded);
+		//first find the first aggregation
+		StreamModule current = editor.getStream();
+		while(current.getStreams().size() == 1) {
+			current = current.getStreams().get(0);
+		}
+		
+		List<StreamModule> leafNodes = new ArrayList<StreamModule>();
+		List<StreamModule> aggregations = new ArrayList<StreamModule>();
+		findThings(leafNodes, aggregations, editor.getStream());
+
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> modules = factory.fetchPullProcessors();		
+		for(StreamModule m : leafNodes) {
+			PullProcessor proc = modules.get(m.getModule());
+			if(proc.getGuiMeta().getNumChildren() != NumChildren.NONE) {
+				flash.error("Not all leaf nodes are data sources.  Module="+m.getModule()+" is not a data source");
+				viewStream(encoded);
+				break;
+			}
+		}
+		
+		for(StreamModule agg : aggregations) {
+			if(!isAggAligned(agg)) {
+				flash.error("Not all streams are time aligned(Use splines, time averages, or interpolation to align times first)");
+				viewStream(encoded);
+			}
+		}
 		
 		render(encoded);
 	}
 
-	private static boolean streamsAligned(List<StreamModule> streams) {
-		//let's first fine all modules with "stream".equals(getModule()) as they have all the relevant children
-		RawProcessorFactory factory = ModuleController.fetchFactory();
-		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
-		
-		for(StreamModule m : streams) {
-			if(!isStreamAligned(m, modules)) 
-				return false;
+	private static void findThings(List<StreamModule> leafNodes, List<StreamModule> aggregations, StreamModule stream) {
+		if(stream.getStreams().size() > 1)
+			aggregations.add(stream);
+
+		for(StreamModule m : stream.getStreams()) {
+			if(m.getStreams().size() == 0)
+				leafNodes.add(m);
+			else
+				findThings(leafNodes, aggregations, m);
 		}
-		return true;
 	}
 
-	private static boolean isStreamAligned(StreamModule m, Map<String, PullProcessor> modules) {
-		//we are looking for one child that is aligning the times
-		for(StreamModule child : m.getStreams()) {
-			PullProcessor proc = modules.get(child.getModule());
-			MetaInformation meta = proc.getGuiMeta();
-			if(meta.isTimeAligning())
-				return true;
-			else if(meta.isAggregation() && child.getStreams().size() > 0) {
-				return streamsAligned(child.getStreams());
+	private static boolean isAggAligned(StreamModule aggregation) {
+		boolean isAligned = true;
+		for(StreamModule child : aggregation.getStreams()) {
+			RawProcessorFactory factory = ModuleController.fetchFactory();
+			Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+			MetaInformation meta = modules.get(child.getModule()).getGuiMeta();
+			if(meta.isAggregation()) {
+				if(!isAggAligned(child))
+					isAligned = false;
+			} else {
+				if(!isChildAligned(child))
+					isAligned = false;
 			}
+		}
+		return isAligned;
+	}
+
+	private static boolean isChildAligned(StreamModule current) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+		MetaInformation meta = modules.get(current.getModule()).getGuiMeta();
+		if(meta.isTimeAligning())
+			return true;
+
+		while(current.getStreams().size() > 0) {
+			current = current.getStreams().get(0);
+			if(current.getStreams().size() > 1) {
+				return isAggAligned(current);
+			}
+			
+			MetaInformation meta2 = modules.get(current.getModule()).getGuiMeta();
+			if(meta2.isTimeAligning())
+				return true;
 		}
 		return false;
 	}
@@ -309,17 +360,21 @@ public class MyDataStreams extends Controller {
 	private static void transfer(StreamModule now, Map<String, Object> now2, TreeInfo info, List<Integer> location) {
 		StreamModule selectedStream = info.getSelected();
 		StreamModule root = info.getRoot();
+		StreamModule second = root.getStreams().get(0);
 		
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		Map<String, PullProcessor> procs = factory.fetchPullProcessors();
 		PullProcessor proc = procs.get(now.getModule());
 		
 		now2.put("id", info.getNextId());
-		if(now == root) {
+		if(now == root)
 			now2.put("isRoot", true);
-		} else if(now == selectedStream)
+		else if(now == selectedStream)
 			now2.put("isSelected", true);
-		
+		else if(now == second && now.getStreams().size() != 1) {
+			now2.put("hideMinus", true);
+		}
+
 		now2.put("module", now.getModule());
 
 		if(proc != null) {

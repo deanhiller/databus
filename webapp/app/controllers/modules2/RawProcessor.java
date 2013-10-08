@@ -22,10 +22,13 @@ import org.codehaus.jackson.io.JsonStringEncoder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.data.validation.Validation;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;
 import play.mvc.Scope.Session;
 import play.mvc.results.BadRequest;
+import play.mvc.results.Forbidden;
+import play.mvc.results.NotFound;
 import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
@@ -74,15 +77,37 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	private boolean skipSecurity;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.NONE, false);
-
+	private static MetaInformation metaInfo = new LocalMetaInformation(parameterMeta);
+	private static String NAME_IN_JAVASCRIPT = "table";
+	
 	static {
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Table");
-		meta.setNameInJavascript("table");
+		meta.setNameInJavascript(NAME_IN_JAVASCRIPT);
 		meta.setRequired(true);
 		meta.setHelp("The table that we read data from");
 		parameterMeta.put(meta.getNameInJavascript(), meta);
+	}
+
+	private static class LocalMetaInformation extends MetaInformation {
+
+		public LocalMetaInformation(Map<String, ChartVarMeta> parameterMeta) {
+			super(parameterMeta, NumChildren.NONE, false);
+		}
+
+		@Override
+		protected void validateMore(Validation validation,
+				Map<String, String> variableValues) {
+			super.validateMore(validation, variableValues);
+			String table = variableValues.get(NAME_IN_JAVASCRIPT);
+			try {
+				SecurityUtil.checkSingleTable(table);
+			} catch(Forbidden e) {
+				validation.addError(NAME_IN_JAVASCRIPT, "You don't have access to this table");
+			} catch(NotFound e) {
+				validation.addError(NAME_IN_JAVASCRIPT, "This table does not exist");
+			}
+		}
 	}
 
 	public RawProcessor() {

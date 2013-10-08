@@ -67,7 +67,7 @@
       var textPath2 = text2.append("textPath")
         .attr("startOffset", "45%")
         .attr("xlink:href", "#path"+l.target.id)
-        .text("-");
+        .text(function(d) { return l.target.hideMinus ? "" : "-" });
 	  });
 
 	  var node = theG.selectAll(".node")
