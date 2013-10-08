@@ -75,15 +75,15 @@ public class MyDataStreams extends Controller {
 		} else if("delete".equals(type)) {
 			StreamModule parent = findParent(editor);
 			NumChildren parentNum = findNum(parent);
-			NumChildren childNum = findNum(module);
+			int numGrandChildren = module.getStreams().size();
 			
-			
-			if((parentNum == NumChildren.ONE && module.getStreams().size() > 1)
-				|| childNum == NumChildren.NONE) {
-				//there is nogood answer here and we must delete the whole subtree
-				deleteSubTree(parent, module);
-			} else
+			//Basically if grandchildren size is 1, this is easy, delete node and move the one grandchild up
+			//If numGrandChildren is > 1 then the parent MUST support having many children or we delete the subtree
+			if(numGrandChildren == 1 || 
+					(numGrandChildren > 1 && parentNum == NumChildren.MANY)) {
 				deleteNode(parent, module);
+			} else
+				deleteSubTree(parent, module);
 
 			encoded = DataStreamUtil.encode(editor);
 			viewStream(encoded);
