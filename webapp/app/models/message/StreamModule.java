@@ -22,10 +22,6 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class StreamModule {
 
-	@JsonProperty("name")
-    @XmlElement(name="name")
-    public String name;
-
 	@JsonProperty("module")
     @XmlElement(name="module")
     public String module;
@@ -65,17 +61,9 @@ public class StreamModule {
 		this.streams = streams;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	@Override
 	public String toString() {
-		return "StreamModule [name=" + name + ", module=" + module + "]";
+		return "module=" + module;
 	}
 
 } // Register

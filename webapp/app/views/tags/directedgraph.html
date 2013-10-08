@@ -21,69 +21,97 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var width = $("#graph").width(),
-    height = 200;
+	var width = $("#graph").width(),
+	    height = 200;
+	
+	var cluster = d3.layout.cluster()
+	    .size([height, width - 160]);
+	
+	var diagonal = d3.svg.diagonal()
+	    .projection(function(d) { return [d.y, d.x]; });
+	var myDiv = document.getElementById('graph');
+	
+	var theSvg = d3.select(myDiv).append("svg")
+	    .attr("width", width)
+	    .attr("height", height);
+	var theG = theSvg.append("g")
+	    .attr("transform", "translate(40,0)");
 
-var cluster = d3.layout.cluster()
-    .size([height, width - 160]);
+	d3.json("/datastreams/json/${_encoded}", function(error, root) {
+	  var nodes = cluster.nodes(root),
+	      links = cluster.links(nodes);
+	  
+	  var link = theG.selectAll(".link")
+	      .data(links).enter();
+	  var path = link.append("path")
+	      .attr("class", "link")
+	      .attr("id", function(d, i) { return "path"+d.target.id; })
+	      .attr("d", diagonal);
+	  
+	  var textPath = path.each(function(l){
+		var aref = theG.append("a")
+	        .attr("xlink:href", function(d) { return l.target.insertUrl });
+		var text = aref.append("text")
+		      .style("font-size", function(d) { return "16px"; })
+		      .style("fill", function(d) { return "blue"; });
+		var textPath = text.append("textPath")
+		        .attr("startOffset", "35%")
+		        .attr("xlink:href", "#path"+l.target.id)
+		        .text("+");
+		
+        var aref2 = theG.append("a")
+        .attr("xlink:href", function(d) { return l.target.deleteUrl });
+      var text2 = aref2.append("text")
+        .style("font-size", function(d) { return "16px"; })
+        .style("fill", function(d) { return "blue"; });
+      var textPath2 = text2.append("textPath")
+        .attr("startOffset", "45%")
+        .attr("xlink:href", "#path"+l.target.id)
+        .text("-");
+	  });
 
-var diagonal = d3.svg.diagonal()
-    .projection(function(d) { return [d.y, d.x]; });
-var myDiv = document.getElementById('graph');
+	  var node = theG.selectAll(".node")
+	      .data(nodes)
+	    .enter().append("g")
+	      .attr("class", "node")
+	      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
+	  
+	  node.append("circle")
+	      .attr("r", function(d) { 
+	    	  if(d.isRoot)
+	    		  return 0;
+	    	  return d.selected ? 10 : 4.5; 
+	    });
+	
+	  var refs = node.append("a")
+	    .attr("xlink:href", function(d) { return d.editUrl; });
+	
+	  var text = refs.append("text")
+	  .attr("dx", function(d) { return -8; })
+	  .attr("dy", -4)
+	  .style("text-anchor", function(d) { return "end"; });
+	  
+	  text.append("tspan")
+	     .style("font-size", function(d) { return d.isSelected ? "16px" : "10px"; })
+	     .style("font-weight", function(d) { return d.isSelected ? "bold" : ""; })
+	     .style("fill", function(d) { return "blue"; })
+	     .text(function(d) { return d.module; });
 
-var svg = d3.select(myDiv).append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(40,0)");
-
-d3.json("/datastreams/json/${_encoded}", function(error, root) {
-  var nodes = cluster.nodes(root),
-      links = cluster.links(nodes);
-
-  var link = svg.selectAll(".link")
-      .data(links)
-    .enter().append("path")
-      .attr("class", "link")
-      .attr("d", diagonal);
-
-  var node = svg.selectAll(".node")
-      .data(nodes)
-    .enter().append("g")
-      .attr("class", "node")
-      .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
-
-  node.append("circle")
-      .attr("r", function(d) { return d.selected ? 10 : 4.5; });
-
-  var text = node.append("text")
-  .attr("dx", function(d) { return d.root ? 8 : -8; })
-  .attr("dy", -4)
-  .style("text-anchor", function(d) { return d.root ? "start" : "end"; });
-  
-  text.append("tspan")
-     .style("font-size", function(d) { return d.selected && !d.isLastModule ? "16px" : "10px"; })
-     .style("font-weight", function(d) { return d.selected && !d.isLastModule ? "bold" : ""; })
-     .text(function(d) { return d.name; });
-  
-  text.append("tspan")
-  .style("font-size", function(d) { return "10px"; })
-  .text(function(d) { return "("; });
-  
-  text.append("tspan")
-  .style("font-size", function(d) { return "10px"; })
-  .text(function(d) { return d.moduleList; });
-  
-  text.append("tspan")
-  .style("font-size", function(d) { return d.selected && d.isLastModule ? "16px" : "10px"; })
-  .style("font-weight", function(d) { return d.selected && d.isLastModule ? "bold" : ""; })
-  .text(function(d) { return d.lastModule; });
-
-  text.append("tspan")
-  .style("font-size", function(d) { return "10px"; })
-  .text(function(d) { return ")"; });
-});
-
-d3.select(self.frameElement).style("height", height + "px");
-
-</script>
+	   var refs2 = node.append("a")
+       .attr("xlink:href", function(d) { return d.addUrl; });
+   
+     var text2 = refs2.append("text")
+     .attr("dx", function(d) { return 10; })
+     .attr("dy", 10)
+     .style("text-anchor", function(d) { return "start"; });
+     
+     text2.append("tspan")
+        .style("font-size", function(d) { return "10px"; })
+        .style("fill", function(d) { return "blue"; })
+        .text(function(d) { return d.canAddChild ? "Add child" : ""; });
+     
+	});
+	
+	d3.select(self.frameElement).style("height", height + "px");
+	
+	</script>

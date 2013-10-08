@@ -2,68 +2,9 @@
 #{set title:'My Groups' /}
 #{set tab:'home' /}
 
-#{list stream.streams, as:'module'}
+<h1 class="db_page_title">Datastream</h1>
 
-#{form @postDeleteModule(), id:'removeModule'+module_index}
-<input type="hidden" name="index" value="${module_index}"/>
-<input type="hidden" name="encoded" value="${encoded}"/>
-
-<div id="deleteModal${module_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-  <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-    <h3 id="myModalLabel">Delete confirmation</h3>
-  </div>
-  <div class="modal-body">
-    <p>Are you sure you want to delete ${module.module} from the ${stream.name} stream?</p>
-  </div>
-  <div class="modal-footer">
-    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-    <input type="submit" name="submit" value="Delete" class="btn btn-primary" />
-  </div>
-</div>
-#{/form}
-
-#{/list}
-
-<h1 class="db_page_title">Datastream '${stream.name}'</h1>
-
-<p>Data goes from bottom to top in this list of modules so start with adding the rawdataV1 module and telling it which stream/table you would like to read
- data from and then you can add splines, range cleaners or other modules to that incoming data</p>
-
-<table class="table">
-	<thead>
-	    <tr>
-	        <th>Name</th>
-	        <th>Parameters</th>
-	        <th>Actions</th>
-	    </tr>
-	</thead>
-	<tbody>
-	#{list stream.streams, as:'module'}
-	   <tr>
-	       <td>${module.module}</td>
-	       <td>${module.params}</td>
-	       <td>
-	       <a href="@{gui.MyDataStreams.editModule(encoded, module_index)}">Edit</a>
-	       #{if module_index < stream.streams.size()}
-           &nbsp;|&nbsp;&nbsp;<a href="#deleteModal${module_index}" role="button" data-toggle="modal">Delete</a>
-           #{/if}
-	       #{if module_index < stream.streams.size() && module_index > 1}
-	       &nbsp;|&nbsp;&nbsp;<a href="@{gui.MyDataStreams.moveModuleUp(encoded, module_index)}">Move Up</a>
-	       #{/if}
-	       #{if module_index < stream.streams.size()-1}
-	       &nbsp;|&nbsp;&nbsp;<a href="@{gui.MyDataStreams.moveModuleDown(encoded, module_index)}">Move Down</a>
-	       #{/if}
-	       </td>
-	   </tr>
-	#{/list}
-	#{else}
-	   <tr>
-	      <td colspan=2>Please add a Data Module</td>
-	   </tr>
-    #{/else}
-	</tbody>
-</table>
+<p>Click on the links in the tree graph below to add nodes or edit nodes</p>
 
 <div id="saveModal" class="modal hide fade">
   <div class="modal-header">
@@ -78,15 +19,25 @@
   </div>
 </div>
 
+<div id="undoModal" class="modal hide fade">
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>How to undo</h3>
+  </div>
+  <div class="modal-body">
+    <p>Undoing deletes or anything is very easy, just hit your browser back button</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+  </div>
+</div>
+
 <div id="graph"></div>
 
 <p>
-#{if stream.streams.size() != 0}
-    <a href="@{gui.MyDataStreams.insertModule(encoded)}" class="btn btn-primary">Insert Module</a>
-#{/if}
-    <a href="@{gui.MyDataStreams.editModule(encoded, -1)}" class="btn btn-primary">Add Module</a>
-    <a href="@{gui.MyDataStreams.streamComplete(encoded)}" class="btn btn-primary">Stream Complete</a>
+   *{ <a href="@{gui.MyDataStreams.streamComplete(encoded)}" class="btn btn-primary">Stream Complete</a> }*
     <a href="#saveModal" role="button" class="btn btn-primary" data-toggle="modal">Save to Edit Later</a>
+    <a href="#undoModal" role="button" class="btn btn-primary" data-toggle="modal">Undo Last Operation</a>
 </p>
 
 #{directedgraph encoded:encoded/}

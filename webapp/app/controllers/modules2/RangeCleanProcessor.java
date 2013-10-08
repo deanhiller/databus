@@ -9,6 +9,7 @@ import models.message.ChartVarMeta;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PushOrPullProcessor;
 
@@ -18,7 +19,7 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 	private BigDecimal max;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false, false);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false);
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

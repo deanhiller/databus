@@ -167,25 +167,14 @@ POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyChart
 # Datastream creation Pages
 # ******************************************************************************
 # ******************************************************************************
-GET  /datastreams                                 gui.MyDataStreams.start
-GET  /datastreams/agg/edit/{encoded}              gui.MyDataStreams.editAggregation
-POST /datastreams/agg/post                        gui.MyDataStreams.postAggregation
-GET  /datastreams/agg/view/{encoded}              gui.MyDataStreams.viewAggregation
-GET  /datastreams/agg/complete/{encoded}          gui.MyDataStreams.aggregationComplete
-GET  /datastreams/stream/edit/{index}/{encoded}   gui.MyDataStreams.editStream
-POST /datastreams/stream/post                     gui.MyDataStreams.postStream
-GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
-GET  /datastreams/stream/complete/{encoded}       gui.MyDataStreams.streamComplete
-POST /datastreams/stream/delete                   gui.MyDataStreams.postDeleteStream
+GET  /datastreams                             gui.MyDataStreams.start
+GET  /datastreams/module/{type}/{encoded}     gui.MyDataStreams.beginEdit
+GET  /datastreams/module/{encoded}            gui.MyDataStreams.editModule
+POST /datastreams/module/post                 gui.MyDataStreams.postModule
+GET  /datastreams/moduleparams/{encoded}      gui.MyDataStreams.editModuleParams
+POST /datastreams/moduleparams/post           gui.MyDataStreams.postModuleParams
 
-GET  /datastreams/module/{encoded}                 gui.MyDataStreams.insertModule
-GET  /datastreams/module/{index}/{encoded}         gui.MyDataStreams.editModule
-POST /datastreams/module/post                      gui.MyDataStreams.postModule
-GET  /datastreams/module/params/{index}/{encoded}  gui.MyDataStreams.editModuleParams
-POST /datastreams/module/postparams                gui.MyDataStreams.postModuleParams
-POST /datastreams/module/delete                    gui.MyDataStreams.postDeleteModule
-GET  /datastreams/module/moveup/{index}/{encoded}   gui.MyDataStreams.moveModuleUp
-GET  /datastreams/module/movedown/{index}/{encoded} gui.MyDataStreams.moveModuleDown
+GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
 
 GET  /datastreams/{encoded}                         gui.MyDataStreams.finish
 

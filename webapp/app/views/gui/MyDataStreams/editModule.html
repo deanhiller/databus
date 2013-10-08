@@ -3,9 +3,8 @@
 
 <h1 class="db_page_title">Choose Module</h1>
 
-#{form @postModule(encoded), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+#{form @postModule(), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
 
-    <input type="hidden" name="index" value="${index}">
     <input type="hidden" name="encoded" value="${encoded}"/>
 
 	#{field 'moduleName'}

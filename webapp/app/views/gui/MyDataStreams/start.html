@@ -6,4 +6,18 @@
 As you add stuff to your stream/aggregation, we will draw a graphical tree.  You should quickly realize that trees must be
 built from the top down.  
 <br/><br/>
-    <a href="@{gui.MyDataStreams.editStream('start', -1)}" class="btn btn-primary">Create First Stream</a>
+    <a href="@{gui.MyDataStreams.beginEdit('start', 'add')}" class="btn btn-primary">Create Stream</a>
+
+*{
+#{form @postBeginEdit(), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <input type="hidden" name="encoded" value="start"/>
+    <input type="hidden" name="type" value="add"/>
+
+    <div class="control-group">
+       <div class="controls">
+          <input type="submit" name="submit" value="Create Stream" class="btn btn-primary" />
+       </div>
+    </div>
+#{/form}
+}*
+

@@ -38,6 +38,7 @@ import controllers.modules2.TimeAverageProcessor;
 import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
 import controllers.modules2.framework.chain.FTranslatorValuesToJson;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.RemoteProcessor;
@@ -152,19 +153,10 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		return pullProcessors;
 	}
 
-	public List<String> fetchTerminalModules() {
-		List<String> keys = new ArrayList<String>();
-		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
-			if(entry.getValue().getGuiMeta().isStreamTerminator())
-				keys.add(entry.getKey());
-		}
-		return keys;
-	}
-	
 	public List<String> fetchNonTerminalModules() {
 		List<String> keys = new ArrayList<String>();
 		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
-			if(!entry.getValue().getGuiMeta().isStreamTerminator())
+			if(entry.getValue().getGuiMeta().getNumChildren() != NumChildren.NONE)
 				keys.add(entry.getKey());
 		}
 		return keys;

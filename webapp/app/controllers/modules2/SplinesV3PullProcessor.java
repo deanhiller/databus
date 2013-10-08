@@ -31,6 +31,7 @@ import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
@@ -52,7 +53,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, false, true);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true);
 	
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

@@ -57,6 +57,7 @@ import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.chain.AHttpChunkingListener;
 import controllers.modules2.framework.http.HttpListener;
 import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.ProcessorSetupAbstract;
 import controllers.modules2.framework.procs.PullProcessor;
@@ -73,7 +74,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	private boolean skipSecurity;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, true, false);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.NONE, false);
 
 	static {
 		ChartVarMeta meta = new ChartVarMeta();

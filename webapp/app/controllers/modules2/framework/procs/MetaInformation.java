@@ -13,12 +13,12 @@ import models.message.ChartVarMeta;
 public class MetaInformation {
 
 	private Map<String, ChartVarMeta> parameterMeta;
-	private boolean isStreamTerminator;
+	private NumChildren numChildren;
 	private boolean isTimeAligning;
 	
-	public MetaInformation(Map<String, ChartVarMeta> paramMeta, boolean isStreamTerminator, boolean isTimeAligning) {
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning) {
 		this.parameterMeta = paramMeta;
-		this.isStreamTerminator = isStreamTerminator;
+		this.numChildren = num;
 		this.isTimeAligning = isTimeAligning;
 	}
 	
@@ -59,12 +59,18 @@ public class MetaInformation {
 		return parameterMeta;
 	}
 
-	public boolean isStreamTerminator() {
-		return isStreamTerminator;
+	public NumChildren getNumChildren() {
+		return numChildren;
 	}
 
 	public boolean isTimeAligning() {
 		return isTimeAligning;
+	}
+
+	public boolean isAggregation() {
+		if(numChildren == NumChildren.MANY)
+			return true;
+		return false;
 	}
 
 }
