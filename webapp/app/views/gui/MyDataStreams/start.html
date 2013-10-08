@@ -8,16 +8,3 @@ built from the top down.
 <br/><br/>
     <a href="@{gui.MyDataStreams.beginEdit('start', 'add')}" class="btn btn-primary">Create Stream</a>
 
-*{
-#{form @postBeginEdit(), id:'edituser', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-    <input type="hidden" name="encoded" value="start"/>
-    <input type="hidden" name="type" value="add"/>
-
-    <div class="control-group">
-       <div class="controls">
-          <input type="submit" name="submit" value="Create Stream" class="btn btn-primary" />
-       </div>
-    </div>
-#{/form}
-}*
-

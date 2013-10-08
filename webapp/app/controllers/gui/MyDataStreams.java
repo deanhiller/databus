@@ -36,7 +36,6 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void viewStream(String encoded) {
-		
 		render(encoded);
 	}
 
@@ -223,6 +222,11 @@ public class MyDataStreams extends Controller {
 		viewStream(encoded);
 	}
 
+	public static void finish(String encoded) {
+		
+		render(encoded);
+	}
+
 	private static boolean streamsAligned(List<StreamModule> streams) {
 		//let's first fine all modules with "stream".equals(getModule()) as they have all the relevant children
 		RawProcessorFactory factory = ModuleController.fetchFactory();
@@ -364,25 +368,6 @@ public class MyDataStreams extends Controller {
 		PullProcessor proc = nameToProc.get(module.getModule());
 		return proc.getGuiMeta();
 	}
-	
-//	public static void postDeleteModule(String encoded, int index) {
-//		StreamEditor editor = DataStreamUtil.decode(encoded);
-//		StreamModule stream = findCurrentStream(editor);
-//		
-//		stream.getStreams().remove(index-1);
-//		
-//		encoded = DataStreamUtil.encode(editor);
-//		viewStream(encoded);
-//	}
-	
-//	public static void insertModule(String encoded) {
-//	RawProcessorFactory factory = ModuleController.fetchFactory();
-//	List<String> modules = factory.fetchNonTerminalModules();
-//	StreamEditor editor = DataStreamUtil.decode(encoded);
-//
-//	int index = -2;
-//	StreamModule module = null;
-//	encoded = DataStreamUtil.encode(editor);
-//	render("@editModule", modules, module, encoded, index);
-//}
+
+
 }

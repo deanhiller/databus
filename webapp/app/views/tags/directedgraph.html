@@ -80,7 +80,7 @@
 	      .attr("r", function(d) { 
 	    	  if(d.isRoot)
 	    		  return 0;
-	    	  return d.selected ? 10 : 4.5; 
+	    	  return d.isSelected ? 10 : 4.5; 
 	    });
 	
 	  var refs = node.append("a")
