@@ -1,3 +1,39 @@
+
+<div id="warningModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Graph Disabled</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+        The graph is not clickable while adding or editing a node.  Finish editing the node first or hit the back button to undo your current
+        work.
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div>
+
+<div id="aggModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Note on Aggregations</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+        This aggregation cannot be deleted yet.  To be able to delete this node, you either need
+        <ol>
+          <li>to insert an aggregation as a parent of this aggregation</li>
+          <li>OR delete nodes so this aggregation only has one child</li>
+        </ol>        
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div>
+      
 <style>
 
 .node circle {
@@ -20,7 +56,6 @@
 
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
-
 	var width = $("#graph").width(),
 	    height = 200;
 	
@@ -49,25 +84,35 @@
 	      .attr("d", diagonal);
 	  
 	  var textPath = path.each(function(l){
-		var aref = theG.append("a")
-	        .attr("xlink:href", function(d) { return l.target.insertUrl });
-		var text = aref.append("text")
-		      .style("font-size", function(d) { return "16px"; })
-		      .style("fill", function(d) { return "blue"; });
-		var textPath = text.append("textPath")
-		        .attr("startOffset", "35%")
-		        .attr("xlink:href", "#path"+l.target.id)
-		        .text("+");
-		
-        var aref2 = theG.append("a")
-        .attr("xlink:href", function(d) { return l.target.deleteUrl });
-      var text2 = aref2.append("text")
-        .style("font-size", function(d) { return "16px"; })
-        .style("fill", function(d) { return "blue"; });
-      var textPath2 = text2.append("textPath")
-        .attr("startOffset", "45%")
-        .attr("xlink:href", "#path"+l.target.id)
-        .text(function(d) { return l.target.hideMinus ? "" : "-" });
+          var aref = theG.append("a")
+	          .attr("xlink:href", function(d) { return l.target.insertUrl })
+	          .attr("class", "graphlink");
+          var text = aref.append("text")
+             .style("font-size", function(d) { return "16px"; })
+             .style("fill", function(d) { return "blue"; });
+          var textPath = text.append("textPath")
+             .attr("startOffset", "35%")
+             .attr("xlink:href", "#path"+l.target.id)
+             .text("+");
+
+          var aref2 = theG.append("a")
+              .attr("class", "graphlink");
+          
+          if(l.target.minusPopupLink) {
+              aref2.attr("xlink:href", "#aggModal")
+                  .attr("role", "button")
+                  .attr("data-toggle", "modal");
+          } else {
+        	  aref2.attr("xlink:href", l.target.deleteUrl)
+          }
+          
+          var text2 = aref2.append("text")
+              .style("font-size", function(d) { return "16px"; })
+              .style("fill", function(d) { return "blue"; });
+          var textPath2 = text2.append("textPath")
+              .attr("startOffset", "45%")
+              .attr("xlink:href", "#path"+l.target.id)
+              .text(function(d) { return l.target.hideMinus ? "" : "-" });
 	  });
 
 	  var node = theG.selectAll(".node")
@@ -84,7 +129,8 @@
 	    });
 	
 	  var refs = node.append("a")
-	    .attr("xlink:href", function(d) { return d.editUrl; });
+	    .attr("xlink:href", function(d) { return d.editUrl; })
+	    .attr("class", "graphlink");
 	
 	  var text = refs.append("text")
 	  .attr("dx", function(d) { return -8; })
@@ -97,19 +143,28 @@
 	     .style("fill", function(d) { return "blue"; })
 	     .text(function(d) { return d.module; });
 
-	   var refs2 = node.append("a")
-       .attr("xlink:href", function(d) { return d.addUrl; });
+      var refs2 = node.append("a")
+          .attr("xlink:href", function(d) { return d.addUrl; })
+          .attr("class", "graphlink");
    
-     var text2 = refs2.append("text")
-     .attr("dx", function(d) { return 10; })
-     .attr("dy", 10)
-     .style("text-anchor", function(d) { return "start"; });
+      var text2 = refs2.append("text")
+         .attr("dx", function(d) { return 10; })
+         .attr("dy", 10)
+         .style("text-anchor", function(d) { return "start"; });
      
      text2.append("tspan")
         .style("font-size", function(d) { return "10px"; })
         .style("fill", function(d) { return "blue"; })
         .text(function(d) { return d.canAddChild ? "Add child" : ""; });
-     
+    
+      #{if !_clickable}
+         var refs = d3.selectAll('.graphlink');
+         refs.attr("xlink:href", "#");
+         $('.graphlink').click(function(e){
+        	 $("#warningModal").modal('show');
+         });
+       #{/if}
+  
 	});
 	
 	d3.select(self.frameElement).style("height", height + "px");

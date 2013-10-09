@@ -330,13 +330,13 @@ public class MyDataStreams extends Controller {
 		List<Integer> location = new ArrayList<Integer>();
 		
 		TreeInfo info = new TreeInfo(root, module, editor);
-		copyTree(root, root2, info, location);
+		copyTree(null, root, root2, info, location);
 		
 		renderJSON(root2);
 	}
 
-	private static void copyTree(StreamModule current, Map<String, Object> current2, TreeInfo info, List<Integer> location) {
-		transfer(current, current2, info, location);
+	private static void copyTree(StreamModule parent, StreamModule current, Map<String, Object> current2, TreeInfo info, List<Integer> location) {
+		transfer(parent, current, current2, info, location);
 
 		List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
 		current2.put("children", list);
@@ -347,7 +347,7 @@ public class MyDataStreams extends Controller {
 			list.add(child2);
 			List<Integer> newLocation = clone(location);
 			newLocation.add(i);
-			copyTree(child, child2, info, newLocation);
+			copyTree(current, child, child2, info, newLocation);
 		}
 	}
 
@@ -357,7 +357,7 @@ public class MyDataStreams extends Controller {
 		return newLoc;
 	}
 
-	private static void transfer(StreamModule now, Map<String, Object> now2, TreeInfo info, List<Integer> location) {
+	private static void transfer(StreamModule parent, StreamModule now, Map<String, Object> now2, TreeInfo info, List<Integer> location) {
 		StreamModule selectedStream = info.getSelected();
 		StreamModule root = info.getRoot();
 		StreamModule second = root.getStreams().get(0);
@@ -375,6 +375,18 @@ public class MyDataStreams extends Controller {
 			now2.put("hideMinus", true);
 		}
 
+		if(parent != null) {
+			NumChildren numChildSupported = NumChildren.ONE;
+			PullProcessor parentProc = procs.get(parent.getModule());
+			if(parentProc != null)
+				numChildSupported = parentProc.getGuiMeta().getNumChildren();
+			
+			if(now.getStreams().size() > 1 && numChildSupported != NumChildren.MANY) {
+				//add the flag to popup a warning and explain why it can't be deleted yet
+				now2.put("minusPopupLink", true);
+			}
+		}
+			
 		now2.put("module", now.getModule());
 
 		if(proc != null) {
@@ -383,7 +395,8 @@ public class MyDataStreams extends Controller {
 			if(meta.getNumChildren() == NumChildren.NONE) {
 				String name = now.getParams().get("table");
 				now2.put("module", name);
-			}
+			} else
+				now2.put("module", meta.getGuiLabel());
 			
 			boolean canAddChild = false;
 			switch(meta.getNumChildren()) {
