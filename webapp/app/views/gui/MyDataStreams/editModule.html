@@ -11,9 +11,9 @@
 	<div class="control-group ${field.errorClass}">
 	    <label class="control-label"><a href="#" rel="tooltip" title="Some help message for schema name"><i class="icon-info-sign"></i></a>Module</label>
 	    <div class="controls">
-	        #{select field.name, value:module?.module}
+	        #{select field.name, value:module?.module, id:'moduleSelect'}
                 #{list items:modules, as:'m'}
-                    #{option m}${m}#{/option}
+                    #{option m.moduleId}${m.guiLabel}#{/option}
                 #{/list}
             #{/select}
 	        <span class="help-block">${field.error}</span>
@@ -21,6 +21,32 @@
 	</div>
     #{/field}
 
+    #{list items:modules, as:'m'}
+    <div id="mod${m.moduleId}" class="control-group" style="display: none;">
+        <label class="control-label">Description</label>
+        <div class="controls">
+            ${m.description}            
+        </div>
+    </div>
+    #{/list}
+
+    <script type="text/javascript">
+    var current = null;
+    $(document).ready(function() {
+    	var id = $("#moduleSelect").val();
+    	$("#mod"+id).css("display", "block");
+    	current = id;
+
+    	$("#moduleSelect").change(function(e){
+    		$("#mod"+current).css("display", "none");
+    		
+    		var id = $("#moduleSelect").val();
+    	    $("#mod"+id).css("display", "block");
+    	    current = id;
+        });
+    });
+    </script>
+    
     <div class="control-group">
        <div class="controls">
           <input type="submit" name="submit" value="Next" class="btn btn-primary" />

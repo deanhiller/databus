@@ -12,6 +12,7 @@ import models.message.ChartVarMeta;
 
 public class MetaInformation {
 
+	private String moduleId;
 	private Map<String, ChartVarMeta> parameterMeta;
 	private NumChildren numChildren;
 	private boolean isTimeAligning;
@@ -86,6 +87,14 @@ public class MetaInformation {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public String getModuleId() {
+		return moduleId;
+	}
+
+	public void setModuleId(String moduleId) {
+		this.moduleId = moduleId;
 	}
 	
 }

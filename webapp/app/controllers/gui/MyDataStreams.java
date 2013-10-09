@@ -145,7 +145,7 @@ public class MyDataStreams extends Controller {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamModule module = findCurrentStream(editor);
 		RawProcessorFactory factory = ModuleController.fetchFactory();
-		List<String> modules = factory.fetchAllModules();
+		List<MetaInformation> modules = factory.fetchAllModules();
 
 		encoded = DataStreamUtil.encode(editor);
 		render(modules, module, encoded);

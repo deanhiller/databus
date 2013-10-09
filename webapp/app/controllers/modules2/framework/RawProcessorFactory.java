@@ -39,6 +39,7 @@ import controllers.modules2.TimeAverageProcessor;
 import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
 import controllers.modules2.framework.chain.FTranslatorValuesToJson;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
@@ -163,10 +164,12 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		return keys;
 	}
 
-	public List<String> fetchAllModules() {
-		List<String> keys = new ArrayList<String>();
+	public List<MetaInformation> fetchAllModules() {
+		List<MetaInformation> keys = new ArrayList<MetaInformation>();
 		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
-			keys.add(entry.getValue().getGuiMeta().getGuiLabel());
+			MetaInformation meta = entry.getValue().getGuiMeta();
+			meta.setModuleId(entry.getKey());
+			keys.add(meta);
 		}
 		return keys;
 	}
