@@ -217,7 +217,10 @@ public class SumStreamsMod extends Controller {
 		String json = Parsing.fetchJson();
 		RegisterAggregation data = Parsing.parseJson(json, RegisterAggregation.class);
 		
-		String schemaName = data.getGroup();
+		String schemaName = data.getDatabase();
+		if(schemaName == null)
+			schemaName = data.getGroup();
+		
 		SecureSchema schema = SecureSchema.findByName(NoSql.em(), schemaName);
 		if(schema == null) {
 			if (log.isInfoEnabled())
