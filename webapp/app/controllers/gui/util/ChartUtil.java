@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import controllers.gui.MyChartsGeneric;
 
 import play.Play;
+import play.mvc.Scope.Flash;
 import play.mvc.results.NotFound;
 import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
@@ -64,7 +65,10 @@ public class ChartUtil {
 			if(chartInfo == null
 					|| lastModified > chartInfo.getLastModified()) {
 				hasChanges = true;
-				loadChart(vfile, chartData, lastModified);
+				String errorMsg = loadChart(vfile, chartData, lastModified);
+				if(errorMsg != null) {
+					Flash.current().error(errorMsg);
+				}
 			}
 		}
 
@@ -75,7 +79,7 @@ public class ChartUtil {
 		}
 	}
 	
-	private static void loadChart(VirtualFile vfile, String chartData, long lastModified) {
+	private static String loadChart(VirtualFile vfile, String chartData, long lastModified) {
 		String name = vfile.getName();
 		log.info("loading chart="+name);
 		
@@ -84,14 +88,17 @@ public class ChartUtil {
 		int indexLarge = chartData.indexOf(META_LARGE);
 		int indexSmall = chartData.indexOf(META_SMALL);
 		if(indexMeta < 0) {
-			log.warn("Faulty chart found missing section "+META_META+" so skipping chart load. filename="+name);
-			return;
+			String msg = "Faulty chart found missing section "+META_META+" so skipping chart load. filename="+name;
+			log.warn(msg);
+			return msg;
 		} else if(indexHead < 0) {
-			log.warn("Faulty chart found missing section "+META_HEAD+" so skipping chart load. filename="+name);
-			return;			
+			String msg = "Faulty chart found missing section "+META_HEAD+" so skipping chart load. filename="+name;
+			log.warn(msg);
+			return msg;			
 		} else if(indexLarge < 0) {
-			log.warn("Faulty chart found missing section "+META_LARGE+" so skipping chart load. fielname="+ name);
-			return;
+			String msg = "Faulty chart found missing section "+META_LARGE+" so skipping chart load. fielname="+ name;
+			log.warn(msg);
+			return msg;
 		}
 
 		int chartVersion;
@@ -99,8 +106,9 @@ public class ChartUtil {
 		try {
 			chartVersion = Integer.parseInt(version);
 		} catch(NumberFormatException e) {
-			log.warn("faulty chart with version string="+version+" could not be converted to an integer.  skipping chart load="+name);
-			return;
+			String msg = "faulty chart with version string="+version+" could not be converted to an integer.  skipping chart load="+name;
+			log.warn(msg);
+			return msg;
 		}
 		
 		String jsonHeader = chartData.substring(indexMeta+META_META.length(), indexHead);
@@ -109,19 +117,23 @@ public class ChartUtil {
 		try {
 			chartMeta = mapper.readValue(jsonHeader, ChartMeta.class);
 		} catch (JsonParseException e) {
-			log.warn("Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file", e);
-			return;
+			String msg = "Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file"; 
+			log.warn(msg, e);
+			return msg;
 		} catch (JsonMappingException e) {
-			log.warn("Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file", e);
-			return;
+			String msg = "Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file";
+			log.warn(msg, e);
+			return msg;
 		} catch (IOException e) {
-			log.warn("Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file", e);
-			return;
+			String msg = "Could not parse json in "+META_META+" section of file="+name+"("+e.getMessage()+").  We are skipping the chart load of this file";
+			log.warn(msg, e);
+			return msg;
 		}
 
 		if(chartMeta.getPages().size() <= 0) {
-			log.warn("There are no configured pages in section "+META_META+" of file="+name+".  We are skipping the chart load as we need to know what to ask the user");
-			return;
+			String msg = "There are no configured pages in section "+META_META+" of file="+name+".  We are skipping the chart load as we need to know what to ask the user"; 
+			log.warn(msg);
+			return msg;
 		}
 		
 		ChartPageMeta page = chartMeta.getPages().get(0);
@@ -131,8 +143,9 @@ public class ChartUtil {
 				foundTitle = true;
 		}
 		if(!foundTitle) {
-			log.warn("There is no url found on first page and variable with 'url' for javascriptInName is required for any chart(we use this later).  Chart="+name+" will not be loaded and will be skipped");
-			return;
+			String msg = "There is no url found on first page and variable with 'url' for javascriptInName is required for any chart(we use this later).  Chart="+name+" will not be loaded and will be skipped";
+			log.warn(msg);
+			return msg;
 		}
 		
 		String htmlHeaders = chartData.substring(indexHead+META_HEAD.length(), indexLarge);
@@ -157,6 +170,7 @@ public class ChartUtil {
 		info.setLastModified(lastModified);
 		
 		filenameToChart.put(info.getId(), info);
+		return null;
 	}
 
 	private static boolean addBuiltInCharts() {
@@ -233,6 +247,9 @@ public class ChartUtil {
 	}
 	
 	public static String replaceVariables(String chart, Map<String, String> variables) {
+		//look for special rangetype variable first
+		modifyVariables(variables);
+		
 		//replace comments first so if there are variables in the comment, they will not be replaced since
 		//they are removed from the file anyways.
 		chart = chart.replaceAll("\\*\\{[\\w\\W]*?\\}\\*", "");
@@ -243,5 +260,23 @@ public class ChartUtil {
 		}
 
 		return chart;
+	}
+
+	public static void modifyVariables(Map<String, String> variables) {
+		String type = variables.get("_daterangetype");
+		if(type != null) {
+			String url = variables.get("url");
+			variables.put("shortUrl", url);
+			if("daterange".equals(type)) {
+				String from = variables.get("_fromepoch");
+				String to = variables.get("_toepoch");
+				url += "/"+from+"/"+to;
+			} else {
+				String number = variables.get("_numberpoints");
+				String ending = url.substring("/api".length());
+				url = "/api/firstvaluesV1/"+number+ending+"?reverse=true";
+			}
+			variables.put("url", url);
+		}
 	}
 }

@@ -1,0 +1,56 @@
+<div class="control-group ${_errors.forKey(_v.meta.nameInJavascript) ? 'error' : ''}">
+    <label class="control-label"><a href="#" rel="tooltip" title="${_v.meta.help}"><i class="icon-info-sign"></i></a>${_v.meta.label}</label>
+    <div class="controls">
+        <select id="type${_v.meta.nameInJavascript}" name="chart.${_v.meta.nameInJavascript}.type">
+            <option value="zerobased">Zero(or Epoch) Based Time</option>
+            <option value="calendarbased">Calendar Based Time</option>
+        </select>
+        <div id="epochDiv${_v.meta.nameInJavascript}" style="display: inline;">
+            <input  id="epoch${_v.meta.nameInJavascript}" type="text" name="chart.${_v.meta.nameInJavascript}" value="${_v.value}" 
+                placeholder="#{if _v.meta.required}(required)#{/if}#{else}(optional)#{/else}"
+                class="${_errors.forKey(_v.meta.nameInJavascript) ? 'has_error' : ''}">
+        </div>
+        <div id="calendarDiv${_v.meta.nameInJavascript}" style="display: none">
+            <input id="input${_v.meta.nameInJavascript}" type="text" name="chart.${_v.meta.nameInJavascript}.date" value="${_v.dateValue}" 
+                placeholder="#{if _v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+                class="${_errors.forKey(_v.meta.nameInJavascript) ? 'has_error' : ''}">
+            <input id="time${_v.meta.nameInJavascript}" type="text" name="chart.${_v.meta.nameInJavascript}.time" value="${_v.timeValue}" 
+                placeholder="#{if _v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+                class="${_errors.forKey(_v.meta.nameInJavascript) ? 'has_error' : ''}">
+        </div>
+        <span class="help-block">${_errors.forKey(_v.meta.nameInJavascript)}</span>
+    </div>
+</div>
+
+<script type="text/javascript">
+   $(document).ready(function() {
+       function switchDivs() {
+           var value = $('#type${_v.meta.nameInJavascript}').val();
+           if("zerobased" == value) {
+               $('#calendarDiv${_v.meta.nameInJavascript}').css('display', 'none');
+               $('#epochDiv${_v.meta.nameInJavascript}').css('display', 'inline');
+           } else {
+               $('#calendarDiv${_v.meta.nameInJavascript}').css('display', 'inline');
+               $('#epochDiv${_v.meta.nameInJavascript}').css('display', 'none');
+               new datepickr('input${_v.meta.nameInJavascript}', {
+                   dateFormat: 'F j, Y',
+               });
+           }
+       }
+       
+       $('#type${_v.meta.nameInJavascript}').change(function(e){
+            switchDivs();
+       });
+
+       $('#time${_v.meta.nameInJavascript}').focus(function(e){
+           //fill in the modal with time if we have a time
+           $('#timeId').val('${_v.meta.nameInJavascript}');
+           $('#hours').val('');
+           $('#minutes').val('');
+           $('#seconds').val('');
+           $("#timeModal").modal('show');
+       });
+
+       switchDivs();
+   });
+</script>

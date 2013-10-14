@@ -100,7 +100,7 @@ public class ChartInfo {
 	public void setAndConvertId(String id) {
 		this.id = convert(id);
 	}
-	private static String convert(String name) {
+	public static String convert(String name) {
 		name = name.replaceAll("\\.", "-");
 		return name;
 	}

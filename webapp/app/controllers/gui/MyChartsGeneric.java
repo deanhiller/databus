@@ -52,7 +52,9 @@ import play.vfs.VirtualFile;
 public class MyChartsGeneric extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyChartsGeneric.class);
-
+	private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("MMMMM dd, yyyy HH:mm:ss");
+	private static final DateTimeFormatter toDate = DateTimeFormat.forPattern("MMMMM dd, yyyy");
+	private static final DateTimeFormatter toTime = DateTimeFormat.forPattern("HH:mm:ss");
 	private static ChartUtil chartUtil = new ChartUtil();
 	
 	public static void selectChart() {
@@ -101,19 +103,60 @@ public class MyChartsGeneric extends Controller {
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		List<VarWrapper> variableList = new ArrayList<VarWrapper>();
 		if(!"start".equals(encoded)) {
-			for(ChartVarMeta var : pageMeta.getVariables()) {
-				String value = variables.get(var.getNameInJavascript());
-				variableList.add(new VarWrapper(var, value));
-			}
+			fillInVariables(pageMeta, variables, variableList);
 		}
 
-		Params theMap = params;
-		
 		String subtitle = "("+(page+1) +" of "+chart.getChartMeta().getPages().size()+")";
 		boolean isLastPage = false;
 		if(page == chart.getChartMeta().getPages().size()-1)
 			isLastPage = true;
 		render(chart, variableList, chartId, page, encoded, isLastPage, subtitle);
+	}
+
+	private static void fillInVariables(ChartPageMeta pageMeta,
+			Map<String, String> variables, List<VarWrapper> variableList) {
+		for(ChartVarMeta var : pageMeta.getVariables()) {
+			VarWrapper varWrapper;
+			if(var.isTimePanel()) {
+				TimePanel p = new TimePanel(var);
+				fillWrapper(variables, p);
+				varWrapper = p;
+			} else {
+				String value = variables.get(var.getNameInJavascript());
+				varWrapper = new VarWrapper(var, value);
+			}
+			variableList.add(varWrapper);
+		}
+	}
+
+	private static void fillWrapper(Map<String, String> variables, TimePanel p) {
+		String type = variables.get("_daterangetype");
+		if(type != null) {
+			convert(p.getFromDate(), variables, "_fromepoch");
+			convert(p.getToDate(), variables, "_toepoch");
+
+			String number = variables.get("_numberpoints");
+			p.setNumberOfPoints(number);
+			p.setType(type);
+		}
+	}
+
+	private static void convert(DateTimeDto dateDto,
+			Map<String, String> variables, String name) {
+		String type = variables.get("chart."+name+".type");
+		String epoch = variables.get(name);
+		if(epoch == null)
+			return;
+
+		long longVal = Long.parseLong(epoch);
+		DateTime jodaVal = new DateTime(longVal);
+		String date = toDate.print(jodaVal);
+		String time = toTime.print(jodaVal);
+
+		dateDto.setEpochOffset(epoch);
+		dateDto.setDate(date);
+		dateDto.setTime(time);
+		dateDto.setType(type);
 	}
 
 	public static void postVariables(String chartId, int page, String encoded) {
@@ -133,7 +176,7 @@ public class MyChartsGeneric extends Controller {
 
 				if(meta.isDateTime()) {
 					//we need to convert here to offset since epoch before storing the stuff
-					value = maybeConvert(javascriptKey, paramMap, value, meta);
+					value = maybeConvert(javascriptKey, paramMap, meta);
 				} else {
 					if(StringUtils.isEmpty(value) && meta.isRequired()) {
 						validation.addError(javascriptKey, "This field is required");
@@ -143,6 +186,9 @@ public class MyChartsGeneric extends Controller {
 				if(javascriptKey.endsWith("url"))
 					value = stripOffHost(value);
 				variablesMap.put(javascriptKey, value);
+			} else if(key.equals("rangeType")) {
+				String rangeTypeValue = paramMap.get(key)[0];
+				putVariablesInMap(paramMap, variablesMap, rangeTypeValue, chart);
 			}
 		}
 
@@ -156,31 +202,42 @@ public class MyChartsGeneric extends Controller {
 		
 		page = page+1;
 		if(page >= chart.getChartMeta().getPages().size()) {
-			String url = formUrl(variablesMap);
-			variablesMap.put("fullUrl", url);
 			encoded = ChartUtil.encodeVariables(variablesMap);
 			drawChart(chartId, encoded);
 		} else
 			chartVariables(chartId, page, encoded);
 	}
 
-	private static String formUrl(Map<String, String> variablesMap) {
-		String url = variablesMap.get("url");
-		String from = variablesMap.get("from");
-		String to = variablesMap.get("to");
-		String fullUrl = url+"/"+from+"/"+to;
-		return fullUrl;
+	private static void putVariablesInMap(Map<String, String[]> paramMap,
+			Map<String, String> variablesMap, String rangeTypeValue, ChartInfo chart) {
+		String name = paramMap.get("javascriptName")[0];
+		ChartVarMeta varMeta = findMeta(chart, name);
+		
+		variablesMap.put("_daterangetype", rangeTypeValue);
+		if("daterange".equals(rangeTypeValue)) {
+			String fromEpoch = maybeConvert("from", paramMap, varMeta);
+			String toEpoch = maybeConvert("to", paramMap, varMeta);
+			variablesMap.put("_fromepoch", fromEpoch);
+			variablesMap.put("_toepoch", toEpoch);
+		} else {
+			String numberPoints = paramMap.get("chart."+name+".numpoints")[0];
+			if(StringUtils.isEmpty(numberPoints)) {
+				validation.addError("chart."+name+".numpoints", "This field is required");
+			}
+
+			variablesMap.put("_numberpoints", numberPoints);
+		}
 	}
 
-	private static String maybeConvert(String javascriptKey, Map<String, String[]> paramMap, String currentValue, ChartVarMeta meta) {
+	private static String maybeConvert(String javascriptKey, Map<String, String[]> paramMap, ChartVarMeta meta) {
 		String selection = paramMap.get("chart."+javascriptKey+".type")[0];
 		if("zerobased".equals(selection)) {
+			String currentValue = paramMap.get("chart."+javascriptKey)[0];
 			if(StringUtils.isEmpty(currentValue) && meta.isRequired()) {
 				validation.addError(javascriptKey, "This field is required");
 			}
 			return currentValue;
 		} else {
-			DateTimeFormatter fmt = DateTimeFormat.forPattern("MMMMM dd, yyyy HH:mm:ss");
 			String date = paramMap.get("chart."+javascriptKey+".date")[0];
 			String time = paramMap.get("chart."+javascriptKey+".time")[0];
 			if(StringUtils.isEmpty(date) && meta.isRequired()) {
@@ -190,7 +247,7 @@ public class MyChartsGeneric extends Controller {
 				validation.addError(javascriptKey, "This field is required");
 			}
 			if(validation.hasErrors()) {
-				return currentValue;
+				return null;
 			}
 
 			String dateTime = date+" "+time;
@@ -206,7 +263,11 @@ public class MyChartsGeneric extends Controller {
 		List<ChartPageMeta> pages = meta.getPages();
 		for(ChartPageMeta m : pages) {
 			for(ChartVarMeta varMeta : m.getVariables()) {
-				if(varMeta.getNameInJavascript().equals(javascriptKey))
+				String nameInJavascript = varMeta.getNameInJavascript();
+				if(nameInJavascript == null) {
+					throw new RuntimeException("This chart is missing 'nameInJavascript' for Chart meta data, variable type="+varMeta.getType());
+				}
+				if(nameInJavascript.equals(javascriptKey))
 					return varMeta;
 			}
 		}
@@ -228,6 +289,9 @@ public class MyChartsGeneric extends Controller {
 		List<ChartDbo> charts = user.getCharts();
 		//special case for showing remote pages
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		
+		//setup the correct urls and such...
+		ChartUtil.modifyVariables(variables);
 		
 		ChartDbo chart = new ChartDbo();
 		chart.setChartId(chartId);

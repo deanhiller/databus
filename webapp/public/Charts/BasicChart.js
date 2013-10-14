@@ -23,17 +23,8 @@
 			        	"isRequired" : true
 					},
 					{
-			        	"nameInJavascript": "from",
-			        	"label": "From",
-			        	"help" : "The date time the chart should begin",
-			        	"type" : "datetime",
-			        	"isRequired" : true
-					},
-					{
-			        	"nameInJavascript": "to",
-			        	"label": "To",
-			        	"help" : "The date time the chart should end",
-			        	"type" : "datetime",
+						"nameInJavascript" : "timepanel",
+			        	"type" : "timepanel",
 			        	"isRequired" : true
 					}
 					]
@@ -90,7 +81,7 @@ $(function () {
 	 * the wizard asking questions to the user for you and you just focus on chart creation
 	 */
 	var _title = '${title}';
-	var _url = '${url}'+'/${from}'+'/${to}'; //OR specially we could write var _url = '${fullUrl}'; as well which is the same
+	var _url = '${url}';
 	var _timeColumn = '${timeColumn}';
 	var _valueColumn = '${valueColumn}';
 	var _units = '${units}';

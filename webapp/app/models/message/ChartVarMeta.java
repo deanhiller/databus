@@ -124,5 +124,10 @@ public class ChartVarMeta {
 			return true;
 		return false;
 	}
+	public boolean isTimePanel() {
+		if("timepanel".equals(type.toLowerCase()))
+			return true;
+		return false;
+	}
 }
 
