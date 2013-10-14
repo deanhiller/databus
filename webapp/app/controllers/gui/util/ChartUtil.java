@@ -225,7 +225,7 @@ public class ChartUtil {
 		for(String key : variables.keySet()) {
 			String value = variables.get(key);
 			String newVal = JavaExtensions.escapeJavaScript(value);
-			if(key.equals("url"))
+			if(key.equals("url") || key.equals("intervalUrl"))
 				newVal = newVal.replace("\\/", "/");
 			variables.put(key, newVal);
 		}
