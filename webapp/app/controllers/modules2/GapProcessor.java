@@ -93,7 +93,7 @@ public class GapProcessor extends PullProcessorAbstract {
 		reversed = visitor.isReversed();
 		String maxG = options.get("maxGap");
 		if(maxG == null) {
-			String maxM = fetchProperty("maxMultiple", "5", options);
+			String maxM = fetchProperty("maxMultiple", "10", options);
 			maxMultiple = Integer.parseInt(maxM);
 		} else
 			maxBeforeInsertingNull = 1000*Long.parseLong(maxG);

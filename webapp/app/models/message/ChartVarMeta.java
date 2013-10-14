@@ -28,6 +28,7 @@ public class ChartVarMeta {
 	
 	@JsonProperty("type")
     @XmlElement(name="type")
+	//default for MyDataStreams stuff NOT default for MyGenericCharts which is a different type system(widget type really)
     public String type = "java.lang.String";
 
 	@JsonProperty("defaultValue")
@@ -38,7 +39,6 @@ public class ChartVarMeta {
     @XmlElement(name="isRequired")
 	public boolean isRequired = false;
 
-	public transient String value;
 	private transient Class<?> clazzType;
 
 	public ChartVarMeta copy() {
@@ -48,7 +48,6 @@ public class ChartVarMeta {
 		copy.setNameInJavascript(this.getNameInJavascript());
 		copy.setHelp(this.getHelp());
 		copy.setType(this.getType());
-		copy.setValue(this.getValue());
 		return copy;
 	}
 
@@ -84,14 +83,6 @@ public class ChartVarMeta {
 		this.type = type;
 	}
 
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-
 	public String getDefaultValue() {
 		return defaultValue;
 	}
@@ -108,10 +99,6 @@ public class ChartVarMeta {
 		this.isRequired = isRequired;
 	}
 
-	public void setTransientClass(Class<?> clazzType) {
-		this.clazzType = clazzType;
-	}
-
 	public Class<?> getClazzType() {
 		return clazzType;
 	}
@@ -119,6 +106,23 @@ public class ChartVarMeta {
 	public void setClazzType(Class<?> clazzType) {
 		this.clazzType = clazzType;
 	}
+
+	public boolean isString() {
+		if("string".equals(type.toLowerCase()))
+			return true;
+		return false;
+	}
 	
+	public boolean isColumnSelector() {
+		if("column".equals(type.toLowerCase()))
+			return true;
+		return false;
+	}
+	
+	public boolean isDateTime() {
+		if("datetime".equals(type.toLowerCase()))
+			return true;
+		return false;
+	}
 }
 

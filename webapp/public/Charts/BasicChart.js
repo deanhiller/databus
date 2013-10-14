@@ -19,28 +19,45 @@
 			        	"nameInJavascript": "url",
 			        	"label": "Data Url",
 			        	"help" : "The url of your input data",
-			        	"type" : "String"
+			        	"type" : "String",
+			        	"isRequired" : true
 					},
 					{
-			        	"nameInJavascript": "timeColumn",
-			        	"label": "Time Column Name",
-			        	"help" : "The name of the column containing the time in milliseconds",
-			        	"type" : "String",
-			        	"defaultValue" : "time"
+			        	"nameInJavascript": "from",
+			        	"label": "From",
+			        	"help" : "The date time the chart should begin",
+			        	"type" : "datetime",
+			        	"isRequired" : true
 					},
 					{
-			        	"nameInJavascript": "valueColumn",
-			        	"label": "Value Column Name",
-			        	"help" : "The name of the column containing the value in milliseconds",
-			        	"type" : "String",
-			        	"defaultValue" : "value"
+			        	"nameInJavascript": "to",
+			        	"label": "To",
+			        	"help" : "The date time the chart should end",
+			        	"type" : "datetime",
+			        	"isRequired" : true
 					}
 					]
 			},
 			{
 				"title" : "Fill in Some Labels",
 				"variables": [
-			        {
+					{
+			        	"nameInJavascript": "timeColumn",
+			        	"label": "Time Column Name",
+			        	"help" : "The name of the column containing the time in milliseconds",
+			        	"type" : "column",
+			        	"defaultValue" : "time",
+			        	"isRequired" : true
+					},
+					{
+			        	"nameInJavascript": "valueColumn",
+			        	"label": "Value Column Name",
+			        	"help" : "The name of the column containing the value in milliseconds",
+			        	"type" : "column",
+			        	"defaultValue" : "value",
+			        	"isRequired" : true
+					},
+				    {
 			        	"nameInJavascript": "yaxisLabel",
 			        	"label": "Y-axis label",
 			        	"help" : "This is the label that goes on the left side of the chart",
@@ -73,7 +90,7 @@ $(function () {
 	 * the wizard asking questions to the user for you and you just focus on chart creation
 	 */
 	var _title = '${title}';
-	var _url = '${url}';
+	var _url = '${url}'+'/${from}'+'/${to}'; //OR specially we could write var _url = '${fullUrl}'; as well which is the same
 	var _timeColumn = '${timeColumn}';
 	var _valueColumn = '${valueColumn}';
 	var _units = '${units}';
@@ -273,7 +290,7 @@ $(function () {
 		 * the wizard asking questions to the user for you and you just focus on chart creation
 		 */
 		var _title = '${title}'
-		var _url = '${url}'
+		var _url = '${url}'+'/${from}'+'/${to}'; //OR specially we could write var _url = '${fullUrl}'; as well which is the same
 		var _timeColumn = '${timeColumn}'
 		var _valueColumn = '${valueColumn}'
 		var _units = '${units}';
@@ -293,31 +310,37 @@ $(function () {
 		        chart.setSize(width, height, false);
 		  });
 
-		  Highcharts.setOptions({
-		    credits: {
-		      enabled: false
-		    },
-		    global: {
-		      useUTC: false
-		    },
-		    xAxis: {
-		      dateTimeLabelFormats: {
-		        second: '%l:%M:%S%P',
-		        minute: '%l:%M%P',
-		        hour: '%l%P',
-		        day: '%e %b',
-		        week: '%e %b'
-		      },
-		      type: 'datetime',
-		      title: {
-		        text: ''
-		      }
-		    },
-		    yAxis: {
-		      endOnTick: false
-		      //min: 0
-		    }
-		  });
+			Highcharts.setOptions({
+				credits: { enabled: false },
+				global: { useUTC: false },
+				loading: { 
+					labelStyle: { color: '#FFF' },
+					style: { backgroundColor: '#444' }
+				},
+				navigator: { margin: 50 },
+				plotOptions: {
+					series: {
+						dataGrouping: { approximation: "high", groupPixelWidth: 1 },
+						marker: { enabled: false }
+					}
+				},
+				tooltip: {
+					backgroundColor: {
+						linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+						stops: [ [0, '#FFF'], [1, '#EEE'] ]
+					},
+					borderColor: 'gray',
+					borderWidth: 1,
+					yDecimals: 2
+				},
+				xAxis: {
+					dateTimeLabelFormats: { second: '%l:%M:%S%P', minute: '%l:%M%P',
+						hour: '%l%P', day: '%e %b', week: '%e %b' },
+					type: 'datetime',
+					title: { text: '' }
+				},
+				yAxis: { endOnTick: false /*, min: 0*/ }
+			});
 
 		  function crisp(arr) {
 		    var i = arr.length;

@@ -127,11 +127,11 @@ public class ChartUtil {
 		ChartPageMeta page = chartMeta.getPages().get(0);
 		boolean foundTitle = false;
 		for(ChartVarMeta var : page.getVariables()) {
-			if("title".equals(var.getNameInJavascript()))
+			if("url".equals(var.getNameInJavascript()))
 				foundTitle = true;
 		}
 		if(!foundTitle) {
-			log.warn("There is no title found on first page and variable with 'title' for javascriptInName is required for any chart title(we use this later).  Chart="+name+" will not be loaded and will be skipped");
+			log.warn("There is no url found on first page and variable with 'url' for javascriptInName is required for any chart(we use this later).  Chart="+name+" will not be loaded and will be skipped");
 			return;
 		}
 		
@@ -225,7 +225,7 @@ public class ChartUtil {
 		for(String key : variables.keySet()) {
 			String value = variables.get(key);
 			String newVal = JavaExtensions.escapeJavaScript(value);
-			if(key.equals("url"))
+			if(key.equals("url") || key.equals("fullUrl"))
 				newVal = newVal.replace("\\/", "/");
 			variables.put(key, newVal);
 		}
