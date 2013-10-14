@@ -31,7 +31,8 @@
 			        	"nameInJavascript": "updateFrequency",
 			        	"label": "Data Interval",
 			        	"help" : "The time frequency for updating the chart data.",
-			        	"type" : "String"
+			        	"type" : "String",
+			        	"isRequired" : true
 					},
 					{
 			        	"nameInJavascript": "timeColumn",
