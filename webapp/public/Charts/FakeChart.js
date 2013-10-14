@@ -16,6 +16,13 @@
 			        	"type" : "String"
 					},
 			        {
+			        	"nameInJavascript": "url",
+			        	"label": "Url",
+			        	"help" : "This is unused but required by the databus charting framework because this is a fake chart",
+			        	"type" : "String",
+			        	"defaultValue" : "nothing"
+					},
+			        {
 			        	"nameInJavascript": "yaxisLabel",
 			        	"label": "Y-axis label",
 			        	"help" : "This is the label that goes on the left side of the chart",
@@ -88,7 +95,7 @@ $(function () {
 		plotOptions: {
 			series: {
 				dataGrouping: { approximation: "high", groupPixelWidth: 1 },
-				marker: { /* enabled: true */ }
+				marker: { enabled: false }
 			}
 		},
 		rangeSelector: {

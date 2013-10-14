@@ -90,8 +90,10 @@ public class MyStuff extends Controller {
 		SecurityUtil.checkSingleTable(table);
 		
 		Map<String, String> variablesMap = new HashMap<String, String>();
-		variablesMap.put("title", table+" Last 1000 Data points");
-		variablesMap.put("url", "/api/firstvaluesV1/1000/gapV1/rawdataV1/" + table + "?reverse=true");
+		variablesMap.put("title", table+" Last 2000 Data points");
+		variablesMap.put("url", "/api/gapV1/rawdataV1/" + table);
+		variablesMap.put("_daterangetype", "npoints");
+		variablesMap.put("_numberpoints", "2000");
 		variablesMap.put("timeColumn", "time");
 		variablesMap.put("valueColumn", "value");
 		variablesMap.put("yaxisLabel", "units");

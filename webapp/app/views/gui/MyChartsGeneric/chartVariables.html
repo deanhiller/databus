@@ -18,18 +18,116 @@
     }
 }%
 
+<div id="timeModal" class="modal hide" data-backdrop="true" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div id="deletePattern_content" class="modal-body">
+        <p>
+       <input id="timeId" type="hidden" value=""/>
+       <input id="hours" type="text" value="" class="input-mini" max="24" min="0" maxlength="2"/> Hours
+       <input id="minutes" type="text" value="" class="input-mini" max="60" min="0"  maxlength="2"/> Minutes
+       <input id="seconds" type="text" value="" class="input-mini"max="60" min="0" maxlength="2"/> Seconds
+        </p>
+    </div>
+    <div class="modal-footer">
+        <input id="timeOk" type="submit" name="save" value="Ok" class="btn btn-primary" />
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+    	  function trim(time)
+    	  {
+    		  return ("0" + time).slice(-2);
+    	  }
+    	  
+          $('#timeOk').click(function(e){
+              var id = $('#timeId').val();
+              var hours = $('#hours').val();
+              var minutes = $('#minutes').val();
+              var seconds = $('#seconds').val();
+              if(hours >= 24)
+                  hours = 0;
+              if(minutes >= 60)
+                  minutes = 0;
+              if(seconds >= 60)
+                  seconds = 0;
+              
+              minutes = trim(minutes);
+              seconds = trim(seconds);
+              hours = trim(hours);
+              var theTime = hours+':'+minutes+":"+seconds;
+              $('#time'+id).val(theTime);
+              $("#timeModal").modal('hide');
+          });
+      });
+    </script>
+</div>
+
 #{form @postVariables(chartId, page, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
     <legend>Create Chart ""${chart.name}" ${subtitle}</legend>
 
-    #{list items:pageMeta.variables, as:'v'}
-	    <div class="control-group ${errors.forKey('v') ? 'error' : ''}">
-	        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>${v.label}</label>
-	        <div class="controls">
-	            <input type="text" name="chart.${v.nameInJavascript}" value="${v.value}" placeholder="Name(required)" class="${errors.forKey('v') ? 'has_error' : ''}">
-	            <span class="help-block">${errors.forKey('v')}</span>
+    #{list items:variableList, as:'v'}
+	    #{if v.meta.dateTime}
+            #{datetimesingle errors:errors,var:v/}
+	    #{/if}
+        #{elseif v.meta.timePanel}
+            <input type="hidden" name="javascriptName" value="${v.meta.nameInJavascript}"/>
+            <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
+                <label class="control-label"></label>
+                <div class="controls">
+                    <input type="radio" name="rangeType" value="daterange" #{if v.type != 'npoints'}checked="checked"#{/if}/> Date Range
+                    <input type="radio" name="rangeType" value="npoints" #{if v.type == 'npoints'}checked="checked"#{/if}/> Last N Points
+	            </div>
 	        </div>
-	    </div>
+	        <div id="daterange" style="display: inline">
+                #{datetime errors:errors,id:'from', label: 'From', var:v.fromDate/}
+                #{datetime errors:errors,id:'to', label: 'To', var:v.toDate/}
+            </div>
+	        <div id="npoints" class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}" style="display: none">
+	            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>Number of Points</label>
+	            <div class="controls">
+	                <input type="text" name="chart.${v.meta.nameInJavascript}.numpoints" value="${v.numberOfPoints}" 
+	                   placeholder="#{if v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+	                   class="${errors.forKey(v.meta.nameInJavascript) ? 'has_error' : ''}">
+	                <span class="help-block">${errors.forKey(v.meta.nameInJavascript)}</span>
+	            </div>
+	        </div>
+	        <script type="text/javascript">
+			  $(document).ready(function() {
+			      function switchDivs(value) {
+			          if("daterange" == value) {
+			              $('#daterange').css('display', 'inline');
+			              $('#npoints').css('display', 'none');
+			          } else {
+                          $('#daterange').css('display', 'none');
+                          $('#npoints').css('display', 'inline');
+			          }
+			      }
+			      
+			      $("input[name='rangeType']").change(function(){
+			    	  var value = $(this).val();
+			    	  switchDivs(value);
+			      });
+			      
+			      #{if v.type == 'npoints'}
+			          switchDivs('npoints');
+			      #{/if}
+			  });
+			</script>
+        #{/elseif}
+	    #{elseif v.meta.columnSelector}
+	    
+	    #{/elseif}
+	    #{else}
+        <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
+            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>
+            <div class="controls">
+                <input type="text" name="chart.${v.meta.nameInJavascript}" value="${v.value}" 
+                   placeholder="#{if v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+                   class="${errors.forKey(v.meta.nameInJavascript) ? 'has_error' : ''}">
+                <span class="help-block">${errors.forKey(v.meta.nameInJavascript)}</span>
+            </div>
+        </div>
+	    #{/else}
     #{/list}
 
 	<div class="control-group">

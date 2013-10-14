@@ -1,0 +1,56 @@
+<div class="control-group ${_errors.forKey(_id) ? 'error' : ''}">
+    <label class="control-label"><a href="#" rel="tooltip" title="Date Range for Chart"><i class="icon-info-sign"></i></a>${_label}</label>
+    <div class="controls">
+        <select id="type${_id}" name="chart.${_id}.type">
+            <option value="calendarbased" #{if _var.type != 'zerobased'}selected="selected"#{/if}>Calendar Based Time</option>
+            <option value="zerobased" #{if _var.type == 'zerobased'}selected="selected"#{/if}>Zero(or Epoch) Based Time</option>
+        </select>
+        <div id="epochDiv${_id}" style="display: inline;">
+           <input  id="epoch${_id}" type="text" name="chart.${_id}" value="${_var.epochOffset}" 
+               placeholder="(required)"
+               class="${_errors.forKey(_id) ? 'has_error' : ''}">
+       </div>
+       <div id="calendarDiv${_id}" style="display: none">
+            <input id="input${_id}" type="text" name="chart.${_id}.date" value="${_var.date}" 
+                placeholder="(required)" 
+                class="${_errors.forKey(_id) ? 'has_error' : ''}">
+            <input id="time${_id}" type="text" name="chart.${_id}.time" value="${_var.time}" 
+                placeholder="(required)" 
+                class="${_errors.forKey(_id) ? 'has_error' : ''}">
+        </div>
+        <span class="help-block">${_errors.forKey(_id)}</span>
+    </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+      function switchDivs() {
+          var value = $('#type${_id}').val();
+          if("zerobased" == value) {
+              $('#calendarDiv${_id}').css('display', 'none');
+              $('#epochDiv${_id}').css('display', 'inline');
+          } else {
+              $('#calendarDiv${_id}').css('display', 'inline');
+              $('#epochDiv${_id}').css('display', 'none');
+              new datepickr('input${_id}', {
+                  dateFormat: 'F j, Y',
+              });
+          }
+      }
+      
+      $('#type${_id}').change(function(e){
+           switchDivs();
+      });
+
+      $('#time${_id}').focus(function(e){
+          //fill in the modal with time if we have a time
+          $('#timeId').val('${_id}');
+          $('#hours').val('');
+          $('#minutes').val('');
+          $('#seconds').val('');
+          $("#timeModal").modal('show');
+      });
+
+      switchDivs();
+  });
+</script>
