@@ -154,10 +154,18 @@ public class MyDataStreams extends Controller {
 	public static void postModule(String encoded, String moduleName) {
 		StreamEditor editor = DataStreamUtil.decode(encoded);
 		StreamModule module = findCurrentStream(editor);
-		module.setModule(moduleName);
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		Map<String, PullProcessor> procs = factory.fetchPullProcessors();
 		MetaInformation meta = procs.get(moduleName).getGuiMeta();
+		if(meta.isTerminal() && module.getStreams().size() > 0) {
+			flash.error("The module selected can only be inserted by clicking 'Add Child' as it is a terminal node that can't have children");
+			editModule(encoded);
+		} else if(!meta.isAggregation() && module.getStreams().size() > 1) {
+			flash.error("This aggregation has "+module.getStreams().size()+" children yet the module you selected only supports one child");
+			editModule(encoded);
+		}
+		
+		module.setModule(moduleName);
 		
 		if(meta.getParameterMeta().size() == 0) {
 			editor.getLocation().clear(); //reset location since we are done
