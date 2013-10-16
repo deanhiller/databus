@@ -274,7 +274,10 @@ public class ChartUtil {
 			} else {
 				String number = variables.get("_numberpoints");
 				String ending = url.substring("/api".length());
-				url = "/api/firstvaluesV1/"+number+ending+"?reverse=true";
+				if(ending.contains("?"))
+					url = "/api/firstvaluesV1/"+number+ending+"&reverse=true";
+				else
+					url = "/api/firstvaluesV1/"+number+ending+"?reverse=true";
 			}
 			variables.put("url", url);
 		}
