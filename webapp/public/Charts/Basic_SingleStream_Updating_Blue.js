@@ -22,37 +22,38 @@
 			        	"type" : "String"
 					},
 					{
-			        	"nameInJavascript": "intervalUrl",
-			        	"label": "Data Interval Url",
-			        	"help" : "The url for data with a count added to the update.",
-			        	"type" : "String"
-					},
-					{
 			        	"nameInJavascript": "updateFrequency",
-			        	"label": "Data Interval",
-			        	"help" : "The time frequency for updating the chart data.",
+			        	"label": "Data Interval(seconds)",
+			        	"help" : "The time frequency for updating the chart data in seconds.",
 			        	"type" : "String",
 			        	"isRequired" : true
 					},
 					{
-			        	"nameInJavascript": "timeColumn",
-			        	"label": "Time Column Name",
-			        	"help" : "The name of the column containing the time in milliseconds",
+			        	"nameInJavascript": "windowSizeSeconds",
+			        	"label": "Window Size(seconds)",
+			        	"help" : "The chart window size seconds.",
 			        	"type" : "String",
-			        	"defaultValue" : "time"
-					},
-					{
-			        	"nameInJavascript": "valueColumn",
-			        	"label": "Value Column Name",
-			        	"help" : "The name of the column containing the value in milliseconds",
-			        	"type" : "String",
-			        	"defaultValue" : "value"
+			        	"isRequired" : true
 					}
 					]
 			},
 			{
 				"title" : "Fill in Some Labels",
 				"variables": [
+					{
+						"nameInJavascript": "timeColumn",
+						"label": "Time Column Name",
+						"help" : "The name of the column containing the time in milliseconds",
+						"type" : "String",
+						"defaultValue" : "time"
+					},
+					{
+						"nameInJavascript": "valueColumn",
+						"label": "Value Column Name",
+						"help" : "The name of the column containing the value in milliseconds",
+						"type" : "String",
+						"defaultValue" : "value"
+					},
 			        {
 			        	"nameInJavascript": "yaxisLabel",
 			        	"label": "Y-axis label",
@@ -79,9 +80,13 @@ $(function () {
 	 * Controller Chart Data
 	 */
 	var _title = '${title}';
-	var _url = '${url}';
-	var _intervalUrl = '${intervalUrl}';
+	/* ${shortUrl} is a special variable that is 100% the same
+	 * as the user entered url while ${url} is
+	 * a modified version of the url that the user entered adding start/stop or other stuff
+	 */
+	var _url = '${shortUrl}'; 
 	var _updateFrequency = '${updateFrequency}' * 1000;
+	var _windowSizeSeconds = '${windowSizeSeconds}' * 1000;
 	var _timeColumn = '${timeColumn}';
 	var _valueColumn = '${valueColumn}';
 	var _units = '${units}';
@@ -138,19 +143,6 @@ $(function () {
 	}
 	
 	/**
-	 * Handle the JSON security callback requirement
-	 */
-	if(_url.indexOf('?') > 0) {
-		_url = _url + '&callback=?';
-	} else
-		_url = _url + '?callback=?';
-		
-	if(_intervalUrl.indexOf('?') > 0) {
-		_intervalUrl = _intervalUrl + '&callback=?';
-	} else
-		_intervalUrl = _intervalUrl + '?callback=?';
-			
-	/**
 	 * Blue theme for this chart.  Must be declared prior to instatiating the
 	 * actual chart itself.
 	 */
@@ -170,7 +162,8 @@ $(function () {
 	      className: 'dark-container',
 	      plotBackgroundColor: 'rgba(255, 255, 255, .1)',
 	      plotBorderColor: '#CCCCCC',
-	      plotBorderWidth: 1
+	      plotBorderWidth: 1,
+	      height: getHeight()
 	   },
 	   title: {
 	      style: {
@@ -401,12 +394,17 @@ $(function () {
 	   maskColor: 'rgba(255,255,255,0.3)'
 	};
 	
+	var d = new Date();
+	var currentTime = d.getTime();
+	var start = currentTime - _windowSizeSeconds;
+	var fullUrl = _url+'&start='+start+'&stop='+currentTime;
+	var start = d;
 	/**
 	 * The actual chart creation
 	 */
-	$.getJSON(_url, function (startData) {
+	$.getJSON(fullUrl, function (startData) {
 		var startingData = [];
-						   
+
 		$.each(startData.data, function (key, val) {
 		    var time = val[_timeColumn];
 		    var value = val[_valueColumn];
@@ -416,8 +414,6 @@ $(function () {
 		    startingData.push([formattedTime.getTime(), (value == "NaN") ? null : value]);
 		    lastTime = time;
 		});
-		
-		startingData.reverse();
 		
 		var msg = "No data available in the specified time period.";
 		if(startingData.length != 0) { 
@@ -438,18 +434,23 @@ $(function () {
 					load : function() {
 						var series = this.series[0];
 												
-						setInterval(function() {								
+						setInterval(function() {
+							var d = new Date();
+							var currentTime = d.getTime();
+							var _intervalUrl = _url+"&start="+lastTime+"&stop="+currentTime+"&reverse="+true;
+							
 							$.getJSON(_intervalUrl, function (chartData) {
-								
-								var lastTime = startingData[startingData.length-1][0];
+								var theData = chartData.data;
+								theData.reverse();
+
 								var count = 0;
-								$.each(chartData.data, function (key, val) {									
+								$.each(theData, function (key, val) {									
 								    var time = val[_timeColumn];
 								    var value = val[_valueColumn];
 								    
 								    var formattedTime = new Date(time);
 								    
-								    if(time != lastTime) {							    
+								    if(time > lastTime) {
 								    	series.addPoint([formattedTime.getTime(), value], true, true);
 								    	count++;
 								    	lastTime = time;
@@ -459,10 +460,10 @@ $(function () {
 								var theChart = $('#chart_container').highcharts();
 								
 								if(count != 0) { 
-									theChart.setTitle(_title, "Last value was " + startingData[startingData.length-1][1] + 
+									chart.setTitle(_title, "Last value was " + startingData[startingData.length-1][1] + 
 										 " at " + new Date(startingData[startingData.length-1][0]).toUTCString());
 								} else {
-									theChart.setTitle(_title, "Value has not changed.");
+									chart.setTitle(_title, "Value has not changed.  Last checked="+d.toUTCString());
 								}
 							});
 						}, _updateFrequency);
@@ -575,6 +576,7 @@ $(function () {
 			}]
 		};
 		
-		window.chart = new Highcharts.StockChart(Highcharts.merge(options, theme));
+		chart = new Highcharts.StockChart(Highcharts.merge(options, theme));
+		
 	});
 });

@@ -291,7 +291,7 @@ public class MyChartsGeneric extends Controller {
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		
 		//setup the correct urls and such...
-		ChartUtil.modifyVariables(variables);
+		ChartUtil.modifyVariables(variables, false);
 		
 		ChartDbo chart = new ChartDbo();
 		chart.setChartId(chartId);

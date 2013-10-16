@@ -199,11 +199,6 @@ $(function () {
 	window.expandData = expandData;
 
 	function addChart() {
-		if(_url.indexOf('?') > 0) {
-			_url = _url + '&callback=?';
-		} else
-			_url = _url + '?callback=?';
-
 		console.log('url='+_url);
 
 		$('#theChart').append($('<div class="chart" />').attr('id', 'mychart'));
@@ -384,11 +379,6 @@ $(function () {
 		  window.expandData = expandData;
 
 		  function addChart() {
-		    if(_url.indexOf('?') > 0) {
-		    	_url = _url + '&callback=?';
-		    } else
-		        _url = _url + '?callback=?';
-		    
 		    console.log('url='+_url);
 		    
 		    $('#theChart').append($('<div class="chart" />').attr('id', 'mychart'));

@@ -248,7 +248,7 @@ public class ChartUtil {
 	
 	public static String replaceVariables(String chart, Map<String, String> variables) {
 		//look for special rangetype variable first
-		modifyVariables(variables);
+		modifyVariables(variables, true);
 		
 		//replace comments first so if there are variables in the comment, they will not be replaced since
 		//they are removed from the file anyways.
@@ -262,11 +262,12 @@ public class ChartUtil {
 		return chart;
 	}
 
-	public static void modifyVariables(Map<String, String> variables) {
+	public static void modifyVariables(Map<String, String> variables, boolean webRequest) {
 		String type = variables.get("_daterangetype");
 		if(type != null) {
 			String url = variables.get("url");
-			variables.put("shortUrl", url);
+			String shortUrl = addCallbackParam(webRequest, url);
+			variables.put("shortUrl", shortUrl);
 			if("daterange".equals(type)) {
 				String from = variables.get("_fromepoch");
 				String to = variables.get("_toepoch");
@@ -279,7 +280,21 @@ public class ChartUtil {
 				else
 					url = "/api/firstvaluesV1/"+number+ending+"?reverse=true";
 			}
+			
+			url = addCallbackParam(webRequest, url);
+
 			variables.put("url", url);
 		}
+	}
+
+	private static String addCallbackParam(boolean webRequest, String url) {
+		if(webRequest) {
+			//add stuff for clean json callback
+			if(url.contains("?"))
+				url = url+"&callback=?";
+			else
+				url = url+"?callback=?";
+		}
+		return url;
 	}
 }

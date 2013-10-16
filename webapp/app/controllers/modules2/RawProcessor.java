@@ -144,6 +144,11 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
 
+		if(start == null)
+			start = parseParam("start");
+		if(end == null)
+			end = parseParam("stop");
+		
 		SecureTable sdiTable = null;
 		if(skipSecurity) {
 			sdiTable = SecureTable.findByName(visitor.getMgr(), colFamily);
@@ -167,6 +172,12 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		return res;
 	}
 
+	private Long parseParam(String name) {
+		String timeVal = Params.current().get(name);
+		if(timeVal == null)
+			return null;
+		return Long.parseLong(timeVal);
+	}
 	@Override
 	public void start(VisitorInfo visitor) {
 		//nothing to do, engine is the one who starts reading from us
