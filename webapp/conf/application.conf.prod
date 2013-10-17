@@ -18,10 +18,7 @@ admins=dhiller2,jcollins
 nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
 nosql.cassandra.clusterName=DatabusClusterB
-nosql.cassandra.seeds=a1:9158,a2:9158,a3:9158,a4:9158,a5:9158,a6:9158,a7:9158,a8:9158,a9:9158,a10:9158,a11:9158,a12:9158
-
-#uncomment this if you changed your cassandra thrift ports
-nosql.cassandra.thriftport=9158
+nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a11:9160,a12:9160
 
 # GUI Charting enabled/disabled
 #   - if enabled, which charting library
