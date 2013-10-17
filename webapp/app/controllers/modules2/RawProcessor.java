@@ -173,7 +173,11 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	}
 
 	private Long parseParam(String name) {
-		String timeVal = Params.current().get(name);
+		Params params = Params.current();
+		if(params == null)
+			return null;
+		
+		String timeVal = params.get(name);
 		if(timeVal == null)
 			return null;
 		return Long.parseLong(timeVal);
