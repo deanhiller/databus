@@ -1,36 +1,60 @@
-#Welcome to the databus configuration.  First, you must understand the 2 modes that Databus can 
-#work in(we may add a hbase mode and mongodb mode later as well)
-# Mode 1: In memory databus where nosqltype.nosqltype=inmemory
-# Mode 2: Single node cassandra database where nosqltype.nosqltype=cassandra
+# Welcome to the DataBus configuration file
+#  vXX.X 13Sep2013 
+#
+# This file set the configuration options for a DataBus installation.
+# Options have the form PROPERTY=VALUE. The application can be started in different modes,
+#  with different values used in each mode. 
+#
+#  # The domain property is used for Active Directory.
+#  domain=nrel.gov
+#
+#  Scripts for starting the DataBus application in different modes are in databus/webapp/ .
+#   (startProduction.sh, startDemo.sh, startQa.sh)
+#  Note that starting DataBus without specifying a mode will enable "dev" mode (See "Application Mode").
 
-#NEXT, you need to understand that %prod.XXXXX are property overrides for when you run startProduction.sh
-#For the databus developers/QA, we also have %qa.XXXX properties.  These are property overrides that are used when startQa.sh is called
-#Lastly, for demo purposes, when startDemo.sh is run, the %demo.XXXXX properties are used
-#NOTE: If you don't see a property %prod.NNNN, then the property NNNN is used by default.  All the %prod are just overrides on the defaults.
+## Section 1: Essential Properties
+# You will need to set these properties in order to start using DataBus.
 
-#This is for Active Directory.  Your IT should have an SRV record in DNS on the location of the AD server and port information.
-#Supplying this domain allows us to use DNS to lookup the SRV record and find your Active Directory. 
+# User Authentication
+# ~~~~~
+# DataBus can use Active Directory or a internal user list for user authetication. For AD, your IT
+#  should have an SRV record in DNS on the location of the AD server and port information.
+#  Supplying your domain here allows DataBus to use DNS to lookup the SRV record and find your Active Directory. 
+# Using a value of none disables AD lookup. In this case, users are authenticated against the internal DataBus user list.
 domain=nrel.gov
 
 admins=dhiller2,jcollins
 
-# Database configuration
+# Cassandra settings
+# ~~~~~
+#  IMPORTANT: Make sure you modify the nosql.cassandra.seeds list to your node hostnames OR just name your nodes a1, a2, etc. etc.
 nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
 nosql.cassandra.clusterName=DatabusClusterB
 nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a11:9160,a12:9160
 
-# GUI Charting enabled/disabled
-#   - if enabled, which charting library
-#       OPTIONS:    highcharts
-#                   highcharts_licensed
-#                   highcharts_disabled
+# Built-in Chart options
+# ~~~~~
+# DataBus includes a demo version of the Highcharts JS scripting library (http://www.highcharts.com/)
+#  for creating charts in the GUI.
+# You may use highcharts with the free demo, or purchase a license from Highcharts, or use a different library.
+# Note that you must purchase a highcharts license for commercial use. 
+# Select GUI charts enable/disable, and if enabled, which charting library
+#    OPTIONS: highcharts_disabled - Disable highcharts.
+#             highcharts - Use the free demo mode of highcharts.
+#             highcharts_licensed  - You have purchased a highcharts license
 gui.charting.enabled=true
 gui.charting.library=highcharts_licensed
 
-#demo.mode=true means populate tons of demo data(slow to startup first time) and ALSO means
-#display help steps on logging in for the user to follow the demo better
+# Demo mode
+# ~~~~~
+# The built-in demo mode populates the database with demo data and displays
+#  a series of guided help messages on the gui to illustrate the features of DataBus.
+#  Note that startup will be slowed by the population of the database with demo data.
 demo.mode=false
+
+## Section 2: Advanced Properties
+# Settings these properties may be necessary for larger or more complex installations.
 
 #Email configuration for SMTP mail server so we can send email when a stream is down
 email.host=sdi-ci
@@ -96,7 +120,8 @@ solr.url=http://b1:8983/solr
 solr.queryRequestHandler=select
 solr.defaultSearchField=allTerms_texts
 
-#Every server polls the tables this rate(in millis)
+#Every server polls the tables this rate(in millis).  This is not the poll rate of the bacnet nor modbus clients but is
+# the poll rate of databus servers only for monitoring/cron jobs that are scheduled
 monitor.rate=60000
 
 # HTTP Response headers control for static files
