@@ -80,19 +80,10 @@ public class StartupBean extends Job {
 		
 		startMonitorService();
 		
-		String mode = (String) Play.configuration.get("upgrade.mode");
-		log.info("upgrade mode="+mode);
-
 		Upgrade8Bean up = new Upgrade8Bean();
 		//up.readOnlyTest();
 		up.upgrade();
 
-		TransferBean b = new TransferBean();
-		b.transfer();
-		
-		TransferBean2 b2 = new TransferBean2();
-		b2.transfer();
-		
 		//THIS SHOULD BE DONE LAST!!!
 		String admins = Play.configuration.getProperty("admins");
 		if(StringUtils.isEmpty(admins))
