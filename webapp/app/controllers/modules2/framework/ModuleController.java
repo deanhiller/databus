@@ -38,6 +38,14 @@ public class ModuleController extends Controller {
 		return theFactory;
 	}
 
+	public static ModuleCore fetchCore() {
+		String mode = Play.configuration.getProperty("application.mode");
+		if("dev".equals(mode)) {
+			core = createCore();
+		}
+		return core;
+	}
+	
 	public static void startModules(String path) {
 		//Because of the on-demand development recompile, dev mode has to recreate the core or changes won't be there
 		String mode = Play.configuration.getProperty("application.mode");

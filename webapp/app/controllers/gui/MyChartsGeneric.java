@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import models.ChartDbo;
 import models.EntityUser;
@@ -40,6 +41,13 @@ import controllers.gui.util.Chart;
 import controllers.gui.util.ChartComparator;
 import controllers.gui.util.ChartInfo;
 import controllers.gui.util.ChartUtil;
+import controllers.modules2.framework.ModuleController;
+import controllers.modules2.framework.RawProcessorFactory;
+import controllers.modules2.framework.ReadResult;
+import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.PullProcessor;
 
 import play.Play;
 import play.mvc.Controller;
@@ -106,11 +114,41 @@ public class MyChartsGeneric extends Controller {
 			fillInVariables(pageMeta, variables, variableList);
 		}
 
+		List<String> columnNames = new ArrayList<String>();
+		if(page > 0 && needsColumns(pageMeta)) {
+			String url = variables.get("url");
+			RawProcessorFactory factory = ModuleController.fetchFactory();
+			RawProcessorFactory.threadLocal.set("passthroughV1");
+			PullProcessor top = (PullProcessor) factory.get();
+			VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
+			String path = url.substring("/api/".length());
+			PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
+			ReadResult result = root.read();
+			if(result.isEndOfStream()) {
+				flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
+				chartVariables(chartId, page, encoded);
+			}
+				
+			TSRelational row = result.getRow();
+			for(Entry<String, Object> entry : row.entrySet()) {
+				columnNames.add(entry.getKey());
+			}
+		}
+
 		String subtitle = "("+(page+1) +" of "+chart.getChartMeta().getPages().size()+")";
 		boolean isLastPage = false;
 		if(page == chart.getChartMeta().getPages().size()-1)
 			isLastPage = true;
-		render(chart, variableList, chartId, page, encoded, isLastPage, subtitle);
+		render(chart, variableList, chartId, page, encoded, isLastPage, subtitle, columnNames);
+	}
+
+	private static boolean needsColumns(ChartPageMeta pageMeta) {
+		List<ChartVarMeta> variables = pageMeta.getVariables();
+		for(ChartVarMeta meta : variables) {
+			if(meta.isColumnSelector())
+				return true;
+		}
+		return false;
 	}
 
 	private static void fillInVariables(ChartPageMeta pageMeta,
@@ -192,11 +230,17 @@ public class MyChartsGeneric extends Controller {
 			}
 		}
 
+		String url = variablesMap.get("url");
 		encoded = ChartUtil.encodeVariables(variablesMap);
 		if(validation.hasErrors()) {
 			params.flash();
 			validation.keep();
 			flash.error("Your form has errors below");
+			chartVariables(chartId, page, encoded);
+		} else if(page == 0 && url == null) {
+			params.flash();
+			validation.keep();
+			flash.error("Script seems corrupt.  We should have url variable by the second page to use");
 			chartVariables(chartId, page, encoded);
 		}
 		

@@ -27,6 +27,7 @@ import controllers.modules2.framework.http.HttpListener;
 import controllers.modules2.framework.http.HttpStatus;
 import controllers.modules2.framework.procs.OutputProcessor;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PushProcessor;
 import controllers.modules2.framework.procs.EngineProcessor.TheRunnablePromise;
 import controllers.modules2.framework.translate.TranslationFactory;
