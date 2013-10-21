@@ -58,6 +58,11 @@ public class Tables extends Controller {
 	}
 
 	public static void postData(String table) throws FileNotFoundException {
+		boolean b = true;
+		if (!b)
+			return;
+		System.out.println("---- AT START table is "+table);
+
 		if(request.isNew) {
 			String mode = (String) Play.configuration.get("upgrade.mode");
 			if(mode != null && mode.startsWith("http")) {
@@ -122,6 +127,7 @@ public class Tables extends Controller {
 			flash.keep();
 		}
 
+		System.out.println("---- table is "+table);
 		uploadSuccess(table);
 	}
 

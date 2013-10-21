@@ -1,0 +1,19 @@
+#{extends './adminTemplate.html' /}
+#{set subtab:'scripting' /}
+
+<h2>Scripting Info</h2>
+
+<table border="1" class="data" cellpadding="5" cellspacing="0">
+	<thead>
+	    <tr>
+	        <th>Language Alias List</th>
+	    </tr>
+	</thead>
+	<tbody>
+		#{list langs, as:'alias'}
+	        <tr>
+	            <td><a href="@{metaTable(alias)}">${alias}</a></td>
+	        </tr>
+	    #{/list}
+	</tbody>
+</table>
