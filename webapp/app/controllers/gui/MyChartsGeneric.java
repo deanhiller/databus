@@ -295,7 +295,8 @@ public class MyChartsGeneric extends Controller {
 			}
 
 			String dateTime = date+" "+time;
-			LocalDateTime dt = fmt.parseLocalDateTime(dateTime);
+			//LocalDateTime dt = fmt.parseLocalDateTime(dateTime);
+			DateTime dt = fmt.parseDateTime(dateTime);
 			DateTime dtWithTimeZone = dt.toDateTime();
 			long millis = dtWithTimeZone.getMillis();
 			return ""+millis;
