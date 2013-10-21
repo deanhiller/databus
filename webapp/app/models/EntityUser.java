@@ -196,6 +196,8 @@ public class EntityUser extends Entity {
 	}
 	
 	public static EntityUser findByName(NoSqlEntityManager mgr, String userName) {
+		if(userName == null)
+			throw new IllegalArgumentException("no username found in basic auth (or possibly the session if logged in via GUI)");
 		Query<EntityUser> query = mgr.createNamedQuery(EntityUser.class, "findByName");
 		query.setParameter("username", userName);
 		return query.getSingleObject();

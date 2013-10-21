@@ -96,5 +96,12 @@ public class MetaInformation {
 	public void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
 	}
+
+	public boolean isTerminal() {
+		if(numChildren == NumChildren.NONE)
+			return true;
+		return false;
+	}
+	
 	
 }

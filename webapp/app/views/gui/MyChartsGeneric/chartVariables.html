@@ -115,7 +115,17 @@
 			</script>
         #{/elseif}
 	    #{elseif v.meta.columnSelector}
-	    
+        <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
+            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>
+            <div class="controls">
+                #{select 'chart.'+v.meta.nameInJavascript, value:v.value, class: errors.forKey(v.meta.nameInJavascript) ? 'has_error' : ''}
+                    #{list items:columnNames, as:'name'}
+                        #{option name}${name}#{/option}
+                    #{/list}
+                #{/select}
+                <span class="help-block">${errors.forKey(v.meta.nameInJavascript)}</span>
+            </div>
+        </div>	    
 	    #{/elseif}
 	    #{else}
         <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">

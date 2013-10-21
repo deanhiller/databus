@@ -18,10 +18,7 @@ admins=dhiller2,jcollins
 nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
 nosql.cassandra.clusterName=QAClusterB
-nosql.cassandra.seeds=sdi-prod-01:9158,sdi-prod-02:9158,sdi-prod-03:9158,sdi-prod-04:9158
-#uncomment this if you changed your cassandra thrift ports
-nosql.cassandra.thriftport=9158
-
+nosql.cassandra.seeds=sdi-prod-01:9158,sdi-prod-02:9160,sdi-prod-03:9160,sdi-prod-04:9160
 
 # GUI Charting enabled/disabled
 #   - if enabled, which charting library
@@ -48,13 +45,6 @@ application.baseUrl=http://sdi-prod-01:9000
 #The url that we turn around and make requests to(service chaining)
 application.requestUrl=http://localhost:9000
 
-#This is only from an upgrade to keep system live.  If you are ok with down time to upgrade, you never need this setting
-#This is for upgrading all STREAM tables into TIME_SERIES tables
-#Values for this are OLD before the switch is started, a url of where to send the same request(you want to send the request to a server with
-#a setting of NEW) and NEW which ensures all new STREAMS are created as TIME_SERIES tables.  Having a url is like setting both where it
-#writes to old cassandra instance and forwards to a webserver with NEW that writes to new cassandra instance.
-upgrade.mode=NEW
-
 # This is the main configuration file for the application.
 # ~~~~~
 application.name=sdiwebapp
@@ -65,12 +55,6 @@ application.mode=prod
 # The secret key is used to secure cryptographics functions
 # If you deploy your application to several instances be sure to use the same key !
 application.secret=9lAKmZe1zQoiRknESDAhXnrVbwKBYURZlJVIaPkgpCgaH51aBQIMVZgmK5DxQqE2
-
-# i18n
-# ~~~~~
-# Define locales used by your application.
-# You can then place localized messages in conf/messages.{locale} files
-# application.langs=fr,en,ja
 
 # Date format
 # ~~~~~
@@ -91,11 +75,6 @@ XForwardedSupport=all
 # You can restrict this.
 # http.address=127.0.0.1
 #
-# Use this if you don't host your Play application at the root of the domain
-# you're serving it from. This parameter has no effect when deployed as a
-# war, because the path will be handled by the application server.
-# http.path=/
-
 # Session configuration
 # ~~~~~~~~~~~~~~~~~~~~~~
 # By default, session will be written to the transient PLAY_SESSION cookie.
@@ -114,12 +93,6 @@ application.session.httpOnly=true
 # foo.example.com and bar.example.com
 # application.defaultCookieDomain=.example.com
 
-# JVM configuration
-# ~~~~~
-# Define which port is used by JPDA when application is in debug mode (default is set to 8000)
-# jpda.port=8000
-%test.jpda.port=8001
-#
 # Java source level => 1.5, 1.6 or 1.7 (experimental)
 # java.source=1.5
 java.source=1.6
@@ -140,40 +113,6 @@ monitor.rate=60000
 # This is only read in prod mode, in dev mode the cache is disabled.
 # http.cacheControl=3600
 
-# If enabled, Play will generate entity tags automatically and send a 304 when needed.
-# Default is true, set it to false to deactivate use of entity tags.
-# http.useETag=true
-
-# Custom mime types
-# mimetype.xpi=application/x-xpinstall
-
-# WS configuration
-# ~~~~~
-# Default engine is Async Http Client, uncomment to use
-# the JDK's internal implementation
-# webservice = urlfetch
-# If you need to set proxy params for WS requests
-# http.proxyHost = localhost
-# http.proxyPort = 3128
-# http.proxyUser = jojo
-# http.proxyPassword = jojo
-
-# Mail configuration
-# ~~~~~ 
-# Default is to use a mock Mailer
-mail.smtp=mock
-
-# Or, specify mail host configuration
-# mail.smtp.host=127.0.0.1
-# mail.smtp.user=admin
-# mail.smtp.pass=
-# mail.smtp.channel=ssl
-
-# Jobs executor
-# ~~~~~~
-# Size of the Jobs pool
-# play.jobs.pool=10
-
 # Execution pool
 # ~~~~~
 # Default to 1 thread in DEV mode or (nb processors + 1) threads in PROD mode.
@@ -182,20 +121,4 @@ mail.smtp=mock
 #NOTE: We modify to 25 as when cassandra slows down, we can see the issue clearly otherwise we get requests waiting to start which we don't really
 #want when we hit it for a test as we miss out on the real timing info(ie. wait long period then process it causes it to go fast...ask dean)
 play.pool=25
-
-# Open file from errors pages
-# ~~~~~
-# If your text editor supports opening files by URL, Play! will
-# dynamically link error pages to files 
-#
-# Example, for textmate:
-# play.editor=txmt://open?url=file://%s&line=%s
-
-# Testing. Set up a custom configuration for test mode
-# ~~~~~
-#%test.module.cobertura=${play.path}/modules/cobertura
-%test.application.mode=dev
-%test.db.url=jdbc:h2:mem:play;MODE=MYSQL;LOCK_MODE=0
-%test.jpa.ddl=create
-%test.mail.smtp=mock
 

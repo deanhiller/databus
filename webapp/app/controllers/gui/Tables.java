@@ -64,11 +64,6 @@ public class Tables extends Controller {
 		System.out.println("---- AT START table is "+table);
 
 		if(request.isNew) {
-			String mode = (String) Play.configuration.get("upgrade.mode");
-			if(mode != null && mode.startsWith("http")) {
-				throw new RuntimeException("CSV upload is turned off right now while we are upgrading our servers(please contact us and let us know at databus@nrel.gov");
-			}
-
 			if (log.isDebugEnabled())
 				log.debug("first call to controller method");
 			PermissionType p = SecurityUtil.checkSingleTable2(table);

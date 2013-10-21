@@ -113,10 +113,9 @@ public class ApiRegistrationImpl {
 				log.info("missing schema attribute");
 			throw new BadRequest("Missing the schema attribute which is required");
 		}
-		
-		//change the mode if we are in NEW mode to always be TIME_SERIES....
-		String mode = (String) Play.configuration.get("upgrade.mode");
-		if("NEW".equals(mode) && msg.getDatasetType() == DatasetType.STREAM)
+
+		//STREAM no longer exists
+		if(msg.getDatasetType() == DatasetType.STREAM)
 			msg.setDatasetType(DatasetType.TIME_SERIES);
 
 		DatasetType type = msg.getDatasetType();
@@ -131,10 +130,7 @@ public class ApiRegistrationImpl {
 		// Setup the table meta
 		DboTableMeta tm = new DboTableMeta();
 		if(msg.getDatasetType() != DatasetType.TIME_SERIES) {
-			String dataCf = "nreldata";
-			
-			if(mode != null && "NEW".equals(mode))
-				dataCf = "relational";
+			String dataCf = "relational";
 			tm.setup(msg.getModelName(), dataCf, false, null);
 		} else {
 			List<DatasetColumnModel> columns = msg.getColumns();

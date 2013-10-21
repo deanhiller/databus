@@ -12,6 +12,8 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import models.SecureTable;
+
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.playorm.cron.api.CronListener;
@@ -27,7 +29,9 @@ import com.alvazan.orm.api.z3api.NoSqlTypedSession;
 import com.alvazan.orm.api.z3api.QueryResult;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
+import com.alvazan.play.NoSql;
 
 import controllers.TableMonitor;
 import controllers.modules2.RawProcessor;
@@ -41,17 +45,19 @@ public class ATableMonitorListener {
 			.getLogger(ATableMonitorListener.class);
 
 	public void monitorFired(NoSqlEntityManager mgr, PlayOrmCronJob mon) {
-		String mode = Play.configuration.getProperty("upgrade.mode");
-		if("NEW".equals(mode) || StringUtils.isEmpty(mode)) {
-			runNewCode(mgr, mon);
-			return;
-		}
-
 		TableMonitor tableMon = TableMonitor.copy(mon);
 		if (log.isInfoEnabled())
-			log.info("monitor firing(old version)=" + tableMon);
-
+			log.info("monitor firing=" + tableMon);
 		String tableName = tableMon.getTableName();
+		DboTableMeta meta = mgr.find(DboTableMeta.class, tableName);
+		if(meta.isTimeSeries()) {
+			runNewCode(mgr, tableMon, tableName);
+		} else
+			runRelational(mgr, tableMon, tableName);
+	}
+
+	private void runRelational(NoSqlEntityManager mgr, TableMonitor tableMon,
+			String tableName) {
 		//NOTE: d.time>0 is here because PlayOrm does not yet have order by asc(time) which would choose the index
 		//so instead PlayOrm randomly chooses an index
 		String sql = "select d from " + tableName + " as d where d.time>0";
@@ -64,13 +70,13 @@ public class ATableMonitorListener {
 		TypedRow r = getLastVal(cursor);
 		DateTime now = new DateTime();
 		if (r == null) {
-			fireEmailStreamIsDown("old", null, now, tableMon);
+			fireEmailStreamIsDown("relational", null, now, tableMon);
 			return;
 		}
 
 		BigInteger timestamp = (BigInteger) r.getRowKey();
 
-		runDataCheck("old", tableMon, now, timestamp.longValue());
+		runDataCheck("relational", tableMon, now, timestamp.longValue());
 	}
 
 	private void runDataCheck(String mode, TableMonitor tableMon, DateTime now,
@@ -95,12 +101,7 @@ public class ATableMonitorListener {
 		fireEmailStreamIsDown(mode, lastDataPoint, now, tableMon);
 	}
 
-	private void runNewCode(NoSqlEntityManager mgr, PlayOrmCronJob mon) {
-		TableMonitor tableMon = TableMonitor.copy(mon);
-		if (log.isInfoEnabled())
-			log.info("monitor firing(new version)=" + tableMon);
-
-		String tableName = tableMon.getTableName();
+	private void runNewCode(NoSqlEntityManager mgr, TableMonitor tableMon, String tableName) {
 		RawProcessor p = new RawProcessor(true);
 		VisitorInfo visitor = new VisitorInfo(null, null, true, mgr);
 		String path = "rawdataV1/"+tableName+"/0/null";
@@ -110,14 +111,14 @@ public class ATableMonitorListener {
 		DateTime now = new DateTime();
 		ReadResult res = p.read();
 		if(res.isEndOfStream()) {
-			fireEmailStreamIsDown("new", null, now, tableMon);
+			fireEmailStreamIsDown("timeseries", null, now, tableMon);
 			return;
 		}
 		
 		TSRelational row = res.getRow();
 		long timestamp = row.getTime();
 		
-		runDataCheck("new", tableMon, now, timestamp);
+		runDataCheck("timeseries", tableMon, now, timestamp);
 	}
 
 	private void fireEmailStreamIsDown(String mode, DateTime lastDataPoint, DateTime now,

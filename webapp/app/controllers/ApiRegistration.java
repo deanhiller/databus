@@ -96,42 +96,35 @@ public class ApiRegistration extends Controller {
 		String username = request.user;
 		String password = request.password;
 		
-		String mode = (String) Play.configuration.get("upgrade.mode");
-		String requestUrl = null;
-		if(mode != null) {
-			if(mode.startsWith("http")) {
-				requestUrl = mode;
-			} else if("NEW".equals(mode)) {
-				DatasetType type = msg.getDatasetType();
-				if(type == DatasetType.STREAM)
-					msg.setDatasetType(DatasetType.TIME_SERIES);
-			}
-		}
+		DatasetType type = msg.getDatasetType();
+		//STREAM is no longer existing!!!
+		if(type == DatasetType.STREAM)
+			msg.setDatasetType(DatasetType.TIME_SERIES);
 
-		ListenableFuture<Response> future = null;
-		if(requestUrl != null) {
-			// fix this so it is passed in instead....
-			Realm realm = new Realm.RealmBuilder()
-					.setPrincipal(username)
-					.setPassword(password)
-					.setUsePreemptiveAuth(true).setScheme(AuthScheme.BASIC)
-					.build();
-
-			String fullUrl = requestUrl+"/api/registerV1";
-
-			RequestBuilder b = new RequestBuilder("POST")
-					.setUrl(fullUrl)
-					.setRealm(realm)
-					.setBody(json);
-			com.ning.http.client.Request httpReq = b.build();
-
-			int maxRetry = client.getConfig().getMaxRequestRetry();
-			try {
-				future = client.executeRequest(httpReq);
-			} catch (IOException e) {
-				throw new RuntimeException(e);
-			}
-		}
+//		ListenableFuture<Response> future = null;
+//		if(requestUrl != null) {
+//			// fix this so it is passed in instead....
+//			Realm realm = new Realm.RealmBuilder()
+//					.setPrincipal(username)
+//					.setPassword(password)
+//					.setUsePreemptiveAuth(true).setScheme(AuthScheme.BASIC)
+//					.build();
+//
+//			String fullUrl = requestUrl+"/api/registerV1";
+//
+//			RequestBuilder b = new RequestBuilder("POST")
+//					.setUrl(fullUrl)
+//					.setRealm(realm)
+//					.setBody(json);
+//			com.ning.http.client.Request httpReq = b.build();
+//
+//			int maxRetry = client.getConfig().getMaxRequestRetry();
+//			try {
+//				future = client.executeRequest(httpReq);
+//			} catch (IOException e) {
+//				throw new RuntimeException(e);
+//			}
+//		}
 
 		RegisterResponseMessage rmsg = ApiRegistrationImpl.registerImpl(msg, username, password);
 		
@@ -152,21 +145,21 @@ public class ApiRegistration extends Controller {
 		if (log.isInfoEnabled())
 			log.info("register successful for table="+msg.getModelName()+" response="+jsonStr);
 		
-		if(future != null) {
-			try {
-				Response response = future.get();
-				if(response.getStatusCode() != 200) {
-					RuntimeException e = new RuntimeException("status code="+response.getStatusCode());
-					e.fillInStackTrace();
-					log.warn("Exception on second request", e);
-					throw e;
-				}
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (ExecutionException e) {
-				throw new RuntimeException(e);
-			}
-		}
+//		if(future != null) {
+//			try {
+//				Response response = future.get();
+//				if(response.getStatusCode() != 200) {
+//					RuntimeException e = new RuntimeException("status code="+response.getStatusCode());
+//					e.fillInStackTrace();
+//					log.warn("Exception on second request", e);
+//					throw e;
+//				}
+//			} catch (InterruptedException e) {
+//				throw new RuntimeException(e);
+//			} catch (ExecutionException e) {
+//				throw new RuntimeException(e);
+//			}
+//		}
 		
 		renderJSON(jsonStr);
 	}
