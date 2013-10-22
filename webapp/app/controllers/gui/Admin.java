@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import javax.script.ScriptEngineFactory;
+import javax.script.ScriptEngineManager;
 import javax.xml.parsers.ParserConfigurationException;
 
 import models.EntityGroup;
@@ -70,6 +72,32 @@ public class Admin extends Controller {
 		String baseurl = "//"+host;
     	
 		render(username, password, baseurl);
+	}
+	
+	public static void scripting() {
+		
+		EntityUser user = Utility.getCurrentUser(session);
+		authCheck(user);
+		
+		ScriptEngineManager mgr = new ScriptEngineManager();
+		List<String> langs = new ArrayList<String>();
+
+        List<ScriptEngineFactory> factories = mgr.getEngineFactories();
+
+        for (ScriptEngineFactory factory : factories) {
+            String langName = factory.getLanguageName();
+            String langVersion = factory.getLanguageVersion();
+
+            List<String> engNames = factory.getNames();
+            System.out.printf("Language: %s (%s):  Alias: ", langName, langVersion);
+
+            String aliasList = "Language: "+langName+" ("+langVersion+"):  Alias: ";
+            for(String name : engNames) {
+                aliasList+=name+" ";
+            }
+            langs.add(aliasList);
+        }
+		render(langs);		
 	}
 
 	private static void authCheck(EntityUser user) {

@@ -58,6 +58,11 @@ public class Tables extends Controller {
 	}
 
 	public static void postData(String table) throws FileNotFoundException {
+		boolean b = true;
+		if (!b)
+			return;
+		System.out.println("---- AT START table is "+table);
+
 		if(request.isNew) {
 			if (log.isDebugEnabled())
 				log.debug("first call to controller method");
@@ -117,6 +122,7 @@ public class Tables extends Controller {
 			flash.keep();
 		}
 
+		System.out.println("---- table is "+table);
 		uploadSuccess(table);
 	}
 
