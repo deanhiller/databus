@@ -42,7 +42,7 @@ public class StartupBean extends Job {
 	public void doJob() {
 		try {
 			doJobImpl();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			if (log.isWarnEnabled())
         		log.warn("Exception.  Running System.exit since playframework does not stop on startup exceptions", e);
 			Runnable r = new Runnable() {
