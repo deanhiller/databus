@@ -93,24 +93,22 @@
 	        </div>
 	        <script type="text/javascript">
 			  $(document).ready(function() {
-			      function switchDivs(value) {
+			      function switchDivs() {
+			    	  var value = $("input[type='radio'][name='rangeType']:checked").val();
 			          if("daterange" == value) {
 			              $('#daterange').css('display', 'inline');
 			              $('#npoints').css('display', 'none');
-			          } else {
+			          } else if("npoints" == value){
                           $('#daterange').css('display', 'none');
                           $('#npoints').css('display', 'inline');
 			          }
 			      }
 			      
 			      $("input[name='rangeType']").change(function(){
-			    	  var value = $(this).val();
-			    	  switchDivs(value);
+			    	  switchDivs();
 			      });
 			      
-			      #{if v.type == 'npoints'}
-			          switchDivs('npoints');
-			      #{/if}
+			      switchDivs();
 			  });
 			</script>
         #{/elseif}
