@@ -44,14 +44,14 @@
 						"nameInJavascript": "timeColumn",
 						"label": "Time Column Name",
 						"help" : "The name of the column containing the time in milliseconds",
-						"type" : "String",
+						"type" : "column",
 						"defaultValue" : "time"
 					},
 					{
 						"nameInJavascript": "valueColumn",
 						"label": "Value Column Name",
 						"help" : "The name of the column containing the value in milliseconds",
-						"type" : "String",
+						"type" : "column",
 						"defaultValue" : "value"
 					},
 			        {
