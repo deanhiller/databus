@@ -82,17 +82,16 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		if(child.getSourceDirection() != Direction.PULL)
 			throw new IllegalStateException("Can't wire in child="+child+" as he is not a PullProcessor");
 
-		if(child instanceof EndOfChain) {
-			Request request1 = Request.current();
-			String val = request1.params.get("reverse");
-			if("true".equalsIgnoreCase(val)) {
-				DNegationProcessor proc = processors.get();
-				proc.initModule(this, visitor, options);
-				child.initModule(proc, visitor, options);
-				ProcessorSetup grandChild = child;
-				proc.setChild(grandChild);
-				child = proc;
-			}
+		Request request1 = Request.current();
+		String val = request1.params.get("reverse");
+		
+		if(child instanceof EndOfChain && "true".equalsIgnoreCase(val)) {
+			DNegationProcessor proc = processors.get();
+			proc.initModule(this, visitor, options);
+			child.initModule(proc, visitor, options);
+			ProcessorSetup grandChild = child;
+			proc.setChild(grandChild);
+			child = proc;
 		} else {
 			child.initModule(this, visitor, options);
 			StreamModule childInfo = null;

@@ -449,11 +449,7 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void createChart(String encoding) {
-		String url = "/api/streamV1(encoding="+encoding+")";
-		Map<String, String> variables = new HashMap<String, String>();
-		variables.put("url", url);
-		String encoded = ChartUtil.encodeVariables(variables);
 		String chartId = "something";
-		MyChartsGeneric.modifyChart(chartId, encoded);
+		MyChartsGeneric.modifyChart(chartId, encoding);
 	}
 }

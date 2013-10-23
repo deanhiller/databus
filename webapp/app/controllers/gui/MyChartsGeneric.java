@@ -85,20 +85,18 @@ public class MyChartsGeneric extends Controller {
 		}
 		
 		ChartMeta meta = chart.getChartMeta();
-		if("start".equals(encoded)) {
-			//setup the defaults on the post if we are just starting(otherwise we use old values from chart we
-			//are modifying)
-			Map<String, String> variables = new HashMap<String, String>();
-			for(ChartPageMeta pMeta : meta.getPages()) {
-				for(ChartVarMeta var : pMeta.getVariables()) {
-					String value = var.getDefaultValue();
-					if(value != null) {
-						variables.put(var.getNameInJavascript(), value);
-					}
+		//setup the defaults on the post as we post the selected chart
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		for(ChartPageMeta pMeta : meta.getPages()) {
+			for(ChartVarMeta var : pMeta.getVariables()) {
+				String currentVal = variables.get(var.getNameInJavascript());
+				String value = var.getDefaultValue();
+				if(value != null && currentVal == null) {
+					variables.put(var.getNameInJavascript(), value);
 				}
 			}
-			encoded = ChartUtil.encodeVariables(variables);
 		}
+		encoded = ChartUtil.encodeVariables(variables);
 		
 		chartVariables(chartId, 0, encoded);
 	}
