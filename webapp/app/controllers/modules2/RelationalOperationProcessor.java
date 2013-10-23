@@ -18,10 +18,10 @@ import javax.script.ScriptException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jruby.exceptions.RaiseException;
+import org.python.core.PyFloat;
+import org.python.core.PyLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.ctc.wstx.util.ExceptionUtil;
 
 import play.mvc.results.BadRequest;
 import controllers.modules2.framework.TSRelational;
@@ -32,6 +32,7 @@ import controllers.modules2.framework.procs.PushOrPullProcessor;
 public class RelationalOperationProcessor extends PushOrPullProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(RelationalOperationProcessor.class);
+	private String toExecute = "";
 	private CompiledScript script;
 	private ScriptEngine engine;
 	private RelationalContext relationalContext;
@@ -111,8 +112,9 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			resultingColumn = StringUtils.substringBefore(resultingColumn, "(");
 			setResultingColumnForcedDataTypeFromShortString(dataTypeString);
 		}
-		String toExecute = scriptText;
-		//toExecute = StringUtils.substringAfter(scriptText, "=");
+		toExecute = scriptText;
+		if (!StringUtils.containsIgnoreCase(engineName, "python"))
+			toExecute = StringUtils.substringAfter(scriptText, "=");
 		toExecute=StringUtils.replace(toExecute, "÷", "/");
 		//ScriptEngineManager manager = new ScriptEngineManager();
 		//engine = manager.getEngineByName(engineName);
@@ -146,15 +148,28 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			attrPrefix = "@";
 		bindings.put("relationalContext", relationalContext);
 		if (StringUtils.containsIgnoreCase(engineName, "ruby")) {
-			for (Entry<String, Object> entry:tv.entrySet())
+			for (Entry<String, Object> entry:tv.entrySet()) {
+				log.info("binding "+attrPrefix+entry.getKey().toLowerCase()+":"+entry.getValue()+" type "+entry.getValue().getClass());
 				bindings.put(attrPrefix+entry.getKey().toLowerCase(), entry.getValue());
+			}
 		}
 		else {
-			for (Entry<String, Object> entry:tv.entrySet())
-				bindings.put(attrPrefix+entry.getKey(), entry.getValue());
+			for (Entry<String, Object> entry:tv.entrySet()) {
+				Object toBind = entry.getValue();
+				log.info("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
+				if (entry.getValue() instanceof BigInteger) {
+					toBind = new PyLong((BigInteger)entry.getValue());
+				}
+				if (entry.getValue() instanceof BigDecimal) {
+					//TODO:  this ABSOLUTELY needs to change.  the call to .doubleValue() loses the precision granted by 
+					//BigDecimal.  However, I can find no way to coerce a BigDecimal into jython without losing precision yet.
+					toBind = new PyFloat(((BigDecimal)entry.getValue()).doubleValue());
+				}
+				bindings.put(attrPrefix+entry.getKey(), toBind);
+			}
 		}
 		if (!bindings.containsKey(resultingColumn))
-			bindings.put(attrPrefix+resultingColumn, null);
+			bindings.put(resultingColumn, null);
 //		for (Entry<String, Object> e:bindings.entrySet())
 //			System.out.println("bindings is  "+e.getKey()+":"+e.getValue());
 		Object result;
@@ -162,11 +177,23 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			if (StringUtils.containsIgnoreCase(engineName, "python") 
 					//||StringUtils.containsIgnoreCase(engineName, "ruby")
 					) {
+				log.info("executing the script: "+ toExecute);
+				for (Entry<String, Object> entry:bindings.entrySet())
+					log.info("----"+entry.getKey()+":"+entry.getValue());
 				script.eval(bindings);
 				result = engine.get(resultingColumn);
+				log.info("after execution: ");
+				for (Entry<String, Object> entry:bindings.entrySet())
+					log.info("----"+entry.getKey()+":"+entry.getValue());
 			}
 			else {
+				log.info("executing the script: "+ toExecute);
+				for (Entry<String, Object> entry:bindings.entrySet())
+					log.info("----"+entry.getKey()+":"+entry.getValue());
 				result = script.eval(bindings);
+				log.info("after execution result is '"+result+"': ");
+				for (Entry<String, Object> entry:bindings.entrySet())
+					log.info("----"+entry.getKey()+":"+entry.getValue());
 			}
 		}
 		catch (ScriptException e) {
