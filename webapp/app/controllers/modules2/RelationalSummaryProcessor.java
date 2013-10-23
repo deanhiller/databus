@@ -36,7 +36,7 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		String longHelpMsg = "The full format for relationalsummary is .../relationalsummaryV1(columnsToSummarize=<columns>, ouputOptions=<options>)/{interval}/{epochOffset}/... ";
 		longHelpMsg+="Where 'columns' is a semicolon separated list of column names in the source data, such as columnsToSummarize=column1;column2 ";

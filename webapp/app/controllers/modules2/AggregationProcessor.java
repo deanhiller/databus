@@ -2,9 +2,9 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -43,7 +43,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		String res = super.init(path, nextInChain, visitor, options);
 		for (String url:urls) {
 			String entryName = getRawDataSource(url);

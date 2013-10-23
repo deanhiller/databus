@@ -2,8 +2,8 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.script.Bindings;
@@ -50,7 +50,7 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		System.setProperty("org.jruby.embed.localvariable.behavior", "persistent");
 		String script = params.getParams().get(0);

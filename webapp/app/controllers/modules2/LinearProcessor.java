@@ -82,7 +82,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		if(log.isInfoEnabled())
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);

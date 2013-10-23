@@ -2,6 +2,7 @@ package controllers.modules2.framework;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 import javax.inject.Inject;
@@ -91,7 +92,8 @@ public class ModuleCore {
 		VisitorInfo visitor = new VisitorInfo(promise, factory, isReversed, NoSql.em());
 		if(visitor.isReversed() && !StringUtils.contains(path, "dateformatV")) {
 			lastOne = negationProcessors.get();
-			lastOne.init("negation/"+path, toOutput, visitor, new HashMap<String, String>());
+			Map<String, String> options = new HashMap<String, String>();
+			lastOne.init("negation/"+path, toOutput, visitor, options);
 		}
 
 		try {

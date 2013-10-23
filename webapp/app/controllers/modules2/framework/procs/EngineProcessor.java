@@ -1,6 +1,6 @@
 package controllers.modules2.framework.procs;
 
-import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -33,7 +33,7 @@ public class EngineProcessor extends ProcessorSetupAbstract {
 	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		super.init(path, nextInChain, visitor, options);
 		//NOTE: only different from super.init is we return the same path that is passed in to us...
 		return path;

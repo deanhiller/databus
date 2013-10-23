@@ -18,6 +18,7 @@ import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.DataFillerProcessor;
 import controllers.modules2.DateFormatMod;
 import controllers.modules2.FirstValuesProcessor;
+import controllers.modules2.FullStreamProcessor;
 import controllers.modules2.GapProcessor;
 import controllers.modules2.InvertProcessor;
 import controllers.modules2.LinearProcessor;
@@ -87,6 +88,8 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
 		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);
+		
+		nameToClazz.put("streamV1", FullStreamProcessor.class);
 		
 		for(Entry<String, Class<?>> entry : nameToClazz.entrySet()) {
 			String key = entry.getKey();

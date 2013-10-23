@@ -1,15 +1,19 @@
 package controllers.modules2.framework.procs;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import models.message.StreamModule;
 
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.VisitorInfo;
 
 public interface ProcessorSetup {
 
-	String init(String path, ProcessorSetup processorSetup, VisitorInfo visitor, HashMap<String, String> options);
+	void initModule(ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options);
+	ProcessorSetup createTree(StreamModule info, VisitorInfo visitor);
 
+	String init(String path, ProcessorSetup processorSetup, VisitorInfo visitor, Map<String, String> options);
 	ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter);
 	
 	void start(VisitorInfo visitor);
@@ -32,6 +36,8 @@ public interface ProcessorSetup {
 	
 	List<String> getAggregationList();
 	
+	void setChild(ProcessorSetup child);
+
 	// Y Y N N N
 	// N Y Y Y Y
 	// Y N N Y Y

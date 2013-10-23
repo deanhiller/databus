@@ -3,6 +3,7 @@ package controllers.modules2;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -20,12 +21,12 @@ public class SumStreamProcessor2 extends StreamsProcessor2 {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		initializeProps(options);
 		return super.init(path, nextInChain, visitor, options);
 	}
 
-	public void initializeProps(HashMap<String, String> options) {
+	public void initializeProps(Map<String, String> options) {
 		String nulls = options.get("enableNulls");
 		enableNulls = false;
 		if(!StringUtils.isEmpty(nulls) && "true".equals(nulls))

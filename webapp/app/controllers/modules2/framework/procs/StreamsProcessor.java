@@ -55,7 +55,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		List<String> params2 = params.getParams();
 		aggName = params2.get(0);

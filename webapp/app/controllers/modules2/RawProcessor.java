@@ -136,8 +136,38 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 	}
 
 	@Override
+	public void initModule(ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
+		super.initModule(nextInChain, visitor, options);
+		String table = options.get("table");
+		
+		SecureTable sdiTable = null;
+		if(skipSecurity) {
+			sdiTable = SecureTable.findByName(visitor.getMgr(), table);
+		} else
+			sdiTable = SecurityUtil.checkSingleTable(table);
+		
+		if(sdiTable == null)
+			throw new BadRequest("table="+table+" does not exist");
+
+		DboTableMeta meta = sdiTable.getTableMeta();
+		
+		Long start = parseParam("start");
+		Long end = parseParam("stop");
+
+		if(meta.isTimeSeries()) {
+			if(visitor.isReversed())
+				subprocessor = new RawTimeSeriesReversedProcessor();
+			else
+				subprocessor = new RawTimeSeriesProcessor();
+		} else
+			subprocessor = new RawStreamProcessor();
+		
+		subprocessor.init(meta, start, end, null, visitor);
+	}
+
+	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		String res = super.init(path, nextInChain, visitor, options);
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)

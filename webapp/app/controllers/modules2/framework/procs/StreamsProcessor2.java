@@ -2,8 +2,8 @@ package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import play.mvc.results.NotFound;
 
@@ -44,7 +44,7 @@ public abstract class StreamsProcessor2 extends PullProcessorAbstract {
 
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		String name = options.get("aggregation");
 

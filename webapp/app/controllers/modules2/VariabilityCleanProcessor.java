@@ -28,7 +28,7 @@ public class VariabilityCleanProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String allowedVarStr = params.getParams().get(0);
 		String correctionMethodStr = options.get("correctionMethod");

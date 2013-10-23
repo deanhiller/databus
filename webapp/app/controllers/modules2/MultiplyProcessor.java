@@ -1,7 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
+import java.util.Map;
 
 import play.mvc.results.BadRequest;
 import controllers.modules2.framework.TSRelational;
@@ -19,7 +19,7 @@ public class MultiplyProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String path = params.getParams().get(0);
 		try {

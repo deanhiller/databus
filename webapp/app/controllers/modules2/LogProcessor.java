@@ -2,7 +2,7 @@ package controllers.modules2;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Map;
 
 import models.PermissionType;
 import models.SecureTable;
@@ -37,7 +37,7 @@ public class LogProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(path, nextInChain, visitor, options);
 		// param 1: Type: String
 		String tableName = params.getParams().get(0);

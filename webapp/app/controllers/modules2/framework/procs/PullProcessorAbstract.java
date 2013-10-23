@@ -4,9 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import models.message.ChartVarMeta;
+import models.message.StreamModule;
 
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.ReadResult;
+import controllers.modules2.framework.VisitorInfo;
 
 
 public abstract class PullProcessorAbstract extends ProcessorSetupAbstract implements PullProcessor {
@@ -51,10 +53,11 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 		this.child = mock;
 	}
 	
-	protected String fetchProperty(String key, String defaultVal, HashMap<String, String> options) {
+	protected String fetchProperty(String key, String defaultVal, Map<String, String> options) {
 		String s = options.get(key);
 		if(s != null)
 			return s;
 		return defaultVal;
 	}
+
 }

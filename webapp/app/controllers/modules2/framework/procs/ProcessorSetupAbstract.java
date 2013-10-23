@@ -10,6 +10,8 @@ import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Provider;
 
+import models.message.StreamModule;
+
 import org.apache.commons.lang.StringUtils;
 
 import controllers.modules2.framework.Direction;
@@ -53,6 +55,11 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	}
 
 	@Override
+	public void setChild(ProcessorSetup child) {
+		this.child = child;
+	}
+
+	@Override
 	public void start(VisitorInfo visitor) {
 		child.start(visitor);
 	}
@@ -60,6 +67,41 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	@Override
 	public String getUrl() {
 		return params.getPreviousPath();
+	}
+
+	@Override
+	public ProcessorSetup createTree(StreamModule stream, VisitorInfo visitor) {
+		String moduleName = stream.getModule();
+		Map<String, String> options = stream.getParams();
+
+		RawProcessorFactory.threadLocal.set(moduleName);
+		child = factory.get();
+		if(child == null) //Needs to be removed so external modules can work
+			throw new DatabusBadRequest("Processor="+moduleName+" does not exist at this time");
+
+		if(child.getSourceDirection() != Direction.PULL)
+			throw new IllegalStateException("Can't wire in child="+child+" as he is not a PullProcessor");
+
+		if(child instanceof EndOfChain) {
+			Request request1 = Request.current();
+			String val = request1.params.get("reverse");
+			if("true".equalsIgnoreCase(val)) {
+				DNegationProcessor proc = processors.get();
+				proc.initModule(this, visitor, options);
+				child.initModule(proc, visitor, options);
+				ProcessorSetup grandChild = child;
+				proc.setChild(grandChild);
+				child = proc;
+			}
+		} else {
+			child.initModule(this, visitor, options);
+			StreamModule childInfo = null;
+			if(stream.getStreams().size() > 0) {
+				childInfo = stream.getStreams().get(0);
+				child.createTree(childInfo, visitor);
+			}
+		}
+		return child;
 	}
 
 	@Override
@@ -142,23 +184,24 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		}
 		
 		
-		Long start;
+		Long start = null;
 		Long end;
 		String to   = pieces[pieces.length-1];
-		String from = pieces[pieces.length-2];
 		try {
 			end = Long.parseLong(to);
 		} catch(NumberFormatException e) {
 			end = null;
 		}
-		
-		try {
-			start = Long.parseLong(from);
-		} catch(NumberFormatException e) {
-			//there is no times, so let's create our own
-			start = null;
-		}
-		
+
+		if(pieces.length >= 2) {
+			String from = pieces[pieces.length-2];
+			try {
+				start = Long.parseLong(from);
+			} catch(NumberFormatException e) {
+				//there is no times, so let's create our own
+				start = null;
+			}
+		}		
 		return new Path(result, path, newPath, start, end, visitor.isReversed());
 	}
 	
@@ -167,7 +210,19 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	}
 	
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public void initModule(ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
+		this.options = options;
+		this.parent = nextInChain;
+		timeColumn = "time";
+		valueColumn = "value";
+		if (options.containsKey("timeColumn"))
+			timeColumn=options.get("timeColumn");
+		if (options.containsKey("valueColumn"))
+			valueColumn=options.get("valueColumn");
+	}
+
+	@Override
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		Path pathInfo = parsePath(path, visitor);
 		this.options = options;
 		this.params = pathInfo;
@@ -179,6 +234,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 			timeColumn=options.get("timeColumn");
 		if (options.containsKey("valueColumn"))
 			valueColumn=options.get("valueColumn");
+		
 		return pathInfo.getLeftOverPath();
 	}
 

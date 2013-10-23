@@ -242,10 +242,14 @@ public class MyChartsGeneric extends Controller {
 				PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
 				ReadResult result = root.read();
 				if(result.isEndOfStream()) {
+					params.flash();
+					validation.keep();
 					flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
 					chartVariables(chartId, page, encoded);
 				}
 			} catch(Exception e) {
+				params.flash();
+				validation.keep();
 				log.info("Invalid url from user="+url, e);
 				flash.error("This stream url is invalid, "+e.getMessage());
 				chartVariables(chartId, page, encoded);

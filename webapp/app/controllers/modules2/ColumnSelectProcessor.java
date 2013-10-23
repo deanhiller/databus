@@ -22,7 +22,7 @@ public class ColumnSelectProcessor extends PushOrPullProcessor {
 	}
 	
 	@Override
-	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String pathStr, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String cols = params.getParams().get(0);
 		colMap = new HashMap<String,String>();

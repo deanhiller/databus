@@ -2,7 +2,7 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -35,7 +35,7 @@ public class DataFillerProcessor  extends PullProcessorAbstract {
 	}
 	
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, HashMap<String, String> options) {
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		if(log.isInfoEnabled())
 			log.info("initialization of datafiller processor");
 		String newPath = super.init(path, nextInChain, visitor, options);

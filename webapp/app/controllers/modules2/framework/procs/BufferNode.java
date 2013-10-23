@@ -1,7 +1,6 @@
 package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +27,7 @@ public class BufferNode extends ProcessorSetupAbstract implements PullProcessor,
 	
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
-			VisitorInfo visitor, HashMap<String, String> options) {
+			VisitorInfo visitor, Map<String, String> options) {
 		super.init(path, nextInChain, visitor, options);
 		return path;
 	}
