@@ -103,7 +103,9 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 			super.validateMore(validation, variableValues);
 			String table = variableValues.get(NAME_IN_JAVASCRIPT);
 			try {
-				SecurityUtil.checkSingleTable(table);
+				SecureTable secTable = SecurityUtil.checkSingleTable(table);
+				if(secTable == null)
+					validation.addError(NAME_IN_JAVASCRIPT, "This table does not exist");
 			} catch(Forbidden e) {
 				validation.addError(NAME_IN_JAVASCRIPT, "You don't have access to this table");
 			} catch(NotFound e) {

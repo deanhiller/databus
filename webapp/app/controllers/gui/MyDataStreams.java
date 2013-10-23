@@ -56,7 +56,7 @@ public class MyDataStreams extends Controller {
 			streams.add(child);
 			editor.getLocation().add(streams.size()-1);
 			module = child;
-			module.setModule("CURRENT");
+			module.setModule("rawdataV1");
 		} else if("insert".equals(type)) {
 			StreamModule child = new StreamModule();
 			StreamModule parent = findParent(editor);
@@ -448,5 +448,12 @@ public class MyDataStreams extends Controller {
 		return proc.getGuiMeta();
 	}
 
-
+	public static void createChart(String encoding) {
+		String url = "/api/streamV1/"+encoding;
+		Map<String, String> variables = new HashMap<String, String>();
+		variables.put("url", url);
+		String encoded = ChartUtil.encodeVariables(variables);
+		String chartId = "something";
+		MyChartsGeneric.modifyChart(chartId, encoded);
+	}
 }

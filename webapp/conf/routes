@@ -179,7 +179,8 @@ GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
 
 GET  /datastreams/{encoded}                         gui.MyDataStreams.finish
 
-GET  /datastreams/json/{encoded}                   gui.MyDataSTreams.fetchJsonTree
+GET  /datastreams/json/{encoded}                   gui.MyDataStreams.fetchJsonTree
+GET  /datastreams/createchart/{encoding}           gui.MyDataStreams.createChart
 
 # GUI Summary Pages
 # ******************************************************************************
