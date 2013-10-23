@@ -53,6 +53,7 @@ import play.Play;
 import play.mvc.Controller;
 import play.mvc.Scope.Params;
 import play.mvc.With;
+import play.mvc.results.BadRequest;
 import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 
@@ -230,6 +231,27 @@ public class MyChartsGeneric extends Controller {
 			}
 		}
 
+		if(page == 0) {
+			String url = variablesMap.get("url");
+			RawProcessorFactory factory = ModuleController.fetchFactory();
+			RawProcessorFactory.threadLocal.set("passthroughV1");
+			PullProcessor top = (PullProcessor) factory.get();
+			VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
+			String path = url.substring("/api/".length());
+			try {
+				PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
+				ReadResult result = root.read();
+				if(result.isEndOfStream()) {
+					flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
+					chartVariables(chartId, page, encoded);
+				}
+			} catch(Exception e) {
+				log.info("Invalid url from user="+url, e);
+				flash.error("This stream url is invalid, "+e.getMessage());
+				chartVariables(chartId, page, encoded);
+			}
+		}
+		
 		String url = variablesMap.get("url");
 		encoded = ChartUtil.encodeVariables(variablesMap);
 		if(validation.hasErrors()) {

@@ -79,7 +79,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 			RawProcessorFactory.threadLocal.set(moduleName);
 			child = factory.get();
 			if(child == null) //Needs to be removed so external modules can work
-				throw new BadRequest("Processor="+moduleName+" does not exist at this time");
+				throw new DatabusBadRequest("Processor="+moduleName+" does not exist at this time");
 		}
 
 		if(child.getSourceDirection() == Direction.NONE)
