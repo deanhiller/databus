@@ -266,7 +266,7 @@ public class MyChartsGeneric extends Controller {
 		} else {
 			String numberPoints = paramMap.get("chart."+name+".numpoints")[0];
 			if(StringUtils.isEmpty(numberPoints)) {
-				validation.addError("chart."+name+".numpoints", "This field is required");
+				validation.addError("numpoints", "This field is required");
 			}
 
 			variablesMap.put("_numberpoints", numberPoints);
