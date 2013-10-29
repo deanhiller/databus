@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
+import play.mvc.results.BadRequest;
 
 import com.alvazan.play.NoSql;
 import com.ning.http.client.ListenableFuture;
@@ -26,6 +27,7 @@ import controllers.modules2.framework.http.HttpCompleted;
 import controllers.modules2.framework.http.HttpException;
 import controllers.modules2.framework.http.HttpListener;
 import controllers.modules2.framework.http.HttpStatus;
+import controllers.modules2.framework.procs.DatabusBadRequest;
 import controllers.modules2.framework.procs.OutputProcessor;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
@@ -45,17 +47,22 @@ public class ModuleCore {
 	private Provider<DNegationProcessor> negationProcessors;
 
 	public PipelineInfo initialize(String path) {
-		// OKAY, at this point, we are ready to rock and roll
-		Request request = Request.current();
-		PipelineInfo info;
-		if (request.isNew) {
-			info = createPipeline(path);
-			request.args.put("info", info);
-		} else {
-			info = (PipelineInfo) request.args.get("info");
+		try {
+			// OKAY, at this point, we are ready to rock and roll
+			Request request = Request.current();
+			PipelineInfo info;
+			if (request.isNew) {
+				info = createPipeline(path);
+				request.args.put("info", info);
+			} else {
+				info = (PipelineInfo) request.args.get("info");
+			}
+	
+			return info;
+		} catch(DatabusBadRequest e) {
+			log.info("user's bad request", e);
+			throw new BadRequest(e.getMessage());
 		}
-
-		return info;
 	}
 
 	private PipelineInfo createPipeline(String path) {

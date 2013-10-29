@@ -26,7 +26,6 @@ import play.data.validation.Validation;
 import play.mvc.Http.Request;
 import play.mvc.Scope.Params;
 import play.mvc.Scope.Session;
-import play.mvc.results.BadRequest;
 import play.mvc.results.Forbidden;
 import play.mvc.results.NotFound;
 import play.mvc.results.Unauthorized;
@@ -59,6 +58,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.chain.AHttpChunkingListener;
 import controllers.modules2.framework.http.HttpListener;
+import controllers.modules2.framework.procs.DatabusBadRequest;
 import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
@@ -147,7 +147,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 			sdiTable = SecurityUtil.checkSingleTable(table);
 		
 		if(sdiTable == null)
-			throw new BadRequest("table="+table+" does not exist");
+			throw new DatabusBadRequest("table="+table+" does not exist");
 
 		DboTableMeta meta = sdiTable.getTableMeta();
 		
@@ -171,7 +171,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 		String res = super.init(path, nextInChain, visitor, options);
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)
-			throw new BadRequest("rawdata module requires a column family name");
+			throw new DatabusBadRequest("rawdata module requires a column family name");
 		String colFamily = parameters.get(0);
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
@@ -188,7 +188,7 @@ public class RawProcessor extends ProcessorSetupAbstract implements PullProcesso
 			sdiTable = SecurityUtil.checkSingleTable(colFamily);
 		
 		if(sdiTable == null)
-			throw new BadRequest("table="+colFamily+" does not exist");
+			throw new DatabusBadRequest("table="+colFamily+" does not exist");
 
 		DboTableMeta meta = sdiTable.getTableMeta();
 		

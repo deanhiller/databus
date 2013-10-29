@@ -61,7 +61,7 @@
     </script>
 </div>
 
-#{form @postVariables(chartId, page, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
+#{form @postVariables(page, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
     <legend>Create Chart ""${chart.name}" ${subtitle}</legend>
 
@@ -85,7 +85,7 @@
 	        <div id="npoints" class="control-group ${errors.forKey('numpoints') ? 'error' : ''}" style="display: none">
 	            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>Number of Points</label>
 	            <div class="controls">
-	                <input type="text" name="chart.${v.meta.nameInJavascript}.numpoints" value="${v.numberOfPoints}" 
+	                <input type="text" name="chart.numpoints" value="${v.numberOfPoints}" 
 	                   placeholder="#{if v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
 	                   class="${errors.forKey('numpoints') ? 'has_error' : ''}">
 	                <span class="help-block">${errors.forKey('numpoints')}</span>

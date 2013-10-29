@@ -449,7 +449,6 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void createChart(String encoding) {
-		String chartId = "something";
-		MyChartsGeneric.modifyChart(chartId, encoding);
+		MyChartsGeneric.modifyChart(encoding);
 	}
 }

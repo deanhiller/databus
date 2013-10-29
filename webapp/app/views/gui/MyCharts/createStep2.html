@@ -2,12 +2,12 @@
 #{set tab:'home' /}
 #{set title:'Create Chart' /}
 
-#{form @postStep2(chartId, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
+#{form @postStep2(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
-    <legend>Create Chart Step 2 of 2</legend>
+    <legend>Create Chart Step 2 of 3</legend>
 
-    <input type="hidden" name="chart.title" value="${chart?.title}">
-	<input type="hidden" name="chart.url" value="${chart?.url}">
+    <input type="hidden" name="encoded" value="${encoded}"/>
+    <input type="hidden" name="chart.title" value="${chart?.title}"/>
 	<input type="hidden" name="chart.axis1.name" value="${chart?.axis1.name}">
 	<input type="hidden" name="chart.axis1.units" value="${chart?.axis1.units}">
 	<input type="hidden" name="chart.axis1.color" value="${chart?.axis1.color}">
@@ -17,16 +17,28 @@
     <input type="hidden" name="chart.axis3.name" value="${chart?.axis3.name}">
     <input type="hidden" name="chart.axis3.units" value="${chart?.axis3.units}">
     <input type="hidden" name="chart.axis3.color" value="${chart?.axis3.color}">
-    <input type="hidden" name="chart.startTime" value="${chart?.startTime}">
-    <input type="hidden" name="chart.endTime" value="${chart?.endTime}">
-    
-	#{text2 id:'chart.timeColumn',label:'Time Column', help:'The name of the column containing the time'/}
 
+    <div class="control-group ${errors.forKey('chart.timeColumn') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="The name of the column containing the time"><i class="icon-info-sign"></i></a>Time Column</label>
+        <div class="controls">
+            #{select 'chart.timeColumn', value:chart.timeColumn, class: errors.forKey('chart.timeColumn') ? 'has_error' : ''}
+                #{list items:columnNamesOnly, as:'name'}
+                    #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
+            <span class="help-block">${errors.forKey('chart.timeColumn')}</span>
+        </div>
+    </div>
+        
 	#{formfield 'chart.series1.name'}
     <div class="control-group ${errors.forKey('chart.series1.name') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            <input type="text" name="chart.series1.name" value="${chart?.series1?.name}" placeholder="Name(required)" class="${errors.forKey('chart.series1.name') ? 'has_error' : ''}">
+            #{select 'chart.series1.name', value:chart?.series1?.name, class: errors.forKey('chart.series1.name') ? 'has_error' : ''}
+                #{list items:columnNamesOnly, as:'name'}
+                     #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
             <input type="text" name="chart.series1.units" value="${chart?.series1?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.series1.units') ? 'has_error' : ''}">
             <input type="text" name="chart.series1.color" value="${chart?.series1?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.series1.color') ? 'has_error' : ''}">
             #{select 'chart.series1.axisIndex', value:chart?.series1?.axisIndex}
@@ -45,7 +57,11 @@
     <div class="control-group ${errors.forKey('chart.series2.name') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            <input type="text" name="chart.series2.name" value="${chart?.series2?.name}" placeholder="Name(required)" class="${errors.forKey('chart.series2.name') ? 'has_error' : ''}">
+            #{select 'chart.series2.name', value:chart?.series2?.name, class: errors.forKey('chart.series2.name') ? 'has_error' : ''}
+                #{list items:columnNames, as:'name'}
+                     #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
             <input type="text" name="chart.series2.units" value="${chart?.series2?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.series2.units') ? 'has_error' : ''}">
             <input type="text" name="chart.series2.color" value="${chart?.series2?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.series2.color') ? 'has_error' : ''}">
             #{select 'chart.series2.axisIndex', value:chart?.series2?.axisIndex}
@@ -64,7 +80,11 @@
     <div class="control-group ${errors.forKey('chart.series3.name') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            <input type="text" name="chart.series3.name" value="${chart?.series3?.name}" placeholder="Name(required)" class="${errors.forKey('chart.series3.name') ? 'has_error' : ''}">
+            #{select 'chart.series3.name', value:chart?.series3?.name, class: errors.forKey('chart.series3.name') ? 'has_error' : ''}
+                #{list items:columnNames, as:'name'}
+                     #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
             <input type="text" name="chart.series3.units" value="${chart?.series3?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.series3.units') ? 'has_error' : ''}">
             <input type="text" name="chart.series3.color" value="${chart?.series3?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.series3.color') ? 'has_error' : ''}">
             #{select 'chart.series3.axisIndex', value:chart?.series3?.axisIndex}
@@ -83,7 +103,11 @@
     <div class="control-group ${errors.forKey('chart.series4.name') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            <input type="text" name="chart.series4.name" value="${chart?.series4?.name}" placeholder="Name(required)" class="${errors.forKey('chart.series4.name') ? 'has_error' : ''}">
+            #{select 'chart.series4.name', value:chart?.series4?.name, class: errors.forKey('chart.series4.name') ? 'has_error' : ''}
+                #{list items:columnNames, as:'name'}
+                     #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
             <input type="text" name="chart.series4.units" value="${chart?.series4?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.series4.units') ? 'has_error' : ''}">
             <input type="text" name="chart.series4.color" value="${chart?.series4?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.series4.color') ? 'has_error' : ''}">
             #{select 'chart.series4.axisIndex', value:chart?.series4?.axisIndex}
@@ -102,7 +126,11 @@
     <div class="control-group ${errors.forKey('chart.series5.name') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            <input type="text" name="chart.series5.name" value="${chart?.series5?.name}" placeholder="Name(required)" class="${errors.forKey('chart.series5.name') ? 'has_error' : ''}">
+            #{select 'chart.series5.name', value:chart?.series5?.name, class: errors.forKey('chart.series5.name') ? 'has_error' : ''}
+                #{list items:columnNames, as:'name'}
+                     #{option name}${name}#{/option}
+                #{/list}
+            #{/select}
             <input type="text" name="chart.series5.units" value="${chart?.series5?.units}" placeholder="Units(optional)" class="${errors.forKey('chart.series5.units') ? 'has_error' : ''}">
             <input type="text" name="chart.series5.color" value="${chart?.series5?.color}" placeholder="Color in hex(optional)" class="${errors.forKey('chart.series5.color') ? 'has_error' : ''}">
             #{select 'chart.series5.axisIndex', value:chart?.series5?.axisIndex}
@@ -118,7 +146,7 @@
     #{/formfield}
 	<div class="control-group">
 	   <div class="controls">
-		  <input type="submit" name="submit" value="Create Chart" class="btn btn-primary" />
+		  <input type="submit" name="submit" value="Next" class="btn btn-primary" />
 		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
 		</div>
 	</div>

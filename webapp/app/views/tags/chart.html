@@ -7,9 +7,7 @@
     <script type="text/javascript">
 $(function () {
 
-  var endTime = ${_chart.endTime},
-    startTime = ${_chart.startTime},
-    maximized = false,
+    var maximized = false,
     maximizedStream,
     height = getHeight(),
     width = $("#theChart").width(),
@@ -152,6 +150,12 @@ $(function () {
     $.each(data.data, function (index, value) {
       collapsedData.push([value.${_chart.timeColumn}, (value == "NaN") ? null : value[columnName] ]);
     });
+    
+    if(collapsedData.length >= 2) {
+        if(collapsedData[0][0] > collapsedData[1][0])
+            collapsedData.reverse();
+    }
+
     return collapsedData;
   }
 
@@ -175,11 +179,7 @@ $(function () {
     singleStream = typeof singleStream !== 'undefined' ? singleStream : false;
     title = typeof title !== 'undefined' ? title : false;
 
-    var url = '${_chart.url}';
-    if(url.indexOf('?') > 0) {
-    	url = url + '&callback=?';
-    } else
-        url = url + '?callback=?';
+    var url = '${_url.raw()}';
     
     console.log('url='+url);
     

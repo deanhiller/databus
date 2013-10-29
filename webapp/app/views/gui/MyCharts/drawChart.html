@@ -2,11 +2,11 @@
 #{set tab:'home' /}
 #{set title:'Your Chart' /}
 
-We are rendering the chart for dataset url=<a href="${chart.url}" target="_blank">${chart.url}</a> below
+We are rendering the chart for <a href="${url}" target="_blank">YOUR DATA</a> below
 
-<a href="@{modifyChart(chartId, encoded)}" class="btn btn-primary">Modify Chart</a>
-<a href="@{drawJustChart(chartId, encoded)}" class="btn btn-primary">Chart Only</a>
-#{form @addChartToDashboard(chartId, encoded), id:'formAddChart'}
+<a href="@{modifyRedirect(encoded)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{drawJustChart(encoded)}" class="btn btn-primary">Chart Only</a>
+#{form @addChartToDashboard(encoded), id:'formAddChart'}
      <div class="control-group">
        <div class="controls">
           <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
@@ -16,4 +16,4 @@ We are rendering the chart for dataset url=<a href="${chart.url}" target="_blank
 
 <div id="theChart"></div>
 
-#{chart chart:chart,topMargin:0,height:height/}
+#{chart chart:chart,url:url,topMargin:0,height:height/}

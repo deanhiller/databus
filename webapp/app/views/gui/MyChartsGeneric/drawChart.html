@@ -15,14 +15,14 @@
 }%
 
 #{if variables.url} 
-We are rendering the chart for dataset url=<a href="${variables.url}" target="_blank">${variables.url}</a> below.  If your chart is
-not displaying, click the url to see if there is any data!!
+We are rendering the chart for dataset <a href="${variables.url}" target="_blank">Your DATA Link</a> below.  If your chart is
+not displaying, click the <a href="${variables.url}" target="_blank">Your DATA Link</a> to see if there is any data!!
 #{/if}
 <br/>
-<a href="@{modifyChart(chartId, encoded)}" class="btn btn-primary">Modify Chart</a>
-<a href="@{largeChart(chartId, encoded)}" class="btn btn-primary">Large Chart Only</a>
-<a href="@{smallChart(chartId, encoded)}" class="btn btn-primary">Small Chart Only</a>
-#{form @addChartToDashboard(chartId, encoded), id:'formAddChart', style:'display:inline'}
+<a href="@{modifyChart(encoded)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{largeChart(encoded)}" class="btn btn-primary">Large Chart Only</a>
+<a href="@{smallChart(encoded)}" class="btn btn-primary">Small Chart Only</a>
+#{form @addChartToDashboard(encoded), id:'formAddChart', style:'display:inline'}
           <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
 #{/form}
 <br/>

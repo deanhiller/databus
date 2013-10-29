@@ -2,6 +2,7 @@ package controllers.gui.util;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,13 +17,12 @@ import play.utils.HTML;
 
 public class Chart {
 
+	private String chartId;
 	private String title;
-	private String url;
 	private String timeColumn;
 	private List<Axis> axis = new ArrayList<Axis>();
 	private ChartSeries[] columns = new ChartSeries[5];
-	private long startTime;
-	private long endTime;
+	private Map<String, String> variables;
 	private static Pattern pattern;
 	private static List<String> dashStyles;
 	private static List<String> standardColors;
@@ -74,13 +74,6 @@ public class Chart {
 		this.title = title;
 	}
 
-	public String getUrl() {
-		String url = JavaExtensions.escapeJavaScript(this.url);
-		return url.replace("\\/", "/");
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
 	public String getTimeColumn() {
 		return timeColumn;
 	}
@@ -116,22 +109,6 @@ public class Chart {
 	}
 	public void setSeries5(ChartSeries column5) {
 		this.columns[4] = column5;
-	}
-
-	public void setStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-
-	public void setEndTime(long endTime) {
-		this.endTime = endTime;
-	}
-
-	public long getStartTime() {
-		return startTime;
-	}
-
-	public long getEndTime() {
-		return endTime;
 	}
 	
 	public Axis getAxis1() {
@@ -199,6 +176,11 @@ public class Chart {
 					s.setColor(standardColors.get(i));
 			}
 		}
+		
+		for(ChartSeries s : getSeriesList()) {
+			if("{NONE}".equals(s.getName()))
+				s.setName(null);
+		}
 	}
 
 	private void fillInfo() {
@@ -242,4 +224,29 @@ public class Chart {
 		if(StringUtils.isEmpty(axis1.getColor()))
 			axis1.setColor(color);
 	}
+
+	public void setChartId(String chartId2) {
+		this.chartId = chartId2;
+	}
+
+	public String getChartId() {
+		return chartId;
+	}
+
+	public void setVariables(Map<String, String> variables) {
+		this.variables = variables;
+	}
+
+	public Map<String, String> getVariables() {
+		return variables;
+	}
+
+	public void initNames() {
+		for(ChartSeries s : columns) {
+			if(StringUtils.isEmpty(s.getName())) {
+				s.setName("{NONE}");
+			}
+		}
+	}
+	
 }

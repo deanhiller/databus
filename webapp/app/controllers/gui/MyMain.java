@@ -43,7 +43,8 @@ public class MyMain extends Controller {
 			render(charts, url, title);
 		} else if(ChartInfo.BUILT_IN_CHART1.equals(chartId)) {
 			ChartDbo chart = new ChartDbo();
-			Chart theChart = MyCharts.deserialize(encoded);
+			Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+			Chart theChart = MyCharts.deserializeChart(variables);
 			String title = theChart.getTitle();
 			chart.setChartId(chartId);
 			chart.setEncodedVariablesRaw(encoded);

@@ -54,6 +54,7 @@ import play.mvc.Controller;
 import play.mvc.Scope.Params;
 import play.mvc.With;
 import play.mvc.results.BadRequest;
+import play.mvc.results.NotFound;
 import play.templates.JavaExtensions;
 import play.vfs.VirtualFile;
 
@@ -61,9 +62,7 @@ import play.vfs.VirtualFile;
 public class MyChartsGeneric extends Controller {
 
 	private static final Logger log = LoggerFactory.getLogger(MyChartsGeneric.class);
-	private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("MMMMM dd, yyyy HH:mm:ss");
-	private static final DateTimeFormatter toDate = DateTimeFormat.forPattern("MMMMM dd, yyyy");
-	private static final DateTimeFormatter toTime = DateTimeFormat.forPattern("HH:mm:ss");
+	public static final DateTimeFormatter fmt = DateTimeFormat.forPattern("MMMMM dd, yyyy HH:mm:ss");
 	private static ChartUtil chartUtil = new ChartUtil();
 	
 	public static void selectChart() {
@@ -72,21 +71,27 @@ public class MyChartsGeneric extends Controller {
 		render(charts, encoded);
 	}
 
-	public static void modifyChart(String chartId, String encoded) {
+	public static void modifyChart(String encoded) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo chart = fetchChart(variables);
+		String chartId = chart.getId();
 		List<ChartInfo> charts = chartUtil.fetchCharts();
 		render("@selectChart", charts, chartId, encoded);
 	}
 
-	public static void postSelectedChart(String chartId, String encoded) {
+	public static void postSelectedChart(String encoded, String chartId) {
+		//setup the defaults on the post as we post the selected chart
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		ChartInfo chart = ChartUtil.fetchChart(chartId);
+		variables.put("__chartId", chartId);
 		
 		if(chart.isBuiltinChart()) {
-			redirect(chart.getRoute());
+			encoded = ChartUtil.encodeVariables(variables);
+			MyCharts.createStep1(encoded);
 		}
 		
 		ChartMeta meta = chart.getChartMeta();
-		//setup the defaults on the post as we post the selected chart
-		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+
 		for(ChartPageMeta pMeta : meta.getPages()) {
 			for(ChartVarMeta var : pMeta.getVariables()) {
 				String currentVal = variables.get(var.getNameInJavascript());
@@ -98,16 +103,24 @@ public class MyChartsGeneric extends Controller {
 		}
 		encoded = ChartUtil.encodeVariables(variables);
 		
-		chartVariables(chartId, 0, encoded);
+		chartVariables(0, encoded);
 	}
 
-	public static void chartVariables(String chartId, int page, String encoded) {
+	private static ChartInfo fetchChart(Map<String, String> variables) {
+		String chartId = variables.get("__chartId");
 		ChartInfo chart = ChartUtil.fetchChart(chartId);
+		if(chart == null)
+			throw new NotFound("chart="+chartId+" was not found in our Charts directory");
+		return chart;
+	}
+
+	public static void chartVariables(int page, String encoded) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo chart = fetchChart(variables);
 		if(page < 0 || page >= chart.getChartMeta().getPages().size())
 			notFound("this page is not found");
 		ChartMeta meta = chart.getChartMeta();
 		ChartPageMeta pageMeta = meta.getPages().get(page);
-		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		List<VarWrapper> variableList = new ArrayList<VarWrapper>();
 		if(!"start".equals(encoded)) {
 			fillInVariables(pageMeta, variables, variableList);
@@ -125,7 +138,7 @@ public class MyChartsGeneric extends Controller {
 			ReadResult result = root.read();
 			if(result.isEndOfStream()) {
 				flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-				chartVariables(chartId, page, encoded);
+				chartVariables(page, encoded);
 			}
 				
 			TSRelational row = result.getRow();
@@ -138,7 +151,7 @@ public class MyChartsGeneric extends Controller {
 		boolean isLastPage = false;
 		if(page == chart.getChartMeta().getPages().size()-1)
 			isLastPage = true;
-		render(chart, variableList, chartId, page, encoded, isLastPage, subtitle, columnNames);
+		render(chart, variableList, page, encoded, isLastPage, subtitle, columnNames);
 	}
 
 	private static boolean needsColumns(ChartPageMeta pageMeta) {
@@ -156,7 +169,7 @@ public class MyChartsGeneric extends Controller {
 			VarWrapper varWrapper;
 			if(var.isTimePanel()) {
 				TimePanel p = new TimePanel(var);
-				fillWrapper(variables, p);
+				p.fillWrapper(variables);
 				varWrapper = p;
 			} else {
 				String value = variables.get(var.getNameInJavascript());
@@ -166,41 +179,11 @@ public class MyChartsGeneric extends Controller {
 		}
 	}
 
-	private static void fillWrapper(Map<String, String> variables, TimePanel p) {
-		String type = variables.get("_daterangetype");
-		if(type != null) {
-			convert(p.getFromDate(), variables, "_fromepoch");
-			convert(p.getToDate(), variables, "_toepoch");
-
-			String number = variables.get("_numberpoints");
-			p.setNumberOfPoints(number);
-			p.setType(type);
-		}
-	}
-
-	private static void convert(DateTimeDto dateDto,
-			Map<String, String> variables, String name) {
-		String type = variables.get("chart."+name+".type");
-		String epoch = variables.get(name);
-		if(epoch == null)
-			return;
-
-		long longVal = Long.parseLong(epoch);
-		DateTime jodaVal = new DateTime(longVal);
-		String date = toDate.print(jodaVal);
-		String time = toTime.print(jodaVal);
-
-		dateDto.setEpochOffset(epoch);
-		dateDto.setDate(date);
-		dateDto.setTime(time);
-		dateDto.setType(type);
-	}
-
-	public static void postVariables(String chartId, int page, String encoded) {
-		ChartInfo chart = ChartUtil.fetchChart(chartId);
+	public static void postVariables(int page, String encoded) {
+		Map<String, String> variablesMap = ChartUtil.decodeVariables(encoded);
+		ChartInfo chart = fetchChart(variablesMap);
 
 		Map<String, String[]> paramMap = params.all();
-		Map<String, String> variablesMap = ChartUtil.decodeVariables(encoded);
 		for(String key : paramMap.keySet()) {
 			if(key.startsWith("chart.")) {
 				String[] values = paramMap.get(key);
@@ -243,14 +226,14 @@ public class MyChartsGeneric extends Controller {
 					params.flash();
 					validation.keep();
 					flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-					chartVariables(chartId, page, encoded);
+					chartVariables(page, encoded);
 				}
 			} catch(Exception e) {
 				params.flash();
 				validation.keep();
 				log.info("Invalid url from user="+url, e);
 				flash.error("This stream url is invalid, "+e.getMessage());
-				chartVariables(chartId, page, encoded);
+				chartVariables(page, encoded);
 			}
 		}
 		
@@ -260,20 +243,20 @@ public class MyChartsGeneric extends Controller {
 			params.flash();
 			validation.keep();
 			flash.error("Your form has errors below");
-			chartVariables(chartId, page, encoded);
+			chartVariables(page, encoded);
 		} else if(page == 0 && url == null) {
 			params.flash();
 			validation.keep();
 			flash.error("Script seems corrupt.  We should have url variable by the second page to use");
-			chartVariables(chartId, page, encoded);
+			chartVariables(page, encoded);
 		}
 		
 		page = page+1;
 		if(page >= chart.getChartMeta().getPages().size()) {
 			encoded = ChartUtil.encodeVariables(variablesMap);
-			drawChart(chartId, encoded);
+			drawChart(encoded);
 		} else
-			chartVariables(chartId, page, encoded);
+			chartVariables(page, encoded);
 	}
 
 	private static void putVariablesInMap(Map<String, String[]> paramMap,
@@ -288,7 +271,7 @@ public class MyChartsGeneric extends Controller {
 			variablesMap.put("_fromepoch", fromEpoch);
 			variablesMap.put("_toepoch", toEpoch);
 		} else {
-			String numberPoints = paramMap.get("chart."+name+".numpoints")[0];
+			String numberPoints = paramMap.get("chart.numpoints")[0];
 			if(StringUtils.isEmpty(numberPoints)) {
 				validation.addError("numpoints", "This field is required");
 			}
@@ -353,48 +336,50 @@ public class MyChartsGeneric extends Controller {
 		return relativeUrl;
 	}
 
-	public static void drawChart(String chartId, String encoded) {
+	public static void drawChart(String encoded) {
 		EntityUser user = Utility.getCurrentUser(session);
 		List<ChartDbo> charts = user.getCharts();
+		
 		//special case for showing remote pages
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo info = fetchChart(variables);
 		
 		//setup the correct urls and such...
 		ChartUtil.modifyVariables(variables, false);
 		
 		ChartDbo chart = new ChartDbo();
-		chart.setChartId(chartId);
+		chart.setChartId(info.getId());
 		chart.setEncodedVariables(encoded);
 		String title = chart.getTitle();
 		String url = chart.getLargeChartUrl();
-		render(charts, variables, url, title, chartId, encoded);
+		render(charts, variables, url, title, encoded);
 	}
 
-	public static void largeChart(String chartId, String encoded) {
-		ChartInfo info = ChartUtil.fetchChart(chartId);
+	public static void largeChart(String encoded) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo info = fetchChart(variables);
 		String c = info.getLargeChart();
-		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		String chart = ChartUtil.replaceVariables(c, variables);
-		render("@chartonly", info, chart, chartId, encoded);
+		render("@chartonly", info, chart, encoded);
 	}
 
-	public static void smallChart(String chartId, String encoded) {
-		ChartInfo info = ChartUtil.fetchChart(chartId);
+	public static void smallChart(String encoded) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo info = fetchChart(variables);
 		String c = info.getSmallChart();
-		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		String chart = ChartUtil.replaceVariables(c, variables);
-		render("@chartonly", info, chart, chartId, encoded);
+		render("@chartonly", info, chart, encoded);
 	}
 
-	public static void addChartToDashboard(String chartId, String encoded) {
-		//make sure chart exists...
-		ChartUtil.fetchChart(chartId);
+	public static void addChartToDashboard(String encoded) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		ChartInfo info = fetchChart(variables);
 		ChartDbo chart = new ChartDbo();
-		chart.setChartId(chartId);
+		chart.setChartId(info.getId());
 		chart.setEncodedVariables(encoded);
 		//he could create multiples of the same chart so just timestamp it as he would not
 		//be fast enough to create ones with an id clash...
-		chart.setId(chartId+System.currentTimeMillis());
+		chart.setId(info.getId()+System.currentTimeMillis());
 
 		EntityUser user = Utility.getCurrentUser(session);
 		List<ChartDbo> charts = user.getCharts();

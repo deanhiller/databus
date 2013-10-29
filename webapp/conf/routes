@@ -146,24 +146,27 @@ GET  /addusertodb                         	gui.MyDatabases.userAddToDatabase
 # Charting framework and built in charts as well(currently just the one chartbasic)
 # ******************************************************************************
 # ******************************************************************************
-GET  /charts                                   gui.MyChartsGeneric.selectChart
-GET  /charts/{chartId}/{encoded}               gui.MyChartsGeneric.modifyChart
-POST /charts                                   gui.MyChartsGeneric.postSelectedChart
-GET  /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.chartVariables
-POST /chart/{chartId}/{page}/{encoded}         gui.MyChartsGeneric.postVariables
-GET  /charts/drawchart/{chartId}/{encoded}     gui.MyChartsGeneric.drawChart
-GET  /charts/largechart/{chartId}/{encoded}    gui.MyChartsGeneric.largeChart
-GET  /charts/smallchart/{chartId}/{encoded}    gui.MyChartsGeneric.smallChart
-POST /charts/addchart/{chartId}/{encoded}      gui.MyChartsGeneric.addChartToDashboard
+GET  /charts                         gui.MyChartsGeneric.selectChart
+GET  /charts/{encoded}               gui.MyChartsGeneric.modifyChart
+POST /charts                         gui.MyChartsGeneric.postSelectedChart
+GET  /chart/{page}/{encoded}         gui.MyChartsGeneric.chartVariables
+POST /chart/{page}/{encoded}         gui.MyChartsGeneric.postVariables
+GET  /charts/drawchart/{encoded}     gui.MyChartsGeneric.drawChart
+GET  /charts/largechart/{encoded}    gui.MyChartsGeneric.largeChart
+GET  /charts/smallchart/{encoded}    gui.MyChartsGeneric.smallChart
+POST /charts/addchart/{encoded}      gui.MyChartsGeneric.addChartToDashboard
 
-GET  /chartbasic/modifychart/{chartId}/{encoded}                   	 gui.MyCharts.modifyChart
-GET  /chartbasic/createchart                                     	 gui.MyCharts.createChart
-POST /chartbasic/createchart                                     	 gui.MyCharts.postStep1
-GET  /chartbasic/createchart/step2/{chartId}/{encoded}               gui.MyCharts.createStep2
-POST /chartbasic/createchart/step2                                 	 gui.MyCharts.postStep2
-GET  /chartbasic/chart/{chartId}/{encoded}                           gui.MyCharts.drawJustChart
-GET  /chartbasic/drawchart/{chartId}/{encoded}                       gui.MyCharts.drawChart
-POST /chartbasic/addchart/{chartId}/{encoded}                        gui.MyCharts.addChartToDashboard
+GET  /chartbasic/step1/{encoded}      gui.MyCharts.createStep1
+GET  /chartbasic/step2/{encoded}      gui.MyCharts.createStep2
+GET  /chartbasic/step3/{encoded}      gui.MyCharts.createStep3
+GET  /chartbasic/chart/{encoded}      gui.MyCharts.drawJustChart
+GET  /chartbasic/drawchart/{encoded}  gui.MyCharts.drawChart
+GET  /chartbasic/modify/{encoded}     gui.MyCharts.modifyRedirect
+
+POST /chartbasic/step1             gui.MyCharts.postStep1
+POST /chartbasic/step2             gui.MyCharts.postStep2
+POST /chartbasic/step3             gui.MyCharts.postStep3
+POST /chartbasic/addchart          gui.MyCharts.addChartToDashboard
 
 # Datastream creation Pages
 # ******************************************************************************
@@ -296,4 +299,4 @@ GET     /public/                                staticDir:public
 
 # Catch all
 #disable this thing, not really needed and confusing for newbs...
-#*       /{controller}/{action}                  {controller}.{action}
+*       /{controller}/{action}                  {controller}.{action}

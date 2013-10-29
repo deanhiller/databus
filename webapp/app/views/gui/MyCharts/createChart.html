@@ -12,10 +12,11 @@
     }
 }%
 
-#{form @postStep1(chartId, encoded), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1000px;margin: 0 auto'}
+#{form @postStep1(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1000px;margin: 0 auto'}
 
-    <legend>Create Chart Step 1 of 2</legend>
+    <legend>Create Chart Step 1 of 3</legend>
 
+    <input type="hidden" name="encoded" value="${encoded}"/>
     <input type="hidden" name="chart.timeColumn" value="${chart?.timeColumn}">
     <input type="hidden" name="chart.series1.name" value="${chart?.series1?.name}">
     <input type="hidden" name="chart.series1.units" value="${chart?.series1?.units}">
@@ -37,11 +38,9 @@
     <input type="hidden" name="chart.series5.units" value="${chart?.series5?.units}">
     <input type="hidden" name="chart.series5.color" value="${chart?.series5?.color}">
     <input type="hidden" name="chart.series5.axisIndex" value="${chart?.series5?.axisIndex}">
-    <input type="hidden" name="chart.startTime" value="${chart?.startTime}">
-    <input type="hidden" name="chart.endTime" value="${chart?.endTime}">
 
     #{text2 id:'chart.title',     label:'Title',       help:'The title of your chart'/}
-    #{text2 id:'chart.url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
+    #{text2 id:'url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
     
     #{formfield 'chart.axis1.name'}
     <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">

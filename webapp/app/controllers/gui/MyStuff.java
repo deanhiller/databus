@@ -98,10 +98,10 @@ public class MyStuff extends Controller {
 		variablesMap.put("valueColumn", "value");
 		variablesMap.put("yaxisLabel", "units");
 		variablesMap.put("units", "units");
+		variablesMap.put("__chartId", "BasicChart-js");
 		String encoded = ChartUtil.encodeVariables(variablesMap);
-		String chartId = "BasicChart-js";
 		
-		MyChartsGeneric.drawChart(chartId, encoded);
+		MyChartsGeneric.drawChart(encoded);
 	}
 
 	public static void createChart(String table) {
@@ -114,10 +114,10 @@ public class MyStuff extends Controller {
 		variablesMap.put("valueColumn", "value");
 		variablesMap.put("yaxisLabel", "units");
 		variablesMap.put("units", "units");
+		variablesMap.put("__chartId", "BasicChart-js");
 		String encoded = ChartUtil.encodeVariables(variablesMap);
-		String chartId = "BasicChart-js";
 		
-		MyChartsGeneric.modifyChart(chartId, encoded);
+		MyChartsGeneric.modifyChart(encoded);
 	}
 
 	public static void aggData(String aggregationName) {

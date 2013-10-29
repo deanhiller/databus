@@ -183,7 +183,7 @@ public class ChartUtil {
 		return true;
 	}
 
-	public List<ChartInfo> fetchCharts() {
+	public static List<ChartInfo> fetchCharts() {
 		reloadChartsIfNeeded();
 		return sortedCharts;
 	}

@@ -86,16 +86,16 @@ public class ChartDbo {
 		if(url != null)
 			return url;
 		else if(ChartInfo.BUILT_IN_CHART1.equals(chartId))
-			return "/chartbasic/chart/"+chartId+"/"+encodedVariables;
-		return "/charts/smallchart/"+chartId+"/"+encodedVariables;
+			return "/chartbasic/chart/"+encodedVariables;
+		return "/charts/smallchart/"+encodedVariables;
 	}
 
 	public String getLargeChartUrl() {
 		if(url != null)
 			return url;
 		else if(ChartInfo.BUILT_IN_CHART1.equals(chartId))
-			return "/chartbasic/chart/"+chartId+"/"+encodedVariables;
-		return "/charts/largechart/"+chartId+"/"+encodedVariables;
+			return "/chartbasic/chart/"+encodedVariables;
+		return "/charts/largechart/"+encodedVariables;
 	}
 
 	public void setTitle(String title2) {

@@ -26,7 +26,6 @@ public class TestCompression {
 		String url1 = "url1=http://databus.nrel.gov/api/module1/module2/something";
 
 		Chart chart = new Chart();
-		chart.setUrl(url1);
 		//chart.setColumn1("temp");
 		//chart.setColumn2("volume");
 		//chart.setColumn3("number");
@@ -69,6 +68,6 @@ public class TestCompression {
 		ByteArrayInputStream bais = new ByteArrayInputStream(result);
 		Chart chart2 = mapper.readValue(bais, Chart.class);
 
-		System.out.println("chart url="+chart2.getUrl()+" col1="+chart2.getSeries1().getName());
+		System.out.println("chart url="+"deleted"+" col1="+chart2.getSeries1().getName());
 	}
 }

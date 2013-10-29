@@ -1,0 +1,133 @@
+#{extends './homeTemplate.html' /}
+#{set tab:'home' /}
+#{set title:'Create Chart' /}
+
+<div id="timeModal" class="modal hide" data-backdrop="true" tabindex="-1" role="dialog" data-backdrop="false" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div id="deletePattern_content" class="modal-body">
+        <p>
+       <input id="timeId" type="hidden" value=""/>
+       <input id="hours" type="text" value="" class="input-mini" max="24" min="0" maxlength="2"/> Hours
+       <input id="minutes" type="text" value="" class="input-mini" max="60" min="0"  maxlength="2"/> Minutes
+       <input id="seconds" type="text" value="" class="input-mini"max="60" min="0" maxlength="2"/> Seconds
+        </p>
+    </div>
+    <div class="modal-footer">
+        <input id="timeOk" type="submit" name="save" value="Ok" class="btn btn-primary" />
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+          function trim(time)
+          {
+              return ("0" + time).slice(-2);
+          }
+          
+          $('#timeOk').click(function(e){
+              var id = $('#timeId').val();
+              var hours = $('#hours').val();
+              var minutes = $('#minutes').val();
+              var seconds = $('#seconds').val();
+              if(hours >= 24)
+                  hours = 0;
+              if(minutes >= 60)
+                  minutes = 0;
+              if(seconds >= 60)
+                  seconds = 0;
+              
+              minutes = trim(minutes);
+              seconds = trim(seconds);
+              hours = trim(hours);
+              var theTime = hours+':'+minutes+":"+seconds;
+              $('#time'+id).val(theTime);
+              $("#timeModal").modal('hide');
+          });
+      });
+    </script>
+</div>
+
+#{form @postStep3(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
+
+    <legend>Create Chart Step 3 of 3</legend>
+
+    <input type="hidden" name="encoded" value="${encoded}"/>
+    <input type="hidden" name="chart.title" value="${chart?.title}"/>
+	<input type="hidden" name="chart.axis1.name" value="${chart?.axis1.name}">
+	<input type="hidden" name="chart.axis1.units" value="${chart?.axis1.units}">
+	<input type="hidden" name="chart.axis1.color" value="${chart?.axis1.color}">
+    <input type="hidden" name="chart.axis2.name" value="${chart?.axis2.name}">
+    <input type="hidden" name="chart.axis2.units" value="${chart?.axis2.units}">
+    <input type="hidden" name="chart.axis2.color" value="${chart?.axis2.color}">
+    <input type="hidden" name="chart.axis3.name" value="${chart?.axis3.name}">
+    <input type="hidden" name="chart.axis3.units" value="${chart?.axis3.units}">
+    <input type="hidden" name="chart.axis3.color" value="${chart?.axis3.color}">
+    
+    <input type="hidden" name="chart.timeColumn" value="${chart?.timeColumn}">
+    <input type="hidden" name="chart.series1.name" value="${chart?.series1?.name}">
+    <input type="hidden" name="chart.series1.units" value="${chart?.series1?.units}">
+    <input type="hidden" name="chart.series1.color" value="${chart?.series1?.color}">
+    <input type="hidden" name="chart.series1.axisIndex" value="${chart?.series1?.axisIndex}">
+    <input type="hidden" name="chart.series2.name" value="${chart?.series2?.name}">
+    <input type="hidden" name="chart.series2.units" value="${chart?.series2?.units}">
+    <input type="hidden" name="chart.series2.color" value="${chart?.series2?.color}">
+    <input type="hidden" name="chart.series2.axisIndex" value="${chart?.series2?.axisIndex}">
+    <input type="hidden" name="chart.series3.name" value="${chart?.series3?.name}">
+    <input type="hidden" name="chart.series3.units" value="${chart?.series3?.units}">
+    <input type="hidden" name="chart.series3.color" value="${chart?.series3?.color}">
+    <input type="hidden" name="chart.series3.axisIndex" value="${chart?.series3?.axisIndex}">
+    <input type="hidden" name="chart.series4.name" value="${chart?.series4?.name}">
+    <input type="hidden" name="chart.series4.units" value="${chart?.series4?.units}">
+    <input type="hidden" name="chart.series4.color" value="${chart?.series4?.color}">
+    <input type="hidden" name="chart.series4.axisIndex" value="${chart?.series4?.axisIndex}">
+    <input type="hidden" name="chart.series5.name" value="${chart?.series5?.name}">
+    <input type="hidden" name="chart.series5.units" value="${chart?.series5?.units}">
+    <input type="hidden" name="chart.series5.color" value="${chart?.series5?.color}">
+    <input type="hidden" name="chart.series5.axisIndex" value="${chart?.series5?.axisIndex}">
+  
+    <div class="control-group">
+        <label class="control-label"></label>
+        <div class="controls">
+            <input type="radio" name="rangeType" value="daterange" #{if v.type != 'npoints'}checked="checked"#{/if}/> Date Range
+            <input type="radio" name="rangeType" value="npoints" #{if v.type == 'npoints'}checked="checked"#{/if}/> Last N Points
+        </div>
+    </div>
+    <div id="daterange" style="display: inline">
+        #{datetime errors:errors,id:'from', label: 'From', var:v.fromDate/}
+        #{datetime errors:errors,id:'to', label: 'To', var:v.toDate/}
+    </div>
+    <div id="npoints" class="control-group ${errors.forKey('numpoints') ? 'error' : ''}" style="display: none">
+        <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>Number of Points</label>
+        <div class="controls">
+            <input type="text" name="chart.numpoints" value="${v.numberOfPoints}" 
+               placeholder="#{if v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+               class="${errors.forKey('numpoints') ? 'has_error' : ''}">
+            <span class="help-block">${errors.forKey('numpoints')}</span>
+        </div>
+    </div>
+    <script type="text/javascript">
+      $(document).ready(function() {
+          function switchDivs() {
+              var value = $("input[type='radio'][name='rangeType']:checked").val();
+              if("daterange" == value) {
+                  $('#daterange').css('display', 'inline');
+                  $('#npoints').css('display', 'none');
+              } else if("npoints" == value){
+                  $('#daterange').css('display', 'none');
+                  $('#npoints').css('display', 'inline');
+              }
+          }
+          
+          $("input[name='rangeType']").change(function(){
+              switchDivs();
+          });
+          
+          switchDivs();
+      });
+    </script>
+            
+	<div class="control-group">
+	   <div class="controls">
+		  <input type="submit" name="submit" value="Create Chart" class="btn btn-primary" />
+		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
+		</div>
+	</div>
+#{/form}

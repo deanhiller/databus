@@ -3,7 +3,7 @@
 #{set subtab:'dashboard' /}
 
 #{if chartId}
-    <a href="@{gui.MyChartsGeneric.modifyChart(chartId, encoded)}" class="btn btn-primary">Copy Chart</a>
+    <a href="@{gui.MyChartsGeneric.modifyChart(encoded)}" class="btn btn-primary">Copy Chart</a>
 #{/if}
 
 <iframe style="border: none;" width="100%" height="600px" src="${url.raw()}">
