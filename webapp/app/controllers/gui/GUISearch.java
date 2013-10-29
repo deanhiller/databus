@@ -3,8 +3,6 @@ package controllers.gui;
 import gov.nrel.util.Utility;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -12,6 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import models.EntityUser;
 
 import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import play.mvc.Controller;
 import play.mvc.Http.Request;
@@ -30,6 +30,8 @@ import controllers.gui.solrsearch.SolrSearchResult;
 @With(GuiSecure.class)
 public class GUISearch extends Controller {
 	private static Map<String, Map<String, List<SearchItem>>> userIndexMapCache = new ConcurrentHashMap<String, Map<String, List<SearchItem>>>();
+	private static final Logger log = LoggerFactory.getLogger(GUISearch.class);
+
 	
 	public static void legacyMetaSearch() {
 		EntityUser user = Utility.getCurrentUser(session);
@@ -68,7 +70,7 @@ public class GUISearch extends Controller {
 	}
 	
 	public static void indexSearch(String index, String query) {
-		System.out.println("GUISearch.indexSearch() - index:[" + index + "], query:[" + query + "]");
+		log.info("GUISearch.indexSearch() - index:[" + index + "], query:[" + query + "]");
 		
 		renderArgs.put("searchString", query);
 		renderArgs.put("searchTable", index);
@@ -110,17 +112,17 @@ public class GUISearch extends Controller {
 		}
 		
 		// DEBUG
-		System.out.println("SearchableItems:\n");
+		log.info("SearchableItems:\n");
 		for (Map.Entry<String, List<SearchItem>> entry : items.entrySet()) {
 		    String db = entry.getKey();
 		    List<SearchItem> dbEntries = entry.getValue();
 		    
-		    System.out.println("\n");
-		    System.out.println("\t" + db.toUpperCase());
+		    log.info("\n");
+		    log.info("\t" + db.toUpperCase());
 		    
 		    for(SearchItem item : dbEntries) {
-		    		System.out.println("\t\tNAME: " + item.getId());
-		    		System.out.println("\t\tTYPE: " + item.getType() + "\n");
+		    	log.info("\t\tNAME: " + item.getId());
+		    	log.info("\t\tTYPE: " + item.getType() + "\n");
 		    }
 		}
 		
@@ -144,7 +146,7 @@ public class GUISearch extends Controller {
 	}
 	
 	public static void detailSearch(String searchTable, String searchString) {
-		//System.out.println("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
+		//log.info("\n\n\n\nDETAIL SEARCH STRING: " + searchString + " - TABLE: " + searchTable + "\n\n\n\n");
 		
 		renderArgs.put("searchString", searchString);
 		renderArgs.put("searchTable", searchTable);
@@ -213,18 +215,18 @@ public class GUISearch extends Controller {
 		}
 		
 		// DEBUG vv
-		System.out.println("\n\n\n\nGLOBAL SEARCH STRING: " + searchString);
-		System.out.println("\n\n");
+		log.info("\n\n\n\nGLOBAL SEARCH STRING: " + searchString);
+		log.info("\n\n");
 		for (Map.Entry<String, List<SearchItem>> entry : facets.entrySet()) {
 		    String db = entry.getKey();
 		    List<SearchItem> dbEntries = entry.getValue();
 		    
-		    System.out.println("\n");
-		    System.out.println("\t" + db.toUpperCase());
+		    log.info("\n");
+		    log.info("\t" + db.toUpperCase());
 		    
 		    for(SearchItem item : dbEntries) {
-		    		System.out.println("\t\tNAME: " + item.getId());
-		    		System.out.println("\t\tTYPE: " + item.getType() + "\n");
+		    	log.info("\t\tNAME: " + item.getId());
+		    	log.info("\t\tTYPE: " + item.getType() + "\n");
 		    }
 		}
 		// DEBUG ^^
