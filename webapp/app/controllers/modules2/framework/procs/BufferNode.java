@@ -17,7 +17,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.http.HttpStatus;
 
-public class BufferNode extends ProcessorSetupAbstract implements PullProcessor, PushProcessor {
+public class BufferNode extends ProcessorSetupContainer implements PullProcessor, PushProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(BufferNode.class);
 	private List<ReadResult> buffer = new ArrayList<ReadResult>();

@@ -299,4 +299,4 @@ GET     /public/                                staticDir:public
 
 # Catch all
 #disable this thing, not really needed and confusing for newbs...
-*       /{controller}/{action}                  {controller}.{action}
+POST       /{controller}/{action}                  {controller}.{action}

@@ -129,5 +129,11 @@ public class ChartVarMeta {
 			return true;
 		return false;
 	}
+	
+	public boolean isUrl() {
+		if("url".equals(type.toLowerCase()))
+			return true;
+		return false;
+	}
 }
 

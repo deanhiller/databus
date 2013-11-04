@@ -30,8 +30,8 @@ public class FullStreamProcessor extends PullProcessorAbstract {
 			ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		StreamEditor editor = DataStreamUtil.decodeSimple(encoding);
 		StreamModule fakeNode = editor.getStream();
-		StreamModule root = fakeNode.getStreams().get(0);
-		return super.createTree(root, visitor);
+		super.createTree(null, fakeNode, visitor);
+		return this;
 	}
 
 	@Override

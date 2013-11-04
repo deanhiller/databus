@@ -1,17 +1,24 @@
 package controllers.modules2.framework.procs;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import play.mvc.Http.Request;
 
 import models.message.ChartVarMeta;
 import models.message.StreamModule;
 
 import controllers.modules2.framework.Direction;
+import controllers.modules2.framework.EndOfChain;
+import controllers.modules2.framework.RawProcessorFactory;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.chain.DNegationProcessor;
 
 
-public abstract class PullProcessorAbstract extends ProcessorSetupAbstract implements PullProcessor {
+public abstract class PullProcessorAbstract extends ProcessorSetupContainer implements PullProcessor {
 
 	public void startEngine() {
 		if(parent instanceof PullProcessor) {
@@ -23,7 +30,7 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 		}
 	}
 	public PullProcessor getChild() {
-		return (PullProcessor) this.child;
+		return (PullProcessor) getSingleChild();
 	}
 
 	@Override
@@ -49,10 +56,6 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 		return Direction.PULL;
 	}
 
-	public void setChild(ProcessorSetup mock) {
-		this.child = mock;
-	}
-	
 	protected String fetchProperty(String key, String defaultVal, Map<String, String> options) {
 		String s = options.get(key);
 		if(s != null)
@@ -60,4 +63,8 @@ public abstract class PullProcessorAbstract extends ProcessorSetupAbstract imple
 		return defaultVal;
 	}
 
+	@Override
+	public List<String> getAggregationList() {
+		return parent.getAggregationList();
+	}
 }

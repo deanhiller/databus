@@ -2,6 +2,7 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
 
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 import controllers.modules.SplinesBigDec;
 import controllers.modules.SplinesBigDecBasic;
@@ -49,6 +51,8 @@ public class LinearProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private boolean isSplineCreated;
+
+	private boolean firstRow = true;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Linear Interpolation");
@@ -81,12 +85,22 @@ public class LinearProcessor extends PullProcessorAbstract {
 		return 0;
 	}
 
-	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
-		if(log.isInfoEnabled())
-			log.info("initialization of splines pull processor");
-		String newPath = super.init(path, nextInChain, visitor, options);
+	public void initModule(Map<String, String> options) {
+		super.initModule(options);
 
+		initParameters(options);
+		
+		long startTime = Long.MIN_VALUE;
+		if(params != null && params.getStart() != null)
+			startTime = params.getStart();
+		end = Long.MAX_VALUE;
+
+		if(log.isInfoEnabled())
+			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
+		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
+	}
+
+	private void initParameters(Map<String, String> options) {
 		// param 2: Interval: long
 		String intervalStr = fetchProperty("interval", "60000", options);
 		try {
@@ -105,6 +119,15 @@ public class LinearProcessor extends PullProcessorAbstract {
 			epochOffset = calculateOffset();
 		} else
 			epochOffset = parseOffset(epoch);
+	}
+
+	@Override
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
+		if(log.isInfoEnabled())
+			log.info("initialization of splines pull processor");
+		String newPath = super.init(path, nextInChain, visitor, options);
+
+		initParameters(options);
 
 		long startTime = Long.MIN_VALUE;
 		if(params.getStart() != null)
@@ -121,7 +144,10 @@ public class LinearProcessor extends PullProcessorAbstract {
 	}
 
 	protected long calculateOffset() {
-		Long startTime = params.getStart();
+		Long startTime = null;
+		if(params != null)
+			startTime = params.getStart();
+
 		if(startTime != null) {
 			long offset = startTime % interval;
 			return offset;
@@ -174,9 +200,10 @@ public class LinearProcessor extends PullProcessorAbstract {
 			}
 		}
 
+		long time = fetchTime(0);
 		//FIRST is move currentTimePointer so currentTime > 1st point time
-		while(currentTimeLessThan1stPtAndBufferFull(currentTimePointer)) {
-			incrementCurrentTime();
+		while(currentTimeLessThan1stPtAndBufferFull(currentTimePointer, time)) {
+			incrementCurrentTime(time);
 		}
 
 		while(needMoreData() && currentTimePointer <= end) {
@@ -213,8 +240,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 		return false;
 	}
 
-	private boolean currentTimeLessThan1stPtAndBufferFull(long currentTimePointer2) {
-		long time = fetchTime(0);
+	private boolean currentTimeLessThan1stPtAndBufferFull(long currentTimePointer2, long time) {
 		if(currentTimePointer2 < time)
 			return true;
 		return false;
@@ -234,6 +260,15 @@ public class LinearProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
+		if(firstRow) {
+			String timeCol = row.getTimeColumn();
+			if(timeCol != null)
+				timeColumn = timeCol;
+			String valCol = row.getValueColumn();
+			if(valCol != null)
+				valueColumn = valCol;
+			firstRow  = false;
+		}
 		buffer.add(row);
 	}
 
@@ -255,7 +290,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 		row.put(valueColumn, val);
 		log.debug("-------- returning a point t(for col="+valueColumn+")="+row.getTime()+" buf="+buffer);
 
-		incrementCurrentTime();
+		incrementCurrentTimeByOne();
 		
 		return new ReadResult(getUrl(), row);
 	}
@@ -267,12 +302,22 @@ public class LinearProcessor extends PullProcessorAbstract {
 		for (int i = 0; i < buffer.maxSize(); i++) {
 			TSRelational tv = (TSRelational) array[i];
 			times[i] = tv.getTime();
-			values[i] = (BigDecimal) tv.get(valueColumn);
+			values[i] = (BigDecimal) tv.getValue(valueColumn);
 		}
 		linear.setRawDataPoints(times, values);
 	}
 
-	private void incrementCurrentTime() {
+	private void incrementCurrentTime(long time) {
+		BigInteger time1 = new BigInteger(time+"");
+		BigInteger time2 = new BigInteger(currentTimePointer+"");
+		BigInteger diff = time1.subtract(time2);
+		BigInteger multiplier = diff.divideAndRemainder(new BigInteger(interval+""))[0];
+		long multiply = multiplier.longValue();
+		long add = multiply*interval;
+		currentTimePointer += add + interval;
+	}
+
+	private void incrementCurrentTimeByOne() {
 		currentTimePointer += interval;
 	}
 

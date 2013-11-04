@@ -7,7 +7,7 @@ import controllers.modules2.framework.VisitorInfo;
 
 public interface RawSubProcessor {
 
-	void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor);
+	void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, String timeColumn, String valueColumn);
 
 	ReadResult read();
 

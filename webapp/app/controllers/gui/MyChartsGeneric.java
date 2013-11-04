@@ -73,8 +73,7 @@ public class MyChartsGeneric extends Controller {
 
 	public static void modifyChart(String encoded) {
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
-		ChartInfo chart = fetchChart(variables);
-		String chartId = chart.getId();
+		String chartId = variables.get("__chartId");
 		List<ChartInfo> charts = chartUtil.fetchCharts();
 		render("@selectChart", charts, chartId, encoded);
 	}
@@ -218,22 +217,24 @@ public class MyChartsGeneric extends Controller {
 			RawProcessorFactory.threadLocal.set("passthroughV1");
 			PullProcessor top = (PullProcessor) factory.get();
 			VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
-			String path = url.substring("/api/".length());
-			try {
-				PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
-				ReadResult result = root.read();
-				if(result.isEndOfStream()) {
+			if(!StringUtils.isEmpty(url)) {
+				String path = url.substring("/api/".length());
+				try {
+					PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
+					ReadResult result = root.read();
+					if(result.isEndOfStream()) {
+						params.flash();
+						validation.keep();
+						flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
+						chartVariables(page, encoded);
+					}
+				} catch(Exception e) {
 					params.flash();
 					validation.keep();
-					flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
+					log.info("Invalid url from user="+url, e);
+					flash.error("This stream url is invalid, "+e.getMessage());
 					chartVariables(page, encoded);
 				}
-			} catch(Exception e) {
-				params.flash();
-				validation.keep();
-				log.info("Invalid url from user="+url, e);
-				flash.error("This stream url is invalid, "+e.getMessage());
-				chartVariables(page, encoded);
 			}
 		}
 		

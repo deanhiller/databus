@@ -66,9 +66,6 @@ public class MyCharts extends Controller {
 	private static final ObjectMapper mapper = new ObjectMapper();
 
 	public static void createStep1(String encoded) {
-		
-		Flash something = flash;
-		
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
 		Chart chart = deserializeChart(variables);
 		String url = variables.get("url");

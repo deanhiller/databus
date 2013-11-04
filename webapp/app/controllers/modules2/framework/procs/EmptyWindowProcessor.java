@@ -65,7 +65,7 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 
 	@Override
 	public ReadResult read() {
-		PullProcessor proc = (PullProcessor) child;
+		PullProcessor proc = (PullProcessor) getSingleChild();
 		
 		while(startOfTheWindow < end) {
 			ReadResult read = readNextValue(proc);
@@ -124,6 +124,6 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 	}
 	
 	public void setChild(PullProcessor mock) {
-		this.child = mock;
+		children.add(mock);
 	}
 }

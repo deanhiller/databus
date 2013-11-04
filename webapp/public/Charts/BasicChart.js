@@ -19,7 +19,7 @@
 			        	"nameInJavascript": "url",
 			        	"label": "Data Url",
 			        	"help" : "The url of your input data",
-			        	"type" : "String",
+			        	"type" : "url",
 			        	"isRequired" : true
 					},
 					{

@@ -39,7 +39,7 @@ public abstract class PushOrPullProcessor extends PushProcessorAbstract implemen
 
 	@Override
 	public ReadResult read() {
-		PullProcessor p = (PullProcessor) child;
+		PullProcessor p = (PullProcessor) getSingleChild();
 
 		ReadResult result;
 		TSRelational row;

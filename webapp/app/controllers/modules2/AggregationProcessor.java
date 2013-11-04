@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import models.message.StreamModule;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -29,7 +31,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	private boolean lookaheadSatisfied = false;
 	private int largestRowWidth = -1;
 	private List<ReadResult> lookaheadBuffer;
-	
+	private boolean newFramework = false;
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation");
 
 	static {
@@ -41,6 +43,11 @@ public class AggregationProcessor extends StreamsProcessor {
 		return metaInfo;
 	}
 	
+	public void createTree(ProcessorSetup parent, StreamModule thisNodeInfo, VisitorInfo visitor) {
+		super.createTree(parent, thisNodeInfo, visitor);
+		newFramework = true;
+	}
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain,
 			VisitorInfo visitor, Map<String, String> options) {
@@ -78,7 +85,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	protected ReadResult process(List<TSRelational> rows) {
 		Long timeCompare = null;
 		BigDecimal total = BigDecimal.ZERO;
-		TSRelational ts = new TSRelational(timeColumn, valueColumn);
+		TSRelational ts = new TSRelational(timeColumn, null);
 		
 		int index = 0;
 		for(TSRelational row : rows) {
@@ -96,7 +103,18 @@ public class AggregationProcessor extends StreamsProcessor {
 			if(val != null) {
 				total = total.add(val);
 			}
-			ts.put(entryNames.get(urls.get(index++)), val);
+			
+			if(newFramework) {
+				for(Entry<String, Object> entry : row.entrySet()) {
+					if(timeColumn.equals(entry.getKey())) 
+						continue; //skip time column
+					ts.put(entry.getKey(), entry.getValue());
+				}
+			} else {
+				String url = urls.get(index++);
+				String entry = entryNames.get(url);
+				ts.put(entry, val);
+			}
 		}
 
 		if(timeCompare == null) {

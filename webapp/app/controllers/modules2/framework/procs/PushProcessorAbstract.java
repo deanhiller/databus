@@ -3,19 +3,26 @@ package controllers.modules2.framework.procs;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.apache.commons.lang.StringUtils;
+
 import controllers.modules2.framework.Direction;
+import controllers.modules2.framework.EndOfChain;
 import controllers.modules2.framework.ProcessedFlag;
+import controllers.modules2.framework.RawProcessorFactory;
 import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.chain.DNegationProcessor;
 import controllers.modules2.framework.http.HttpStatus;
 
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
-public abstract class PushProcessorAbstract extends ProcessorSetupAbstract implements PushProcessor {
+public abstract class PushProcessorAbstract extends ProcessorSetupContainer implements PushProcessor {
 
 	@Override
 	public Direction getSinkDirection() {

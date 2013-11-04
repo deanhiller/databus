@@ -4,10 +4,12 @@ import gov.nrel.util.Utility;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import models.EntityUser;
+import models.message.StreamModule;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -34,7 +36,7 @@ import controllers.modules2.framework.chain.DNegationProcessor;
 import controllers.modules2.framework.http.HttpListener;
 import controllers.modules2.framework.translate.TranslationFactory;
 
-public class RemoteProcessor extends ProcessorSetupAbstract implements EndOfChain {
+public class RemoteProcessor extends EndOfChain {
 
 	private static final Logger log = LoggerFactory.getLogger(RemoteProcessor.class);
 
@@ -46,19 +48,6 @@ public class RemoteProcessor extends ProcessorSetupAbstract implements EndOfChai
 	private Provider<AHttpChunkingListener> listeners;
 
 	private String path;
-	
-	@Override
-	public String toString() {
-		String prevPath = params.getPreviousPath();
-		if(child == null)
-			return getClass().getSimpleName()+"("+prevPath+")";
-		return getClass().getSimpleName()+"("+prevPath+")-"+child;
-	}
-	
-	@Override
-	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup child, boolean alreadyAdded) {
-		return null;
-	}
 	
 	@Override
 	public void start(VisitorInfo visitor) {

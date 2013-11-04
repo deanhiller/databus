@@ -1,6 +1,7 @@
 package controllers.modules2;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import controllers.modules.SplinesBigDec;
 
@@ -34,7 +35,7 @@ public class SplinesLinear implements SplinesBigDec {
 		
 		long range = x2 - x1;
 		BigDecimal xrange = new BigDecimal(range);
-		BigDecimal slope = y2.subtract(y1).divide(xrange);
+		BigDecimal slope = y2.subtract(y1).divide(xrange, 5, RoundingMode.HALF_UP);
 		//equation of any line is y = mx +constant
 		//so to find the constant, constant = y - mx using any point on that line
 		BigDecimal constant = y2.subtract(slope.multiply(new BigDecimal(x2)));

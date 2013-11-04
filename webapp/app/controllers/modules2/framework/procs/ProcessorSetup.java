@@ -10,8 +10,7 @@ import controllers.modules2.framework.VisitorInfo;
 
 public interface ProcessorSetup {
 
-	void initModule(ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options);
-	ProcessorSetup createTree(StreamModule info, VisitorInfo visitor);
+	void createTree(ProcessorSetup parent, StreamModule info, VisitorInfo visitor);
 
 	String init(String path, ProcessorSetup processorSetup, VisitorInfo visitor, Map<String, String> options);
 	ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter);
@@ -35,8 +34,6 @@ public interface ProcessorSetup {
 
 	
 	List<String> getAggregationList();
-	
-	void setChild(ProcessorSetup child);
 
 	// Y Y N N N
 	// N Y Y Y Y

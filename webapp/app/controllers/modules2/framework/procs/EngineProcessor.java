@@ -22,7 +22,7 @@ import controllers.modules2.framework.http.HttpListener;
 import controllers.modules2.framework.http.HttpStatus;
 
 
-public class EngineProcessor extends ProcessorSetupAbstract {
+public class EngineProcessor extends ProcessorSetupContainer {
 
 	private static final Logger log = LoggerFactory.getLogger(EngineProcessor.class);
 	private static final EmptyListener empty = new EmptyListener();
@@ -43,9 +43,9 @@ public class EngineProcessor extends ProcessorSetupAbstract {
 	public void start(VisitorInfo visitor) {
 		visitor.incrementStreamCount();
 
-		child.start(visitor);
+		super.start(visitor);
 		promise = visitor.getPromise();
-		ourRunnable = new TheRunnablePromise((PullProcessor) child, (PushProcessor) parent, promise);
+		ourRunnable = new TheRunnablePromise((PullProcessor) getSingleChild(), (PushProcessor) parent, promise);
 		promise.addResponse(ourRunnable);
 		isRunning = true;
 	}

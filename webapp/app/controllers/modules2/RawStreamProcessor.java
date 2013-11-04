@@ -29,11 +29,15 @@ public class RawStreamProcessor implements RawSubProcessor {
 	private Iterator<KeyValue<TypedRow>> cursor;
 	private DboTableMeta meta;
 	private String url;
+	private String timeColumn;
+	private String valueColumn;
 	
 	@Override
-	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
+	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, String timeCol, String valCol) {
 		this.url = url;
 		this.meta = meta;
+		this.timeColumn = timeCol;
+		this.valueColumn = valCol;
 		String cf = meta.getColumnFamily();
 		String idCol = meta.getIdColumnMeta().getColumnName();
 		String sql = "SELECT c FROM "+cf+" as c WHERE c."+idCol+" >= "+start+" and c."+idCol+" <= "+end;
@@ -64,14 +68,14 @@ public class RawStreamProcessor implements RawSubProcessor {
 		}
 		TypedRow row = kv.getValue();
 		//TODO:  parameterize timeColumn and valueColumn from options
-		TSRelational tv = new TSRelational("time", "value");
+		TSRelational tv = new TSRelational(timeColumn, valueColumn);
 		DboColumnMeta idMeta = meta.getIdColumnMeta();
 		if(row.getRowKey() == null)
 			return new ReadResult(url, "rowkey="+kv.getKey()+" found in index, but row not found");
 
 		Object key = row.getRowKey();
 		String colName = idMeta.getColumnName();
-		tv.put(colName, key);
+		tv.put(timeColumn, key);
 		for(DboColumnMeta colMeta : meta.getAllColumns()) {
 			createJson(row, colMeta, tv);
 		}

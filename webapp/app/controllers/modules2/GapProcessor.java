@@ -80,7 +80,7 @@ public class GapProcessor extends PullProcessorAbstract {
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor,
 			ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		ProcessorSetup setup = super.createPipeline(path, visitor, useThisChild, alreadyAddedInverter);
-		readAheadProc = new ProxyProcessor((PullProcessor) child);
+		readAheadProc = new ProxyProcessor((PullProcessor) getSingleChild());
 		return setup;
 	}
 

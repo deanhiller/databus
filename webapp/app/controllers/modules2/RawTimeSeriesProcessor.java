@@ -49,11 +49,17 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	protected List<Long> existingPartitions = new ArrayList<Long>();
 	protected NoSqlEntityManager mgr;
 
+	private String timeColumn;
+	private String valueColumn;
+
 	@Override
-	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor) {
+	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, String timeCol, String valCol) {
 		mgr = visitor.getMgr();
 		this.meta = meta;
 		this.url = url;
+		
+		this.timeColumn = timeCol;
+		this.valueColumn = valCol;
 		
 		this.start = start;
 		this.end = end;
@@ -149,9 +155,9 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		Object time = meta.getIdColumnMeta().convertFromStorage2(name);
 		Object val = colMeta.convertFromStorage2(value);
 		//TODO:  parameterize timeColumn and valueColumn from options
-		TSRelational tv = new TSRelational("time", "value");
-		tv.put("time", time);
-		tv.put(colMeta.getColumnName(), val);
+		TSRelational tv = new TSRelational(timeColumn, valueColumn);
+		tv.put(timeColumn, time);
+		tv.put(valueColumn, val);
 		return new ReadResult(url, tv);
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import models.StreamAggregation;
 import models.message.ChartVarMeta;
+import models.message.StreamModule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,12 +27,10 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	static final Logger log = LoggerFactory.getLogger(StreamsProcessor.class);
 
 	protected Long currentTimePointer;
-	protected List<PullProcessor> children = new ArrayList<PullProcessor>();
 	protected List<ProxyProcessor> processors = new ArrayList<ProxyProcessor>();
 	protected List<String> urls;
 	private List<ReadResult> results = new ArrayList<ReadResult>();
 	private String aggName;
-
 
 	protected static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 
@@ -81,6 +80,19 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		return aggregationList;
 	}
 
+	
+	@Override
+	public void createTree(ProcessorSetup parent, StreamModule thisNodeInfo, VisitorInfo visitor) {
+		super.createTree(parent, thisNodeInfo, visitor);
+		
+		urls = new ArrayList<String>();
+		for(int i = 0; i < children.size(); i++) {
+			ProcessorSetup child = children.get(i);
+			processors.add(new ProxyProcessor((PullProcessor)child));
+			this.urls.add("id"+i);
+		}
+	}
+
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
 		Long start = params.getOriginalStart();
@@ -99,7 +111,6 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 		for(String url : urls) {
 			String newUrl = addTimeStamps(url, start, end);
 			ProcessorSetup child = super.createPipeline(newUrl, visitor, null, false);
-			children.add((PullProcessor) child);
 			processors.add(new ProxyProcessor((PullProcessor)child));
 		}
 		return null;
