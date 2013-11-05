@@ -149,14 +149,14 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 		bindings.put("relationalContext", relationalContext);
 		if (StringUtils.containsIgnoreCase(engineName, "ruby")) {
 			for (Entry<String, Object> entry:tv.entrySet()) {
-				log.info("binding "+attrPrefix+entry.getKey().toLowerCase()+":"+entry.getValue()+" type "+entry.getValue().getClass());
+				log.debug("binding "+attrPrefix+entry.getKey().toLowerCase()+":"+entry.getValue()+" type "+entry.getValue().getClass());
 				bindings.put(attrPrefix+entry.getKey().toLowerCase(), entry.getValue());
 			}
 		}
 		else {
 			for (Entry<String, Object> entry:tv.entrySet()) {
 				Object toBind = entry.getValue();
-				log.info("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
+				log.debug("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
 				if (entry.getValue() instanceof BigInteger) {
 					toBind = new PyLong((BigInteger)entry.getValue());
 				}
@@ -177,23 +177,23 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			if (StringUtils.containsIgnoreCase(engineName, "python") 
 					//||StringUtils.containsIgnoreCase(engineName, "ruby")
 					) {
-				log.info("executing the script: "+ toExecute);
+				log.debug("executing the script: "+ toExecute);
 				for (Entry<String, Object> entry:bindings.entrySet())
-					log.info("----"+entry.getKey()+":"+entry.getValue());
+					log.debug("----"+entry.getKey()+":"+entry.getValue());
 				script.eval(bindings);
 				result = engine.get(resultingColumn);
-				log.info("after execution: ");
+				log.debug("after execution: ");
 				for (Entry<String, Object> entry:bindings.entrySet())
-					log.info("----"+entry.getKey()+":"+entry.getValue());
+					log.debug("----"+entry.getKey()+":"+entry.getValue());
 			}
 			else {
-				log.info("executing the script: "+ toExecute);
+				log.debug("executing the script: "+ toExecute);
 				for (Entry<String, Object> entry:bindings.entrySet())
-					log.info("----"+entry.getKey()+":"+entry.getValue());
+					log.debug("----"+entry.getKey()+":"+entry.getValue());
 				result = script.eval(bindings);
-				log.info("after execution result is '"+result+"': ");
+				log.debug("after execution result is '"+result+"': ");
 				for (Entry<String, Object> entry:bindings.entrySet())
-					log.info("----"+entry.getKey()+":"+entry.getValue());
+					log.debug("----"+entry.getKey()+":"+entry.getValue());
 			}
 		}
 		catch (ScriptException e) {
