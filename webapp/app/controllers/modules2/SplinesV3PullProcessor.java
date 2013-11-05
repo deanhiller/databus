@@ -51,6 +51,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
 	private CircularFifoBuffer master;
 	private long end;
+	private boolean firstRow = true;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Spline(version 3)");
@@ -94,10 +95,12 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
-		if(log.isInfoEnabled())
-			log.info("initialization of splines pull processor");
-		String newPath = super.init(path, nextInChain, visitor, options);
+	public void initModule(Map<String, String> options, Long start, Long end) {
+		super.initModule(options, start, end);
+		initParameters(options, start, end);
+	}
+
+	private void initParameters(Map<String, String> options, Long start, Long end2) {
 		columnsToInterpolate=Arrays.asList(new String[]{valueColumn});
 		String columnsToInterpolateString = options.get("columnsToInterpolate");
 		if (StringUtils.isNotBlank(columnsToInterpolateString)) {
@@ -125,18 +128,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			epochOffset = calculateOffset();
 		} else
 			epochOffset = parseOffset(epoch);
-
-		long startTime = Long.MIN_VALUE;
-		if(params.getStart() != null)
-			startTime = params.getStart();
-		end = Long.MAX_VALUE;
-		if(params.getEnd() != null)
-			end = params.getEnd();
-
-		if(log.isInfoEnabled())
-			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
-		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
-
+		
 		String multipleOfInterval = fetchProperty("maxToStopSplining", "5", options);
 		int maxNumIntervalsStopSplining = Integer.parseInt(multipleOfInterval);
 		long maxTimeToStopSplining = interval * maxNumIntervalsStopSplining;
@@ -149,26 +141,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			throw new BadRequest("bufferSize is too small. must be 0 or greater. size="+ bufferSize);
 		
 		master = new CircularFifoBuffer(4+bufferSize);
-
-		//USE CASES
-		//#1 What if one columns buffer is A1,A2,A3,NNNNNNN
-		//#2 What is one columns buffer is that of #1 but with an A4 that is 1000 rows away(we don't want to read all the data in)
-		//#3 
-		//use windowFilterSize as max gap as well seems a bit wrong?  Have maxgap variable with default at 10 intervals
-
-		//1    2    3    4    5   6    7    8
-		//A1   A2   A3   N    N   N    N    A4
-		//B1   B2   B3   B4   N   B5   B6   B7
-		//
-		//
-		//125         890
-		//1256        78N0
-		//1234        567890
-		//1234567890
-		//
-		//125
-		//1256
-		//2345  then 3456
 
 		splineType = fetchProperty("splineType", "basic", options);
 
@@ -190,16 +162,63 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			String msg = "/splinesV3(type="+splineType+")/ ; type must be basic or limitderivative or linear";
 			throw new BadRequest(msg);
 		}
+		
+		this.end = end2;
+		if(log.isInfoEnabled())
+			log.info("offset="+epochOffset+" start="+start+" interval="+interval);
+		currentTimePointer = calculateStartTime(start, interval, epochOffset);
+	}
+
+	@Override
+	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
+		if(log.isInfoEnabled())
+			log.info("initialization of splines pull processor");
+		String newPath = super.init(path, nextInChain, visitor, options);
+
+		long startTime = Long.MIN_VALUE;
+		if(params.getStart() != null)
+			startTime = params.getStart();
+		long end = Long.MAX_VALUE;
+		if(params.getEnd() != null)
+			end = params.getEnd();
+		
+		initParameters(options, startTime, end);
+
+		//USE CASES
+		//#1 What if one columns buffer is A1,A2,A3,NNNNNNN
+		//#2 What is one columns buffer is that of #1 but with an A4 that is 1000 rows away(we don't want to read all the data in)
+		//#3 
+		//use windowFilterSize as max gap as well seems a bit wrong?  Have maxgap variable with default at 10 intervals
+
+		//1    2    3    4    5   6    7    8
+		//A1   A2   A3   N    N   N    N    A4
+		//B1   B2   B3   B4   N   B5   B6   B7
+		//
+		//
+		//125         890
+		//1256        78N0
+		//1234        567890
+		//1234567890
+		//
+		//125
+		//1256
+		//2345  then 3456
 
 		return newPath;
 	}
 
 	protected long calculateOffset() {
-		Long startTime = params.getStart();
-		long offset = startTime % interval;
-		return offset;
-	}
+		Long startTime = null;
+		if(params != null)
+			startTime = params.getStart();
 
+		if(startTime != null) {
+			long offset = startTime % interval;
+			return offset;
+		}
+		return 0;
+	}
+	
 	protected long parseOffset(String offset) {
 		try {
 			return Long.parseLong(offset);
@@ -251,7 +270,8 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		//We need at least one of the streams to have currentTimePointer after the 2nd point so can spline that
 		//ONE guy at that time point(and the other ones would have to just return null
 		while(currentTimeLessThan2ndPtAndBufferFull(currentTimePointer)) {
-			incrementCurrentTime();
+			long minTime = fetchMinSecondTimePoint();
+			incrementCurrentTimeByAlot(minTime);
 		}
 
 		//needMoreData is a very tricky method so read the comments in that method
@@ -279,6 +299,15 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		}
 
 		return returnVal;
+	}
+
+	private long fetchMinSecondTimePoint() {
+		long min = Long.MAX_VALUE;
+		for(ColumnState s : columns) {
+			long time = s.fetchSecondTime();
+			min = Math.min(min, time);
+		}
+		return min;
 	}
 
 	private ReadResult calculateLastRows(ReadResult lastValue) {
@@ -353,6 +382,20 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
+		if(firstRow) {
+			String timeCol = row.getTimeColumn();
+			if(timeCol != null)
+				timeColumn = timeCol;
+			String valCol = row.getValueColumn();
+			if(valCol != null) {
+				//very special case very bad hack but need to complete story and revisit for relational time series later
+				for(ColumnState state : columns) {
+					state.setColumnName(valCol);
+				}
+				valueColumn = valCol;
+			}
+			firstRow  = false;
+		}
 		master.add(row);
 		for(ColumnState s : columns) {
 			s.transferRow(row, currentTimePointer);
@@ -381,6 +424,23 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		return new ReadResult(getUrl(), row);
 	}
 
+	private void incrementCurrentTimeByAlot(long minTime) {
+		BigInteger time1 = new BigInteger(minTime+"");
+		BigInteger time2 = new BigInteger(currentTimePointer+"");
+		BigInteger diff = time1.subtract(time2);
+		BigInteger multiplier = diff.divideAndRemainder(new BigInteger(interval+""))[0];
+		long multiply = multiplier.longValue();
+		long add = multiply*interval;
+		currentTimePointer += add + interval;
+		
+		TSRelational[] rows = (TSRelational[]) master.toArray(new TSRelational[0]);
+		if(rows.length >= 2) {
+			long time = getTime(rows[1]);
+			if(currentTimePointer > time)
+				master.remove(rows[0]); //remove first row, we don't need it if currentTime > row 2's time
+		}
+	}
+	
 	private void incrementCurrentTime() {
 		currentTimePointer += interval;
 		TSRelational[] rows = (TSRelational[]) master.toArray(new TSRelational[0]);

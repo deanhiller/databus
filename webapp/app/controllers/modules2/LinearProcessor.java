@@ -66,7 +66,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 		meta1.setHelp("The interval we return data at(so for 60000, we return you data points that are 60 seconds apart");
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Epoch Offset");
-		meta.setNameInJavascript("offset");
+		meta.setNameInJavascript("epochOffset");
 		meta.setHelp("The offset from the epoch that the initial time will match.  After that, every datapoint is Interval apart.  " +
 				"If left blank, we use the start time as the offset");
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
@@ -85,22 +85,13 @@ public class LinearProcessor extends PullProcessorAbstract {
 		return 0;
 	}
 
-	public void initModule(Map<String, String> options) {
-		super.initModule(options);
-
-		initParameters(options);
-		
-		long startTime = Long.MIN_VALUE;
-		if(params != null && params.getStart() != null)
-			startTime = params.getStart();
-		end = Long.MAX_VALUE;
-
-		if(log.isInfoEnabled())
-			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
-		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
+	@Override
+	public void initModule(Map<String, String> options, Long start, Long end) {
+		super.initModule(options, start, end);
+		initParameters(options, start, end);
 	}
 
-	private void initParameters(Map<String, String> options) {
+	private void initParameters(Map<String, String> options, Long start, Long end) {
 		// param 2: Interval: long
 		String intervalStr = fetchProperty("interval", "60000", options);
 		try {
@@ -119,6 +110,12 @@ public class LinearProcessor extends PullProcessorAbstract {
 			epochOffset = calculateOffset();
 		} else
 			epochOffset = parseOffset(epoch);
+		
+		this.end = end;
+		
+		if(log.isInfoEnabled())
+			log.info("offset="+epochOffset+" start="+start+" interval="+interval);
+		currentTimePointer = calculateStartTime(start, interval, epochOffset);
 	}
 
 	@Override
@@ -127,18 +124,13 @@ public class LinearProcessor extends PullProcessorAbstract {
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
 
-		initParameters(options);
-
 		long startTime = Long.MIN_VALUE;
 		if(params.getStart() != null)
 			startTime = params.getStart();
-		end = Long.MAX_VALUE;
+		long end = Long.MAX_VALUE;
 		if(params.getEnd() != null)
 			end = params.getEnd();
-
-		if(log.isInfoEnabled())
-			log.info("offset="+epochOffset+" start="+startTime+" interval="+interval);
-		currentTimePointer = calculateStartTime(startTime, interval, epochOffset);
+		initParameters(options, startTime, end);
 
 		return newPath;
 	}

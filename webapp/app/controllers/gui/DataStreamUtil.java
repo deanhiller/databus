@@ -18,7 +18,7 @@ public class DataStreamUtil {
 
 	private static final ObjectMapper mapper = new ObjectMapper();
 
-	public static String encode(StreamEditor agg) {
+	public static String encode(StreamEditor agg, Map<String, String> variablesMap) {
 		String first;
 		try {
 			first = mapper.writeValueAsString(agg);
@@ -32,17 +32,12 @@ public class DataStreamUtil {
 		
 		byte[] bytes = first.getBytes();
 		String encoding = Base64.encodeBase64URLSafeString(bytes);
-		Map<String, String> variablesMap = new HashMap<String, String>();
 		variablesMap.put("url", "/api/streamV1(encoding="+encoding+")");
 		String encoded = ChartUtil.encodeVariables(variablesMap );
 		return encoded;
 	}
 
-	public static StreamEditor decode(String encoded) {
-		if("start".equals(encoded))
-			return new StreamEditor();
-		
-		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+	public static StreamEditor decode(Map<String, String> vars) {
 		String url = vars.get("url");
 		String match = "streamV1(encoding=";
 		int indexOf = url.indexOf(match);

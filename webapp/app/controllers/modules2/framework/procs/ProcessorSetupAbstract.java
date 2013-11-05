@@ -98,7 +98,7 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		return 0;
 	}
 	
-	public void initModule(Map<String, String> options) {
+	public void initModule(Map<String, String> options, Long start, Long end) {
 		this.options = options;
 		timeColumn = "time";
 		valueColumn = "value";

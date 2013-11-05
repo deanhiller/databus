@@ -8,6 +8,8 @@ import models.message.StreamModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.mvc.Http.Request;
+
 import controllers.gui.DataStreamUtil;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.ReadResult;

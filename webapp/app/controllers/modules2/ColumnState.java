@@ -136,7 +136,7 @@ public class ColumnState {
 		return fetchTime(2);
 	}
 
-	private long fetchSecondTime() {
+	public long fetchSecondTime() {
 		return fetchTime(1);
 	}
 
@@ -172,6 +172,10 @@ public class ColumnState {
 		if(leftOver.size() >= bufferSize)
 			return true;
 		return false;
+	}
+
+	public void setColumnName(String valCol) {
+		this.colName = valCol;
 	}
 
 }

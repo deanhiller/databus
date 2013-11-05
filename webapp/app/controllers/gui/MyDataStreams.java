@@ -36,18 +36,22 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void viewStream(String encoded) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		editor.getLocation().clear();
-		encoded = DataStreamUtil.encode(editor);
+		encoded = DataStreamUtil.encode(editor, vars);
 		render(encoded);
 	}
 
 	public static void beginEdit(String encoded, String type) {
 		StreamEditor editor = null;
+		Map<String, String> vars = new HashMap<String, String>();
 		if("start".equals(encoded)) {
 			editor = new StreamEditor();
-		} else
-			editor = DataStreamUtil.decode(encoded);
+		} else {
+			vars = ChartUtil.decodeVariables(encoded);
+			editor = DataStreamUtil.decode(vars);
+		}
 		
 		StreamModule module = findCurrentStream(editor);
 		if("add".equals(type)) {
@@ -85,11 +89,11 @@ public class MyDataStreams extends Controller {
 			} else
 				deleteSubTree(parent, module);
 
-			encoded = DataStreamUtil.encode(editor);
+			encoded = DataStreamUtil.encode(editor, vars);
 			viewStream(encoded);
 		}
 
-		encoded = DataStreamUtil.encode(editor);
+		encoded = DataStreamUtil.encode(editor, vars);
 		editModule(encoded);
 	}
 
@@ -142,17 +146,19 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void editModule(String encoded) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		StreamModule module = findCurrentStream(editor);
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		List<MetaInformation> modules = factory.fetchAllModules();
 
-		encoded = DataStreamUtil.encode(editor);
+		encoded = DataStreamUtil.encode(editor, vars);
 		render(modules, module, encoded);
 	}
 
 	public static void postModule(String encoded, String moduleName) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		StreamModule module = findCurrentStream(editor);
 		RawProcessorFactory factory = ModuleController.fetchFactory();
 		Map<String, PullProcessor> procs = factory.fetchPullProcessors();
@@ -169,16 +175,17 @@ public class MyDataStreams extends Controller {
 		
 		if(meta.getParameterMeta().size() == 0) {
 			editor.getLocation().clear(); //reset location since we are done
-			encoded = DataStreamUtil.encode(editor);
+			encoded = DataStreamUtil.encode(editor, vars);
 			viewStream(encoded);
 		}
 
-		encoded = DataStreamUtil.encode(editor);
+		encoded = DataStreamUtil.encode(editor, vars);
 		editModuleParams(encoded);
 	}
 
 	public static void editModuleParams(String encoded) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		StreamModule module = findCurrentStream(editor);
 		
 		Map<String, String[]> paramMap = params.all();
@@ -201,7 +208,8 @@ public class MyDataStreams extends Controller {
 	}
 	
 	public static void postModuleParams(String encoded, int index) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		StreamModule module = findCurrentStream(editor);
 		MetaInformation meta = fetchMeta(module);
 
@@ -224,17 +232,18 @@ public class MyDataStreams extends Controller {
 
 		if(validation.hasErrors()) {
 			validation.keep();
-			encoded = DataStreamUtil.encode(editor);
+			encoded = DataStreamUtil.encode(editor, vars);
 			editModuleParams(encoded);
 		}
 		
 		editor.getLocation().clear();
-		encoded = DataStreamUtil.encode(editor);
+		encoded = DataStreamUtil.encode(editor, vars);
 		viewStream(encoded);
 	}
 
 	public static void finish(String encoded) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		//first find the first aggregation
 		StreamModule current = editor.getStream();
 		while(current.getStreams().size() == 1) {
@@ -331,13 +340,14 @@ public class MyDataStreams extends Controller {
 	}
 
 	public static void fetchJsonTree(String encoded) {
-		StreamEditor editor = DataStreamUtil.decode(encoded);
+		Map<String, String> vars = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(vars);
 		StreamModule module = findCurrentStream(editor);
 		StreamModule root = editor.getStream();
 		Map<String, Object> root2 = new HashMap<String, Object>();
 		List<Integer> location = new ArrayList<Integer>();
 		
-		TreeInfo info = new TreeInfo(root, module, editor);
+		TreeInfo info = new TreeInfo(root, module, editor, vars);
 		copyTree(null, root, root2, info, location);
 		
 		renderJSON(root2);
@@ -421,7 +431,7 @@ public class MyDataStreams extends Controller {
 
 			StreamEditor editor = info.getEditor();
 			editor.setLocation(location);
-			String encoded = DataStreamUtil.encode(editor);
+			String encoded = DataStreamUtil.encode(editor, info.getVariableMap());
 			
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("encoded", encoded);

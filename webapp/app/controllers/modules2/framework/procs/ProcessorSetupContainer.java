@@ -9,6 +9,8 @@ import models.message.StreamModule;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.netflix.astyanax.connectionpool.exceptions.IsRetryableException;
+
 import play.mvc.Http.Request;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
@@ -30,6 +32,10 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 	@Override
 	public void createTree(ProcessorSetup parent, StreamModule thisNodeInfo, VisitorInfo visitor) {
 		this.parent = parent;
+		Request request1 = Request.current();
+		String val = request1.params.get("reverse");
+		boolean isReversed = "true".equalsIgnoreCase(val);
+		
 		for(StreamModule childInfo : thisNodeInfo.getStreams()) {
 			String moduleName = childInfo.getModule();
 	
@@ -41,10 +47,7 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 			if(child.getSourceDirection() != Direction.PULL)
 				throw new IllegalStateException("Can't wire in child="+child+" as he is not a PullProcessor");
 	
-			Request request1 = Request.current();
-			String val = request1.params.get("reverse");
-			
-			if(child instanceof EndOfChain && "true".equalsIgnoreCase(val)) {
+			if(child instanceof EndOfChain && isReversed) {
 				DNegationProcessor proc = processors.get();
 				proc.createTree(this, new StreamModule(), visitor);
 				child.createTree(proc, childInfo, visitor);
@@ -57,8 +60,25 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 
 			children.add(child);
 		}
+		
+		
+		
+		String startStr = Request.current().params.get("start");
+		String endStr = Request.current().params.get("end");
+		Long start = 0L;
+		Long end = Long.MAX_VALUE;
+		if(startStr != null)
+			start = Long.parseLong(startStr);
+		if(endStr != null)
+			end = Long.parseLong(endStr);
+
+		if(isReversed) {
+			start = -end;
+			end = -start;
+		}
+
 		Map<String, String> modOptions2 = thisNodeInfo.getParams();
-		initModule(modOptions2);
+		initModule(modOptions2, start, end);
 	}
 
 	public void setChild(ProcessorSetup child) {

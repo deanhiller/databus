@@ -20,6 +20,7 @@ not displaying, click the <a href="${variables.url}" target="_blank">Your DATA L
 #{/if}
 <br/>
 <a href="@{modifyChart(encoded)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{gui.MyDataStreams.viewStream(encoded)}" class="btn btn-primary">Modify Input Data</a>
 <a href="@{largeChart(encoded)}" class="btn btn-primary">Large Chart Only</a>
 <a href="@{smallChart(encoded)}" class="btn btn-primary">Small Chart Only</a>
 #{form @addChartToDashboard(encoded), id:'formAddChart', style:'display:inline'}

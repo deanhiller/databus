@@ -271,7 +271,7 @@ public class ChartUtil {
 			if("daterange".equals(type)) {
 				String from = variables.get("_fromepoch");
 				String to = variables.get("_toepoch");
-				url += "/"+from+"/"+to;
+				url += "?start="+from+"&end="+to;
 			} else {
 				String number = variables.get("_numberpoints");
 				String ending = url.substring("/api".length());

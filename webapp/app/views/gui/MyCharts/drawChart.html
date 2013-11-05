@@ -2,17 +2,17 @@
 #{set tab:'home' /}
 #{set title:'Your Chart' /}
 
+<br/>
 We are rendering the chart for <a href="${url}" target="_blank">YOUR DATA</a> below
 
 <a href="@{modifyRedirect(encoded)}" class="btn btn-primary">Modify Chart</a>
+<a href="@{gui.MyDataStreams.viewStream(encoded)}" class="btn btn-primary">Modify Input Data</a>
 <a href="@{drawJustChart(encoded)}" class="btn btn-primary">Chart Only</a>
-#{form @addChartToDashboard(encoded), id:'formAddChart'}
-     <div class="control-group">
-       <div class="controls">
-          <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
-        </div>
-    </div>
+#{form @addChartToDashboard(encoded), id:'formAddChart', style:'display:inline'}
+     <input type="submit" name="submit" value="Add to Dashboard" class="btn btn-primary" />
 #{/form}
+
+<br/><br/>
 
 <div id="theChart"></div>
 
