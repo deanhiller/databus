@@ -147,6 +147,15 @@ public class ColumnState {
 		return timeSecondInBuffer;
 	}
 
+	public Long fetchSecondTimeIfExist() {
+		TSRelational[] objects = (TSRelational[])buffer.toArray(new TSRelational[]{});
+		if(objects.length >= 2) {
+			TSRelational secondInBuf = objects[1];
+			return ((BigInteger)secondInBuf.get(timeCol)).longValue();			
+		}
+		return null;
+	}
+	
 //	private void recalc2nd3rdTimes() {
 //	
 //

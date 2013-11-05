@@ -225,7 +225,7 @@ public class TestSplineV3 {
 			throw new IllegalArgumentException("arrays must be the same length");
 		List<TSRelational> rows = new ArrayList<TSRelational>();
 		for(int i = 0; i < times.length; i++) {
-			TSRelational map = new TSRelational("time", "value");
+			TSRelational map = new TSRelational();
 			map.setTime(times[i]);
 			if(values[i] == null)
 				map.put("temp", null);

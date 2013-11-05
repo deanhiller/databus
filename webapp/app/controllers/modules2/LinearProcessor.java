@@ -306,7 +306,9 @@ public class LinearProcessor extends PullProcessorAbstract {
 		BigInteger multiplier = diff.divideAndRemainder(new BigInteger(interval+""))[0];
 		long multiply = multiplier.longValue();
 		long add = multiply*interval;
-		currentTimePointer += add + interval;
+		currentTimePointer += add;
+		if(currentTimePointer < time)
+			currentTimePointer += interval;
 	}
 
 	private void incrementCurrentTimeByOne() {

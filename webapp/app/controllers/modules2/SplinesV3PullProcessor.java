@@ -304,8 +304,9 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long fetchMinSecondTimePoint() {
 		long min = Long.MAX_VALUE;
 		for(ColumnState s : columns) {
-			long time = s.fetchSecondTime();
-			min = Math.min(min, time);
+			Long time = s.fetchSecondTimeIfExist();
+			if(time != null) 
+				min = Math.min(min, time);
 		}
 		return min;
 	}
