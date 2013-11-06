@@ -1,11 +1,13 @@
 package controllers.api;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 
 import junit.framework.Assert;
 
 import org.junit.Test;
 
+import controllers.modules2.SplinesLinear;
 import controllers.modules2.SplinesV3PullProcessor;
 
 public class TestOffsetCode {
@@ -26,4 +28,17 @@ public class TestOffsetCode {
 	}
 	
 
+	@Test
+	public void testSplinesLinear() {
+		SplinesLinear lin = new SplinesLinear();
+		BigDecimal[] yaxis = new BigDecimal[2];
+		long[] xaxis = new long[2];
+		xaxis[0] = 1;
+		xaxis[1] = 3;
+		yaxis[0] = new BigDecimal("1");
+		yaxis[1] = new BigDecimal("2");
+		lin.setRawDataPoints(xaxis, yaxis);
+		
+		BigDecimal value = lin.getValue(2);
+	}
 }

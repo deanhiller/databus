@@ -34,14 +34,18 @@ public class SplinesLinear implements SplinesBigDec {
 		long x2 = xaxis[index+1];
 		
 		long range = x2 - x1;
-		BigDecimal xrange = new BigDecimal(range);
-		BigDecimal slope = y2.subtract(y1).divide(xrange, 5, RoundingMode.HALF_UP);
+		BigDecimal slopeDivisor = new BigDecimal(range);
+		BigDecimal slopeNumerator = y2.subtract(y1);
 		//equation of any line is y = mx +constant
 		//so to find the constant, constant = y - mx using any point on that line
-		BigDecimal constant = y2.subtract(slope.multiply(new BigDecimal(x2)));
+		BigDecimal firstPart = slopeNumerator.multiply(new BigDecimal(x2));
+		BigDecimal firstPart2 = firstPart.divide(slopeDivisor, 5, RoundingMode.HALF_UP);
+		BigDecimal constant = y2.subtract(firstPart2);
 		
 		//now y = mx + constant
-		BigDecimal value = slope.multiply(new BigDecimal(x)).add(constant);
+		BigDecimal mxPart1 = slopeNumerator.multiply(new BigDecimal(x));
+		BigDecimal mx = mxPart1.divide(slopeDivisor, 5, RoundingMode.HALF_UP);
+		BigDecimal value = mx.add(constant);
 		return value;
 	}
 
