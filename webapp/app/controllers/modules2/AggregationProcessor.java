@@ -157,7 +157,7 @@ public class AggregationProcessor extends StreamsProcessor {
 			while (CollectionUtils.size(lookaheadBuffer)!=0) {
 				ReadResult RRreturn = lookaheadBuffer.get(0);
 				lookaheadBuffer.remove(0);
-				if (RRreturn != null && RRreturn.getRow() != null && RRreturn.isEndOfStream() && RRreturn.getRow().size() >=largestRowWidth)
+				if (RRreturn != null && RRreturn.getRow() != null && !RRreturn.isEndOfStream() && RRreturn.getRow().size() >=largestRowWidth)
 					return RRreturn;
 			}
 			ReadResult r = super.read();
