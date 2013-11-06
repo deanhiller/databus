@@ -34,6 +34,12 @@ public class SplinesLinear implements SplinesBigDec {
 		long x2 = xaxis[index+1];
 		
 		long range = x2 - x1;
+		//NOTE: Avoid rounding issues by keeping slopeDivisor and slopeNumerator separated because
+		//doing the math with the x2 variable first will re-normalize the numerator so we can divide without
+		//too much of a rounding issue.....ie. take 1383688080030 as x1 and 6.35 as y1 and 1383688200030 as x2
+		//and 6.4 as y2 and you end up with ZERO for the multiplier(if rounding to 5 places) which can heavily affect results
+		//so instead hold off on dividing so you are taking 1383688200030 times something divided by 60000 and it works out
+		//better
 		BigDecimal slopeDivisor = new BigDecimal(range);
 		BigDecimal slopeNumerator = y2.subtract(y1);
 		//equation of any line is y = mx +constant
