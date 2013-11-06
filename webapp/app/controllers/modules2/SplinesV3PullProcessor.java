@@ -232,18 +232,18 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		if(epochOffset == null)
 			return startTime;
 
-		long rangeFromOffsetToStart = startTime-epochOffset;
-		long offsetFromStart = -rangeFromOffsetToStart % interval;
-		if(startTime > 0) {
-			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
+		if(startTime > epochOffset) {
+			long rangeFromOffsetToStart = startTime-epochOffset;
+			long offsetFromStart = interval - (rangeFromOffsetToStart % interval);
+			long result = startTime+offsetFromStart;
+			return result;
 		}
 
-		long result = startTime+offsetFromStart; 
-		if(startTime == Long.MIN_VALUE) {
-			result = interval+offsetFromStart+startTime;
-		}
-		if(log.isInfoEnabled())
-			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
+		//just go BigInteger here for easy coding(we could try to do this differently if we really wanted to spend more time on it)
+		//because startTime=Long.MIN_VALUE in some cases and any positive value - Long.MIN_VALUE overflows wrapping around
+		BigInteger rangeFromStartToOffset = new BigInteger(epochOffset+"").subtract(new BigInteger(startTime+""));
+		BigInteger remainder = rangeFromStartToOffset.divideAndRemainder(new BigInteger(interval+""))[1];
+		long result = startTime+remainder.longValue();
 		return result;
 	}
 

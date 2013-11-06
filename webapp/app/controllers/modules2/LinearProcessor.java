@@ -115,7 +115,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 		
 		if(log.isInfoEnabled())
 			log.info("offset="+epochOffset+" start="+start+" interval="+interval);
-		currentTimePointer = calculateStartTime(start, interval, epochOffset);
+		currentTimePointer = SplinesV3PullProcessor.calculateStartTime(start, interval, epochOffset);
 	}
 
 	@Override
@@ -154,25 +154,6 @@ public class LinearProcessor extends PullProcessorAbstract {
 			String msg = "/linearV1(epochOffset="+offset+")/ epochOffset is not a long";
 			throw new BadRequest(msg);
 		}
-	}
-
-	public static long calculateStartTime(long startTime, long interval, Long epochOffset) {
-		if(epochOffset == null)
-			return startTime;
-
-		long rangeFromOffsetToStart = startTime-epochOffset;
-		long offsetFromStart = -rangeFromOffsetToStart % interval;
-		if(startTime > 0) {
-			offsetFromStart = interval - (rangeFromOffsetToStart%interval);
-		}
-
-		long result = startTime+offsetFromStart; 
-		if(startTime == Long.MIN_VALUE) {
-			result = interval+offsetFromStart+startTime;
-		}
-		if(log.isInfoEnabled())
-			log.info("range="+rangeFromOffsetToStart+" offsetFromStart="+offsetFromStart+" startTime="+startTime+" result="+result);
-		return result;
 	}
 
 	@Override

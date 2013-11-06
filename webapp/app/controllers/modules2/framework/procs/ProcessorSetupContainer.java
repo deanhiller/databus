@@ -65,7 +65,7 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 		
 		String startStr = Request.current().params.get("start");
 		String endStr = Request.current().params.get("end");
-		Long start = 0L;
+		Long start = Long.MIN_VALUE+1;
 		Long end = Long.MAX_VALUE;
 		if(startStr != null)
 			start = Long.parseLong(startStr);
@@ -73,8 +73,9 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 			end = Long.parseLong(endStr);
 
 		if(isReversed) {
+			long temp = start;
 			start = -end;
-			end = -start;
+			end = -temp;
 		}
 
 		Map<String, String> modOptions2 = thisNodeInfo.getParams();
