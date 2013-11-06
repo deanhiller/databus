@@ -157,13 +157,15 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			for (Entry<String, Object> entry:tv.entrySet()) {
 				Object toBind = entry.getValue();
 				log.debug("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
-				if (entry.getValue() instanceof BigInteger) {
-					toBind = new PyLong((BigInteger)entry.getValue());
-				}
-				if (entry.getValue() instanceof BigDecimal) {
-					//TODO:  this ABSOLUTELY needs to change.  the call to .doubleValue() loses the precision granted by 
-					//BigDecimal.  However, I can find no way to coerce a BigDecimal into jython without losing precision yet.
-					toBind = new PyFloat(((BigDecimal)entry.getValue()).doubleValue());
+				if (StringUtils.containsIgnoreCase(engineName, "ython")) {
+					if (entry.getValue() instanceof BigInteger) {
+						toBind = new PyLong((BigInteger)entry.getValue());
+					}
+					if (entry.getValue() instanceof BigDecimal) {
+						//TODO:  this ABSOLUTELY needs to change.  the call to .doubleValue() loses the precision granted by 
+						//BigDecimal.  However, I can find no way to coerce a BigDecimal into jython without losing precision yet.
+						toBind = new PyFloat(((BigDecimal)entry.getValue()).doubleValue());
+					}
 				}
 				bindings.put(attrPrefix+entry.getKey(), toBind);
 			}
