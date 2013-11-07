@@ -276,8 +276,13 @@ public class MyDataStreams extends Controller {
 	}
 
 	private static void findThings(List<StreamModule> leafNodes, List<StreamModule> aggregations, StreamModule stream) {
-		if(stream.getStreams().size() > 1)
-			aggregations.add(stream);
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+		if(stream.getStreams().size() > 1) {
+			MetaInformation aggMeta = modules.get(stream.getModule()).getGuiMeta();
+			if(aggMeta.isNeedsAlignment())
+				aggregations.add(stream);
+		}
 
 		for(StreamModule m : stream.getStreams()) {
 			if(m.getStreams().size() == 0)
@@ -288,10 +293,11 @@ public class MyDataStreams extends Controller {
 	}
 
 	private static boolean isAggAligned(StreamModule aggregation) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> modules = factory.fetchPullProcessors();
+		
 		boolean isAligned = true;
 		for(StreamModule child : aggregation.getStreams()) {
-			RawProcessorFactory factory = ModuleController.fetchFactory();
-			Map<String, PullProcessor> modules = factory.fetchPullProcessors();
 			MetaInformation meta = modules.get(child.getModule()).getGuiMeta();
 			if(meta.isAggregation()) {
 				if(!isAggAligned(child))

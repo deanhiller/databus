@@ -1,6 +1,7 @@
 package controllers.modules2.framework.procs;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -18,12 +19,19 @@ public class MetaInformation {
 	private boolean isTimeAligning;
 	private String guiLabel;
 	private String description;
+	private boolean needsAlignment;
 	
 	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel) {
 		this.parameterMeta = paramMeta;
 		this.numChildren = num;
 		this.isTimeAligning = isTimeAligning;
 		this.guiLabel = guiLabel;
+		this.needsAlignment = true;
+	}
+	
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel, boolean needsAlignment) {
+		this(paramMeta, num, isTimeAligning, guiLabel);
+		this.needsAlignment = needsAlignment;
 	}
 	
 	public final void validate(Validation validation, Map<String, String> variableValues) {
@@ -77,6 +85,10 @@ public class MetaInformation {
 		return false;
 	}
 
+	public boolean isNeedsAlignment() {
+		return needsAlignment;
+	}
+
 	public String getGuiLabel() {
 		return guiLabel;
 	}
@@ -102,6 +114,5 @@ public class MetaInformation {
 			return true;
 		return false;
 	}
-	
-	
+
 }

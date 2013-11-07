@@ -24,6 +24,8 @@ import models.message.ChartMeta;
 import models.message.ChartPageMeta;
 import models.message.ChartVarMeta;
 import models.message.RegisterMessage;
+import models.message.StreamEditor;
+import models.message.StreamModule;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang.StringUtils;
@@ -51,11 +53,13 @@ import controllers.gui.util.ChartInfo;
 import controllers.gui.util.ChartSeries;
 import controllers.gui.util.ChartUtil;
 import controllers.gui.util.Info;
+import controllers.modules2.RawProcessor;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.PullProcessor;
 import de.undercouch.bson4jackson.BsonFactory;
 
@@ -101,28 +105,10 @@ public class MyCharts extends Controller {
 			validation.addError("chart.axis1.name", "Name is a required field");
 
 		Map<String, String> variables = ChartUtil.decodeVariables(encoded);
+		StreamEditor editor = DataStreamUtil.decode(variables);
+		StreamModule stream = editor.getStream();
 		chart.fillInAxisColors();
 		encoded = createUrl(variables, chart, url, 1);
-		
-		RawProcessorFactory factory = ModuleController.fetchFactory();
-		RawProcessorFactory.threadLocal.set("passthroughV1");
-		PullProcessor top = (PullProcessor) factory.get();
-		VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
-		String path = url.substring("/api/".length());
-		try {
-			PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
-			ReadResult result = root.read();
-			if(result.isEndOfStream()) {
-				validation.keep();
-				flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-				createStep1(encoded);
-			}
-		} catch(Exception e) {
-			validation.keep();
-			log.info("Invalid url from user="+url, e);
-			flash.error("This stream url is invalid, "+e.getMessage());
-			createStep1(encoded);
-		}
 
 		createStep2(encoded);
 	}
@@ -140,33 +126,40 @@ public class MyCharts extends Controller {
 			chart.getSeries1().setName(valCol);
 		}
 		
-		List<String> columnNames = new ArrayList<String>();
-		String url = variables.get("url");
-		RawProcessorFactory factory = ModuleController.fetchFactory();
-		RawProcessorFactory.threadLocal.set("passthroughV1");
-		PullProcessor top = (PullProcessor) factory.get();
-		VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
-		String path = url.substring("/api/".length());
-		PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
-		ReadResult result = root.read();
-		if(result.isEndOfStream()) {
-			flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-			createStep1(encoded);
-		}
-			
-		TSRelational row = result.getRow();
-		for(Entry<String, Object> entry : row.entrySet()) {
-			columnNames.add(entry.getKey());
-		}
+		StreamEditor editor = DataStreamUtil.decode(variables);
+		List<String> columnNames = fetchColumnNames(editor);
 		
 		chart.initNames();
 
 		List<String> columnNamesOnly = new ArrayList<String>();
 		columnNamesOnly.addAll(columnNames);
-		
 		columnNames.add("{NONE}");
 		
 		render(encoded, chart, columnNames, columnNamesOnly);
+	}
+
+	private static List<String> fetchColumnNames(StreamEditor editor) {
+		List<String> colNames = new ArrayList<String>();
+		StreamModule mod = editor.getStream();
+		fetchNames(mod.getStreams().get(0), colNames);
+		colNames.add("time");
+		return colNames;
+	}
+
+	private static void fetchNames(StreamModule mod, List<String> colNames) {
+		RawProcessorFactory factory = ModuleController.fetchFactory();
+		Map<String, PullProcessor> procs = factory.fetchPullProcessors();
+		MetaInformation meta = procs.get(mod.getModule()).getGuiMeta();
+		
+		if(meta.isTerminal()) {
+			Map<String, String> params = mod.getParams();
+			String oneCol = params.get(RawProcessor.COL_NAME);
+			colNames.add(oneCol);
+		}
+		
+		for(StreamModule child : mod.getStreams()) {
+			fetchNames(child, colNames);
+		}
 	}
 
 	public static void postStep2(String encoded, Chart chart) throws UnsupportedEncodingException {
