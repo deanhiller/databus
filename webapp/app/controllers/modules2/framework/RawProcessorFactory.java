@@ -12,6 +12,7 @@ import javax.inject.Provider;
 
 import com.google.inject.Injector;
 
+import controllers.modules2.AggregationPipeProcessor;
 import controllers.modules2.AggregationProcessor;
 import controllers.modules2.AggregationProcessorOld;
 import controllers.modules2.ColumnSelectProcessor;
@@ -85,6 +86,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("columnselectV1", ColumnSelectProcessor.class);
 		nameToClazz.put("aggregation", AggregationProcessorOld.class);
 		nameToClazz.put("aggregationV1", AggregationProcessor.class);
+		nameToClazz.put("aggregationpipeV1", AggregationPipeProcessor.class);
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
 		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);

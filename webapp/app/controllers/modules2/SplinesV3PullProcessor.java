@@ -59,12 +59,12 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");
-		meta1.setNameInJavascript("interval");
+		meta1.setNameInJavascript(TimeAverageProcessor.INTERVAL_NAME);
 		meta1.setDefaultValue("60000");
 		meta1.setClazzType(Integer.class);
 		ChartVarMeta meta2 = new ChartVarMeta();
 		meta2.setLabel("Epoch Offset");
-		meta2.setNameInJavascript("epochOffset");
+		meta2.setNameInJavascript(TimeAverageProcessor.OFFSET_NAME);
 		meta2.setClazzType(Integer.class);
 		ChartVarMeta meta3 = new ChartVarMeta();
 		meta3.setLabel("Max To Stop Splining");
@@ -95,12 +95,12 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public void initModule(Map<String, String> options, Long start, Long end) {
+	public void initModule(Map<String, String> options, long start, long end) {
 		super.initModule(options, start, end);
 		initParameters(options, start, end);
 	}
 
-	private void initParameters(Map<String, String> options, Long start, Long end2) {
+	private void initParameters(Map<String, String> options, long start, long end2) {
 		columnsToInterpolate=Arrays.asList(new String[]{valueColumn});
 		String columnsToInterpolateString = options.get("columnsToInterpolate");
 		if (StringUtils.isNotBlank(columnsToInterpolateString)) {
@@ -111,7 +111,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			uninterpalatedValueMethod = UninterpalatedValueMethod.NEAREST_ROW;
 
 		// param 2: Interval: long
-		String intervalStr = fetchProperty("interval", "60000", options);
+		String intervalStr = fetchProperty(TimeAverageProcessor.INTERVAL_NAME, "60000", options);
 		try {
 			interval = Long.parseLong(intervalStr);
 			if (interval < 1) {
@@ -123,7 +123,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			throw new BadRequest(msg);
 		}
 
-		String epoch = options.get("epochOffset");
+		String epoch = options.get(TimeAverageProcessor.OFFSET_NAME);
 		if(epoch == null) {
 			epochOffset = calculateOffset();
 		} else
@@ -175,7 +175,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
 
-		long startTime = Long.MIN_VALUE;
+		long startTime = Long.MIN_VALUE+1;
 		if(params.getStart() != null)
 			startTime = params.getStart();
 		long end = Long.MAX_VALUE;

@@ -43,7 +43,7 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new LocalMetaInformation(parameterMeta);
 	private static String NAME_IN_JAVASCRIPT = "table";
-	private static String COL_NAME = "columnName";
+	public static String COL_NAME = "columnName";
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

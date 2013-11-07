@@ -44,7 +44,7 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 			if(child == null) //Needs to be removed so external modules can work
 				throw new DatabusBadRequest("Processor="+moduleName+" does not exist at this time");
 	
-			if(child.getSourceDirection() != Direction.PULL)
+			if(child.getSourceDirection() != Direction.PULL && child.getSourceDirection() != Direction.EITHER)
 				throw new IllegalStateException("Can't wire in child="+child+" as he is not a PullProcessor");
 	
 			if(child instanceof EndOfChain && isReversed) {
@@ -65,8 +65,8 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 		
 		String startStr = Request.current().params.get("start");
 		String endStr = Request.current().params.get("end");
-		Long start = Long.MIN_VALUE+1;
-		Long end = Long.MAX_VALUE;
+		long start = Long.MIN_VALUE+1;
+		long end = System.currentTimeMillis();
 		if(startStr != null)
 			start = Long.parseLong(startStr);
 		if(endStr != null)
@@ -180,5 +180,10 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 		if(parent != null)
 			return parent.getAggregationList();
 		return new ArrayList<String>();
+	}
+	
+	protected Long fetchLong(String key, Map<String, String> options) {
+		String val = options.get(key);
+		return Long.parseLong(val);
 	}
 }
