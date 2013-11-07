@@ -36,9 +36,8 @@ public class SumStreamProcessor extends StreamsProcessor {
 	}
 
 	@Override
-	public void initModule(Map<String, String> options, Long start, Long end) {
+	public void initModule(Map<String, String> options, long start, long end) {
 		super.initModule(options, start, end);
-		
 		String outputCol = options.get(COL_NAME);
 		valueColumn = outputCol;
 	}

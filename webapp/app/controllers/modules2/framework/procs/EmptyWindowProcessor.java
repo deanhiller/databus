@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import controllers.modules2.EmptyFlag;
 import controllers.modules2.SplinesPullProcessor;
+import controllers.modules2.SplinesV3PullProcessor;
 import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
@@ -27,7 +28,7 @@ public abstract class EmptyWindowProcessor extends PushOrPullProcessor {
 	private ReadResult lastRead;
 
 	public void initEmptyParser(long start, long end2, long interval2, Long epochOffset) {
-		startOfTheWindow = SplinesPullProcessor.calculateStartTime(start, interval2, epochOffset);
+		startOfTheWindow = SplinesV3PullProcessor.calculateStartTime(start, interval2, epochOffset);
 		this.end = end2;
 		interval = interval2;
 		initEndOfWindow();

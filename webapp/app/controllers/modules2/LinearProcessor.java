@@ -60,13 +60,13 @@ public class LinearProcessor extends PullProcessorAbstract {
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");
-		meta1.setNameInJavascript("interval");
+		meta1.setNameInJavascript(TimeAverageProcessor.INTERVAL_NAME);
 		meta1.setRequired(true);
 		meta1.setDefaultValue("60000");
 		meta1.setHelp("The interval we return data at(so for 60000, we return you data points that are 60 seconds apart");
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Epoch Offset");
-		meta.setNameInJavascript("epochOffset");
+		meta.setNameInJavascript(TimeAverageProcessor.OFFSET_NAME);
 		meta.setHelp("The offset from the epoch that the initial time will match.  After that, every datapoint is Interval apart.  " +
 				"If left blank, we use the start time as the offset");
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
@@ -86,14 +86,14 @@ public class LinearProcessor extends PullProcessorAbstract {
 	}
 
 	@Override
-	public void initModule(Map<String, String> options, Long start, Long end) {
+	public void initModule(Map<String, String> options, long start, long end) {
 		super.initModule(options, start, end);
 		initParameters(options, start, end);
 	}
 
-	private void initParameters(Map<String, String> options, Long start, Long end) {
+	private void initParameters(Map<String, String> options, long start, long end) {
 		// param 2: Interval: long
-		String intervalStr = fetchProperty("interval", "60000", options);
+		String intervalStr = fetchProperty(TimeAverageProcessor.INTERVAL_NAME, "60000", options);
 		try {
 			interval = Long.parseLong(intervalStr);
 			if (interval < 1) {
@@ -105,7 +105,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 			throw new BadRequest(msg);
 		}
 
-		String epoch = options.get("epochOffset");
+		String epoch = options.get(TimeAverageProcessor.OFFSET_NAME);
 		if(epoch == null) {
 			epochOffset = calculateOffset();
 		} else
@@ -124,7 +124,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
 
-		long startTime = Long.MIN_VALUE;
+		long startTime = Long.MIN_VALUE+1;
 		if(params.getStart() != null)
 			startTime = params.getStart();
 		long end = Long.MAX_VALUE;
