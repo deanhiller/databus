@@ -5,6 +5,7 @@ import gov.nrel.util.Utility;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import models.EntityUser;
@@ -61,10 +62,18 @@ public class GUISearch extends Controller {
 		}
 		
 		Map<String, List<SearchItem>> searchableItems = GUISearch.userIndexMapCache.get(user.getId());
-		List<String> indexes = new ArrayList<String>(searchableItems.keySet());
+		//Phils original code:
+		//List<String> indexes = new ArrayList<String>(searchableItems.keySet());
+		List<String> indexes = new ArrayList<String>();
+		for (Entry<String, List<SearchItem>> entry:searchableItems.entrySet()) {
+			for (SearchItem s:entry.getValue()) {
+				indexes.add(s.getId());
+			}
+		}
+			
 		java.util.Collections.sort(indexes);
 		
-		System.out.println("Recieved " + indexes.size() + " indices");
+		log.info("Recieved " + indexes.size() + " indices");
 		
 		render(indexes);
 	}
