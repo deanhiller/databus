@@ -297,7 +297,7 @@ public class EntityUser extends Entity {
 		
 		if(selected == null) {
 			selected = new ChartDbo();
-			selected.setEncodedVariables("eyJ0aXRsZSI6IkZha2UgQ2hhcnQiLCJ5YXhpc0xhYmVsIjoiTGVuZ3RoIiwidW5pdHMiOiJpbmNoZXMiLCJtc2ciOiJUaGlzIGlzIGEgZmFrZSBjaGFydCJ9");
+			selected.setEncodedVariables("eyJfX2NoYXJ0SWQiOiJGYWtlQ2hhcnQtanMiLCJ1cmwiOiIiLCJ0aXRsZSI6IkEgRmFrZSBDaGFydCIsInlheGlzTGFiZWwiOiIiLCJtc2ciOiIiLCJ1bml0cyI6IiJ9");
 			selected.setChartId("FakeChart-js");
 		}
 		
