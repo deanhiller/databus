@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.netflix.astyanax.connectionpool.exceptions.BadRequestException;
 
+import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 import controllers.modules.SplinesBigDec;
 import controllers.modules.SplinesBigDecBasic;
@@ -84,6 +85,17 @@ public class GapProcessor extends PullProcessorAbstract {
 		return setup;
 	}
 
+	
+	@Override
+	public void initModule(Map<String, String> options, long start, long end) {
+		super.initModule(options, start, end);
+		Request request1 = Request.current();
+		String val = request1.params.get("reverse");
+		reversed = "true".equalsIgnoreCase(val);
+		initialize(options);
+		readAheadProc = new ProxyProcessor((PullProcessor) getSingleChild());
+	}
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		if(log.isInfoEnabled())
@@ -91,14 +103,18 @@ public class GapProcessor extends PullProcessorAbstract {
 		String newPath = super.init(path, nextInChain, visitor, options);
 
 		reversed = visitor.isReversed();
+		initialize(options);
+
+		return newPath;
+	}
+
+	private void initialize(Map<String, String> options) {
 		String maxG = options.get("maxGap");
 		if(maxG == null) {
 			String maxM = fetchProperty("maxMultiple", "10", options);
 			maxMultiple = Integer.parseInt(maxM);
 		} else
 			maxBeforeInsertingNull = 1000*Long.parseLong(maxG);
-
-		return newPath;
 	}
 
 	@Override
