@@ -1,6 +1,5 @@
 #!/bin/bash
 
-cp conf/prod.logback.xml conf/logback.xml
 cp conf/application.conf.qa conf/application.conf
 
 #NOTE: Developers, PLEASE do not start this script and start using the 
