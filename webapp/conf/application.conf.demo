@@ -1,0 +1,141 @@
+# Welcome to the DataBus configuration file
+#  vXX.X 13Sep2013 
+#
+# This file set the configuration options for a DataBus installation.
+# Options have the form PROPERTY=VALUE. The application can be started in different modes,
+#  with different values used in each mode. 
+#
+#  # The domain property is used for Active Directory.
+#  domain=nrel.gov
+#
+#  Scripts for starting the DataBus application in different modes are in databus/webapp/ .
+#   (startProduction.sh, startDemo.sh, startQa.sh)
+#  Note that starting DataBus without specifying a mode will enable "dev" mode (See "Application Mode").
+
+## Section 1: Essential Properties
+# You will need to set these properties in order to start using DataBus.
+
+# User Authentication
+# ~~~~~
+# DataBus can use Active Directory or a internal user list for user authetication. For AD, your IT
+#  should have an SRV record in DNS on the location of the AD server and port information.
+#  Supplying your domain here allows DataBus to use DNS to lookup the SRV record and find your Active Directory. 
+# Using a value of none disables AD lookup. In this case, users are authenticated against the internal DataBus user list.
+domain=none
+
+admins=dhiller2,jcollins
+
+# Cassandra settings
+# ~~~~~
+#  IMPORTANT: Make sure you modify the nosql.cassandra.seeds list to your node hostnames OR just name your nodes a1, a2, etc. etc.
+nosql.nosqltype=cassandra
+nosql.cassandra.keyspace=databus
+nosql.cassandra.clusterName=DemoCluster
+nosql.cassandra.seeds=localhost:9160
+
+# Built-in Chart options
+# ~~~~~
+# DataBus includes a demo version of the Highcharts JS scripting library (http://www.highcharts.com/)
+#  for creating charts in the GUI.
+# You may use highcharts with the free demo, or purchase a license from Highcharts, or use a different library.
+# Note that you must purchase a highcharts license for commercial use. 
+# Select GUI charts enable/disable, and if enabled, which charting library
+#    OPTIONS: highcharts_disabled - Disable highcharts.
+#             highcharts - Use the free demo mode of highcharts.
+#             highcharts_licensed  - You have purchased a highcharts license
+gui.charting.enabled=true
+gui.charting.library=highcharts_licensed
+
+# Demo mode
+# ~~~~~
+# The built-in demo mode populates the database with demo data and displays
+#  a series of guided help messages on the gui to illustrate the features of DataBus.
+#  Note that startup will be slowed by the population of the database with demo data.
+demo.mode=true
+
+## Section 2: Advanced Properties
+# Settings these properties may be necessary for larger or more complex installations.
+
+#Email configuration for SMTP mail server so we can send email when a stream is down
+email.host=sdi-ci
+email.fromaddress=dean.hiller@nrel.gov
+
+# Url-resolving in Jobs
+# ~~~~~~
+# When rendering templates with reverse-url-resoling (@@{..}) in Jobs (which do not have an inbound Http.Request),
+# ie if sending a HtmlMail, Play need to know which url your users use when accessing your app.
+application.baseUrl=https://databusdemo.nrel.gov
+
+#The url that we turn around and make requests to(service chaining)
+application.requestUrl=http://beach.nrel.gov:8080
+
+# This is the main configuration file for the application.
+# ~~~~~
+application.name=sdiwebapp
+application.mode=prod
+
+# Secret key
+# ~~~~~
+# The secret key is used to secure cryptographics functions
+# If you deploy your application to several instances be sure to use the same key !
+application.secret=9lAKmZe1zQoiRknESDAhXnrVbwKBYURZlJVIaPkgpCgaH51aBQIMVZgmK5DxQqE2
+
+# Date format
+# ~~~~~
+date.format=yyyy-MM-dd
+
+# Server configuration
+# ~~~~~
+# If you need to change the HTTP port, uncomment this (default is set to 9000)
+http.port=8080
+
+XForwardedSupport=all
+
+# Session configuration
+# ~~~~~~~~~~~~~~~~~~~~~~
+# By default, session will be written to the transient PLAY_SESSION cookie.
+# The cookies are not secured by default, only set it to true
+# if you're serving your pages through https.
+# application.session.cookie=PLAY
+application.session.secure=false
+application.session.maxAge=1h
+application.session.httpOnly=true
+
+# Session/Cookie sharing between subdomain
+# ~~~~~~~~~~~~~~~~~~~~~~
+# By default a cookie is only valid for a specific domain. By setting
+# application.defaultCookieDomain to '.example.com', the cookies
+# will be valid for all domains ending with '.example.com', ie:
+# foo.example.com and bar.example.com
+# application.defaultCookieDomain=.example.com
+
+# Java source level => 1.5, 1.6 or 1.7 (experimental)
+# java.source=1.5
+java.source=1.6
+
+# SOLR configuration
+solr.mode=server
+solr.url=http://b1:8983/solr
+solr.queryRequestHandler=select
+solr.defaultSearchField=allTerms_texts
+
+#Every server polls the tables this rate(in millis).  This is not the poll rate of the bacnet nor modbus clients but is
+# the poll rate of databus servers only for monitoring/cron jobs that are scheduled
+monitor.rate=60000
+
+# HTTP Response headers control for static files
+# ~~~~~
+# Set the default max-age, telling the user's browser how long it should cache the page.
+# Default is 3600 (one hour). Set it to 0 to send no-cache.
+# This is only read in prod mode, in dev mode the cache is disabled.
+# http.cacheControl=3600
+
+# Execution pool
+# ~~~~~
+# Default to 1 thread in DEV mode or (nb processors + 1) threads in PROD mode.
+# Try to keep a low as possible. 1 thread will serialize all requests (very useful for debugging purpose)
+# play.pool=3
+#NOTE: We modify to 25 as when cassandra slows down, we can see the issue clearly otherwise we get requests waiting to start which we don't really
+#want when we hit it for a test as we miss out on the real timing info(ie. wait long period then process it causes it to go fast...ask dean)
+play.pool=25
+
