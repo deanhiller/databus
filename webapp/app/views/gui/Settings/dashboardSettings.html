@@ -206,7 +206,7 @@ Any changes are not applied until you click the Save button
 			if(chart.isBuiltIn) {
 				var encodedVars = chart.encoding;
                 var chartId = chart.chartId;
-                url = '/chartbasic/chart/'+chartId+"/"+encodedVars;
+                url = '/chartbasic/chart/'+encodedVars;
 			} else if(chart.url == '') {
 				var encodedVars = chart.encoding;
 				var chartId = chart.chartId;
@@ -218,7 +218,7 @@ Any changes are not applied until you click the Save button
 					if(pulldownIndex == 2)
 						type = 'largechart';
 				}
-				url = '/charts/'+type+'/'+chartId+'/'+encodedVars;
+				url = '/charts/'+type+'/'+encodedVars;
 			} else
 				url = chart.url;
 
