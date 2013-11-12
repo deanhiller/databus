@@ -128,7 +128,7 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		DboTableMeta meta = sdiTable.getTableMeta();
 		
 		Long start = parseParam("start");
-		Long end = parseParam("stop");
+		Long end = parseParam("end");
 
 		if(meta.isTimeSeries()) {
 			if(visitor.isReversed())
@@ -155,7 +155,7 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		if(start == null)
 			start = parseParam("start");
 		if(end == null)
-			end = parseParam("stop");
+			end = parseParam("end");
 		
 		SecureTable sdiTable = null;
 		if(skipSecurity) {

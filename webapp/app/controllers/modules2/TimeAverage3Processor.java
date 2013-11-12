@@ -5,6 +5,8 @@ import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.mortbay.log.Log;
+
 import models.message.ChartVarMeta;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -82,9 +84,11 @@ public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 	}
 
 	@Override
-	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow) {
+	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow, long interval) {
 		TSRelational r = new TSRelational(timeColumn, valueColumn);
-		setTime(r, endOfWindow);
+		long time = startOfWindow + (interval/2);
+		
+		setTime(r, time);
 		if(total != null) {
 			BigDecimal average = total.divide(new BigDecimal(numberOfPoints), 10, RoundingMode.HALF_UP);
 			setValue(r, average);

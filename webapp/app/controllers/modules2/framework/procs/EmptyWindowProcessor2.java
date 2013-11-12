@@ -30,7 +30,8 @@ public abstract class EmptyWindowProcessor2 extends PullProcessorAbstract {
 	private boolean hasData;
 
 	public void initEmptyParser(long start, long end2, long interval2, Long epochOffset) {
-		startOfTheWindow = SplinesV3PullProcessor.calculateStartTime(start, interval2, epochOffset);
+		long half = interval2 / 2;
+		startOfTheWindow = SplinesV3PullProcessor.calculateStartTime(start, interval2, epochOffset) + half;
 		this.end = end2;
 		interval = interval2;
 		initEndOfWindow();
@@ -50,7 +51,11 @@ public abstract class EmptyWindowProcessor2 extends PullProcessorAbstract {
 		while(startOfTheWindow < end) {
 			ReadResult read = readNextValue(proc);
 			if(read.isEndOfStream()) {
-				return fetchWindowResult();
+				if(!hasData)
+					return read;
+				ReadResult res = fetchWindowResult();
+				hasData = false;
+				return res;
 			} else if(read.isMissingData())
 				return read;
 
@@ -103,7 +108,7 @@ public abstract class EmptyWindowProcessor2 extends PullProcessorAbstract {
 	}
 	
 	private TSRelational readDataForWindow() {
-		TSRelational r = readLastWindowsValue(startOfTheWindow, endOfTheWindow);
+		TSRelational r = readLastWindowsValue(startOfTheWindow, endOfTheWindow, interval);
 		
 		startOfTheWindow += interval;
 		initEndOfWindow();
@@ -111,7 +116,7 @@ public abstract class EmptyWindowProcessor2 extends PullProcessorAbstract {
 	}
 
 	protected abstract void incomingTimeValue(long time, TSRelational value);
-	protected abstract TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow);
+	protected abstract TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow, long interval);
 
 	//unused
 	protected TSRelational modifyRow(TSRelational row) {
