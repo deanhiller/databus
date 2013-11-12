@@ -60,13 +60,15 @@ public class LinearProcessor extends PullProcessorAbstract {
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");
-		meta1.setNameInJavascript(TimeAverageProcessor.INTERVAL_NAME);
+		meta1.setNameInJavascript(TimeAverage3Processor.INTERVAL_NAME);
 		meta1.setRequired(true);
 		meta1.setDefaultValue("60000");
 		meta1.setHelp("The interval we return data at(so for 60000, we return you data points that are 60 seconds apart");
 		ChartVarMeta meta = new ChartVarMeta();
 		meta.setLabel("Epoch Offset");
-		meta.setNameInJavascript(TimeAverageProcessor.OFFSET_NAME);
+		meta.setRequired(true);
+		meta.setDefaultValue("0");
+		meta.setNameInJavascript(TimeAverage3Processor.OFFSET_NAME);
 		meta.setHelp("The offset from the epoch that the initial time will match.  After that, every datapoint is Interval apart.  " +
 				"If left blank, we use the start time as the offset");
 		parameterMeta.put(meta1.getNameInJavascript(), meta1);
@@ -88,12 +90,13 @@ public class LinearProcessor extends PullProcessorAbstract {
 	@Override
 	public void initModule(Map<String, String> options, long start, long end) {
 		super.initModule(options, start, end);
+		epochOffset = fetchLong(TimeAverage3Processor.OFFSET_NAME, options);
 		initParameters(options, start, end);
 	}
 
 	private void initParameters(Map<String, String> options, long start, long end) {
 		// param 2: Interval: long
-		String intervalStr = fetchProperty(TimeAverageProcessor.INTERVAL_NAME, "60000", options);
+		String intervalStr = fetchProperty(TimeAverage3Processor.INTERVAL_NAME, "60000", options);
 		try {
 			interval = Long.parseLong(intervalStr);
 			if (interval < 1) {
@@ -104,12 +107,6 @@ public class LinearProcessor extends PullProcessorAbstract {
 			String msg = "/linearV1(interval="+intervalStr+")/ ; interval is not a long ";
 			throw new BadRequest(msg);
 		}
-
-		String epoch = options.get(TimeAverageProcessor.OFFSET_NAME);
-		if(epoch == null) {
-			epochOffset = calculateOffset();
-		} else
-			epochOffset = parseOffset(epoch);
 		
 		this.end = end;
 		
@@ -130,6 +127,25 @@ public class LinearProcessor extends PullProcessorAbstract {
 		long end = Long.MAX_VALUE;
 		if(params.getEnd() != null)
 			end = params.getEnd();
+		
+		String intervalStr = fetchProperty(TimeAverage3Processor.INTERVAL_NAME, "60000", options);
+		try {
+			interval = Long.parseLong(intervalStr);
+			if (interval < 1) {
+				String msg = "/linearV1(interval="+interval+")/ ; interval must be > 0 ";
+				throw new BadRequest(msg);
+			}
+		} catch (NumberFormatException e) {
+			String msg = "/linearV1(interval="+intervalStr+")/ ; interval is not a long ";
+			throw new BadRequest(msg);
+		}
+		
+		String epoch = options.get(TimeAverage3Processor.OFFSET_NAME);
+		if(epoch == null) {
+			epochOffset = calculateOffset();
+		} else
+			epochOffset = parseOffset(epoch);
+		
 		initParameters(options, startTime, end);
 
 		return newPath;

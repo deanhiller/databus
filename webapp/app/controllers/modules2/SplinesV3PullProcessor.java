@@ -59,12 +59,15 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");
-		meta1.setNameInJavascript(TimeAverageProcessor.INTERVAL_NAME);
+		meta1.setNameInJavascript(TimeAverage3Processor.INTERVAL_NAME);
 		meta1.setDefaultValue("60000");
+		meta1.setRequired(true);
 		meta1.setClazzType(Integer.class);
 		ChartVarMeta meta2 = new ChartVarMeta();
 		meta2.setLabel("Epoch Offset");
-		meta2.setNameInJavascript(TimeAverageProcessor.OFFSET_NAME);
+		meta2.setDefaultValue("0");
+		meta2.setRequired(true);
+		meta2.setNameInJavascript(TimeAverage3Processor.OFFSET_NAME);
 		meta2.setClazzType(Integer.class);
 		ChartVarMeta meta3 = new ChartVarMeta();
 		meta3.setLabel("Max To Stop Splining");
@@ -97,6 +100,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	@Override
 	public void initModule(Map<String, String> options, long start, long end) {
 		super.initModule(options, start, end);
+		epochOffset = fetchLong(TimeAverage3Processor.OFFSET_NAME, options);
 		initParameters(options, start, end);
 	}
 
@@ -111,7 +115,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			uninterpalatedValueMethod = UninterpalatedValueMethod.NEAREST_ROW;
 
 		// param 2: Interval: long
-		String intervalStr = fetchProperty(TimeAverageProcessor.INTERVAL_NAME, "60000", options);
+		String intervalStr = fetchProperty(TimeAverage3Processor.INTERVAL_NAME, "60000", options);
 		try {
 			interval = Long.parseLong(intervalStr);
 			if (interval < 1) {
@@ -122,12 +126,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 			String msg = "/splinesV3(interval="+intervalStr+")/ ; interval is not a long ";
 			throw new BadRequest(msg);
 		}
-
-		String epoch = options.get(TimeAverageProcessor.OFFSET_NAME);
-		if(epoch == null) {
-			epochOffset = calculateOffset();
-		} else
-			epochOffset = parseOffset(epoch);
 		
 		String multipleOfInterval = fetchProperty("maxToStopSplining", "5", options);
 		int maxNumIntervalsStopSplining = Integer.parseInt(multipleOfInterval);
@@ -169,19 +167,44 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		currentTimePointer = calculateStartTime(start, interval, epochOffset);
 	}
 
+	private void calculateOffset(Map<String, String> options, Long startTime, long interval) {
+		String epoch = options.get(TimeAverage3Processor.OFFSET_NAME);
+		if(epoch == null) {
+			epochOffset = calculateOffset(startTime, interval);
+		} else
+			epochOffset = parseOffset(epoch);
+	}
+
 	@Override
 	public String init(String path, ProcessorSetup nextInChain, VisitorInfo visitor, Map<String, String> options) {
 		if(log.isInfoEnabled())
 			log.info("initialization of splines pull processor");
 		String newPath = super.init(path, nextInChain, visitor, options);
 
-		long startTime = Long.MIN_VALUE+1;
+		Long startTime = null;
 		if(params.getStart() != null)
 			startTime = params.getStart();
 		long end = Long.MAX_VALUE;
 		if(params.getEnd() != null)
 			end = params.getEnd();
 		
+		// param 2: Interval: long
+		String intervalStr = fetchProperty(TimeAverage3Processor.INTERVAL_NAME, "60000", options);
+		try {
+			interval = Long.parseLong(intervalStr);
+			if (interval < 1) {
+				String msg = "/splinesV2(interval="+interval+")/ ; interval must be > 0 ";
+				throw new BadRequest(msg);
+			}
+		} catch (NumberFormatException e) {
+			String msg = "/splinesV3(interval="+intervalStr+")/ ; interval is not a long ";
+			throw new BadRequest(msg);
+		}		
+		
+		calculateOffset(options, startTime, interval);
+		
+		if(startTime == null)
+			startTime = Long.MIN_VALUE+1;
 		initParameters(options, startTime, end);
 
 		//USE CASES
@@ -207,11 +230,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		return newPath;
 	}
 
-	protected long calculateOffset() {
-		Long startTime = null;
-		if(params != null)
-			startTime = params.getStart();
-
+	protected static long calculateOffset(Long startTime, long interval) {
 		if(startTime != null) {
 			long offset = startTime % interval;
 			return offset;
@@ -219,11 +238,11 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 		return 0;
 	}
 	
-	protected long parseOffset(String offset) {
+	protected static long parseOffset(String offset) {
 		try {
 			return Long.parseLong(offset);
 		} catch (NumberFormatException e) {
-			String msg = "/splinesV3(epochOffset="+offset+")/ epochOffset is not a long";
+			String msg = "epochOffset is not a long. val="+offset;
 			throw new BadRequest(msg);
 		}
 	}
