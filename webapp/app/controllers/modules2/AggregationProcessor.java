@@ -19,6 +19,7 @@ import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.RowMeta;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
 public class AggregationProcessor extends StreamsProcessor {
@@ -36,6 +37,12 @@ public class AggregationProcessor extends StreamsProcessor {
 
 	static {
 		metaInfo.setDescription("This module takes many streams that are already aligned on time(time, value pairs) and condenses it to time, value1, value2, value3 passing that to the next module");
+	}
+
+	
+	@Override
+	public RowMeta getRowMeta() {
+		return null;
 	}
 
 	@Override
