@@ -39,12 +39,6 @@ public class AggregationProcessor extends StreamsProcessor {
 		metaInfo.setDescription("This module takes many streams that are already aligned on time(time, value pairs) and condenses it to time, value1, value2, value3 passing that to the next module");
 	}
 
-	
-	@Override
-	public RowMeta getRowMeta() {
-		return null;
-	}
-
 	@Override
 	public MetaInformation getGuiMeta() {
 		return metaInfo;

@@ -19,6 +19,7 @@ import models.EntityUser;
 import models.message.ChartMeta;
 import models.message.ChartPageMeta;
 import models.message.ChartVarMeta;
+import models.message.StreamEditor;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
@@ -127,23 +128,8 @@ public class MyChartsGeneric extends Controller {
 
 		List<String> columnNames = new ArrayList<String>();
 		if(page > 0 && needsColumns(pageMeta)) {
-			String url = variables.get("url");
-			RawProcessorFactory factory = ModuleController.fetchFactory();
-			RawProcessorFactory.threadLocal.set("passthroughV1");
-			PullProcessor top = (PullProcessor) factory.get();
-			VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
-			String path = url.substring("/api/".length());
-			PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
-			ReadResult result = root.read();
-			if(result.isEndOfStream()) {
-				flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-				chartVariables(page, encoded);
-			}
-				
-			TSRelational row = result.getRow();
-			for(Entry<String, Object> entry : row.entrySet()) {
-				columnNames.add(entry.getKey());
-			}
+			StreamEditor editor = DataStreamUtil.decode(variables);
+			columnNames = MyCharts.fetchColumnNames(editor);
 		}
 
 		String subtitle = "("+(page+1) +" of "+chart.getChartMeta().getPages().size()+")";
@@ -208,33 +194,6 @@ public class MyChartsGeneric extends Controller {
 			} else if(key.equals("rangeType")) {
 				String rangeTypeValue = paramMap.get(key)[0];
 				putVariablesInMap(paramMap, variablesMap, rangeTypeValue, chart);
-			}
-		}
-
-		if(page == 0) {
-			String url = variablesMap.get("url");
-			RawProcessorFactory factory = ModuleController.fetchFactory();
-			RawProcessorFactory.threadLocal.set("passthroughV1");
-			PullProcessor top = (PullProcessor) factory.get();
-			VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
-			if(!StringUtils.isEmpty(url)) {
-				String path = url.substring("/api/".length());
-				try {
-					PullProcessor root = (PullProcessor) top.createPipeline(path, visitor, null, true);
-					ReadResult result = root.read();
-					if(result.isEndOfStream()) {
-						params.flash();
-						validation.keep();
-						flash.error("This stream cannot be used at this point as no data comes out(either raw data tables don't have it or a module causes no data to come out)");
-						chartVariables(page, encoded);
-					}
-				} catch(Exception e) {
-					params.flash();
-					validation.keep();
-					log.info("Invalid url from user="+url, e);
-					flash.error("This stream url is invalid, "+e.getMessage());
-					chartVariables(page, encoded);
-				}
 			}
 		}
 		
