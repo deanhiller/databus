@@ -106,7 +106,7 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 
 	@Override
 	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow) {
-		TSRelational r = new TSRelational(timeColumn, valueColumn);
+		TSRelational r = new TSRelational();
 		r.setTime(startOfWindow);
 		if(min.size()!=0) {
 			for (String column:columnsToProcess) {

@@ -66,7 +66,7 @@ public class SumStreamProcessor2 extends StreamsProcessor2 {
 			return new ReadResult();
 		}
 		
-		TSRelational ts = new TSRelational(timeColumn, valueColumn);
+		TSRelational ts = new TSRelational();
 		setTime(ts, timeCompare);
 		setValue(ts, total);
 		ReadResult res = new ReadResult(null, ts);

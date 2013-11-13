@@ -29,6 +29,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
+import controllers.modules2.framework.procs.RowMeta;
 
 public class SqlPullProcessor extends PullProcessorAbstract {
 
@@ -41,6 +42,11 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 		return 1;
 	}
 
+	@Override
+	public RowMeta getRowMeta() {
+		return null;
+	}
+	
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor, ProcessorSetup child, boolean alreadyAdded) {
 		return null;
@@ -103,7 +109,7 @@ public class SqlPullProcessor extends PullProcessorAbstract {
 	}
 
 	private ReadResult translate(List<TypedRow> typedRows) {
-		TSRelational tv = new TSRelational(timeColumn, valueColumn);
+		TSRelational tv = new TSRelational();
 		for(int i = 0; i < typedRows.size(); i++) {
 			TypedRow row = typedRows.get(i);
 			DboTableMeta meta = row.getView().getTableMeta();

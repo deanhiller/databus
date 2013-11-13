@@ -35,6 +35,8 @@ public interface ProcessorSetup {
 	
 	List<String> getAggregationList();
 
+	RowMeta getRowMeta();
+
 	// Y Y N N N
 	// N Y Y Y Y
 	// Y N N Y Y

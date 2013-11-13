@@ -85,7 +85,7 @@ public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 
 	@Override
 	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow, long interval) {
-		TSRelational r = new TSRelational(timeColumn, valueColumn);
+		TSRelational r = new TSRelational();
 		long time = startOfWindow + (interval/2);
 		
 		setTime(r, time);

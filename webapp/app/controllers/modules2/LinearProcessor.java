@@ -52,8 +52,6 @@ public class LinearProcessor extends PullProcessorAbstract {
 
 	private boolean isSplineCreated;
 
-	private boolean firstRow = true;
-
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Linear Interpolation");
 
@@ -249,15 +247,6 @@ public class LinearProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
-		if(firstRow) {
-			String timeCol = row.getTimeColumn();
-			if(timeCol != null)
-				timeColumn = timeCol;
-			String valCol = row.getValueColumn();
-			if(valCol != null)
-				valueColumn = valCol;
-			firstRow  = false;
-		}
 		buffer.add(row);
 	}
 

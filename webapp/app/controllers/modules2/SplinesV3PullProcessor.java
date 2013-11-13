@@ -35,6 +35,7 @@ import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PullProcessorAbstract;
+import controllers.modules2.framework.procs.RowMeta;
 
 public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
@@ -51,7 +52,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 
 	private CircularFifoBuffer master;
 	private long end;
-	private boolean firstRow = true;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Spline(version 3)");
@@ -95,6 +95,21 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	@Override
 	protected int getNumParams() {
 		return 0;
+	}
+
+	
+	@Override
+	public void start(VisitorInfo visitor) {
+		super.start(visitor);
+		
+		RowMeta rowMeta = getSingleChild().getRowMeta();
+		if(rowMeta != null) {
+			//very special case very bad hack but need to complete story and revisit for relational time series later
+			for(ColumnState state : columns) {
+				state.setColumnName(rowMeta.getValueColumn());
+				state.setTimeColumn(rowMeta.getTimeColumn());
+			}
+		}
 	}
 
 	@Override
@@ -402,20 +417,6 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	}
 
 	private void transferRow(TSRelational row) {
-		if(firstRow) {
-			String timeCol = row.getTimeColumn();
-			if(timeCol != null)
-				timeColumn = timeCol;
-			String valCol = row.getValueColumn();
-			if(valCol != null) {
-				//very special case very bad hack but need to complete story and revisit for relational time series later
-				for(ColumnState state : columns) {
-					state.setColumnName(valCol);
-				}
-				valueColumn = valCol;
-			}
-			firstRow  = false;
-		}
 		master.add(row);
 		for(ColumnState s : columns) {
 			s.transferRow(row, currentTimePointer);

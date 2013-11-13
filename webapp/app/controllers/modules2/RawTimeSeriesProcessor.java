@@ -31,6 +31,7 @@ import controllers.api.ApiPostDataPointsImpl;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
+import controllers.modules2.framework.procs.RowMeta;
 
 public class RawTimeSeriesProcessor implements RawSubProcessor {
 
@@ -53,13 +54,13 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	private String valueColumn;
 
 	@Override
-	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, String timeCol, String valCol) {
+	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, RowMeta rowMeta) {
 		mgr = visitor.getMgr();
 		this.meta = meta;
 		this.url = url;
 		
-		this.timeColumn = timeCol;
-		this.valueColumn = valCol;
+		this.timeColumn = rowMeta.getTimeColumn();
+		this.valueColumn = rowMeta.getValueColumn();
 		
 		this.start = start;
 		this.end = end;
@@ -155,7 +156,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		Object time = meta.getIdColumnMeta().convertFromStorage2(name);
 		Object val = colMeta.convertFromStorage2(value);
 		//TODO:  parameterize timeColumn and valueColumn from options
-		TSRelational tv = new TSRelational(timeColumn, valueColumn);
+		TSRelational tv = new TSRelational();
 		tv.put(timeColumn, time);
 		tv.put(valueColumn, val);
 		return new ReadResult(url, tv);

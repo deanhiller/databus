@@ -85,7 +85,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	protected ReadResult process(List<TSRelational> rows) {
 		Long timeCompare = null;
 		BigDecimal total = BigDecimal.ZERO;
-		TSRelational ts = new TSRelational(timeColumn, null);
+		TSRelational ts = new TSRelational();
 		
 		int index = 0;
 		for(TSRelational row : rows) {

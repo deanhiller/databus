@@ -187,4 +187,8 @@ public class ColumnState {
 		this.colName = valCol;
 	}
 
+	public void setTimeColumn(String timeColumn) {
+		this.timeCol = timeColumn;
+	}
+
 }

@@ -107,7 +107,7 @@ public class TestTimeAveProcessor {
 			throw new IllegalArgumentException("arrays must be the same length");
 		List<TSRelational> rows = new ArrayList<TSRelational>();
 		for(int i = 0; i < times.length; i++) {
-			TSRelational map = new TSRelational("time", "value");
+			TSRelational map = new TSRelational();
 			map.setTime(times[i]);
 			map.put("value", new BigDecimal(values[i]+""));
 			rows.add(map);

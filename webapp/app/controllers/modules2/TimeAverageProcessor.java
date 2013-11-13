@@ -47,7 +47,7 @@ public class TimeAverageProcessor extends EmptyWindowProcessor {
 
 	@Override
 	protected TSRelational readLastWindowsValue(long startOfWindow, long endOfWindow) {
-		TSRelational r = new TSRelational(timeColumn, valueColumn);
+		TSRelational r = new TSRelational();
 		setTime(r, endOfWindow);
 		if(total != null) {
 			BigDecimal average = total.divide(new BigDecimal(numberOfPoints), 10, RoundingMode.HALF_UP);

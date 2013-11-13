@@ -31,6 +31,7 @@ import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
+import controllers.modules2.framework.procs.RowMeta;
 
 public class RawProcessor extends EndOfChain implements PullProcessor {
 
@@ -39,7 +40,8 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 	private BigDecimal maxInt = new BigDecimal(Integer.MAX_VALUE);
 	private RawSubProcessor subprocessor;
 	private boolean skipSecurity;
-
+	private RowMeta rowMeta;
+	
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new LocalMetaInformation(parameterMeta);
 	private static String NAME_IN_JAVASCRIPT = "table";
@@ -104,9 +106,16 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 	
 	@Override
 	public MetaInformation getGuiMeta() {
+		//this is per class(ie. this method could be static really except that we use polymorphism to call it on an unknown ProcessorSetup.java(superclass)
 		return metaInfo;
 	}
 
+	@Override
+	public RowMeta getRowMeta() {
+		//this is per instance
+		return rowMeta;
+	}
+	
 	@Override
 	public void createTree(ProcessorSetup parent, StreamModule info, VisitorInfo visitor) {
 		this.parent = parent;
@@ -116,6 +125,8 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		valueColumn = options.get(COL_NAME);
 		timeColumn = "time";
 		
+		rowMeta = new RowMeta(timeColumn, valueColumn);
+
 		SecureTable sdiTable = null;
 		if(skipSecurity) {
 			sdiTable = SecureTable.findByName(visitor.getMgr(), table);
@@ -138,7 +149,7 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		} else
 			subprocessor = new RawStreamProcessor();
 		
-		subprocessor.init(meta, start, end, null, visitor, timeColumn, valueColumn);
+		subprocessor.init(meta, start, end, null, visitor, rowMeta);
 	}
 
 	@Override
@@ -176,7 +187,9 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		} else
 			subprocessor = new RawStreamProcessor();
 		
-		subprocessor.init(meta, start, end, params.getPreviousPath(), visitor, "time", "value");
+		rowMeta = new RowMeta("time", "value");
+		
+		subprocessor.init(meta, start, end, params.getPreviousPath(), visitor, rowMeta);
 		return res;
 	}
 

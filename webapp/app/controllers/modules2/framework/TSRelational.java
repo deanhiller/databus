@@ -9,17 +9,11 @@ import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 public class TSRelational extends HashMap<String, Object>{
 
 	private static final long serialVersionUID = 1L;
-	private String valueColumn;
 	
 	//TODO:  all of the "time" and "value" strings should be setable, not hardcoded:
 	
 	public TSRelational() {
 		super();
-	}
-	
-	public TSRelational(String timeColumn, String valueColumn) {
-		super();
-		this.valueColumn = valueColumn;
 	}
 	
 	public TSRelational(BigInteger time, BigDecimal value) {
@@ -37,16 +31,7 @@ public class TSRelational extends HashMap<String, Object>{
 	}
 
 	public BigDecimal getValue(String col) {
-		if(valueColumn != null)
-			return (BigDecimal) get(valueColumn);
 		return (BigDecimal) get(col);
 	}
 
-	public String getTimeColumn() {
-		return null;
-	}
-
-	public String getValueColumn() {
-		return valueColumn;
-	}
 }

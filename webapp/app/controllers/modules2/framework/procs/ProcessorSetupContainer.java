@@ -1,5 +1,7 @@
 package controllers.modules2.framework.procs;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,8 @@ import play.mvc.Http.Request;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.EndOfChain;
 import controllers.modules2.framework.RawProcessorFactory;
+import controllers.modules2.framework.SuccessfulAbort;
+import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.chain.DNegationProcessor;
 
@@ -90,6 +94,25 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 	public void start(VisitorInfo visitor) {
 		for(ProcessorSetup child : children)
 			child.start(visitor);
+		
+		if(children.size() == 1) {
+			ProcessorSetup processor = getSingleChild();
+			RowMeta meta = processor.getRowMeta();
+			if(meta != null) {
+				String timeCol = meta.getTimeColumn();
+				String valCol = meta.getValueColumn();
+				if(timeCol != null)
+					timeColumn = timeCol;
+				if(valCol != null)
+					valueColumn = valCol;
+			}
+		}
+	}
+
+	public RowMeta getRowMeta() {
+		if(children.size() == 1)
+			return getSingleChild().getRowMeta();
+		throw new RuntimeException("Class="+getClass()+" needs to override getRowMeta");
 	}
 
 	@Override
@@ -186,4 +209,5 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 		String val = options.get(key);
 		return Long.parseLong(val);
 	}
+
 }
