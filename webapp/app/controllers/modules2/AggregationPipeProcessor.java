@@ -45,7 +45,7 @@ public class AggregationPipeProcessor extends StreamsProcessor {
 	@Override
 	protected ReadResult process(List<TSRelational> rows) {
 		Long timeCompare = null;
-		TSRelational ts = new TSRelational(timeColumn, null);
+		TSRelational ts = new TSRelational();
 		
 		for(TSRelational row : rows) {
 			if(row == null)

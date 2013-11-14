@@ -84,7 +84,7 @@ public class StartupDemo {
 		
 		NoSql.em().flush();
 		
-		createSeriesImplWithPrettyDemoData(DEMO_TIME_SOLAR1, DEMO_DATA_TIME_BACK, DEMO_DATA_TIME_FORWARD, DEMO_DATA_INTERVAL_15MIN, GROUPDEMO, DEMO, RANDOMNESS_VERY_SLIGHT, 2000, FREQUENCY_HIGH, DROP_BELOW_ZERO);
+		createSeriesImplWithPrettyDemoData(DEMO_TIME_SOLAR1, DEMO_DATA_TIME_BACK, DEMO_DATA_TIME_FORWARD, -DEMO_DATA_INTERVAL_15MIN, GROUPDEMO, DEMO, RANDOMNESS_VERY_SLIGHT, 2000, FREQUENCY_HIGH, DROP_BELOW_ZERO);
 		createSeriesImplWithPrettyDemoData(DEMO_TIME_SOLAR2, DEMO_DATA_TIME_BACK, DEMO_DATA_TIME_FORWARD, DEMO_DATA_INTERVAL_HOURLY, GROUPDEMO, DEMO, RANDOMNESS_SLIGHT, 600, FREQUENCY_HIGH, DROP_BELOW_ZERO);
 		createSeriesImplWithPrettyDemoData(DEMO_TIME_SOLAR3, DEMO_DATA_TIME_BACK, DEMO_DATA_TIME_FORWARD, DEMO_DATA_INTERVAL_HOURLY, GROUPDEMO, DEMO, RANDOMNESS_VERY_SLIGHT, 500, FREQUENCY_HIGH, DROP_BELOW_ZERO);
 		createSeriesImplWithPrettyDemoData(DEMO_TIME_SOLAR4, DEMO_DATA_TIME_BACK, DEMO_DATA_TIME_FORWARD, DEMO_DATA_INTERVAL_HOURLY, GROUPDEMO, DEMO, RANDOMNESS_SLIGHT, 600, FREQUENCY_HIGH, DROP_BELOW_ZERO);
@@ -132,7 +132,22 @@ public class StartupDemo {
 		int FREQ_SCALEFACTOR = 100000;
 		Random r = new Random();
 		
+		boolean doASkipData = false;
+		if(pointFrequency < 0) {
+			pointFrequency = -pointFrequency;
+			doASkipData = true;
+		}
+		
+		int counter = 0;
 		for (long i = startTime/1000; i < endTime/1000; i+=pointFrequency/1000) {
+			counter++;
+			if(doASkipData){
+				if(counter > 300 && counter < 312)
+					continue;
+				else if(counter > 348 && counter < 360)
+					continue;
+			}
+
 			double radians = (Math.PI / (FREQ_SCALEFACTOR*frequencyScale)) * i;
 			double result = Math.sin(radians)*ampScale;
 			if (randomness != 0)

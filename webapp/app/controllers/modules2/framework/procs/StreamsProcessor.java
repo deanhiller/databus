@@ -35,6 +35,11 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	protected static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 
 	@Override
+	public RowMeta getRowMeta() {
+		return null;
+	}
+
+	@Override
 	public String toString() {
 		String msg = getClass().getSimpleName()+":"+children;
 		return msg;

@@ -397,12 +397,13 @@ $(function () {
 	var d = new Date();
 	var currentTime = d.getTime();
 	var start = currentTime - _windowSizeSeconds;
-	var fullUrl = _url+'&start='+start+'&stop='+currentTime;
+	var fullUrl = _url+'&start='+start+'&end='+currentTime;
 	var start = d;
 	/**
 	 * The actual chart creation
 	 */
 	$.getJSON(fullUrl, function (startData) {
+		var theData = startData;
 		var startingData = [];
 
 		$.each(startData.data, function (key, val) {
@@ -410,16 +411,17 @@ $(function () {
 		    var value = val[_valueColumn];
 		    
 		    var formattedTime = new Date(time);
-		    		
-		    startingData.push([formattedTime.getTime(), (value == "NaN") ? null : value]);
-		    lastTime = time;
+		    if(typeof value !== 'undefined') {
+		    	startingData.push([formattedTime.getTime(), value]);
+		    	lastTime = time;
+		    }
 		});
 		
-		var msg = "No data available in the specified time period.";
+		/*var msg = "No data available in the specified time period.";
 		if(startingData.length != 0) { 
 			msg = "Last value was " + startingData[startingData.length-1][1] + 
 			 " at " + new Date(startingData[startingData.length-1][0]).toUTCString();
-		}	
+		}*/	
 	
 		Highcharts.setOptions({
 			global : {
@@ -437,7 +439,7 @@ $(function () {
 						setInterval(function() {
 							var d = new Date();
 							var currentTime = d.getTime();
-							var _intervalUrl = _url+"&start="+lastTime+"&stop="+currentTime+"&reverse="+true;
+							var _intervalUrl = _url+"&start="+lastTime+"&end="+currentTime+"&reverse="+true;
 							
 							$.getJSON(_intervalUrl, function (chartData) {
 								var theData = chartData.data;
@@ -450,7 +452,7 @@ $(function () {
 								    
 								    var formattedTime = new Date(time);
 								    
-								    if(time > lastTime) {
+								    if(time > lastTime && typeof value !== 'undefined') {
 								    	series.addPoint([formattedTime.getTime(), value], true, true);
 								    	count++;
 								    	lastTime = time;
@@ -459,12 +461,12 @@ $(function () {
 								
 								var theChart = $('#chart_container').highcharts();
 								
-								if(count != 0) { 
+								/*if(count != 0) { 
 									chart.setTitle(_title, "Last value was " + startingData[startingData.length-1][1] + 
 										 " at " + new Date(startingData[startingData.length-1][0]).toUTCString());
 								} else {
 									chart.setTitle(_title, "Value has not changed.  Last checked="+d.toUTCString());
-								}
+								}*/
 							});
 						}, _updateFrequency);
 					}
@@ -525,7 +527,7 @@ $(function () {
 			},
 			
 			subtitle: {
-				text: msg
+				text: "subtitle here"
 			},
 			
 			xAxis: { 

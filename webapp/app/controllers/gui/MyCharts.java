@@ -138,7 +138,7 @@ public class MyCharts extends Controller {
 		render(encoded, chart, columnNames, columnNamesOnly);
 	}
 
-	private static List<String> fetchColumnNames(StreamEditor editor) {
+	public static List<String> fetchColumnNames(StreamEditor editor) {
 		List<String> colNames = new ArrayList<String>();
 		StreamModule mod = editor.getStream();
 		fetchNames(mod.getStreams().get(0), colNames);

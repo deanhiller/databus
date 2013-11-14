@@ -12,6 +12,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.PullProcessor;
+import controllers.modules2.framework.procs.RowMeta;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
 public class SumStreamProcessor extends StreamsProcessor {
@@ -22,6 +23,12 @@ public class SumStreamProcessor extends StreamsProcessor {
 
 	static {
 		metaInfo.setDescription("This module takes many streams and adds them up");
+	}
+
+	
+	@Override
+	public RowMeta getRowMeta() {
+		return new RowMeta(timeColumn, valueColumn);
 	}
 
 	@Override
@@ -67,7 +74,7 @@ public class SumStreamProcessor extends StreamsProcessor {
 			return new ReadResult();
 		}
 		
-		TSRelational ts = new TSRelational(timeColumn, valueColumn);
+		TSRelational ts = new TSRelational();
 		setTime(ts, timeCompare);
 		setValue(ts, total);
 		ReadResult res = new ReadResult(null, ts);
