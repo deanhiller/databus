@@ -42,7 +42,7 @@ public class ApiGetData extends Controller {
 		try {
 			
 			DataTypeEnum type = sdiTable.getTypeOfData();
-			if(type != DataTypeEnum.TIME_SERIES)
+			if(type != DataTypeEnum.TIME_SERIES && type != DataTypeEnum.RELATIONAL_TIME_SERIES)
 				badRequest("This table is not a time series table.  Need the ad-hoc interface for this.");
 			
 			long start = Long.parseLong(from);

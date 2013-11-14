@@ -1,20 +1,25 @@
 package controllers.api;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import models.KeyToTableName;
 import models.SecureTable;
 import models.message.PostTrigger;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.codehaus.jackson.JsonGenerationException;
@@ -192,18 +197,80 @@ public class ApiPostDataPointsImpl {
 
 	private static void postTimeSeries(Map<String, String> json,
 			KeyToTableName info, DboTableMeta table, Object pkValue, boolean timeIsISOFormat) {
-		Collection<DboColumnMeta> cols = table.getAllColumns();
+		Collection<DboColumnMeta> colsCol = table.getAllColumns();
+		List<DboColumnMeta> cols = new ArrayList<DboColumnMeta>(colsCol);
 
-		DboColumnMeta col = cols.iterator().next();
-		Object node = json.get(col.getColumnName());
-		if(node == null) {
-			if (log.isWarnEnabled())
-				log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
-			throw new BadRequest("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
+
+		List<Object> nodes = new ArrayList<Object>();
+		for (DboColumnMeta col:cols) {
+			Object node = json.get(col.getColumnName());
+			if(node == null) {
+				if (log.isWarnEnabled())
+					log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
+				throw new BadRequest("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in json request="+json);
+			}
+			nodes.add(node);
 		}
+		if (cols.size() > 1) {
+			Map<DboColumnMeta, Object> newValue = convertToStorage(cols, nodes);
+			postRelationalTimeSeriesImpl(NoSql.em(), table, pkValue, newValue, timeIsISOFormat);
+		}
+		else {
+			Object newValue = convertToStorage(cols.get(0), nodes.get(0));
+			postTimeSeriesImpl(NoSql.em(), table, pkValue, newValue, timeIsISOFormat);
+		}
+	}
+	
+	
+	public static void postRelationalTimeSeriesImpl(NoSqlEntityManager mgr, DboTableMeta table, Object pkValue, Map<DboColumnMeta, Object> newValues, boolean timeIsISOFormat) {
+		if (timeIsISOFormat)
+			throw new BadRequest("Currently Iso Date Format is not supported with the RELATIONAL_TIME_SERIES table type");
+		if (log.isInfoEnabled())
+			log.info("table name = '" + table.getColumnFamily() + "'");
+		NoSqlTypedSession typedSession = mgr.getTypedSession();		
+		String cf = table.getColumnFamily();
+
+		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+		//rowKey better be BigInteger
+		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
+		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
+		BigInteger time = (BigInteger) timeStamp;
+		long longTime = time.longValue();
+		//find the partition
+		Long partitionSize = table.getTimeSeriesPartionSize();
+		long partitionKey = calculatePartitionId(longTime, partitionSize);
+
+		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+		BigInteger rowKey = new BigInteger(""+partitionKey);
+		row.setRowKey(rowKey);
+
+		DboTableMeta meta = mgr.find(DboTableMeta.class, "partitions");
+		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
+		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
+		Column partitionIdCol = new Column(partitionBytes, null);
+		NoSqlSession session = mgr.getSession();
+		List<Column> columns = new ArrayList<Column>();
+		columns.add(partitionIdCol);
+		session.put(meta, partitionsRowKey, columns);
 		
-		Object newValue = convertToStorage(col, node);
-		postTimeSeriesImpl(NoSql.em(), table, pkValue, newValue, timeIsISOFormat);
+		ByteArrayOutputStream valStream = new ByteArrayOutputStream();
+
+		try {
+			for (Entry<DboColumnMeta, Object> entry:newValues.entrySet()) {
+				DboColumnMeta col = entry.getKey();
+				Object newValue = entry.getValue();
+				byte[] valarr = col.convertToStorage2(newValue);
+				byte[] lenarr = ByteBuffer.allocate(4).putInt(valarr.length).array();
+				//byte len = (byte)valarr.length;
+				valStream.write(lenarr);
+				valStream.write(valarr, 0, valarr.length);
+			}
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
+		row.addColumn(colKey, valStream.toByteArray(), null);
+		typedSession.put(cf, row);
 	}
 
 	public static void postTimeSeriesImpl(NoSqlEntityManager mgr, DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat) {
@@ -384,6 +451,41 @@ public class ApiPostDataPointsImpl {
 
 		byte[] valueRaw = column.getValueRaw();
 		row.addColumn(historyColName, valueRaw, null);
+	}
+	
+	public static Map<DboColumnMeta, Object> convertToStorage(List<DboColumnMeta> cols, List<Object> someVals) {
+		try {
+			LinkedHashMap<DboColumnMeta, Object> result = new LinkedHashMap<DboColumnMeta, Object>();
+			if(CollectionUtils.size(cols) ==0 || CollectionUtils.size(someVals)==0)
+				return result;
+			for (int i = 0; i<cols.size(); i++) {
+				DboColumnMeta col = cols.get(i);
+				Object someVal = someVals.get(i);
+				if(someVal == null)
+					result.put(col, null);
+				else if("null".equals(someVal))
+					result.put(col, null); //a fix for when they pass us "null" instead of null
+				
+				String val = ""+someVal;
+				if(val.length() == 0)
+					val = null;
+				try {
+					result.put(col, col.convertStringToType(val));
+				}
+				catch(Exception e) { 
+					//Why javassist library throws a checked exception, I don't know as we can't catch a checked exception here
+					if(e instanceof InvocationTargetException &&
+							e.getCause() instanceof NumberFormatException) {
+						if (log.isWarnEnabled())
+			        		log.warn("Cannot convert value="+someVal+" for column="+col.getColumnName()+" table="+col.getOwner().getRealColumnFamily()+" as it needs to be type="+col.getClassType(), e.getCause());
+					}
+					throw new RuntimeException(e);
+				}
+			}
+			return result;
+		} catch(Exception e) { 
+			throw new RuntimeException(e);
+		}
 	}
 
 	public static Object convertToStorage(DboColumnMeta col, Object someVal) {

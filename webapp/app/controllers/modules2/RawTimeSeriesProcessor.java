@@ -1,8 +1,11 @@
 package controllers.modules2;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,7 +46,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 	protected Long end;
 	protected AbstractCursor<Column> cursor;
 	protected Long partitionSize;
-	private DboColumnMeta colMeta;
+	private List<DboColumnMeta> colMeta = new ArrayList<DboColumnMeta>();
 	private String url;
 	protected int currentIndex;
 	protected List<Long> existingPartitions = new ArrayList<Long>();
@@ -72,7 +75,8 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		if(end != null)
 			this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
 
-		colMeta = meta.getAllColumns().iterator().next();
+		for (DboColumnMeta thismeta:meta.getAllColumns())
+			colMeta.add(thismeta);
 		if (log.isInfoEnabled())
 			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
 	}
@@ -112,6 +116,7 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 			return new ReadResult(); //no more data to read
 
 		return translate(cursor.getCurrent());
+
 	}
 
 	protected AbstractCursor<Column> getCursorWithResults() {
@@ -153,7 +158,34 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		byte[] name = current.getName();
 		byte[] value = current.getValue();
 		Object time = meta.getIdColumnMeta().convertFromStorage2(name);
-		Object val = colMeta.convertFromStorage2(value);
+		if (colMeta.size() > 0)
+			return translateRelationalTS(current, time, value);
+		else 
+			return translateTS(current, time, value);
+		
+	}
+
+	private ReadResult translateRelationalTS(Column current, Object time, byte[] value) {
+		TSRelational tv = new TSRelational();
+		tv.put(timeColumn, time);
+		if (value!=null && value.length!=0) {
+			int startindex = 0;
+			int endindex;
+			for (DboColumnMeta meta:colMeta) {
+				int len = ByteBuffer.wrap(Arrays.copyOfRange(value, startindex, startindex+4)).getInt();
+				//int len = (int)value[startindex];
+				endindex = startindex+4+len;
+				byte[] thisval = Arrays.copyOfRange(value, startindex+4, endindex);
+				Object val = meta.convertFromStorage2(thisval);
+				tv.put(meta.getColumnName(), val);
+				startindex=endindex;
+			}
+		}
+		return new ReadResult(url, tv);
+	}
+
+	private ReadResult translateTS(Column current, Object time, byte[] value) {
+		Object val = colMeta.get(0).convertFromStorage2(value);
 		//TODO:  parameterize timeColumn and valueColumn from options
 		TSRelational tv = new TSRelational(timeColumn, valueColumn);
 		tv.put(timeColumn, time);

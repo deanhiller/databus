@@ -79,7 +79,7 @@ public class ApiRegistrationImpl {
 		if (log.isInfoEnabled())
 			log.info("Registering table="+msg.getModelName());
 		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE 
-				&& msg.getDatasetType() != DatasetType.TIME_SERIES) {
+				&& msg.getDatasetType() != DatasetType.TIME_SERIES && msg.getDatasetType() != DatasetType.RELATIONAL_TIME_SERIES) {
 			if (log.isInfoEnabled())
 				log.info("only supporting type of STREAM or RELATIONAL_TABLE or TIME_SERIES right now");
 			throw new BadRequest("only supporting type of STREAM or RELATIONAL_TABLE or TIME_SERIES right now");
@@ -129,10 +129,7 @@ public class ApiRegistrationImpl {
 		
 		// Setup the table meta
 		DboTableMeta tm = new DboTableMeta();
-		if(msg.getDatasetType() != DatasetType.TIME_SERIES) {
-			String dataCf = "relational";
-			tm.setup(msg.getModelName(), dataCf, false, null);
-		} else {
+		if(msg.getDatasetType() == DatasetType.TIME_SERIES) {
 			List<DatasetColumnModel> columns = msg.getColumns();
 			if(columns.size() != 2)
 				throw new BadRequest("TIME_SERIES table can only have two columns, the primary key of long(time since epoch) and value of any type");
@@ -144,6 +141,18 @@ public class ApiRegistrationImpl {
 			tm.setTimeSeriesPartionSize(partitionSize);
 			tm.setup(msg.getModelName(), realCf, false, null);
 			tm.setColNameType(long.class);
+
+		} else if  (msg.getDatasetType() == DatasetType.RELATIONAL_TIME_SERIES) {
+			String modelName = msg.getModelName();
+			String realCf = Utility.createCfName(modelName);
+			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+			tm.setTimeSeries(true);
+			tm.setTimeSeriesPartionSize(partitionSize);
+			tm.setup(msg.getModelName(), realCf, false, null);
+			tm.setColNameType(long.class);
+		} else {
+			String dataCf = "relational";
+			tm.setup(msg.getModelName(), dataCf, false, null);
 		}
 
 		// create new Table here and add to security group as well
@@ -152,6 +161,9 @@ public class ApiRegistrationImpl {
 			t.setTypeOfData(DataTypeEnum.RELATIONAL);
 		} else if(msg.getDatasetType() == DatasetType.TIME_SERIES) {
 			t.setTypeOfData(DataTypeEnum.TIME_SERIES);
+		}
+		else if(msg.getDatasetType() == DatasetType.RELATIONAL_TIME_SERIES) {
+			t.setTypeOfData(DataTypeEnum.RELATIONAL_TIME_SERIES);
 		}
 
 		t.setTableName(msg.getModelName());
@@ -424,7 +436,7 @@ public class ApiRegistrationImpl {
 		}
 
 		boolean indexed = c.isIndex;
-		if(type == DatasetType.TIME_SERIES)
+		if(type == DatasetType.TIME_SERIES || type == DatasetType.RELATIONAL_TIME_SERIES)
 			indexed = false;
 		DboColumnIdMeta idMeta = new DboColumnIdMeta();
 		idMeta.setup(tm, c.getName(), dataType, indexed);

@@ -9,7 +9,7 @@ import org.apache.commons.lang.WordUtils;
 
 public enum DataTypeEnum {
 
-	TIME_SERIES("timeseries"), RELATIONAL("relational");
+	TIME_SERIES("timeseries"), RELATIONAL("relational"), RELATIONAL_TIME_SERIES("relationalTimeSeries");
 	
 	private static final Map<String, DataTypeEnum> types;
 	
