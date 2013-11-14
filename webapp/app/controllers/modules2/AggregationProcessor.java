@@ -19,6 +19,7 @@ import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.RowMeta;
 import controllers.modules2.framework.procs.StreamsProcessor;
 
 public class AggregationProcessor extends StreamsProcessor {
@@ -85,7 +86,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	protected ReadResult process(List<TSRelational> rows) {
 		Long timeCompare = null;
 		BigDecimal total = BigDecimal.ZERO;
-		TSRelational ts = new TSRelational(timeColumn, null);
+		TSRelational ts = new TSRelational();
 		
 		int index = 0;
 		for(TSRelational row : rows) {

@@ -40,7 +40,17 @@
     <input type="hidden" name="chart.series5.axisIndex" value="${chart?.series5?.axisIndex}">
 
     #{text2 id:'chart.title',     label:'Title',       help:'The title of your chart'/}
-    #{text2 id:'url',       label:'Url',         help:'The url which streams back a wide table with more than one column'/}
+    
+    <div class="control-group ${errors.forKey('url') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="The url which streams back a wide table with more than one column"><i class="icon-info-sign"></i></a>Url</label>
+        <div class="controls">
+            <input type="text" name="url" value="${url}" 
+               placeholder="(required)" 
+               class="${errors.forKey('url') ? 'error' : ''}">
+            <a href="@{gui.MyDataStreams.start()}" class="btn">Create</a>
+            <span class="help-block">${errors.forKey('url')}</span>
+        </div>
+    </div>
     
     #{formfield 'chart.axis1.name'}
     <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">

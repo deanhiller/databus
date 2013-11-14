@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import models.message.StreamEditor;
+import models.message.StreamModule;
 
 import org.apache.commons.codec.binary.Base64;
 import org.codehaus.jackson.JsonGenerationException;
@@ -41,6 +42,17 @@ public class DataStreamUtil {
 		String url = vars.get("url");
 		String match = "streamV1(encoding=";
 		int indexOf = url.indexOf(match);
+		if(indexOf < 0) {
+			int lastIndex = url.lastIndexOf("/");
+			String tableName = url.substring(lastIndex+1);
+			StreamModule m = new StreamModule();
+			m.setModule("rawdataV1");
+			m.getParams().put("table", tableName);
+			m.getParams().put("columnName", "value");
+			StreamEditor editor = new StreamEditor();
+			editor.getStream().getStreams().add(m);
+			return editor;
+		}
 		String post = url.substring(indexOf+match.length());
 		int index2 = post.indexOf(")");
 		String encoding = post.substring(0, index2);

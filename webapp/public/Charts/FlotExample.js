@@ -178,7 +178,8 @@ $(function() {
 
 	(function () {
 		function onDataReceived(series) {
-			data.push(collapseData(series,'value'));
+			var newData = collapseData(series.data, _valueColumn);
+			data.push(newData);
 			$.plot("#theChart", data, options);
 		}
 
@@ -189,18 +190,21 @@ $(function() {
 			success: onDataReceived
 		});
 	})();
-	function collapseData(data, columnName) {
-	    var collapsedData = [];
-	    $.each(data.data, function (index, value) {
-	      collapsedData.push([value[_timeColumn], (value == "NaN") ? null : value[columnName] ]);
-	    });
-	    
-	    if(collapsedData.length >= 2) {
-	    	if(collapsedData[0][0] > collapsedData[1][0])
-	    		collapsedData.reverse();
-	    }
-	    
-	    return collapsedData;
-	  }
+
+    function collapseData(data, col) {
+        var collapsedData = [];
+        $.each(data, function (index, value) {
+        	if(typeof value[col] !== 'undefined') {
+        	    collapsedData.push([value[_timeColumn], value[col] ]);
+        	}
+        });
+    
+        if(collapsedData.length >= 2) {
+           if(collapsedData[0][0] > collapsedData[1][0])
+               collapsedData.reverse();
+        }
+
+        return collapsedData;
+    }
 	
 });

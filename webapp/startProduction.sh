@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cp conf/prod.logback.xml conf/logback.xml
+cp conf/application.conf.prod conf/application.conf
 
 #NOTE: Developers, PLEASE do not start this script and start using the 
 #production database!!!!

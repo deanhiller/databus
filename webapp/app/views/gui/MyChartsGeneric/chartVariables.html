@@ -9,7 +9,7 @@
    Step 19. This page is generated from the Chart in the Charts directory<br/>
    Step 20. Feel free to modify the Title<br/>
    Step 21. The fields are automatically populated for you for many of the charts.<br/>
-   Step 22. Click Next
+   Step 22. Click Next<br/>
    Step 23. This next page is also generated from the charts in the Charts directory<br/>
    Step 24. Feel free to modify the Y-axis label or the Units here<br/>
    Step 25. Click Create Chart
@@ -125,6 +125,18 @@
             </div>
         </div>
 	    #{/elseif}
+	    #{elseif v.meta.url}
+        <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
+            <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>
+            <div class="controls">
+                <input type="text" name="chart.${v.meta.nameInJavascript}" value="${v.value}" 
+                   placeholder="#{if v.meta.required}(required)#{/if}#{else}(optional)#{/else}" 
+                   class="${errors.forKey(v.meta.nameInJavascript) ? 'has_error' : ''}">
+                <a href="@{gui.MyDataStreams.start()}" class="btn">Create</a>
+                <span class="help-block">${errors.forKey(v.meta.nameInJavascript)}</span>
+            </div>
+        </div>
+	    #{/elseif}	    
 	    #{else}
         <div class="control-group ${errors.forKey(v.meta.nameInJavascript) ? 'error' : ''}">
             <label class="control-label"><a href="#" rel="tooltip" title="${v.meta.help}"><i class="icon-info-sign"></i></a>${v.meta.label}</label>

@@ -125,9 +125,6 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 	}
 
 	protected BigDecimal getValueEvenIfNull(TSRelational row) {
-		if(row.getValueColumn() != null)
-			valueColumn = row.getValueColumn();
-		
 		Object obj = row.get(valueColumn);
 		if(obj == null)
 			return null;

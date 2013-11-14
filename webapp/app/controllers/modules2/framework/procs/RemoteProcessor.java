@@ -166,4 +166,9 @@ public class RemoteProcessor extends EndOfChain {
 		return Direction.PUSH;
 	}
 
+	@Override
+	public RowMeta getRowMeta() {
+		return new RowMeta("time", "value");
+	}
+
 }

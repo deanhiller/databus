@@ -37,6 +37,7 @@ import controllers.modules2.SplinesV3PullProcessor;
 import controllers.modules2.SqlPullProcessor;
 import controllers.modules2.SumStreamProcessor;
 import controllers.modules2.SumStreamProcessor2;
+import controllers.modules2.TimeAverage3Processor;
 import controllers.modules2.TimeAverageProcessor;
 import controllers.modules2.VariabilityCleanProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToCsv;
@@ -69,6 +70,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("rangecleanV1", RangeCleanProcessor.class);
 		nameToClazz.put("variabilitycleanV1", VariabilityCleanProcessor.class);
 		nameToClazz.put("timeaverageV2", TimeAverageProcessor.class);
+		nameToClazz.put("timeaverageV3", TimeAverage3Processor.class);
 		nameToClazz.put("invertV1", InvertProcessor.class);
 		nameToClazz.put("passthroughV1", PassthroughProcessor.class);
 		nameToClazz.put("rawdataV1", RawProcessor.class);

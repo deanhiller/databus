@@ -15,6 +15,22 @@
     }
 }%
 
+<div id="myModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel">Buying New Charts</h3>
+    </div>
+    <div class="modal-body">
+        <p>
+        If you want to buy new Charts, you can email <a href="mailto:support@buffalosw.com">support@buffalosw.com</a> or check out 
+        <a target="_blank" href="http://en.openei.org/wiki/NREL_Energy_DataBus/Partners">The Energy Databus Partners Page</a>
+        </p>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+    </div>
+</div>
+
 #{form @gui.MyChartsGeneric.postSelectedChart(), id:'editmonitor', class:'form-horizontal', style:'min-width:100px;max-width:1100px;margin: 0 auto'}
 
     <legend>Pick a Chart</legend>
@@ -28,11 +44,25 @@
     <div class="control-group ${errors.forKey('chartId') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Series 1</label>
         <div class="controls">
-            #{select 'chartId', items:charts, valueProperty:'id', labelProperty:'name', value:chartId/}
+            #{select 'chartId', items:charts, valueProperty:'id', labelProperty:'name', value:chartId, id:'chartSelect'/}
             <span class="help-block">${errors.forKey('chartId')}</span>
         </div>
     </div>
     #{/formfield}
+
+	<script type="text/javascript">
+    var current = null;
+    $(document).ready(function() {
+    	$("#chartSelect").change(function(e){
+    		var id = $("#chartSelect").val();
+    		if("Advertisement-js" == id) {
+    			$("#chartSelect").val('BasicChart-js');		
+    			
+    			$("#myModal").modal('show') 
+    		}
+        });
+    });
+    </script>
 
 	<div class="control-group">
 	   <div class="controls">

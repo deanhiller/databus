@@ -168,19 +168,21 @@ $(function () {
 		return height;
 	}
 	
-	function collapseData(data, columnName) {
-		var collapsedData = [];
-		$.each(data.data, function (index, value) {
-			collapsedData.push([value[_timeColumn], (value == "NaN") ? null : value[columnName] ]);
-		});
-	
-		if(collapsedData.length >= 2) {
-			if(collapsedData[0][0] > collapsedData[1][0])
-				collapsedData.reverse();
-		}
+    function collapseData(data, col) {
+        var collapsedData = [];
+        $.each(data, function (index, value) {
+        	if(typeof value[col] !== 'undefined') {
+        	    collapsedData.push([value[_timeColumn], value[col] ]);
+        	}
+        });
+    
+        if(collapsedData.length >= 2) {
+           if(collapsedData[0][0] > collapsedData[1][0])
+               collapsedData.reverse();
+        }
 
-		return collapsedData;
-	}
+        return collapsedData;
+    }
 
 	function expandData(data) {
 		var expandedData = {};
@@ -240,7 +242,7 @@ $(function () {
 				        	 name: 'SeriesName', 
 				        	 type: 'spline',
 				        	 yAxis: 0,
-				        	 data: collapseData(data, _valueColumn),
+				        	 data: collapseData(data.data, _valueColumn),
 				        	 tooltip: {
 				        		 valueSuffix: ' '+_units
 				        	 }
@@ -349,19 +351,21 @@ $(function () {
 			return height;
 		  }
 		  
-		  function collapseData(data, columnName) {
-		    var collapsedData = [];
-		    $.each(data.data, function (index, value) {
-		      collapsedData.push([value[_timeColumn], (value == "NaN") ? null : value[columnName] ]);
-		    });
+		    function collapseData(data, col) {
+		        var collapsedData = [];
+		        $.each(data, function (index, value) {
+		        	if(typeof value[col] !== 'undefined') {
+		        	    collapsedData.push([value[_timeColumn], value[col] ]);
+		        	}
+		        });
 		    
-		    if(collapsedData.length >= 2) {
-		    	if(collapsedData[0][0] > collapsedData[1][0])
-		    		collapsedData.reverse();
+		        if(collapsedData.length >= 2) {
+		           if(collapsedData[0][0] > collapsedData[1][0])
+		               collapsedData.reverse();
+		        }
+
+		        return collapsedData;
 		    }
-		    
-		    return collapsedData;
-		  }
 
 		  function expandData(data) {
 		    var expandedData = {};
@@ -444,7 +448,7 @@ $(function () {
 		                	   name: 'SeriesName', 
 		                	   type: 'spline',
 		                	   yAxis: 0,
-		                	   data: collapseData(data, _valueColumn),
+		                	   data: collapseData(data.data, _valueColumn),
 		                	   tooltip: {
 		                		   valueSuffix: ' '+_units
 		                	   }
