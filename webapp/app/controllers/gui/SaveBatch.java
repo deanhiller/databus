@@ -127,22 +127,7 @@ public class SaveBatch implements Runnable {
 
 	private void processLineTimeSeries(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
-//			BigInteger time = null;
-//			Object value = null;
-//			for(int i = 0; i < headersize; i++) {
-//				String col = line.getColumns()[i];
-//				DboColumnMeta meta = headers.get(i);
-//				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
-//				if(meta instanceof DboColumnIdMeta)
-//					time = (BigInteger) val;
-//				else
-//					value = val;
-//			}
-//			ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, time, value, false);
-//			
-			
-			
-			
+
 			List<DboColumnMeta> cols = new ArrayList<DboColumnMeta>(table.getAllColumns());
 			List<Object> nodes = new ArrayList<Object>();
 			String pkValue = line.getColumns()[headerIndexs.get("time")];
