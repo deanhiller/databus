@@ -1,13 +1,17 @@
 package controllers.gui;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.Http.Request;
+import play.mvc.results.BadRequest;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
@@ -16,6 +20,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
+import com.alvazan.play.NoSql;
 
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.util.Line;
@@ -30,6 +35,7 @@ public class SaveBatch implements Runnable {
 	private Request request;
 	private DboTableMeta table;
 	private int count = 0;
+	private LinkedHashMap<String, Integer> headerIndexs = new LinkedHashMap<String, Integer>();
 	
 	//this are precaculated outside the run loop for performance:
 	private int batchsize;
@@ -48,6 +54,10 @@ public class SaveBatch implements Runnable {
 		this.request = request;
 		this.batchsize = batchsize;
 		this.tableColumnFamily = table.getColumnFamily();
+		
+		for (int i = 0; i < headers.size(); i++) {
+			headerIndexs.put(headers.get(i).getColumnName(), i);
+		}
 		
 	}
 
@@ -117,19 +127,54 @@ public class SaveBatch implements Runnable {
 
 	private void processLineTimeSeries(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
-			BigInteger time = null;
-			Object value = null;
-			for(int i = 0; i < headersize; i++) {
-				String col = line.getColumns()[i];
-				DboColumnMeta meta = headers.get(i);
-				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
-				if(meta instanceof DboColumnIdMeta)
-					time = (BigInteger) val;
-				else
-					value = val;
+//			BigInteger time = null;
+//			Object value = null;
+//			for(int i = 0; i < headersize; i++) {
+//				String col = line.getColumns()[i];
+//				DboColumnMeta meta = headers.get(i);
+//				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
+//				if(meta instanceof DboColumnIdMeta)
+//					time = (BigInteger) val;
+//				else
+//					value = val;
+//			}
+//			ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, time, value, false);
+//			
+			
+			
+			
+			List<DboColumnMeta> cols = new ArrayList<DboColumnMeta>(table.getAllColumns());
+			List<Object> nodes = new ArrayList<Object>();
+			String pkValue = line.getColumns()[headerIndexs.get("time")];
+			if (pkValue == null)
+				throw new RuntimeException("The time cannot be null!");
+			//workaround for scientific notation which can't currently be parsed by playorm:
+			if (StringUtils.containsIgnoreCase(pkValue, "e")) {
+				pkValue = ""+Double.valueOf(pkValue).longValue();
 			}
-
-			ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, time, value, false);
+			for (DboColumnMeta col:cols) {
+				String node = line.getColumns()[headerIndexs.get(col.getColumnName())];
+				if(node == null) {
+					if (log.isWarnEnabled())
+						log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
+					throw new BadRequest("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
+				}
+				if(!(col instanceof DboColumnIdMeta))
+					nodes.add(node.trim());
+			}
+			
+			if (cols.size() > 1) {
+				Map<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.convertToStorage(cols, nodes);
+				ApiPostDataPointsImpl.postRelationalTimeSeriesImpl(mgr, table, pkValue, newValue, false);
+			}
+			else {
+				Object newValue = ApiPostDataPointsImpl.convertToStorage(cols.get(0), nodes.get(0));
+				ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, pkValue, newValue, false);
+			}
+			
+			
+			
+			
 
 		} catch(Exception e) {
 			if (log.isWarnEnabled())
