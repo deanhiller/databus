@@ -53,6 +53,7 @@ import controllers.gui.util.ChartInfo;
 import controllers.gui.util.ChartSeries;
 import controllers.gui.util.ChartUtil;
 import controllers.gui.util.Info;
+import controllers.modules2.FullStreamProcessor;
 import controllers.modules2.RawProcessor;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
@@ -61,6 +62,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.MetaInformation;
 import controllers.modules2.framework.procs.PullProcessor;
+import controllers.modules2.framework.procs.RowMeta;
 import de.undercouch.bson4jackson.BsonFactory;
 
 @With(GuiSecure.class)
@@ -140,26 +142,17 @@ public class MyCharts extends Controller {
 
 	public static List<String> fetchColumnNames(StreamEditor editor) {
 		List<String> colNames = new ArrayList<String>();
-		StreamModule mod = editor.getStream();
-		fetchNames(mod.getStreams().get(0), colNames);
-		colNames.add("time");
-		return colNames;
-	}
-
-	private static void fetchNames(StreamModule mod, List<String> colNames) {
 		RawProcessorFactory factory = ModuleController.fetchFactory();
-		Map<String, PullProcessor> procs = factory.fetchPullProcessors();
-		MetaInformation meta = procs.get(mod.getModule()).getGuiMeta();
-		
-		if(meta.isTerminal()) {
-			Map<String, String> params = mod.getParams();
-			String oneCol = params.get(RawProcessor.COL_NAME);
-			colNames.add(oneCol);
-		}
-		
-		for(StreamModule child : mod.getStreams()) {
-			fetchNames(child, colNames);
-		}
+		RawProcessorFactory.threadLocal.set("streamV1");
+		FullStreamProcessor top = (FullStreamProcessor) factory.get();
+		VisitorInfo visitor = new VisitorInfo(null, null, false, NoSql.em());
+		top.setupTree(editor, visitor);
+
+		RowMeta rowMeta = top.getRowMeta();
+		List<String> valueColumns = rowMeta.getValueColumns();
+		colNames.add(rowMeta.getTimeColumn());
+		colNames.addAll(valueColumns);
+		return colNames;
 	}
 
 	public static void postStep2(String encoded, Chart chart) throws UnsupportedEncodingException {

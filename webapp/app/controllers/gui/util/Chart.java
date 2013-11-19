@@ -57,9 +57,9 @@ public class Chart {
 		Axis a3 = new Axis();
 		a3.setOpposite(false);
 		
-		a1.setColor("89A54E");
-		a2.setColor("4572A7");
-		a3.setColor("AA4643");
+		a1.setColor("#89A54E");
+		a2.setColor("#4572A7");
+		a3.setColor("#AA4643");
 		
 		axis.add(a1);
 		axis.add(a2);

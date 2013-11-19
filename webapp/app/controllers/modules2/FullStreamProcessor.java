@@ -27,6 +27,11 @@ public class FullStreamProcessor extends PullProcessorAbstract {
 
 	private String encoding;
 	
+	public void setupTree(StreamEditor editor, VisitorInfo visitor) {
+		StreamModule fakeNode = editor.getStream();
+		super.createTree(null, fakeNode, visitor);
+	}
+
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor,
 			ProcessorSetup useThisChild, boolean alreadyAddedInverter) {

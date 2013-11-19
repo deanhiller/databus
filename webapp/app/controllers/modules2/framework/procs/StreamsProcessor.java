@@ -36,7 +36,14 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 
 	@Override
 	public RowMeta getRowMeta() {
-		return null;
+		List<String> columns = new ArrayList<String>();
+		for(ProcessorSetup p : children) {
+			RowMeta rowMeta = p.getRowMeta();
+			columns.addAll(rowMeta.getValueColumns());
+		}
+		
+		RowMeta meta = new RowMeta("time", columns);
+		return meta;
 	}
 
 	@Override
