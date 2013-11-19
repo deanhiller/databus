@@ -312,7 +312,8 @@ public class MyDatabases extends Controller {
 				monitors.add(TableMonitor.copy(m));
 		}
 		DataTypeEnum timeseries = DataTypeEnum.TIME_SERIES;
-		render(user, schema, oldSchemaName, tables, monitors, timeseries);
+		DataTypeEnum wideTs = DataTypeEnum.RELATIONAL_TIME_SERIES;
+		render(user, schema, oldSchemaName, tables, monitors, timeseries, wideTs);
 	}
 
 	public static void dbProperties(String schemaName) {

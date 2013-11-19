@@ -29,6 +29,7 @@ import controllers.modules2.MultiplyProcessor;
 import controllers.modules2.PassthroughProcessor;
 import controllers.modules2.RangeCleanProcessor;
 import controllers.modules2.RawProcessor;
+import controllers.modules2.RawWideProcessor;
 import controllers.modules2.RelationalOperationProcessor;
 import controllers.modules2.RelationalSummaryProcessor;
 import controllers.modules2.SplinesPullProcessor;
@@ -74,6 +75,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("invertV1", InvertProcessor.class);
 		nameToClazz.put("passthroughV1", PassthroughProcessor.class);
 		nameToClazz.put("rawdataV1", RawProcessor.class);
+		nameToClazz.put("rawWideV1", RawWideProcessor.class);
 		//nameToClazz.put("demux", StreamsProcessor.class);
 		nameToClazz.put("firstvaluesV1", FirstValuesProcessor.class);
 		nameToClazz.put("minmaxV1", MinMaxProcessor.class);

@@ -31,6 +31,9 @@
 		        #{if table?.typeOfData == timeseries}
 					<td><a href="@{gui.MyStuff.tableChart(table.tableName)}">View Chart</a> / <a href="@{gui.MyStuff.createChart(table.tableName)}">Create Chart</a></td>
 				#{/if}
+				#{elseif table?.typeOfData == wideTs}
+					<td><a href="@{gui.MyStuff.createChart(table.tableName)}">Create Chart</a></td>
+				#{/elseif}
 				#{else}
                     <td></td>
 				#{/else}

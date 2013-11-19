@@ -31,14 +31,12 @@ public class RawStreamProcessor implements RawSubProcessor {
 	private DboTableMeta meta;
 	private String url;
 	private String timeColumn;
-	private String valueColumn;
 	
 	@Override
 	public void init(DboTableMeta meta, Long start, Long end, String url, VisitorInfo visitor, RowMeta rowMeta) {
 		this.url = url;
 		this.meta = meta;
 		this.timeColumn = rowMeta.getTimeColumn();
-		this.valueColumn = rowMeta.getValueColumn();
 		String cf = meta.getColumnFamily();
 		String idCol = meta.getIdColumnMeta().getColumnName();
 		String sql = "SELECT c FROM "+cf+" as c WHERE c."+idCol+" >= "+start+" and c."+idCol+" <= "+end;
