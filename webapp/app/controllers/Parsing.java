@@ -41,11 +41,11 @@ public class Parsing {
 		} catch (JsonParseException e) {
 			if (log.isWarnEnabled())
         		log.warn("There was a problem parsing the JSON request. json="+json, e);
-			throw new BadRequest("There was a problem parsing the JSON request.");
+			throw new BadRequest("There was a problem parsing the JSON request. json="+json);
 		} catch (JsonMappingException e) {
 			if (log.isWarnEnabled())
         		log.warn("Your json request appears to be invalid. json="+json, e);
-			throw new BadRequest("Your json request appears to be invalid.");
+			throw new BadRequest("Your json request appears to be invalid.  json="+json);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
