@@ -159,10 +159,11 @@ public class RawTimeSeriesProcessor implements RawSubProcessor {
 		byte[] name = current.getName();
 		byte[] value = current.getValue();
 		Object time = meta.getIdColumnMeta().convertFromStorage2(name);
-		if (colMeta.size() > 1)
-			return translateRelationalTS(current, time, value);
-		else 
+		if (colMeta.size() == 1 && "value".equals(colMeta.get(0).getColumnName()))
 			return translateTS(current, time, value);
+		else 
+			return translateRelationalTS(current, time, value);
+
 		
 	}
 
