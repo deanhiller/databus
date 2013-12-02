@@ -48,10 +48,10 @@ group distinct data into one overall container. Basically, they store
 <br />
 <b> Tables </b>
 store data. A table can contain any combination of values but they must
-be defined as one of two available types: STREAM and RELATIONAL_TABLE.
+be defined as one of two available types: TIME_SERIES and RELATIONAL_TABLE.
 <br />
 <div class="subdefine" style="margin-top: 10px; margin-left: 70px;">
-	<b style="color: #01355e;"> STREAM </b> tables are for time series
+	<b style="color: #01355e;"> TIME_SERIES </b> tables are for time series
 	data. These tables consist of a <i> single </i> TIME column and a <i>
 		single </i> VALUE column.
 </div>
@@ -102,7 +102,7 @@ be defined as one of two available types: STREAM and RELATIONAL_TABLE.
 			</ul>
 		</li>
 	</ul>
-	The Time Series table (<b>STREAM</b>) has some constraints that the <b>RELATIONAL_TABLE</b>
+	The Time Series table (<b>TIME_SERIES</b>) has some constraints that the <b>RELATIONAL_TABLE</b>
 	does not:
 	<ul class="subdefine" style="margin-left: 80px;">
 		<li>Can only have 2 columns. The first column must be named
@@ -134,12 +134,12 @@ be defined as one of two available types: STREAM and RELATIONAL_TABLE.
 </pre>
 <br />
 <div style="margin-left: 60px;">
-	The JSON definition syntax for <b> STREAM </b> tables looks like:
+	The JSON definition syntax for <b> TIME_SERIES </b> tables looks like:
 </div>
-<div class="code_title"><b>Definition:</b> STREAM</div>
+<div class="code_title"><b>Definition:</b> TIME_SERIES</div>
 <pre class="prettyprint" style="width: 90%; margin-top: 2px;">
 <div class="code">
-{"datasetType":"STREAM",
+{"datasetType":"TIME_SERIES",
   "modelName":"yourTableName",
   "schema":"yourDatabaseName",
   "columns":[
@@ -322,12 +322,12 @@ $
 
 <br />
 <h3 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
-	Example: Creating a <b>STREAM</b>
+	Example: Creating a <b>TIME_SERIES</b>
 </h3>
 <div style="margin-left: 60px">
-	All of the steps above are exactly the same for creating a <b>STREAM</b>
+	All of the steps above are exactly the same for creating a <b>TIME_SERIES</b>
 	table except for the definition of the table itself. <br />
-	<br /> Using the above JSON definition for a STREAM the following
+	<br /> Using the above JSON definition for a TIME_SERIES the following
 	table "ExampleTable2" will be saved to a file called <span
 		style="color: #CF2900; font-weight: bold;">ExampleTableDefinition2.txt</span>.
 	It assumes that a <b> Database </b> called "ExampleDatabase" has
@@ -338,7 +338,7 @@ $
 </div>
 <pre class="prettyprint" style="width: 90%; margin-top: 2px;">
 <div class="code">
-{"datasetType":"STREAM", 
+{"datasetType":"TIME_SERIES", 
   "modelName":"ExampleTable2", 
   "schema":"ExampleDatabase",
   "columns":[ 
@@ -413,6 +413,105 @@ $
 </pre>
 
 
+
+
+<br />
+<h3 style="padding-bottom: 5px; padding-top: 10px; margin-bottom: 10px;">
+	Example: Creating a <b>RELATIONAL_TIME_SERIES</b>
+</h3>
+<div style="margin-left: 60px">
+	All of the steps above for TIME_SERIES are exactly the same for creating a <b>RELATIONAL_TIME_SERIES</b>
+	table except for the definition of the table itself. A RELATIONAL_TIME_SERIES table is a combination of 
+	a RELATIONAL_TABLE and a TIME_SERIES.  Like a TIME_SERIES, it is very fast to access by time, but like a RELATIONAL_TABLE 
+	it can have more columns than just time and value.  What you sacrifice is the ability of a REALATIONAL_TABLE to 
+	index and query data by the value columns.  You can only retrieve the data by timestamp.<br />
+	<br /> Using the above JSON definition for a RELATIONAL_TIME_SERIES the following
+	table "ExampleTable2" will be saved to a file called <span
+		style="color: #CF2900; font-weight: bold;">ExampleTableDefinition2.txt</span>.
+	It assumes that a <b> Database </b> called "ExampleDatabase" has
+	already been created.
+</div>
+<div class="code_title">
+	<span style="color: #CF2900;"><b>File:</b> ExampleTableDefinition2.txt</span>
+</div>
+<pre class="prettyprint" style="width: 90%; margin-top: 2px;">
+<div class="code">
+{"datasetType":"RELATIONAL_TIME_SERIES", 
+  "modelName":"ExampleTable2", 
+  "schema":"ExampleDatabase",
+  "columns":[ 
+            {"name":"time","dataType":"BigInteger","isIndex":true,"isPrimaryKey":true},
+            {"name":"volume","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false}, 
+            {"name":"description","dataType":"string","isIndex":false,"isPrimaryKey":false}, 
+            {"name":"temp","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false}, 
+            {"name":"value","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false}
+            ] 
+}
+</div>
+</pre>
+<br />
+<div style="margin-left: 60px">
+	We will use your Databus <b>User</b> account to authenticate with the
+	Databus Server. But instead of using your password, we'll use your
+	Databus API Key. <br /> <br />
+	<div class="subdefine">
+		<table width="50%" cellspacing="0">
+			<tr style="border-bottom: 0;">
+				<td width="15%" style="color: #01355e;"><b> User Name: </b></td>
+				<td>${user.name}</td>
+			</tr>
+			<tr style="border-bottom: 0;">
+				<td width="15%" style="color: #01355e;"><b> Databus API
+						Key: </b></td>
+				<td>${user.apiKey}</td>
+			</tr>
+		</table>
+	</div>
+	The curl command (assuming it is run within the same directory as the
+	file <span style="color: #CF2900; font-weight: bold;">ExampleTableDefinition2.txt</span>)
+	is as follows:
+</div>
+<pre class="prettyprint lang-cyc"
+	style="width: 90%; background-color: #003525;">
+<div class="code">
+$ curl -X POST -w "\nRESULT CODE:&#37;{http_code}\n" --insecure --header "Content-Type:application/json" --user ${user.name}:${user.apiKey} -d @ExampleTableDefinition2.txt https://databus.nrel.gov/api/registerV1
+<br />
+</div>
+</pre>
+<div class="subdefine">The above curl command puts the
+	authentication within the curl arguments itself. An alternative way to
+	structure the request that is not dependent on the curl command is to
+	put the credentials within the url itself:</div>
+<pre class="prettyprint lang-cyc"
+	style="width: 90%; background-color: #003525;">
+<div class="code">
+$ curl -X POST -w "\nRESULT CODE:&#37;{http_code}\n" --insecure --header "Content-Type:application/json" -d @ExampleTableDefinition2.txt http://${user.name}:${user.apiKey}@databus.nrel.gov/api/registerV1
+<br />
+</div>
+</pre>
+<div class="subdefine">If the request was successful, you will
+	receive a RESULT CODE of 200 as shown:</div>
+<pre class="prettyprint lang-cyc"
+	style="width: 90%; background-color: #003525;">
+<div class="code">
+$ curl -X POST -w "\nRESULT CODE:&#37;{http_code}\n" --insecure --header "Content-Type:application/json" --user ${user.name}:${user.apiKey} -d @ExampleTableDefinition2.txt https://databus.nrel.gov/api/registerV1
+{"modelName":"ExampleTable2","groups":[]}
+RESULT CODE:200
+$
+</div>
+</pre>
+<div class="subdefine">If the request was unsuccessful, the RESULT
+	CODE and response message from the server will give information as to
+	what the error was:</div>
+<pre class="prettyprint lang-cyc"
+	style="width: 90%; background-color: #003525;">
+<div class="code">
+$ curl -X POST -w "\nRESULT CODE:&#37;{http_code}\n" --insecure --header "Content-Type:application/json" --user ${user.name}:${user.apiKey} -d @ExampleTableDefinition2.txt https://databus.nrel.gov/api/registerV1
+Sorry, table with tablename='ExampleTable2' is already in use
+RESULT CODE:400
+$
+</div>
+</pre>
 
 
 
