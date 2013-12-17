@@ -16,6 +16,10 @@ public class TSRelational extends HashMap<String, Object>{
 		super();
 	}
 	
+	public TSRelational(TSRelational toCopy) {
+		super(toCopy);
+	}
+	
 	public TSRelational(BigInteger time, BigDecimal value) {
 		this.put("time", time);
 		this.put("value", value);
