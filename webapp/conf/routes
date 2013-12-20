@@ -22,6 +22,8 @@
 #POST /old/addusertoschema      			MySchemas.postAddUserToSchema
 
 
+WS  /upload/{table}            			gui.FileUploadSocket.fileToWebSocket
+
 # PROTOTYPE UIs
 # ******************************************************************************
 # ******************************************************************************

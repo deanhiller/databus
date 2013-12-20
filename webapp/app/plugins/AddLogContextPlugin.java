@@ -56,9 +56,10 @@ public class AddLogContextPlugin extends PlayPlugin {
 			long start = System.currentTimeMillis();
 			current.args.put("__startTime", start);
 			overrideMDC(current, fetchLast());
-			if (log.isInfoEnabled())
-				if(isProduction || (!current.path.startsWith("/public")))
-					log.info("---begin request="+current.method+":"+current.path);
+			if(isProduction && log.isInfoEnabled())
+				log.info("---begin request="+current.method+":"+current.path);
+			else if(log.isTraceEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
+				log.info("---begin request="+current.method+":"+current.path);
 		}
 	}
 
@@ -140,7 +141,9 @@ public class AddLogContextPlugin extends PlayPlugin {
 			//start will be null IF StartupBean was just invoked!!!! 
 			long total = System.currentTimeMillis() - start;
 			if (log.isInfoEnabled()) {
-				if(isProduction || (!current.path.startsWith("/public")))
+				if(isProduction && log.isInfoEnabled())
+					log.info("---ended request="+current.method+":"+current.path+" total time="+total+" ms");
+				else if(log.isTraceEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
 					log.info("---ended request="+current.method+":"+current.path+" total time="+total+" ms");
 			}
 		}

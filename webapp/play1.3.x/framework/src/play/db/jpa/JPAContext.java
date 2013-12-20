@@ -4,6 +4,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.FlushModeType;
 import javax.persistence.PersistenceException;
 
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
+
 import play.exceptions.JPAException;
 
 /**
@@ -20,7 +23,8 @@ public class JPAContext {
         this.jpaConfig = jpaConfig;
 
         EntityManager manager = jpaConfig.newEntityManager();
-        manager.setFlushMode(FlushModeType.COMMIT);
+        Session session = (Session) manager.getDelegate();
+		session.setFlushMode(FlushMode.MANUAL);
         manager.setProperty("org.hibernate.readOnly", readonly);
 
         if (beginTransaction) {

@@ -276,7 +276,7 @@ public class ApiPostDataPointsImpl {
 	public static void postTimeSeriesImpl(NoSqlEntityManager mgr, DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat) {
 		if (timeIsISOFormat)
 			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
-		if (log.isInfoEnabled())
+		if (log.isDebugEnabled())
 			log.info("table name = '" + table.getColumnFamily() + "'");
 		NoSqlTypedSession typedSession = mgr.getTypedSession();		
 		String cf = table.getColumnFamily();
