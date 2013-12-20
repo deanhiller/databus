@@ -27,10 +27,11 @@ output/
 /solr/solr/data/*
 /.classpath
 /.project
-.settings
+/.settings
 /master/.classpath
 /master/.project
 /master/.settings
 /client/bin
 /modbus/.project
 /modbus/.classpath
+/modbus/.settings
