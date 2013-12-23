@@ -58,7 +58,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 			overrideMDC(current, fetchLast());
 			if(isProduction && log.isInfoEnabled())
 				log.info("---begin request="+current.method+":"+current.path);
-			else if(log.isTraceEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
+			else if(log.isInfoEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
 				log.info("---begin request="+current.method+":"+current.path);
 		}
 	}
@@ -143,7 +143,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 			if (log.isInfoEnabled()) {
 				if(isProduction && log.isInfoEnabled())
 					log.info("---ended request="+current.method+":"+current.path+" total time="+total+" ms");
-				else if(log.isTraceEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
+				else if(log.isInfoEnabled() || (!current.path.startsWith("/public") && log.isInfoEnabled()))
 					log.info("---ended request="+current.method+":"+current.path+" total time="+total+" ms");
 			}
 		}
