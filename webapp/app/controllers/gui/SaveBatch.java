@@ -119,7 +119,7 @@ public class SaveBatch implements Runnable {
 		if (log.isDebugEnabled())
 			log.debug("time to run full loop : "+(System.currentTimeMillis()-preLoop));
 
-		//mgr.flush();
+		mgr.flush();
 		mgr.clear();
 	}
 
@@ -171,7 +171,7 @@ public class SaveBatch implements Runnable {
 		if(count >= FLUSH_SIZE) {
 			flushCount++;
 			long preFlush = System.currentTimeMillis();
-			//mgr.flush();
+			mgr.flush();
 			long postFlush = System.currentTimeMillis();
 			mgr.clear();
 			count=0;
@@ -206,7 +206,7 @@ public class SaveBatch implements Runnable {
 		if(count >= FLUSH_SIZE) {
 			flushCount++;
 			long preFlush = System.currentTimeMillis();
-			//mgr.flush();
+			mgr.flush();
 			long postFlush = System.currentTimeMillis();
 			mgr.clear();
 			count=0;
