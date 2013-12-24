@@ -169,7 +169,13 @@
    	}
    	
 	function readBlob() {
-	
+		//reset state..
+		cancelled = false;
+		if(ws && ws.readyState != 3) {
+			//if not closed, close the socket
+			ws.close();
+		}
+			
 		if (window.File && window.FileReader && window.FileList && window.Blob) {
 			// Great success! All the File APIs are supported.
 		} else {
