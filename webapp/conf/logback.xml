@@ -43,8 +43,8 @@
     <!--logger name="controllers" level="WARN"/-->
     <!--logger name="org.playorm.cron" level="WARN"/-->
     
-    <logger name="controllers.modules2.DataFillerProcessor" level="DEBUG"/>
-    <logger name="bytecodeparser" level="DEBUG"/>
+    <logger name="controllers.modules2.DataFillerProcessor" level="INFO"/>
+    <logger name="bytecodeparser" level="INFO"/>
     <!-- this config is a little more verbose, comment out any given line to be more verbose: -->
     <!--logger name="com.alvazan.orm.logging" level="WARN"/-->
     <!--logger name="com.alvazan.orm.parser.antlr" level="WARN"/-->
