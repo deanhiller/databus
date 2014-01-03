@@ -1,7 +1,35 @@
-#{extends '_main.html' /}
+#{extends '_index.html' /}
 
-#{form @postData(table), enctype:'multipart/form-data', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-    <legend>Upload Data</legend>
+<div id="upload" class="modal hide" data-backdrop="true" tabindex="-1" 
+	role="dialog" data-backdrop="false" 
+	aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-header">
+        <h4 id="myModalLabel">Uploading</h4>
+    </div>
+    <div id="deletePattern_content" class="modal-body">
+       <p>
+           	Uploading
+           
+           	Percent of File Sent:
+			<div class="progress progress-striped" style="position: relative;">
+				<div id="sentbar" class="bar" style="width: 0%;"></div>
+			</div>
+			    
+			Percent of File Saved to Database:
+			<div class="progress progress-striped" style="position: relative;">
+				<div id="bar" class="bar" style="width: 0%;"></div>
+			</div>
+        </p>
+	</div>
+	<div class="modal-footer">
+		<button id="cancelbtn" class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+	</div>
+ </div>
+
+
+<div class="form-horizontal" style="min-width:500px;max-width:500px;margin: 0 auto">
+
+    <legend>Upload Data to ${table}</legend>
     
     <div class="control-group">
         <label class="control-label">File:</label>
@@ -9,10 +37,192 @@
             <input type="file" id="file" name="file" />
         </div>
     </div>
-    
-    <div class="control-group">
-        <div class="controls">
-            <input type="submit" value="Send it..." class="btn btn-primary"/>
-        </div>
-    </div>
-#{/}
+
+	<button id="uploadbtn" class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Upload</button>
+
+   	<script>
+   	var cancelled = false;
+   	var ws;
+	function GalileoSend (file, callback) {
+		var fullUrl = window.location.href;
+		var arr = fullUrl.split(":");
+		var protocol = arr[0];
+
+		var port = location.port;
+		var portPostfix = port;
+		if(port) //if port was defined, we need to prefix with ':'
+			portPostfix = ":"+port;
+		
+		var wsProtocol = "ws";
+		if("https" == protocol)
+			wsProtocol = "wss";
+		
+   		var server = location.hostname;
+   		var url = wsProtocol+"://"+server+portPostfix+"/upload/${table}";
+
+   	  	ws = new WebSocket(url);
+   	  	var filedata = { name : file.name, size : file.size, action : "start" };
+
+   	  	var chunksize = 250000;
+   	  	var slice_start = 0;
+   	  	var end = filedata.size;
+   	  	var finished = false;
+   	  	var success = false;  // set to true on completion
+   	  	var error_messages = [];
+      	var counter = 0;
+   	  	ws.onopen = function(){ ws.send("json"+JSON.stringify(filedata)) };
+
+   	  	//This is called every 1 or 100 ms to send next part of file depending on
+   	  	//if nic buffer is backed up or not(if not backed up, every 1 ms, this is called)
+		function nextSlice() {
+			if(ws.readyState != 1) {
+	    		console.log("socket state="+ws.readyState+" so exiting and not writing");
+    			return;
+    		}
+
+	    	var slice_end = slice_start + chunksize;
+   		    if ( slice_end >= end )
+	   			slice_end = end;
+	
+     		var amount = ws.bufferedAmount;
+     		if(amount > 0) {
+     			//let's wait and backoff on sending next slice
+     			console.log("wait a bit as nic buffer still has data="+amount);
+     			setTimeout(nextSlice, 200);
+     			return;
+     		}
+  	 	
+   			var bytes = file.slice(slice_start,slice_end);
+    		ws.send( bytes );
+    		var percent = Math.round(100*slice_end / end);
+    		if(callback.onsent)
+    			callback.onsent(percent);
+    	
+    		if(slice_end == end) {
+    			if(callback.onsent)
+   		 			callback.onsent(100);
+    			//we just send the last slice, send end and wait for result
+    			ws.send("end");
+    			return;
+    		}
+    	
+			slice_start = slice_end;
+    	
+	    	if(ws.readyState == 1) //if socket is still open
+				setTimeout(nextSlice, 1);
+    	}
+		
+   	  	ws.onmessage = function(e){
+   			console.log( e.data +" end="+end);
+   	    	var status = JSON.parse(e.data);
+
+	   	    if(status.numdone) {
+   		    	var totalDone = status.numdone;
+   	    		//update progress bar
+   	    		var percent = Math.round(100*totalDone / end);
+	   	    	if(callback.onsaved)
+   		    		callback.onsaved(percent);
+	   	    	if(totalDone == end) {
+	   	    		success = true;
+	   	    		ws.close();
+	   	    	}
+   	    		return;
+   	    	}
+   	    	// server reports error
+   	    	if ( status.error ) {
+   	    		if ( callback.onerror ) {
+   	        		callback.onerror( status.error );
+   	      		}
+   	      		error_messages.push( status.error );
+   	      		return;
+   	    	}
+   	    
+   	    	// anything else but ready signal is ignored
+   	    	if (status.start) {
+   	   		    setTimeout(nextSlice, 0);
+   	    		return;
+   	    	}
+
+ 	  	    return;
+		};
+
+   	  	ws.onclose = function () {
+   		  	console.log("server closing socket. cancelled="+cancelled+" succ="+success+" errorsLen="+error_messages.length);
+   		  	if(cancelled)
+   		  		return;
+
+   	    	if ( success ) {
+   	      		if ( callback.onsuccess ) {
+   	        		callback.onsuccess();
+   	      		}
+   	      		return;
+   	    	}
+
+ 	  	    if (error_messages.length == 0) {
+   		    	error_messages[0] = { error : 'Unknown upload error' };
+   	    	}
+
+ 	  	 	console.log( error_messages[0] );
+   	    	if ( callback.onfailure )
+   	      		callback.onfailure( error_messages[0] );
+   	  	}
+   	}
+   	
+	function readBlob() {
+		//reset state..
+		cancelled = false;
+		if(ws && ws.readyState != 3) {
+			//if not closed, close the socket
+			ws.close();
+		}
+			
+		if (window.File && window.FileReader && window.FileList && window.Blob) {
+			// Great success! All the File APIs are supported.
+		} else {
+		  alert('Only IE10 or greater, Chrome, or Firefox can be used.  (They must be the most recent versions)');
+		}
+		
+	    var files = document.getElementById('file').files;
+	    if (!files.length) {
+	      alert('Please select a file!');
+	      return;
+	    }
+	
+		$('#bar').width("0%");
+		$('#sentbar').width("0%");
+		$('#upload').modal();
+		cancelled = false;
+		
+	    var file = files[0];
+	    
+	    var callback = {
+	   		onsent: function(ratioComplete) {
+	   			$('#sentbar').width(ratioComplete+"%");
+	   		},
+	   		onsaved: function (ratioComplete) {
+	   			$('#bar').width(ratioComplete+"%");
+	   		},
+	   		onsuccess: function () {
+	   			$('#upload').modal('hide')
+	   			alert("File uploaded successfully");
+	   		},
+	   		onfailure: function (error_messages) {
+	   			alert("errmsgs="+error_messages);
+	   			$('#upload').modal('hide')
+	   		}	   		
+	    }
+	    
+	    GalileoSend(file, callback)
+	}
+	  
+	/* document.getElementById('file').addEventListener('change', readBlob, false);*/
+	document.getElementById('uploadbtn').addEventListener('click', readBlob, false);
+	
+	function cancelUpload() {
+		cancelled=true;
+		ws.send('json{ "action":"cancel" }');
+		ws.close();
+	}
+	document.getElementById('cancelbtn').addEventListener('click', cancelUpload, false);
+	</script>
+</div>

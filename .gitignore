@@ -25,10 +25,13 @@ output/
 /webapp/play-1.2.5/framework/classes/
 /solr/data/*
 /solr/solr/data/*
-.classpath
-.project
-.settings
+/.classpath
+/.project
+/.settings
 /master/.classpath
 /master/.project
 /master/.settings
 /client/bin
+/modbus/.project
+/modbus/.classpath
+/modbus/.settings

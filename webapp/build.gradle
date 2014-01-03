@@ -13,10 +13,10 @@ sourceSets.main{
 // ######################################################################
 
 dependencies {
-	compile fileTree(dir: 'play-1.2.5/framework/lib', include: '*.jar')
-	compile fileTree(dir: 'play-1.2.5/framework', include: 'play-*.jar')
+	compile fileTree(dir: 'play1.3.x/framework/lib', include: '*.jar')
+	compile fileTree(dir: 'play1.3.x/framework', include: 'play-*.jar')
 
-	testCompile fileTree(dir: 'play-1.2.5/framework/lib', include: '*.jar')
+	testCompile fileTree(dir: 'play1.3.x/framework/lib', include: '*.jar')
 
 	compile fileTree(dir: 'lib', includes: ['*.jar'])
 }

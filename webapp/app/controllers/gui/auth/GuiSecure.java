@@ -121,6 +121,7 @@ public class GuiSecure extends Controller {
         if(validation.hasErrors() || !allowed) {
             flash.keep("url");
             flash.error("Invalid username and password combination");
+            params.remove("password");
             params.flash();
             login();
         }

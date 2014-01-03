@@ -1,0 +1,18 @@
+YamlModel(ym1):
+  id: 1
+  name: Morten
+  binaryData: !!binary VGhpcyBTdHJpbmcgaXMgc3RvcmVkIGluIHlhbWwgZmlsZSB1c2luZyBiYXNlNjQ=
+
+DataWithCompositeKey(1):
+   key1: a
+   key2: b
+
+DataWithCompositeKey(2):
+   key1: a
+   key2: c
+
+YamlModel(ym2):
+  id: 2
+  name: "&{'message.name.yamlModel2'}[${toto}]-Test"
+  binaryData: !!binary VGhpcyBTdHJpbmcgaXMgc3RvcmVkIGluIHlhbWwgZmlsZSB1c2luZyBiYXNlNjQ=
+
