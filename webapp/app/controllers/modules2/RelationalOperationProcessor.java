@@ -24,9 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import play.mvc.results.BadRequest;
+import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.ProcessorSetup;
+import controllers.modules2.framework.procs.PullProcessor;
 import controllers.modules2.framework.procs.PushOrPullProcessor;
 
 public class RelationalOperationProcessor extends PushOrPullProcessor {
@@ -137,43 +139,43 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 			throw new BadRequest("unsupported data type "+dataTypeString+" only BigDecimal, BigInteger and String are allowed");
 
 	}
+	
+	@Override
+	public ReadResult read() {
+		PullProcessor p = (PullProcessor) getSingleChild();
+
+		ReadResult result = null;
+		TSRelational row = relationalContext.getRowNum()>0?relationalContext.previousRow(0):null;
+		do {
+			//IF modifyRow returns null, it is because we are modifying the value out or cleaning it
+			//and do not want upstream to see that result at all, so continue reading until row != null
+			if (relationalContext.isComplete()) {
+				result = p.read();
+				if(result == null)
+					return result;
+				row = result.getRow();
+			}
+
+			//If row is null from downstream, just feed him upstream since it is probably an error or something
+			if(row == null)
+				return result;
+			
+			//IF row is null from this one, keep reading until we get data
+			row = modifyRow(row);
+			result.setRow(row);
+		} while(row == null);
+		
+		return result;
+	}
 
 	@Override
 	protected TSRelational modifyRow(TSRelational tv) {
 		
 		relationalContext.addPrevious(tv);
-		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-		String attrPrefix = "";
-		if (StringUtils.containsIgnoreCase(engineName, "ruby"))
-			attrPrefix = "@";
-		bindings.put("relationalContext", relationalContext);
-		if (StringUtils.containsIgnoreCase(engineName, "ruby")) {
-			for (Entry<String, Object> entry:tv.entrySet()) {
-				log.debug("binding "+attrPrefix+entry.getKey().toLowerCase()+":"+entry.getValue()+" type "+entry.getValue().getClass());
-				bindings.put(attrPrefix+entry.getKey().toLowerCase(), entry.getValue());
-			}
-		}
-		else {
-			for (Entry<String, Object> entry:tv.entrySet()) {
-				Object toBind = entry.getValue();
-				log.debug("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
-				if (StringUtils.containsIgnoreCase(engineName, "ython")) {
-					if (entry.getValue() instanceof BigInteger) {
-						toBind = new PyLong((BigInteger)entry.getValue());
-					}
-					if (entry.getValue() instanceof BigDecimal) {
-						//TODO:  this ABSOLUTELY needs to change.  the call to .doubleValue() loses the precision granted by 
-						//BigDecimal.  However, I can find no way to coerce a BigDecimal into jython without losing precision yet.
-						toBind = new PyFloat(((BigDecimal)entry.getValue()).doubleValue());
-					}
-				}
-				bindings.put(attrPrefix+entry.getKey(), toBind);
-			}
-		}
-		if (!bindings.containsKey(resultingColumn))
-			bindings.put(resultingColumn, null);
-//		for (Entry<String, Object> e:bindings.entrySet())
-//			System.out.println("bindings is  "+e.getKey()+":"+e.getValue());
+		//inside the loop so that the client code can't forget to reset it.
+		//it'll always be true unless they explicitly set it or insert a row:
+		relationalContext.setComplete(true);
+		Bindings bindings = handleBindings(tv);
 		Object result;
 		try {
 			if (StringUtils.containsIgnoreCase(engineName, "python") 
@@ -206,9 +208,55 @@ public class RelationalOperationProcessor extends PushOrPullProcessor {
 		if(resultingColumnForcedDataType == null && result instanceof Double) {
 			result = new BigDecimal(result+"");
 		}
-		tv.put(resultingColumn,  result);
-		relationalContext.incRowNum();
+		relationalContext.addPreviousReturned(tv);
+
+		if (!relationalContext.isDiscardRow()) {
+			tv.put(resultingColumn,  result);
+			relationalContext.incRowNum();
+		}
+		else {
+			relationalContext.setComplete(true);
+			tv = null;
+		}
+
 		return tv;
+	}
+
+	private Bindings handleBindings(TSRelational tv) {
+		Bindings bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
+		String attrPrefix = "";
+		if (StringUtils.containsIgnoreCase(engineName, "ruby"))
+			attrPrefix = "@";
+		bindings.put("relationalContext", relationalContext);
+		if (StringUtils.containsIgnoreCase(engineName, "ruby")) {
+			for (Entry<String, Object> entry:tv.entrySet()) {
+				log.debug("binding "+attrPrefix+entry.getKey().toLowerCase()+":"+entry.getValue()+" type "+entry.getValue().getClass());
+				bindings.put(attrPrefix+entry.getKey().toLowerCase(), entry.getValue());
+			}
+		}
+		else {
+			for (Entry<String, Object> entry:tv.entrySet()) {
+				Object toBind = entry.getValue();
+				log.debug("binding "+attrPrefix+entry.getKey()+":"+entry.getValue()+" type "+entry.getValue().getClass());
+				if (StringUtils.containsIgnoreCase(engineName, "ython")) {
+					if (entry.getValue() instanceof BigInteger) {
+						toBind = new PyLong((BigInteger)entry.getValue());
+					}
+					if (entry.getValue() instanceof BigDecimal) {
+						//TODO:  this ABSOLUTELY needs to change.  the call to .doubleValue() loses the precision granted by 
+						//BigDecimal.  However, I can find no way to coerce a BigDecimal into jython without losing precision yet.
+						toBind = new PyFloat(((BigDecimal)entry.getValue()).doubleValue());
+					}
+				}
+				bindings.put(attrPrefix+entry.getKey(), toBind);
+			}
+		}
+		if (!bindings.containsKey(resultingColumn))
+			bindings.put(resultingColumn, null);
+//		for (Entry<String, Object> e:bindings.entrySet())
+//			System.out.println("bindings is  "+e.getKey()+":"+e.getValue());
+		return bindings;
+
 	}
 
 }

@@ -10,6 +10,8 @@ public class RelationalContext {
 	private LinkedList<TSRelational> previous = new LinkedList<TSRelational>();
 	private LinkedList<TSRelational> previousReturnedRow = new LinkedList<TSRelational>();
 	private long rowNum = 0;
+	private boolean complete = true;
+	private boolean discardRow = false;
 
 	public void addPrevious(TSRelational lastValue) {
 		previous.add(0, lastValue);
@@ -56,6 +58,16 @@ public class RelationalContext {
 		return previousReturnedRow.get(index);
 	}
 	
+	public TSRelational insertEmptySyntheticRow() {
+		setComplete(false);
+		return new TSRelational();
+	}
+	
+	public TSRelational insertClonedSourceSyntheticRow() {
+		setComplete(false);
+		return new TSRelational(previousRow(0));
+	}
+	
 	public Object previousReturnedValue(int index, String columnName) {
 		if ((previousReturnedRow.size()-1)<index)
 			return null;
@@ -82,8 +94,39 @@ public class RelationalContext {
 		rowNum++;
 	}
 	
-	
-	
+	/**
+	 * if IsComplete it means that the source row has been 'consumed' and the next time 'read' is called 
+	 * a new source row will be provided to the script.  if isComplete is false, it means that the script is 
+	 * not yet 'done' with the current source row, so the next time 'read' is called the SAME source row will 
+	 * still be provided.  This allows for situations like an interpolation where the original source row is 
+	 * potentially used for multiple iterations through the script as synthetic rows are inserted.
+	 * 
+	 * This value is set to true by default and is only set to false if explicitly set by the script or if 
+	 * insertEmptySyntheticRow() or insertClonedSourceSyntheticRow() are called.
+	 * 
+	 * @return
+	 */
+	public boolean isComplete() {
+		return complete;
+	}
+
+	public void setComplete(boolean complete) {
+		this.complete = complete;
+	}
+
+	/**
+	 * if discardRow is true no row is returned.  This is useful for situations like a 'cleaner' where for 
+	 * some reason the original source row is never returned to the parent processor.  This is only set 
+	 * to true if explicitly set by the script.
+	 * @return
+	 */
+	public boolean isDiscardRow() {
+		return discardRow;
+	}
+
+	public void setDiscardRow(boolean discardRow) {
+		this.discardRow = discardRow;
+	}
 	
 	
 
