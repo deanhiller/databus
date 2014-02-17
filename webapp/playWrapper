@@ -1,0 +1,3 @@
+#!/bin/bash
+
+./play run --http.port=9000 > playWrapper.log 2>&1 &
