@@ -237,7 +237,7 @@ public class Search extends Controller {
 		requestHandler = StringUtils.removeStart(requestHandler, "/");
 		
 		url += "/"+table+"/"+requestHandler+params;
-		System.out.println("Getting url "+url);
+		//System.out.println("Getting url "+url);
 		RequestBuilder b = new RequestBuilder("GET").setUrl(url);
 		AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 		try {
@@ -369,9 +369,9 @@ public class Search extends Controller {
 		
         @Override
         public com.ning.http.client.Response onCompleted(final com.ning.http.client.Response response) throws Exception {
-        	System.out.println("got response from solr:");
+        	//System.out.println("got response from solr:");
         	String responseBody = response.getResponseBody();
-        	System.out.println(responseBody);
+        	//System.out.println(responseBody);
             return super.onCompleted(response);
         }
 

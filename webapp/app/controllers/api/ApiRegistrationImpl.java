@@ -22,6 +22,7 @@ import models.EntityGroup;
 import models.EntityGroupXref;
 import models.EntityUser;
 import models.KeyToTableName;
+import models.MetaDataTag;
 import models.PermissionType;
 import models.RoleMapping;
 import models.SdiColumn;
@@ -76,6 +77,7 @@ public class ApiRegistrationImpl {
 	public static int divisor = Integer.MAX_VALUE / 10;
 
 	public static RegisterResponseMessage registerImpl(RegisterMessage msg, String username, String apiKey) {
+		
 		if (log.isInfoEnabled())
 			log.info("Registering table="+msg.getModelName());
 		if(msg.getDatasetType() != DatasetType.STREAM && msg.getDatasetType() != DatasetType.RELATIONAL_TABLE 
@@ -166,14 +168,37 @@ public class ApiRegistrationImpl {
 			t.setTypeOfData(DataTypeEnum.RELATIONAL_TIME_SERIES);
 		}
 
+		
+		
+		
+		NoSql.em().fillInWithKey(t);
+		
+		List<MetaDataTag>newtags = new ArrayList<MetaDataTag>();
+		if (msg.getTags() != null && msg.getTags().size() > 0) {
+			for (String s: msg.getTags()) {
+				newtags.add(MetaDataTag.getMetaDataTag(s, 1, NoSql.em()));
+			}
+		}
+			
+
 		t.setTableName(msg.getModelName());
 		t.setDateCreated(new LocalDateTime());
 		t.setTableMeta(tm);
 		t.setCreator(user);
 		t.setIsForLogging(msg.getIsForLogging());
 		t.setSearchable(msg.getIsSearchable());
-		NoSql.em().fillInWithKey(t);
-
+		
+		long before = System.currentTimeMillis();
+		//------ real code
+		t.setTags(newtags, NoSql.em());
+//		for (MetaDataTag tag:t.getTags()){
+//			NoSql.em().put(tag);
+//		}
+		//----- end real code
+		long after = System.currentTimeMillis();
+		log.warn("^^^^^ time for setting tags: "+(after-before));
+		
+		
 		schema.addTable(t);
 
 		tm.setForeignKeyToExtensions(t.getId());

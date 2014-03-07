@@ -19,6 +19,11 @@ public class Tables extends Controller {
 		SecureTable sdiTable = SecurityUtil.checkSingleTable(table);
 		render(sdiTable, table);
 	}
+	
+	public static void uploadFormJSON(String table) {
+		SecureTable sdiTable = SecurityUtil.checkSingleTable(table);
+		render(sdiTable, table);
+	}
 
 	public static void uploadSuccess(String table) {
 		render();

@@ -283,7 +283,7 @@ public class SearchUtils {
 						}
 						if (tablesolrDocs.size() > REINDEX_BATCH_SIZE) {
 							docsindexed+=solrDocs.size();
-							System.out.println("hit solr doc batch size in a searchable table, "+docsindexed+" docs so far, "+(System.currentTimeMillis()-startTime)+" millis elapsed "+(docsindexed/((System.currentTimeMillis()-startTime)/1000))+" docs per sec.");
+							//System.out.println("hit solr doc batch size in a searchable table, "+docsindexed+" docs so far, "+(System.currentTimeMillis()-startTime)+" millis elapsed "+(docsindexed/((System.currentTimeMillis()-startTime)/1000))+" docs per sec.");
 							SearchPosting.saveSolr("reindex", tablesolrDocs, null);
 							tablesolrDocs = new ArrayList<SolrInputDocument>();
 						}
@@ -301,8 +301,8 @@ public class SearchUtils {
 				docsindexed+=solrDocs.size();
 				long elapsed = System.currentTimeMillis()-startTime;
 				if (elapsed < 1) elapsed = 1;
-				System.out.println("hit solr doc batch size in metadata, "+docsindexed+" docs so far, "+(elapsed)+" millis elapsed "+
-						((docsindexed/elapsed)*1000)+" docs per sec.");
+				//System.out.println("hit solr doc batch size in metadata, "+docsindexed+" docs so far, "+(elapsed)+" millis elapsed "+
+				//		((docsindexed/elapsed)*1000)+" docs per sec.");
 				SearchPosting.saveSolr("reindex", solrDocs, "databusmeta");
 				solrDocs = new ArrayList<SolrInputDocument>();
 			}
@@ -311,8 +311,8 @@ public class SearchUtils {
 			docsindexed+=solrDocs.size();
 			long elapsed = System.currentTimeMillis()-startTime;
 			if (elapsed < 1) elapsed = 1;
-			System.out.println("hit solr doc batch size during finalization, "+docsindexed+" docs so far, "+(elapsed)+" millis elapsed "+
-					((docsindexed/elapsed)*1000)+" docs per sec.");
+			//System.out.println("hit solr doc batch size during finalization, "+docsindexed+" docs so far, "+(elapsed)+" millis elapsed "+
+			//		((docsindexed/elapsed)*1000)+" docs per sec.");
 			SearchPosting.saveSolr("reindex", solrDocs, "databusmeta");
 			solrDocs = new ArrayList<SolrInputDocument>();
 		}

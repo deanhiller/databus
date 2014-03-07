@@ -1,17 +1,22 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.joda.time.LocalDateTime;
+import org.mortbay.log.Log;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.Query;
 import com.alvazan.orm.api.base.anno.NoSqlDiscriminatorColumn;
 import com.alvazan.orm.api.base.anno.NoSqlEntity;
 import com.alvazan.orm.api.base.anno.NoSqlIndexed;
+import com.alvazan.orm.api.base.anno.NoSqlManyToMany;
 import com.alvazan.orm.api.base.anno.NoSqlManyToOne;
 import com.alvazan.orm.api.base.anno.NoSqlOneToMany;
 import com.alvazan.orm.api.base.anno.NoSqlOneToOne;
@@ -20,6 +25,7 @@ import com.alvazan.orm.api.base.anno.NoSqlQuery;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.play.NoSql;
 
 @NoSqlQueries({
 	@NoSqlQuery(name = "findByName", query = "select t from TABLE as t where t.tableName = :name"),
@@ -71,8 +77,13 @@ public class SecureTable extends SecureResource {
 
 	@NoSqlOneToOne
 	private DboTableMeta tableMeta;
-
+	
+	@NoSqlManyToMany
+	private List<MetaDataTag> tags = new ArrayList<MetaDataTag>();
+	
 	private Boolean isForLogging;
+	
+	public static final transient String tagDelimiter = "_:_";
 
 	public String getClassType() {
 		return classType;
@@ -256,6 +267,149 @@ public class SecureTable extends SecureResource {
 
 	public void setIsForLogging(Boolean isForLogging) {
 		this.isForLogging = isForLogging;
+	}
+	
+	
+	public void addTag(String tagname, NoSqlEntityManager em) {
+
+		//this version of this code uses the 'setTags()' method to exersise that code.  it's slow.
+//		MetaDataTag tagobj = MetaDataTag.getMetaDataTag(tag, 1, em);
+//		List<MetaDataTag> currentFirstLevelTags = getTags();
+//		if (!currentFirstLevelTags.contains(tagobj)) {
+//			currentFirstLevelTags.add(tagobj);
+//		}
+//		setTags(currentFirstLevelTags, em);
+		
+		MetaDataTag tagobj = MetaDataTag.getMetaDataTag(tagname, 1, em);
+		if (tags.contains(tagobj))
+			return;
+		TreeSet<MetaDataTag>tagSet = new TreeSet<MetaDataTag>(new MetaDataTagComparator());
+		tagSet.addAll(getTags());
+		tagSet.add(tagobj);
+		Set<MetaDataTag> allTagCombos = permute(tagSet, em);
+		for (MetaDataTag tag:allTagCombos) {
+			if (!tags.contains(tag)) {
+				tags.add(tag);
+				tag.addTable(this);
+				em.put(tag);
+			}	
+		}
+		
+	}
+	
+	public void removeTag(String tagToRemove, NoSqlEntityManager em) {
+		MetaDataTag tagobj = MetaDataTag.getMetaDataTag(tagToRemove, 1, em);
+		if (tags.contains(tagobj)) {
+			//need to remove not just this tag, but all tag combinations that include it.
+			long before = System.currentTimeMillis();
+
+			for(int i = tags.size()-1; i >= 0; i--) {
+				MetaDataTag thistag = tags.get(i);
+				if (thistag.containsSubtag(tagobj)) {
+					tags.remove(i);
+					thistag.removeTable(this);
+					if (thistag.getTableCount()==0)
+						em.remove(thistag);
+					else
+						em.put(thistag);
+
+				}
+				long after = System.currentTimeMillis();
+				em.put(this);
+				after = System.currentTimeMillis();
+			}
+		}
+	}
+	
+	
+	public void setTags(List<MetaDataTag> newtags, NoSqlEntityManager mgr) {
+		
+		TreeSet<MetaDataTag>tagSet = new TreeSet<MetaDataTag>(new MetaDataTagComparator());
+		tagSet.addAll(newtags);
+		Set<MetaDataTag> allTagCombos = permute(tagSet, mgr);
+		long before = System.currentTimeMillis();
+		
+		for(int i = tags.size()-1; i >= 0; i--) {
+			MetaDataTag tag = tags.get(i);
+			if (!allTagCombos.contains(tag)) {
+				//remove me from the tags tables
+				tag.removeTable(this);
+				//remove this tag from my list of tags
+				tags.remove(i);
+				//delete the tag if empty???  only if empty and not in provided tags list
+				if (tag.getTableCount()==0)
+					mgr.remove(tag);
+			}
+			mgr.put(tag);
+			//mgr.flush();
+		}
+		long after = System.currentTimeMillis();
+		before = System.currentTimeMillis();
+
+		for (MetaDataTag tag:allTagCombos) {
+			if (!tags.contains(tag)) {
+				tags.add(tag);
+				tag.addTable(this);
+				mgr.put(tag);
+			}
+					
+		}
+		after = System.currentTimeMillis();
+	}
+
+	
+	
+	private Set<MetaDataTag> permute(TreeSet<MetaDataTag> newtags, NoSqlEntityManager mgr)
+	  {
+		TreeSet<MetaDataTag> result = new TreeSet<MetaDataTag>(new MetaDataTagComparator());
+		if (newtags == null || newtags.size() == 0)
+			return result;
+
+	    // Termination condition: only 1 permutation for a list of length 1
+		if (newtags.size() == 1) {
+			result.add(MetaDataTag.getMetaDataTag(newtags.first().getName(), newtags.first().getLength(), mgr));
+		} else {
+			TreeSet<MetaDataTag> subtags = new TreeSet<MetaDataTag>(new MetaDataTagComparator());
+			MetaDataTag first = newtags.first();
+			subtags.addAll(newtags);
+			subtags.remove(first);
+			Set<MetaDataTag> subtagPermutations = permute(subtags, mgr);
+			result.addAll(subtagPermutations);
+			
+			result.add(MetaDataTag.getMetaDataTag(first.getName(), first.getLength(), mgr));
+			for (MetaDataTag subtag : subtagPermutations) {
+				MetaDataTag thistag = MetaDataTag.getMetaDataTag(first.getName()+tagDelimiter+subtag.getName(), subtag.getLength()+1, mgr);
+				result.add(thistag);
+			}
+			
+		}
+	    return result;
+	  }
+
+	public List<MetaDataTag> getTags() {
+		List<MetaDataTag> result = new ArrayList<MetaDataTag>();
+		for (MetaDataTag tag:tags){
+			if (tag.getLength() == 1)
+				result.add(tag);
+		}
+		return result;
+	}
+	
+	public List<MetaDataTag> getTagsIncludingCalculated() {
+		return tags;
+	}
+	
+	private static class MetaDataTagComparator implements Comparator<MetaDataTag> {
+
+	    @Override
+	    public int compare(MetaDataTag o1, MetaDataTag o2) {
+	        if(o1.getName() != null && o2.getName() != null){
+	            return o1.getName().compareTo(o2.getName());
+	        }
+
+	        return 0;
+	    }
+
 	}
 
 } // Table

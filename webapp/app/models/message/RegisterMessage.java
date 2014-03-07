@@ -42,6 +42,10 @@ public class RegisterMessage {
 	@XmlElement(name="groups")
     public List<String> groups = new ArrayList<String>();
 	
+	@JsonProperty("tags")
+	@XmlElement(name="tags")
+    public List<String> tags = new ArrayList<String>();
+	
 	@JsonProperty("schema")
 	@XmlElement(name="schema")
     public String schema;
@@ -89,6 +93,14 @@ public class RegisterMessage {
 
 	public void setGroups(List<String> groups) {
 		this.groups = groups;
+	}
+	
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(List<String> tags) {
+		this.tags = tags;
 	}
 
 	public List<DatasetColumnModel> getColumns() {

@@ -28,12 +28,9 @@ public class SaveBatch implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(SaveBatch.class);
 	private static final int FLUSH_SIZE = 500;
-	private List<DboColumnMeta> headers;
-	private int headersize = 0;
 	private List<Line> batch;
 	private DboTableMeta table;
 	private int count = 0;
-	private LinkedHashMap<String, Integer> headerIndexs = new LinkedHashMap<String, Integer>();
 	
 	//this are precaculated outside the run loop for performance:
 	private String tableColumnFamily;
@@ -46,18 +43,12 @@ public class SaveBatch implements Runnable {
 	private int characterCount;
 	private Outbound outbound;
 
-	public SaveBatch(DboTableMeta table, List<DboColumnMeta> headers, List<Line> batch2, SocketState state, Outbound outbound) {
+	public SaveBatch(DboTableMeta table, List<Line> batch2, SocketState state, Outbound outbound) {
 		this.table = table;
-		this.headers = headers;
-		this.headersize = headers.size();
 		this.batch = batch2;
 		this.state = state;
 		this.outbound = outbound;
 		this.tableColumnFamily = table.getColumnFamily();
-		
-		for (int i = 0; i < headers.size(); i++) {
-			headerIndexs.put(headers.get(i).getColumnName(), i);
-		}
 		
 	}
 
@@ -75,7 +66,7 @@ public class SaveBatch implements Runnable {
 			synchronized(state) {
 				int count = state.getDoneCount();
 				int newCount = count+batchsize;
-				int numSubmitted = state.getNumLinesSubmitted();
+				int numSubmitted = state.getNumItemsSubmitted();
 				state.setDoneCount(newCount);
 				state.addTotalCharactersDone(characterCount);
 				outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
@@ -112,6 +103,8 @@ public class SaveBatch implements Runnable {
 				return; //exit out since somoene errored
 			}
 			processLine(mgr, line, session);
+			if (line.getLength() != 0)
+				log.info("adding "+line.getLength()+" to charcount!!!!!!!!!!!!!!!!!!!!");
 			characterCount += line.getLength();
 			count++;
 		}
@@ -132,18 +125,18 @@ public class SaveBatch implements Runnable {
 
 	private void processLineTimeSeries(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
-
 			List<DboColumnMeta> cols = new ArrayList<DboColumnMeta>(table.getAllColumns());
 			List<Object> nodes = new ArrayList<Object>();
-			String pkValue = line.getColumns()[headerIndexs.get("time")];
+			String pkValue = line.getColumns().get("time");
 			if (pkValue == null)
 				throw new RuntimeException("The time cannot be null!");
 			//workaround for scientific notation which can't currently be parsed by playorm:
 			if (StringUtils.containsIgnoreCase(pkValue, "e")) {
 				pkValue = ""+Double.valueOf(pkValue).longValue();
 			}
+			
 			for (DboColumnMeta col:cols) {
-				String node = line.getColumns()[headerIndexs.get(col.getColumnName())];
+				String node = line.getColumns().get(col.getColumnName());
 				if(node == null) {
 					if (log.isWarnEnabled())
 						log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
@@ -185,14 +178,18 @@ public class SaveBatch implements Runnable {
 	private void processLineRel(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
 			TypedRow row = session.createTypedRow(tableColumnFamily);
-			for(int i = 0; i < headersize; i++) {
-				String col = line.getColumns()[i];
-				DboColumnMeta meta = headers.get(i);
-				Object val = ApiPostDataPointsImpl.convertToStorage(meta, col.trim());
+			for (String colname:line.getColumns().keySet()) {
+				DboColumnMeta meta = table.getColumnMeta(colname);
+				String stringval = line.getColumns().get(colname);
+				//jsc:todo  Do we need to do a 'required' check here and throw an exception in some cases for blank???
+				if (StringUtils.isBlank(stringval))
+					continue;
+				Object val = ApiPostDataPointsImpl.convertToStorage(meta, stringval.trim());
 				if(meta instanceof DboColumnIdMeta)
 					row.setRowKey(val);
 				else
 					row.addColumn(meta.getColumnName(), val);
+
 			}
 	
 			session.put(tableColumnFamily, row);

@@ -133,23 +133,6 @@ public class Application extends Controller {
 			}
 		}
 		
-		// DEBUG vv
-		System.out.println("\n\n\n\nGLOBAL SEARCH STRING: " + searchString);
-		System.out.println("\n\n");
-		for (Map.Entry<String, List<SearchItem>> entry : facets.entrySet()) {
-		    String db = entry.getKey();
-		    List<SearchItem> dbEntries = entry.getValue();
-		    
-		    System.out.println("\n");
-		    System.out.println("\t" + db.toUpperCase());
-		    
-		    for(SearchItem item : dbEntries) {
-		    		System.out.println("\t\tNAME: " + item.getId());
-		    		System.out.println("\t\tTYPE: " + item.getType() + "\n");
-		    }
-		}
-		// DEBUG ^^
-		
 		/*
 		 * Step 2) Do a solr search for each "item" id in the searchableItems results
 		 */

@@ -63,7 +63,7 @@ public class RegisterForBatchLoad {
 
 		long r = System.currentTimeMillis();
 		String tableName = "pinkBlobFromMarsData"+r;
-		registerNewStream(httpclient, tableName);
+		registerNewStream(httpclient, tableName, null);
 
 		queryEmptyTable(tableName, httpclient);
 		
@@ -72,7 +72,7 @@ public class RegisterForBatchLoad {
 		Utility.sendRequest(httpclient, requestUri, StartupGroups.ROBOT_USER, "1234324234324", 401);
 		
 		String tableName2 = "pinkBlobFromMarsDataTWO"+r;
-		registerNewStream(httpclient, tableName2);
+		registerNewStream(httpclient, tableName2, null);
 
 		List<Map> tuples = new ArrayList<Map>();
 		tuples.add(createPoint(10, 23.2, tableName));
@@ -138,11 +138,11 @@ public class RegisterForBatchLoad {
 		return result;
 	}
 	
-	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName) 
+	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName, List<String> tags) 
 			throws IOException, JsonGenerationException,
 			JsonMappingException, UnsupportedEncodingException,
 			ClientProtocolException, JsonParseException {
-		String json = RegisterPostAndGet.createJsonForRequest(tableName, false);
+		String json = RegisterPostAndGet.createJsonForRequest(tableName, false, tags);
 		String theString = Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		ObjectMapper mapper = new ObjectMapper();
 		RegisterResponseMessage resp = mapper.readValue(theString, RegisterResponseMessage.class);

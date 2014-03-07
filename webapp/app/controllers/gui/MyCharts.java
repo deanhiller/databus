@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import com.alvazan.play.NoSql;
 
 import play.Play;
+import play.data.validation.Error;
 import play.mvc.Controller;
 import play.mvc.Scope.Flash;
 import play.mvc.With;
@@ -287,7 +288,15 @@ public class MyCharts extends Controller {
 		String encoded = ChartUtil.encodeVariables(variables );
 		
 		if(validation.hasErrors()) {
-			flash.error("You have errors in your form below");
+			Map<String, List<Error>> errorsMap = validation.errorsMap();
+			String errorsString = "";
+			for (Entry<String, List<Error>>entry:errorsMap.entrySet()) {
+				errorsString += " Field "+entry.getKey()+": ";
+				for (Error error:entry.getValue()) {
+					errorsString += error.toString();
+				}
+			}
+			flash.error("You have errors in your form below "+errorsString);
 			validation.keep();
 			flash.keep();
 			if(stepNumber == 1)

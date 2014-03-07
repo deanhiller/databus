@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,7 @@ import controllers.gui.util.ChartUtil;
 import play.mvc.Controller;
 import play.mvc.With;
 import play.mvc.Http.Request;
+import play.mvc.results.BadRequest;
 
 @With(GuiSecure.class)
 public class MyStuff extends Controller {
@@ -139,17 +141,52 @@ public class MyStuff extends Controller {
 		render(username, password, baseurl, agg);
 	}
 
-	public static void postTable(String table, String description) {
-		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
-		PermissionType permission = SecurityUtil.checkSingleTable2(table);
-		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
-			unauthorized("You don't have permission to change this resource");
+	public static void postTable(String table, String description, String tag) {
+		String action = params.get("submit");
+		//pull out duplicate code
+	    if ("Save".equals(action)) {
+	    	SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+			PermissionType permission = SecurityUtil.checkSingleTable2(table);
+			if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+				unauthorized("You don't have permission to change this resource");
 
-		targetTable.setDescription(description);
-		NoSql.em().put(targetTable);
-		NoSql.em().flush();
-		
-		flash.success("Your changes were saved");
-		tableEdit(table);
+			targetTable.setDescription(description);
+			NoSql.em().put(targetTable);
+			NoSql.em().flush();
+			
+			flash.success("Your changes were saved");
+			tableEdit(table);
+
+	    } else if ("addTag".equals(action)) {
+	    	if (StringUtils.isBlank(tag)) {
+				flash.success("If you want to add a tag, fill in a value in the 'New Tag' field.");
+	    		tableEdit(table);
+	    	}
+	    	SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+			PermissionType permission = SecurityUtil.checkSingleTable2(table);
+			if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+				unauthorized("You don't have permission to change this resource");
+
+			targetTable.addTag(tag, NoSql.em());
+			NoSql.em().put(targetTable);
+			NoSql.em().flush();
+			
+			flash.success("Your changes were saved");
+			tableEdit(table);	    
+		}  else if (action.startsWith("Remove Tag ")) {
+	    	SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+			PermissionType permission = SecurityUtil.checkSingleTable2(table);
+			if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+				unauthorized("You don't have permission to change this resource");
+
+			targetTable.removeTag(action.substring("Remove Tag ".length()), NoSql.em());
+			NoSql.em().put(targetTable);
+			NoSql.em().flush();
+			
+			flash.success("Your changes were saved");
+			tableEdit(table);	    
+		}else {
+	      throw new BadRequest("This action is not allowed");
+	    }
 	}
 }

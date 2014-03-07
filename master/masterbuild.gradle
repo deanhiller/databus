@@ -134,6 +134,7 @@ project(':master') {
 
 	dependencies {
                 compile 'de.undercouch:bson4jackson:1.3.0'
+		compile 'com.google.code.gson:gson:2.2.4'
 		compile group: 'org.acegisecurity',  name: 'acegi-security',          version: '1.0.7'
 			
 		//compile group: 'org.hibernate',    name: 'hibernate-entitymanager', version: '4.1.4.Final'

@@ -7,15 +7,20 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeSet;
 
 import models.message.DatasetColumnModel;
 import models.message.DatasetType;
 import models.message.RegisterMessage;
 import models.message.RegisterResponseMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -46,14 +51,74 @@ public class RegisterPostAndGet {
 	private final static Logger log = LoggerFactory.getLogger(RegisterPostAndGet.class);
 	
 	private int port = Utility.retrievePlayServerPort();
+	ArrayList<String> regionTags = new ArrayList<String>();
+	ArrayList<String> buildingTags = new ArrayList<String>();
+	ArrayList<String> roomTags = new ArrayList<String>();
+	ArrayList<String> typeTags = new ArrayList<String>();
+	ArrayList<String> subtypeTags = new ArrayList<String>();
+	ArrayList<String> unitTags = new ArrayList<String>();
+	ArrayList<String> equipmentTags = new ArrayList<String>();
+	ArrayList<String> randomTags = new ArrayList<String>();
 	
-	@Test
+	public void generateABunchOfTablesWithTags() throws JsonGenerationException, JsonMappingException, IOException {
+		
+		regionTags.addAll(Arrays.asList("r1","r2","r3","r4","r5","r6","r7","r8","r9","r10","r11","r12"));
+		for(int i = 0; i < 100; i++)
+			buildingTags.add("b"+i);
+		for(int i = 0; i < 1000; i++)
+			roomTags.add("r"+i);
+		typeTags.addAll(Arrays.asList("analogInput", "analogOutput", "digitalInput", "digitalOutput"));
+		subtypeTags.addAll(Arrays.asList("HVAC", "Power", "lighting", "elevator", "solar", "heat pump", "data center", "emergency generator"));
+		unitTags.addAll(Arrays.asList("degree F", "degree C", "kelvins", "mhz", "ghz", "rpm", "btu", "kw", "kwh", "watts"));
+		equipmentTags.addAll(Arrays.asList("ac unit", "tv monitor", "computer", "led light", "fan", "fireplace", "solar panel"));
+		randomTags.addAll(Arrays.asList("tall", "short", "big", "small", "blue", "red", "hot", "cold", "happy", "sad"));
+
+		List<Long> timeResults = generateTablesWithRandomTags(3000, 10000);
+		System.out.println("times!!!!!!");
+		for (int i =0; i< timeResults.size(); i++)
+			System.out.println(timeResults.get(i));
+		
+	}
+	
+	private List<Long> generateTablesWithRandomTags(int start, int end) throws JsonGenerationException, JsonMappingException, IOException {
+		DefaultHttpClient httpclient = new DefaultHttpClient();
+
+		ArrayList<Long> times = new ArrayList<Long>();
+		for (int i = start; i < end; i++) {
+			String tableName = "tableWithTags"+i;
+			List<String> someTags = selectRandomTags();
+			long before = System.currentTimeMillis();
+			registerNewStream(httpclient, tableName, someTags);		
+			long after = System.currentTimeMillis();
+			times.add(after - before);
+			System.out.println("  ^^^^^^ time for table tableWithTags"+i+":  "+(after-before));
+		}
+		return times;
+	}
+
+	private List<String> selectRandomTags() {
+		List someTags = new ArrayList<String>();
+		someTags.add(regionTags.get(new Random().nextInt(regionTags.size())));
+		someTags.add(buildingTags.get(new Random().nextInt(buildingTags.size())));
+		someTags.add(roomTags.get(new Random().nextInt(roomTags.size())));
+		someTags.add(typeTags.get(new Random().nextInt(typeTags.size())));
+		someTags.add(subtypeTags.get(new Random().nextInt(subtypeTags.size())));
+		someTags.add(unitTags.get(new Random().nextInt(unitTags.size())));
+		someTags.add(equipmentTags.get(new Random().nextInt(equipmentTags.size())));
+		someTags.add(randomTags.get(new Random().nextInt(randomTags.size())));
+
+		return someTags;
+	}
+
 	public void registerPostAndGet() throws JsonGenerationException, JsonMappingException, IOException {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 
 		long r = System.currentTimeMillis();
 		String tableName = "pinkBlobFromMarsData"+r;
-		registerNewStream(httpclient, tableName);
+		registerNewStream(httpclient, tableName+"1jsc", Arrays.asList("a"));
+		registerNewStream(httpclient, tableName+"2jsc", Arrays.asList("a", "b"));
+		registerNewStream(httpclient, tableName+"3jsc", Arrays.asList("a", "b", "c"));
+		registerNewStream(httpclient, tableName, Arrays.asList("e", "b", "a", "c"));
 
 		String apiKey = StartupGroups.ROBOT_KEY;
 		postNewDataPoint(httpclient, 30, 34.5, apiKey, tableName);
@@ -121,11 +186,11 @@ public class RegisterPostAndGet {
 		return result;
 	}
 	
-	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName) 
+	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName, List<String> tags) 
 			throws IOException, JsonGenerationException,
 			JsonMappingException, UnsupportedEncodingException,
 			ClientProtocolException, JsonParseException {
-		String json = createJsonForRequest(tableName, false);
+		String json = createJsonForRequest(tableName, false, tags);
 		
 		String theString = Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		
@@ -134,7 +199,7 @@ public class RegisterPostAndGet {
 		return resp;
 	}
 
-	public static String createJsonForRequest(String tableName, boolean isForLogging) throws IOException,
+	public static String createJsonForRequest(String tableName, boolean isForLogging, List<String> tags) throws IOException,
 			JsonGenerationException, JsonMappingException {
 //		{"datasetType":"STREAM",
 //		 "modelName":"timeSeriesForPinkBlobZ",
@@ -148,6 +213,8 @@ public class RegisterPostAndGet {
 		msg.setDatasetType(DatasetType.STREAM);
 		msg.setModelName(tableName);
 		msg.setSchema(StartupDetailed.GROUP1);
+		if (tags != null && tags.size() > 0)
+			msg.setTags(tags);
 		if(isForLogging) //else leave null as this is an optional field
 			msg.setIsForLogging(isForLogging);
 		

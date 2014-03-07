@@ -119,7 +119,7 @@ public class AddLogContextPlugin extends PlayPlugin {
 		Request current = Request.current();
 		if(current != null) {
 			Boolean isLastCall = (Boolean) current.args.get("__lastCall");
-			if(!resp.chunked || (isLastCall != null && isLastCall))
+			if(resp!=null && (!resp.chunked || (isLastCall != null && isLastCall)))
 				processEndOfRequestMaybe(current);
 		}
 		

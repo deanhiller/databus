@@ -23,6 +23,8 @@
 
 
 WS  /upload/{table}            			gui.FileUploadSocket.fileToWebSocket
+WS  /uploadJSON/{table}            		gui.FileUploadSocket.fileToWebSocketJSON
+
 
 # PROTOTYPE UIs
 # ******************************************************************************
@@ -86,6 +88,7 @@ GET  /groups/{group}/addtable           	gui.MyStuff.tableAdd
 GET  /tables/{table}                    	gui.MyStuff.tableEdit
 POST /groups/{table}/savetable          	gui.MyStuff.postTable
 GET  /tables/{table}/upload             	gui.Tables.uploadForm
+GET  /tables/{table}/uploadJSON             gui.Tables.uploadFormJSON
 POST /tables/{table}/specialupload      	gui.Tables.postData
 GET  /tables/{table}/uploadsuccess      	gui.Tables.uploadSuccess
 

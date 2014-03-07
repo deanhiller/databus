@@ -48,7 +48,8 @@ public class FileUploadSocket extends WebSocketController {
 	static {
 		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000);
 		executor = new ThreadPoolExecutor(20, 20, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
-	}	
+	}
+	
 	public static void fileToWebSocket(String table) throws IOException {
 		if (request.isNew) {
 			PermissionType p = SecurityUtil.checkSingleTable2(table);
@@ -67,10 +68,10 @@ public class FileUploadSocket extends WebSocketController {
 			}
 
 			NoSqlEntityManagerFactory factory = NoSql.getEntityManagerFactory();
-			request.args.put("state", new SocketState(factory, sdiTable, executor, outbound));
+			request.args.put("state", new SocketStateCSV(factory, sdiTable, executor, outbound));
 		}
 
-		SocketState state = (SocketState) request.args.get("state");
+		SocketStateCSV state = (SocketStateCSV) request.args.get("state");
 		while (inbound.isOpen()) {
 			WebSocketEvent e = await(inbound.nextEvent());
 			if (e instanceof WebSocketFrame) {
@@ -107,6 +108,76 @@ public class FileUploadSocket extends WebSocketController {
 			}
 		}
 	}
+	
+	public static void fileToWebSocketJSON(String table) throws IOException {
+		if (request.isNew) {
+			PermissionType p = SecurityUtil.checkSingleTable2(table);
+			if (PermissionType.READ_WRITE.isHigherRoleThan(p))
+				throw new Unauthorized(
+						"You do not have a high enough permission to write to this table="
+								+ table);
+
+			NoSqlEntityManagerFactory factory = NoSql.getEntityManagerFactory();
+			SecureTable sdiTable = SecureTable.findByName(NoSql.em(), table);
+			SocketState state = new SocketStateJSON(factory, sdiTable, executor, outbound);
+
+			if (sdiTable == null){
+				request.args.put("state", state);
+				state.reportErrorAndClose("No such table '"+table+"'");
+				log.info("user selected a non-existant table:'"+table+"'...");
+				return;
+			}
+			DboTableMeta meta = sdiTable.getTableMeta();
+			meta.initCaches();
+			Collection<DboColumnMeta> columns = meta.getAllColumns();
+			for (DboColumnMeta m : columns) {
+				// force load from noSQL store right now...
+				m.getColumnName();
+			}
+
+			request.args.put("state", state);
+		}
+
+		SocketStateJSON state = (SocketStateJSON) request.args.get("state");
+		while (inbound.isOpen()) {
+			WebSocketEvent e = await(inbound.nextEvent());
+			if (e instanceof WebSocketFrame) {
+				WebSocketFrame frame = (WebSocketFrame) e;
+				if(state.getErrors().size() > 0) {
+					log.warn("odd, socket is always closed right after error so how did we get here...possibly a race condition we don't care much about");
+					continue; 
+				} else if (frame.isBinary) {
+					processFile(state, frame);
+				} else if(frame.textData.startsWith("json")) {
+					String jsonStr = frame.textData.substring(4);
+					Map json = mapper.readValue(jsonStr, Map.class);
+					String action = (String) json.get("action");
+					if(action.equals("start")) {
+						int size = (Integer) json.get("size");
+						state.setSize(size);
+						outbound.send("{ \"start\":true }");
+						log.info("hi there");
+					} else if(action.equals("cancel")) {
+						log.info("user cancelled upload");
+						state.getErrors().add("User cancelled file upload");
+						disconnect();
+					}
+				} else if(frame.textData.equalsIgnoreCase("end")) {
+					log.info("got 'end', calling endOfData!");
+					endOfData(state);
+				} else if (frame.textData.equals("quit")) {
+					outbound.send("Bye!");
+					log.info("got 'quit', disconnecting!");
+					disconnect();
+				}
+			}
+			if (e instanceof WebSocketClose) {
+				log.info("Socket closed for table="
+						+ state.getSdiTable().getName());
+			}
+		}
+	}
+
 	
 	private static void reportErrorAndClose(SocketState state, String msg) {
 		state.reportErrorAndClose(msg);

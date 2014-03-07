@@ -27,7 +27,7 @@ public class TokenCalculator
             BigInteger pow   = BigInteger.valueOf(2).pow(127).subtract(BigInteger.ONE);
             token = token.multiply(pow).divide(BigInteger.valueOf(total));
 
-            System.out.println("Token "+node+" of "+total+": "+token.abs().toString());
+            //System.out.println("Token "+node+" of "+total+": "+token.abs().toString());
 
 	    return;
         }

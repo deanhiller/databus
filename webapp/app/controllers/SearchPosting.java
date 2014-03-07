@@ -90,7 +90,7 @@ public class SearchPosting {
 					return;
 				String parentVal = idMeta.convertTypeToString(prow.getRowKey());
 				String parentColName = idMeta.getColumnName();
-				System.out.println("---- parent col:"+parentColName+", "+parentVal);
+				//System.out.println("---- parent col:"+parentColName+", "+parentVal);
 				for(DboColumnMeta colMeta : meta.getAllColumns()) {
 					String colName = colMeta.getColumnName();
 					TypedColumn column = row.getColumn(colName);
@@ -99,7 +99,7 @@ public class SearchPosting {
 						Object data = column.getValue();
 						strVal = colMeta.convertTypeToString(data);
 					}
-					System.out.println("---- "+colName+", "+strVal);
+					//System.out.println("---- "+colName+", "+strVal);
 					SolrInputField field = doc.getField(colName);
 					if (field != null)
 						doc.addField(colName+"_texts", strVal);

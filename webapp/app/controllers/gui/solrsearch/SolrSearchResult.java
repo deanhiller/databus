@@ -73,7 +73,6 @@ public class SolrSearchResult {
 			rootNode = mapper.readTree(this.result);
 			responseNode = rootNode.path("response");
 		} catch (Exception e) {
-			System.out.println("SolrSearchResult.getCountFromResult() JSON EXCEPTION: [" + e.getMessage() + "]");
 			this.count = theCount;
 			return;
 		} 
@@ -91,7 +90,6 @@ public class SolrSearchResult {
 		try {
 			this.count = responseNode.path("numFound").getIntValue();
 		} catch (Exception e) {
-			System.out.println("SolrSearchResult.getCountFromResult() JsonNode.getIntValue() ERROR: [" + e.getMessage() + "]");
 			this.count = theCount;
 			return;
 		} 

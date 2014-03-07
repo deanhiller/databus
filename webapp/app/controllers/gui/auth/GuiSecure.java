@@ -34,9 +34,7 @@ public class GuiSecure extends Controller {
         // Authent
         if(!session.contains(KEY)) {
             flash.put("url", "GET".equals(request.method) ? request.url : Play.ctxPath + "/"); // seems a good default
-            System.out.println("about to enter login()");
             login();
-            System.out.println("done with login()");
         }
         if (log.isInfoEnabled())
 			log.info("user is already authenticated");
@@ -65,9 +63,7 @@ public class GuiSecure extends Controller {
 
     // ~~~ Login
     public static void login() throws Throwable {
-    	System.out.println("just entered login()");
     	Http.Cookie remember = null;
-    	System.out.println("defined remember in login()");
     	try {
         remember = request.cookies.get("rememberme");
     	}
