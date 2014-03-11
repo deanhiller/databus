@@ -10,6 +10,7 @@ import models.SecureTable;
 import models.message.ChartVarMeta;
 import models.message.StreamModule;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,6 +42,8 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 	private RawSubProcessor subprocessor;
 	private boolean skipSecurity;
 	private RowMeta rowMeta;
+	private boolean includeTableName = false;
+	private String tableNameForOutput = null;
 	
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
 	private static MetaInformation metaInfo = new LocalMetaInformation(parameterMeta);
@@ -124,7 +127,6 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		String table = options.get(NAME_IN_JAVASCRIPT);
 		valueColumn = options.get(COL_NAME);
 		timeColumn = "time";
-		
 		rowMeta = new RowMeta(timeColumn, valueColumn);
 
 		SecureTable sdiTable = null;
@@ -159,7 +161,12 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		List<String> parameters = params.getParams();
 		if(parameters.size() == 0)
 			throw new DatabusBadRequest("rawdata module requires a column family name");
+		String timeColNameOption = options.get("includetablename");
+		if (StringUtils.isNotBlank(timeColNameOption)) 
+			includeTableName = Boolean.parseBoolean(options.get("includetablename"));
+
 		String colFamily = parameters.get(0);
+		tableNameForOutput = colFamily;
 		Long start = params.getOriginalStart();
 		Long end = params.getOriginalEnd();
 
@@ -214,6 +221,8 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		TSRelational tv = r.getRow();
 		if(tv != null)
 			modifyForMaxIntBug(tv);
+		if (includeTableName)
+			tv.put(NAME_IN_JAVASCRIPT, tableNameForOutput);
 		return r;
 	}
 
