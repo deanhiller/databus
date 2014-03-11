@@ -48,7 +48,8 @@ public class SocketStateCSV extends SocketState {
 			try {
 				processItem(row, row.length()+1);
 			} catch(RuntimeException e) {
-				throw new RuntimeException("exception processing row="+row, e);
+				throw e;
+				//throw new RuntimeException("exception processing row="+row+"   "+e.getMessage(), e);
 			}
 			index = buffer.indexOf("\n");
 		}

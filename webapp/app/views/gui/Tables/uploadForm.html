@@ -92,7 +92,14 @@
      			return;
      		}
   	 	
-   			var bytes = file.slice(slice_start,slice_end);
+  	 		if (file.webkitSlice) {
+    			var bytes = file.webkitSlice(slice_start,slice_end);
+			} else if (file.mozSlice) {
+				var bytes = file.mozSlice(slice_start,slice_end);
+			} else {
+				var bytes = file.slice(slice_start,slice_end);
+			}
+   			//var bytes = file.slice(slice_start,slice_end);
     		ws.send( bytes );
     		var percent = Math.round(100*slice_end / end);
     		if(callback.onsent)

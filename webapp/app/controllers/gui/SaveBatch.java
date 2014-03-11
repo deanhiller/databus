@@ -82,7 +82,7 @@ public class SaveBatch implements Runnable {
 		} catch(Exception e) {
 			if (log.isWarnEnabled())
         		log.warn("csv upload - Exception processing batch.", e);
-			reportError("Error processing batch. exc="+e+" msg="+e.getMessage());
+			reportError("Error processing batch. exception="+e+" msg="+e.getMessage());
 		}
 	}
 

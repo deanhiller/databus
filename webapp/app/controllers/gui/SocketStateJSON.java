@@ -87,14 +87,15 @@ public class SocketStateJSON extends SocketState {
 			}
 		}
 		catch (Exception e) {
-			//this case will only occur if on the line
+			//this case will occur either on the line
 			//while (jsonReader.hasNext())
-			//and only when the content happens to end with a missing comma as the last expected element, like this:
+			//when the content happens to end with a missing comma as the last expected element, like this:
 			//...
 			//{"_tableName":"EVSE_09B", "time":1382854260000, "value":0.002967},
 			//{"_tableName":"EVSE_09B", "time":1382854200000, "value":0.002950}
 			//
-			//e.printStackTrace();
+			//OR almost all the time it will happen during chunking with incomplete content lines like this:
+			//{"_tableName":"EVSE_09
 			incompleteContent = true;
 			//throw new RuntimeException(e);
 		}

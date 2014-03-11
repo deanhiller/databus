@@ -100,9 +100,9 @@ public abstract class SocketState {
 	private void sendErrorThenClose() {
 		String msg = errors.get(0);
 		String newMsg = msg.replace("\"", "'");
+		newMsg = newMsg.replace("\n", " ").replace("\r", " ");
 		if(!outbound.isOpen())
 			return;
-		
 		outbound.send("{ \"error\":\""+newMsg+"\" }");
 		outbound.close();
 	}

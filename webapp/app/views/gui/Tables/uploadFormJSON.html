@@ -92,6 +92,14 @@
      			return;
      		}
   	 	
+  	 	  	console.log("file is "+file.name);
+  	 		if (file.webkitSlice) {
+    			var bytes = file.webkitSlice(slice_start,slice_end);
+			} else if (file.mozSlice) {
+				var bytes = file.mozSlice(startingByte, endindByte);
+			} else {
+				var bytes = file.slice(startingByte, endindByte);
+			}
    			var bytes = file.slice(slice_start,slice_end);
     		ws.send( bytes );
     		var percent = Math.round(100*slice_end / end);
