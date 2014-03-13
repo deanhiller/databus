@@ -1,5 +1,6 @@
 package controllers.modules2;
 
+import java.io.IOException;
 import java.util.Map;
 
 import models.message.StreamEditor;
@@ -35,9 +36,14 @@ public class FullStreamProcessor extends PullProcessorAbstract {
 	@Override
 	public ProcessorSetup createPipeline(String path, VisitorInfo visitor,
 			ProcessorSetup useThisChild, boolean alreadyAddedInverter) {
-		StreamEditor editor = DataStreamUtil.decodeSimple(encoding);
-		StreamModule fakeNode = editor.getStream();
-		super.createTree(null, fakeNode, visitor);
+		try {
+			StreamEditor editor = DataStreamUtil.decodeSimple(encoding);
+			StreamModule fakeNode = editor.getStream();
+			super.createTree(null, fakeNode, visitor);
+		}
+		catch (IOException ioe) {
+			throw new RuntimeException(ioe);
+		}
 		return this;
 	}
 

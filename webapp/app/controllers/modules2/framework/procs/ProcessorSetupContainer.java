@@ -140,8 +140,10 @@ public abstract class ProcessorSetupContainer extends ProcessorSetupAbstract {
 		HashMap<String, String> childsOptions = new HashMap<String, String>();
 		if (StringUtils.contains(moduleName, "(")) {
 			String optionString = StringUtils.substringBetween(moduleName, "(", ")");
-			for (String option: optionString.split(",")) 
-				childsOptions.put(StringUtils.substringBefore(option, "="), StringUtils.substringAfter(option, "="));
+			if (StringUtils.isNotBlank(optionString)) {
+				for (String option: optionString.split(",")) 
+					childsOptions.put(StringUtils.substringBefore(option, "="), StringUtils.substringAfter(option, "="));
+			}
 			moduleName = StringUtils.substringBefore(moduleName, "(");
 		}
 
