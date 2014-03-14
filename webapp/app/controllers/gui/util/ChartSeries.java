@@ -1,5 +1,6 @@
 package controllers.gui.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 import play.templates.JavaExtensions;
@@ -28,6 +29,8 @@ public class ChartSeries {
 		return JavaExtensions.escapeJavaScript(color);
 	}
 	public void setColor(String color) {
+		if (!StringUtils.isBlank(color) && !StringUtils.startsWith(color,"#"))
+			color = "#"+color;
 		this.color = color;
 	}
 	public int getAxisIndex() {
