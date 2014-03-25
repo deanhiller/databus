@@ -89,7 +89,7 @@ public class Admin extends Controller {
             String langVersion = factory.getLanguageVersion();
 
             List<String> engNames = factory.getNames();
-            System.out.printf("Language: %s (%s):  Alias: ", langName, langVersion);
+            //System.out.printf("Language: %s (%s):  Alias: ", langName, langVersion);
 
             String aliasList = "Language: "+langName+" ("+langVersion+"):  Alias: ";
             for(String name : engNames) {

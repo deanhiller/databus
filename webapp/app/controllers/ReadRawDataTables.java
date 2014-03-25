@@ -90,15 +90,15 @@ public class ReadRawDataTables {
 		}
 
 		Set<String> tables = new HashSet<String>();
-		System.out.println("size="+aggregations.size());
+		//System.out.println("size="+aggregations.size());
 		for(String name : aggregations) {
 			processAggregation(name, tables);
 		}
 		
-		System.out.println("tables size="+tables.size());
-		for(String table : tables) {
-			System.out.println(table);
-		}
+		//System.out.println("tables size="+tables.size());
+		//for(String table : tables) {
+		//	System.out.println(table);
+		//}
 	}
 
 	private void initializeHttp() throws UnrecoverableKeyException, KeyManagementException, NoSuchAlgorithmException, KeyStoreException {

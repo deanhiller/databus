@@ -136,9 +136,9 @@ public class DataStreamUtil {
 	}
 
 	public static StreamEditor decodeSimple(String encoding) throws IOException{
-		System.out.println("decoding the string, len is "+encoding.length()+", string is "+encoding);
+		//System.out.println("decoding the string, len is "+encoding.length()+", string is "+encoding);
 		encoding = uncompress(encoding);
-		System.out.println("after uncompressing, len is "+encoding.length()+", string is "+encoding);
+		//System.out.println("after uncompressing, len is "+encoding.length()+", string is "+encoding);
 		byte[] decoded = Base64.decodeBase64(encoding);
 		String json = new String(decoded);
 		StreamEditor streamInfo;
