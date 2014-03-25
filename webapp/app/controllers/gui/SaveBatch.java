@@ -27,7 +27,7 @@ import controllers.gui.util.Line;
 public class SaveBatch implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(SaveBatch.class);
-	private static final int FLUSH_SIZE = 5000;
+	private static final int FLUSH_SIZE = 500;
 	private List<Line> batch;
 	private DboTableMeta table;
 	private int count = 0;
