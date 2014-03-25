@@ -2,12 +2,17 @@ package controllers.modules2;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-
-import org.mortbay.log.Log;
+import java.util.Set;
 
 import models.message.ChartVarMeta;
+
+import org.apache.commons.lang.StringUtils;
+
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.EmptyWindowProcessor2;
@@ -17,12 +22,17 @@ import controllers.modules2.framework.procs.ProcessorSetup;
 
 public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 
-	private int numberOfPoints = 0;
-	private BigDecimal total;
+	private HashMap<String, Integer> numberOfPoints = new HashMap<String, Integer>();
+	private HashMap<String, BigDecimal> totals = new HashMap<String, BigDecimal>();
 		
 	public static String INTERVAL_NAME = "interval";
 	public static String OFFSET_NAME = "epochOffset";
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	
+	private List<String> columnsToAverage;
+	private List<ColumnState> columns = new ArrayList<ColumnState>();
+	private UnAveragedValueMethod unaveragedValueMethod = UnAveragedValueMethod.PREVIOUS_ROW;
+
 
 	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Time Average", "Rollup");
 
@@ -68,19 +78,34 @@ public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 		String msg2 = "The url /timeaverageV2/{interval}/{epochOffset} must have a long as the epochOffset but it was not a long";
 		long epochOffset = parseLong(params.getParams().get(1), msg2);
 		super.initEmptyParser(params.getStart(), params.getEnd(), interval, epochOffset);
+		
+		columnsToAverage=Arrays.asList(new String[]{valueColumn});
+		String columnsToAverageString = options.get("columnsToAverage");
+		if (StringUtils.isNotBlank(columnsToAverageString)) {
+			columnsToAverage = Arrays.asList(StringUtils.split(columnsToAverageString, ";"));
+		}
+		String unaveragedValueMethodString = options.get("unaveragedValueMethod");
+		if (StringUtils.equalsIgnoreCase("nearest", unaveragedValueMethodString))
+			unaveragedValueMethod = unaveragedValueMethod.NEAREST_ROW;
+
 		return newPath;
 	}
 	
 	@Override
 	protected void incomingTimeValue(long time, TSRelational row) {
-		BigDecimal value = getValueEvenIfNull(row);
-		if(value == null)
-			return;
+		for (String key:columnsToAverage) {
+			BigDecimal value = row.getValue(key);
+			if(value == null)
+				continue;
+			
+			if(totals.get(key) == null) 
+				totals.put(key, BigDecimal.ZERO);
+			if(numberOfPoints.get(key) == null) 
+				numberOfPoints.put(key, 0);
+			totals.put(key,totals.get(key).add(value));
+			numberOfPoints.put(key, numberOfPoints.get(key)+1);
+		}
 		
-		if(total == null) 
-			total = BigDecimal.ZERO;
-		total = total.add(value);
-		numberOfPoints++;
 	}
 
 	@Override
@@ -89,15 +114,22 @@ public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 		long time = startOfWindow + (interval/2);
 		
 		setTime(r, time);
-		if(total != null) {
-			BigDecimal average = total.divide(new BigDecimal(numberOfPoints), 10, RoundingMode.HALF_UP);
-			setValue(r, average);
+		
+		for (String key:columnsToAverage) {
+			if (totals.get(key) != null) {
+				BigDecimal average = totals.get(key).divide(new BigDecimal(numberOfPoints.get(key)), 10, RoundingMode.HALF_UP);
+				r.put(key, average);
+			}
+			
+			numberOfPoints.put(key, 0);
+			totals.put(key, BigDecimal.ZERO);
 		}
 		
-		//reset the state
-		numberOfPoints = 0;
-		total = null;
 		return r;
+	}
+	
+	private enum UnAveragedValueMethod {
+		PREVIOUS_ROW,NEAREST_ROW
 	}
 
 }
