@@ -12,6 +12,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 import org.mortbay.log.Log;
 
+import play.Play;
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
@@ -54,6 +55,11 @@ public class DateFormatMod extends PushOrPullProcessor {
 		String timeZoneOption = options.get("timeZone");
 		if (StringUtils.isNotBlank(timeZoneOption))
 			timeZone = timeZoneOption;
+		else {
+			String defaulttz = Play.configuration.getProperty("default.date.format.timezone");
+			if (StringUtils.isNotBlank(defaulttz))
+				timeZone = defaulttz;
+		}
 		
 		String val = Request.current().params.get("reverse");
 		if("true".equalsIgnoreCase(val)) {

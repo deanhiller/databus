@@ -54,7 +54,7 @@ public class GapProcessor extends PullProcessorAbstract {
 	private ProxyProcessor readAheadProc;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false, "Line Break");
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false, "Line Break", "Formatting");
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

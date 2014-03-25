@@ -13,7 +13,19 @@
 	    <div class="controls">
 	        #{select field.name, value:module?.module, id:'moduleSelect'}
                 #{list items:modules, as:'m'}
-                    #{option m.moduleId}${m.guiLabel}#{/option}
+                	#{if m.moduleType == 'group'}
+                		#{ifnot m_isFirst}
+                		</optgroup>
+                		#{/ifnot}
+                		<optgroup label="${m.guiLabel}">
+                	#{/if}
+                	#{elseif m_isLast}
+                		#{option m.moduleId}${m.guiLabel}#{/option}
+                		</optgroup>
+                	#{/elseif}
+                	#{else}
+                    	#{option m.moduleId}${m.guiLabel}#{/option}
+                    #{/else}
                 #{/list}
             #{/select}
 	        <span class="help-block">${field.error}</span>

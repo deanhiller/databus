@@ -17,7 +17,7 @@ public class ChartVarMeta {
 	@JsonProperty("nameInJavascript")
     @XmlElement(name="nameInJavascript")
     public String nameInJavascript;
-	
+
 	@JsonProperty("label")
     @XmlElement(name="label")
     public String label;

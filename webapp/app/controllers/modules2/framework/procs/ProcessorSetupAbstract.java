@@ -157,6 +157,13 @@ public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 		row.put(timeColumn, new BigInteger(""+time));
 	}
 	
+	protected BigDecimal parseBigDecimal(String param, String msg) {
+		try {
+			return new BigDecimal(param);
+		} catch(NumberFormatException e) {
+			throw new BadRequest(msg);
+		}
+	}
 	protected long parseLong(String param, String msg) {
 		try {
 			return Long.parseLong(param);

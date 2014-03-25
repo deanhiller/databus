@@ -21,7 +21,7 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 	private BigDecimal max;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false, "Range Clean");
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, false, "Range Clean", "Data Cleaning");
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

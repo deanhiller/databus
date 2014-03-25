@@ -71,7 +71,7 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 	private static class LocalMetaInformation extends MetaInformation {
 
 		public LocalMetaInformation(Map<String, ChartVarMeta> parameterMeta) {
-			super(parameterMeta, NumChildren.NONE, false, "Table Data Source");
+			super(parameterMeta, NumChildren.NONE, false, "Table Data Source", "Data Source");
 		}
 
 		@Override

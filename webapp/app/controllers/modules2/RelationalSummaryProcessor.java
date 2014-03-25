@@ -9,11 +9,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import models.message.ChartVarMeta;
+
 import org.apache.commons.lang.StringUtils;
 
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.EmptyWindowProcessor;
+import controllers.modules2.framework.procs.MetaInformation;
+import controllers.modules2.framework.procs.NumChildren;
 import controllers.modules2.framework.procs.ProcessorSetup;
 import controllers.modules2.framework.procs.PullProcessor;
 
@@ -31,6 +35,34 @@ public class RelationalSummaryProcessor extends EmptyWindowProcessor {
 	private int numberOfPoints = 0;
 	private Map<String, BigDecimal> total = new HashMap<String, BigDecimal>();
 
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Relational Data Summary", "Interpolation/Time alignment");
+
+	static {
+		ChartVarMeta meta1 = new ChartVarMeta();
+		meta1.setLabel("Interval");
+		meta1.setNameInJavascript(TimeAverage3Processor.INTERVAL_NAME);
+		meta1.setRequired(true);
+		meta1.setDefaultValue("60000");
+		meta1.setHelp("The interval for which we summarize data (so for 60000, we return you data points that are 60 seconds apart that summarize all the data in that minute)");
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setLabel("Epoch Offset");
+		meta.setRequired(true);
+		meta.setDefaultValue("0");
+		meta.setNameInJavascript(TimeAverage3Processor.OFFSET_NAME);
+		meta.setHelp("The offset from the epoch that the initial time will match.  After that, every datapoint is Interval apart.  " +
+				"If left blank, we use the start time as the offset");
+		parameterMeta.put(meta1.getNameInJavascript(), meta1);
+		parameterMeta.put(meta.getNameInJavascript(), meta);
+		
+		metaInfo.setDescription("This module takes data from the source module and summarizes all the points in each interval down into one point per interval with associated informaion about that interval (avg, min, max, min at, max at)");
+	}
+	
+	@Override
+	public MetaInformation getGuiMeta() {
+		return metaInfo;
+	}
+	
 	@Override
 	protected int getNumParams() {
 		return 2;

@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.util.zip.ZipException;
 
 import models.message.StreamEditor;
 import models.message.StreamModule;
@@ -73,6 +74,9 @@ public class DataStreamUtil {
 		    try {
 		      zi = new GZIPInputStream(new ByteArrayInputStream(bytes));
 		      result = IOUtils.toString(zi);
+		    } catch (ZipException ze) {
+			      //assume that this is the old style uncompressed string for backward compatability:
+			      return zippedBase64Str;
 		    } finally {
 		      IOUtils.closeQuietly(zi);
 		    }

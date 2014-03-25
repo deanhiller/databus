@@ -61,7 +61,7 @@ public class RawWideProcessor extends EndOfChain implements PullProcessor {
 	private static class LocalMetaInformation extends MetaInformation {
 
 		public LocalMetaInformation(Map<String, ChartVarMeta> parameterMeta) {
-			super(parameterMeta, NumChildren.NONE, false, "Wide Time Series");
+			super(parameterMeta, NumChildren.NONE, false, "Wide Time Series", "Data Source");
 		}
 
 		@Override

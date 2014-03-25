@@ -23,9 +23,10 @@ import controllers.modules2.framework.procs.StreamsProcessor;
 
 public class AggregationPipeProcessor extends StreamsProcessor {
 
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation Pipe", false);
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation Pipe", false, "Aggregation");
 
 	static {
+		
 		metaInfo.setDescription("This module takes many streams(that don't need to be aligned) and combines them into a single stream with rows like time, value1, value2, value3 passing that to the next module where some rows may have some values missing when there is no value for that timestamp");
 	}
 

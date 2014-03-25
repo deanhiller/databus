@@ -19,7 +19,7 @@ public class SumStreamProcessor extends StreamsProcessor {
 
 	private static final String COL_NAME = "outputColumn";
 	protected static Map<String, ChartVarMeta> paramMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(paramMeta, NumChildren.MANY, false, "Sum Stream");
+	private static MetaInformation metaInfo = new MetaInformation(paramMeta, NumChildren.MANY, false, "Sum Stream", "Aggregation");
 
 	static {
 		metaInfo.setDescription("This module takes many streams and adds them up");

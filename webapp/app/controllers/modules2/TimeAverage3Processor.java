@@ -19,13 +19,13 @@ public class TimeAverage3Processor extends EmptyWindowProcessor2 {
 
 	private int numberOfPoints = 0;
 	private BigDecimal total;
-	
-	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Time Average");
-	
+		
 	public static String INTERVAL_NAME = "interval";
 	public static String OFFSET_NAME = "epochOffset";
-	
+	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
+
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Time Average", "Rollup");
+
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();
 		meta1.setLabel("Interval");

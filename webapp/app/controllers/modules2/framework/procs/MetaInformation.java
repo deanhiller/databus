@@ -18,19 +18,21 @@ public class MetaInformation {
 	private NumChildren numChildren;
 	private boolean isTimeAligning;
 	private String guiLabel;
+	private String moduleType;
 	private String description;
 	private boolean needsAlignment;
 	
-	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel) {
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel, String moduleType) {
 		this.parameterMeta = paramMeta;
 		this.numChildren = num;
 		this.isTimeAligning = isTimeAligning;
 		this.guiLabel = guiLabel;
 		this.needsAlignment = true;
+		this.moduleType = moduleType;
 	}
 	
-	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel, boolean needsAlignment) {
-		this(paramMeta, num, isTimeAligning, guiLabel);
+	public MetaInformation(Map<String, ChartVarMeta> paramMeta, NumChildren num, boolean isTimeAligning, String guiLabel, boolean needsAlignment, String moduleType) {
+		this(paramMeta, num, isTimeAligning, guiLabel, moduleType);
 		this.needsAlignment = needsAlignment;
 	}
 	
@@ -107,6 +109,14 @@ public class MetaInformation {
 
 	public void setModuleId(String moduleId) {
 		this.moduleId = moduleId;
+	}
+
+	public String getModuleType() {
+		return moduleType;
+	}
+
+	public void setModuleType(String moduleType) {
+		this.moduleType = moduleType;
 	}
 
 	public boolean isTerminal() {

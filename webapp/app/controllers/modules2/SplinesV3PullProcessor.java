@@ -54,7 +54,7 @@ public class SplinesV3PullProcessor extends PullProcessorAbstract {
 	private long end;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Spline(version 3)");
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Spline(version 3)", "Interpolation/Time alignment");
 	
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

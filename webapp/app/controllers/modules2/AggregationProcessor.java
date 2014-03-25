@@ -33,7 +33,7 @@ public class AggregationProcessor extends StreamsProcessor {
 	private int largestRowWidth = -1;
 	private List<ReadResult> lookaheadBuffer;
 	private boolean newFramework = false;
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation");
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.MANY, false, "Aggregation", "Aggregation");
 
 	static {
 		metaInfo.setDescription("This module takes many streams that are already aligned on time(time, value pairs) and condenses it to time, value1, value2, value3 passing that to the next module");

@@ -53,7 +53,7 @@ public class LinearProcessor extends PullProcessorAbstract {
 	private boolean isSplineCreated;
 
 	private static Map<String, ChartVarMeta> parameterMeta = new HashMap<String, ChartVarMeta>();
-	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Linear Interpolation");
+	private static MetaInformation metaInfo = new MetaInformation(parameterMeta, NumChildren.ONE, true, "Linear Interpolation", "Interpolation/Time alignment");
 
 	static {
 		ChartVarMeta meta1 = new ChartVarMeta();

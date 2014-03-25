@@ -79,9 +79,11 @@ public class ApiPostDataPointsImpl {
 				String[] options = StringUtils.split(utcModString, ",");
 				for (String s:options) {
 					String[] parts = StringUtils.split(utcModString, "=");
+					//no idea why 'timeFormat' instead of 'dateFormat' was the original param name.
+					//use 'dateFormat', but allow the old 'timeFormat' for backward compatibility
 					if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "columnName"))
 						timeISOFormatColumn = parts[1];
-					else if (parts.length == 2 && StringUtils.equals(parts[0].trim(), "timeFormat"))
+					else if (parts.length == 2 && (StringUtils.equals(parts[0].trim(), "timeFormat") || StringUtils.equals(parts[0].trim(), "dateFormat")))
 						timeISOStringFormat = parts[1];
 					else
 						throw new RuntimeException("The format of the dateformat module is not correct, it must be ../dateformatV1/... or .../dateformatV1(columnName=<colName>)/... or .../dateformatV1(columnName=<colName>,timeFormat=<timeFormat>)/...");
@@ -278,18 +280,23 @@ public class ApiPostDataPointsImpl {
 			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
 		//if (log.isDebugEnabled())
 			//log.info("table name = '" + table.getColumnFamily() + "'");
-		NoSqlTypedSession typedSession = mgr.getTypedSession();		
-		String cf = table.getColumnFamily();
-
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
 		//rowKey better be BigInteger
 		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
-		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
 		BigInteger time = (BigInteger) timeStamp;
 		long longTime = time.longValue();
 		//find the partition
 		Long partitionSize = table.getTimeSeriesPartionSize();
 		long partitionKey = calculatePartitionId(longTime, partitionSize);
+		
+		putPartition(mgr, table, partitionKey);
+		
+		postTimeSeriesImplAssumingPartitionExists(mgr, table, pkValue, newValue, timeIsISOFormat, partitionKey);
+	}
+
+
+	public static void putPartition(NoSqlEntityManager mgr, DboTableMeta table, long partitionKey) {
+		NoSqlTypedSession typedSession = mgr.getTypedSession();		
 
 		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
 		BigInteger rowKey = new BigInteger(""+partitionKey);
@@ -303,6 +310,22 @@ public class ApiPostDataPointsImpl {
 		List<Column> columns = new ArrayList<Column>();
 		columns.add(partitionIdCol);
 		session.put(meta, partitionsRowKey, columns);
+	}
+	
+	public static void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, Object pkValue, Object newValue, boolean timeIsISOFormat, long partitionKey) {
+
+		if (timeIsISOFormat)
+			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
+		NoSqlTypedSession typedSession = mgr.getTypedSession();		
+		String cf = table.getColumnFamily();
+
+		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
+		//rowKey better be BigInteger
+		Object timeStamp = convertToStorage(idColumnMeta, pkValue);
+		byte[] colKey = idColumnMeta.convertToStorage2(timeStamp);
+		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
+		BigInteger rowKey = new BigInteger(""+partitionKey);
+		row.setRowKey(rowKey);
 		
 		Collection<DboColumnMeta> cols = table.getAllColumns();
 		DboColumnMeta col = cols.iterator().next();

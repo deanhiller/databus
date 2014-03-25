@@ -182,4 +182,24 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		}
 		return keys;
 	}
+	
+	public List<MetaInformation> fetchGuiOrganizedModules() {
+		HashMap<String, List<Entry<String, PullProcessor>>> groups = new HashMap<String, List<Entry<String, PullProcessor>>>();
+		List<MetaInformation> keys = new ArrayList<MetaInformation>();
+		for(Entry<String, PullProcessor> entry : pullProcessors.entrySet()) {
+			if (!groups.containsKey(entry.getValue().getGuiMeta().getModuleType())) {
+				groups.put(entry.getValue().getGuiMeta().getModuleType(), new ArrayList<Entry<String, PullProcessor>>());
+			}
+			groups.get(entry.getValue().getGuiMeta().getModuleType()).add(entry);
+		}
+		for (String groupname:groups.keySet()) {
+			keys.add(new MetaInformation(null, null, false, groupname, false, "group"));
+			for(Entry<String, PullProcessor> entry : groups.get(groupname)) {
+				MetaInformation meta = entry.getValue().getGuiMeta();
+				meta.setModuleId(entry.getKey());
+				keys.add(meta);
+			}
+		}
+		return keys;
+	}
 }

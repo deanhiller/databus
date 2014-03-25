@@ -34,6 +34,9 @@ public class SaveBatch implements Runnable {
 	
 	//this are precaculated outside the run loop for performance:
 	private String tableColumnFamily;
+	
+	private long currentPartitionStart = 0;
+	private long currentPartitionEnd = 0;
 
 	
 	//jsc for performance tracking:
@@ -103,8 +106,7 @@ public class SaveBatch implements Runnable {
 				return; //exit out since somoene errored
 			}
 			processLine(mgr, line, session);
-			if (line.getLength() != 0)
-				log.info("adding "+line.getLength()+" to charcount!!!!!!!!!!!!!!!!!!!!");
+
 			characterCount += line.getLength();
 			count++;
 		}
@@ -145,14 +147,15 @@ public class SaveBatch implements Runnable {
 				if(!(col instanceof DboColumnIdMeta))
 					nodes.add(node.trim());
 			}
-			
+			createPartitionIfNeeded(mgr, pkValue);
 			if (cols.size() > 1) {
 				Map<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.convertToStorage(cols, nodes);
 				ApiPostDataPointsImpl.postRelationalTimeSeriesImpl(mgr, table, pkValue, newValue, false);
 			}
 			else {
 				Object newValue = ApiPostDataPointsImpl.convertToStorage(cols.get(0), nodes.get(0));
-				ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, pkValue, newValue, false);
+				//ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, pkValue, newValue, false);
+				ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(mgr, table, pkValue, newValue, false, currentPartitionStart);
 			}
 
 		} catch(Exception e) {
@@ -172,6 +175,15 @@ public class SaveBatch implements Runnable {
 				accumulatedFlushTime+=System.currentTimeMillis()-preFlush;
 				log.debug("flush count: "+flushCount+", time to flush once: "+(postFlush-preFlush)+ ", time to clear "+(System.currentTimeMillis()-postFlush)+" total flush time: "+accumulatedFlushTime);
 			}
+		}
+	}
+
+	private void createPartitionIfNeeded(NoSqlEntityManager mgr, String pkVal) {
+		long timestamp = Long.valueOf(pkVal);
+		if (! (currentPartitionStart <= timestamp && timestamp <= currentPartitionEnd)) {
+			currentPartitionStart = ApiPostDataPointsImpl.calculatePartitionId(timestamp, table.getTimeSeriesPartionSize());
+			currentPartitionEnd = currentPartitionStart + table.getTimeSeriesPartionSize();
+			ApiPostDataPointsImpl.putPartition(mgr, table, currentPartitionStart);
 		}
 	}
 
