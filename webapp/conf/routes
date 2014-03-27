@@ -183,9 +183,11 @@ POST /datastreams/module/post                 gui.MyDataStreams.postModule
 GET  /datastreams/moduleparams/{encoded}      gui.MyDataStreams.editModuleParams
 POST /datastreams/moduleparams/post           gui.MyDataStreams.postModuleParams
 
-GET  /datastreams/stream/view/{encoded}           gui.MyDataStreams.viewStream
+GET  /datastreams/stream/view/{encoded}       gui.MyDataStreams.viewStream
 
-GET  /datastreams/{encoded}                         gui.MyDataStreams.finish
+GET  /datastreams/{encoded}                   gui.MyDataStreams.finish
+GET  /datastreams/downloaddata/{encoding}  gui.MyDataStreams.downloadData
+POST /datastreams/fetchdata/{encoding}        gui.MyDataStreams.fetchdata
 
 GET  /datastreams/json/{encoded}                   gui.MyDataStreams.fetchJsonTree
 GET  /datastreams/createchart/{encoding}           gui.MyDataStreams.createChart

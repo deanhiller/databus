@@ -1,5 +1,6 @@
 package controllers.gui;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,6 +12,9 @@ import models.message.ChartVarMeta;
 import models.message.StreamEditor;
 import models.message.StreamModule;
 
+import org.apache.commons.lang.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +22,7 @@ import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.With;
 import controllers.gui.auth.GuiSecure;
+import controllers.gui.util.Chart;
 import controllers.gui.util.ChartUtil;
 import controllers.modules2.framework.ModuleController;
 import controllers.modules2.framework.RawProcessorFactory;
@@ -467,4 +472,83 @@ public class MyDataStreams extends Controller {
 	public static void createChart(String encoding) {
 		MyChartsGeneric.modifyChart(encoding);
 	}
+	
+	public static void downloadData(String encoding) {
+		Map<String, String> variables = ChartUtil.decodeVariables(encoding);
+
+		ChartVarMeta meta = new ChartVarMeta();
+		meta.setRequired(true);
+		meta.setHelp("The times to retrieve data for");
+		TimePanel v = new TimePanel(meta );
+		v.fillWrapper(variables);
+		renderTemplate("gui/MyDataStreams/downloadData.html", encoding, v);
+	}
+	
+	public static void fetchData(String encoding, Chart chart) throws UnsupportedEncodingException {
+		//chart.fillIn();
+		Map<String, String> variables = ChartUtil.decodeVariables(encoding);
+		Map<String, String[]> paramMap = params.all();
+		for(String key : paramMap.keySet()) {
+			if(key.equals("rangeType")) {
+				String rangeTypeValue = paramMap.get(key)[0];
+				putVariablesInMap(paramMap, variables, rangeTypeValue);
+			}
+		}
+		ChartUtil.modifyVariables(variables, false);
+		String url = variables.get("url");
+		if (StringUtils.containsIgnoreCase(params.get("submit"), "CSV"))
+			url = StringUtils.replace(url, "/api/", "/api/csv/", 1);
+		redirect(url);
+		//encoded = createUrl(variables, chart, null, 2);
+		//drawChart(encoded);
+	}
+	
+	private static void putVariablesInMap(Map<String, String[]> paramMap,
+			Map<String, String> variablesMap, String rangeTypeValue) {
+		variablesMap.put("_daterangetype", rangeTypeValue);
+		if("daterange".equals(rangeTypeValue)) {
+			String fromEpoch = maybeConvert("from", paramMap);
+			String toEpoch = maybeConvert("to", paramMap);
+			variablesMap.put("_fromepoch", fromEpoch);
+			variablesMap.put("_toepoch", toEpoch);
+		} else {
+			String numberPoints = paramMap.get("chart.numpoints")[0];
+			if(StringUtils.isEmpty(numberPoints)) {
+				validation.addError("numpoints", "This field is required");
+			}
+
+			variablesMap.put("_numberpoints", numberPoints);
+		}
+	}
+	
+	private static String maybeConvert(String javascriptKey, Map<String, String[]> paramMap) {
+		String selection = paramMap.get("chart."+javascriptKey+".type")[0];
+		if("zerobased".equals(selection)) {
+			String currentValue = paramMap.get("chart."+javascriptKey)[0];
+			if(StringUtils.isEmpty(currentValue)) {
+				validation.addError(javascriptKey, "This field is required");
+			}
+			return currentValue;
+		} else {
+			String date = paramMap.get("chart."+javascriptKey+".date")[0];
+			String time = paramMap.get("chart."+javascriptKey+".time")[0];
+			if(StringUtils.isEmpty(date)) {
+				validation.addError(javascriptKey, "This field is required");
+			}
+			if(StringUtils.isEmpty(time)) {
+				validation.addError(javascriptKey, "This field is required");
+			}
+			if(validation.hasErrors()) {
+				return null;
+			}
+
+			String dateTime = date+" "+time;
+			LocalDateTime dt = MyChartsGeneric.fmt.parseLocalDateTime(dateTime);
+			//DateTime dt = fmt.parseDateTime(dateTime);
+			DateTime dtWithTimeZone = dt.toDateTime();
+			long millis = dtWithTimeZone.getMillis();
+			return ""+millis;
+		}
+	}
+	
 }
