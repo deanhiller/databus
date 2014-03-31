@@ -18,6 +18,7 @@ import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.data.validation.Error;
 import play.mvc.Controller;
 import play.mvc.Router;
 import play.mvc.With;
@@ -488,6 +489,9 @@ public class MyDataStreams extends Controller {
 		//chart.fillIn();
 		Map<String, String> variables = ChartUtil.decodeVariables(encoding);
 		Map<String, String[]> paramMap = params.all();
+		
+		validation.clear();
+		
 		for(String key : paramMap.keySet()) {
 			if(key.equals("rangeType")) {
 				String rangeTypeValue = paramMap.get(key)[0];
@@ -495,6 +499,25 @@ public class MyDataStreams extends Controller {
 			}
 		}
 		ChartUtil.modifyVariables(variables, false);
+		if(validation.hasErrors()) {
+			Map<String, List<Error>> errorsMap = validation.errorsMap();
+			String errorsString = "";
+			for (Entry<String, List<Error>>entry:errorsMap.entrySet()) {
+				errorsString += " Field "+entry.getKey()+": ";
+				for (Error error:entry.getValue()) {
+					errorsString += error.toString();
+				}
+			}
+			flash.error("You have errors in your form below "+errorsString);
+			validation.keep();
+			flash.keep();
+			ChartVarMeta meta = new ChartVarMeta();
+			meta.setRequired(true);
+			meta.setHelp("The times to retrieve data for");
+			TimePanel v = new TimePanel(meta );
+			v.fillWrapper(variables);
+			renderTemplate("gui/MyDataStreams/downloadData.html", encoding, v);
+		}
 		String url = variables.get("url");
 		if (StringUtils.containsIgnoreCase(params.get("submit"), "CSV"))
 			url = StringUtils.replace(url, "/api/", "/api/csv/", 1);
