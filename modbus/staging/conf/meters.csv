@@ -9,9 +9,9 @@ AFUF,BACPULSE1,,AFUF,,,192.174.36.28/80,Master
 C6572141,GEPQM,AFUF,AFUF,Building,,199.117.151.93/5001,Slave 1
 A2700245,GE750,BUILDING 251 750,Building 251,Building,,192.88.248.93/5002,Slave 13
 C6572140,GEPQM,BLDG.#251,Building 251,Building,,192.88.248.93/5001,Slave 20
-C6572150,GEPQM,"BLDG.#252, A60",Building 252,Building,,192.174.56.32/5001,Slave 1
+C6572150,GEPQM,BLDG.#252 A60,Building 252,Building,,192.174.56.32/5001,Slave 1
 A2787629,GE750,BUILDING 252/254 750,Building 252 and 254,Building,,192.88.248.93/5002,Slave 12
-C6572152,GEPQM,"BLDG.#254, IUF",Building 254,Building,,192.174.56.31/5001,Slave 1
+C6572152,GEPQM,BLDG.#254 IUF,Building 254,Building,,192.174.56.31/5001,Slave 1
 C6520765,GEPQM,BLDG.#256 & 257,Building 256 and 257,Building,,192.174.56.31/5001,Slave 2
 A2787625,GE750,DYNAMOMETER BLDG 750,Dynamometer,Wind,,192.88.248.93/5002,Slave 14
 C6503386,GEPQM,DYNAMOMETER BLDG,Dynamometer,Building,,192.174.56.90/5001,Slave 1
@@ -93,7 +93,7 @@ SEBLSASolar2,GEPQMII,SEB-LSA Solar PV Feed #2,SEB Electrical Room-S. Wall,,,10.4
 SEBLSMMechanical,GEPQMII,SEB-LSM Mechanical Equipment,SEB Electrical Room-E. Wall,,,10.40.186.26/5001,Slave 2
 SEBLSLLighting,GEPQMII,SEB-LSL Interior and Exterior Lighting,SEB Electrical Room-S. Wall,,,10.40.186.26/5001,Slave 3
 SEBLSRGatesReceptacles,GEPQMII,SEB-LSR Parking Gates and Receptacles,SEB Electrical Room-S. Wall,,,10.40.186.26/5001,Slave 4
-SEBLSUSecurity,GEPQMII,"SEB-LSU Security, Access Control and UPS",SEB Electrical Room-W. Wall,,,10.40.186.26/5001,Slave 7
+SEBLSUSecurity,GEPQMII,SEB-LSU Security Access Control and UPS,SEB Electrical Room-W. Wall,,,10.40.186.26/5001,Slave 7
 GARHY11GarageLighting,GEPQMII,GAR-HY11 Garage Interior Lighting,Garage:Electrical Room,,,10.40.186.26/5001,Slave 14
 GARHE11Elevators,GEPQMII,GAR-HE11 Elevators and LS11/LQ11,Garage:Electrical Room,,,10.40.186.26/5001,Slave 13
 GARTS11LS31,GEPQMII,GAR-TS11 LS31/LS32 and Security Equip,Garage:Electrical Room,,,10.40.186.26/5001,Slave 16
@@ -101,14 +101,14 @@ GARTR42Receptacles,GEPQMII,GAR-TR42 Receptacles W Levels 3/4/5,Garage:Elec Room 
 GARLR42Misc,GEPQMII,GAR-LR42 ???,Garage:Electrical Room,,,10.40.186.26/5001,Slave 18
 GARTV11TV21TV22,GEPQMII,GAR-TV11 TV21/TV22 for EVCS Stations,Garage:Electrical Room,,,10.40.186.26/5001,Slave 10
 GARTR11LR11,GEPQMII,GAR-TR11 LR11,Garage:Electrical Room,,,10.40.186.26/5001,Slave 12
-GARLR11Signs,GEPQMII,"GAR-LR11 Signs, Ctrs, Rec's E Levels 1/2",Garage:Electrical Room,,,10.40.186.26/5001,Slave 15
+GARLR11Signs,GEPQMII,GAR-LR11 Signs Ctrs, Rec's E Levels 1/2,Garage:Electrical Room,,,10.40.186.26/5001,Slave 15
 GARTR41LR41,GEPQMII,GAR-TR41 LR41,Garage:Electrical Room,,,10.40.186.26/5001,Slave 11
 GARLR41Receptacles,GEPQMII,GAR-LR41 Receptacles E Levels 3/4/5,Garage:Elec Room E. 3rd Lvl,,,10.40.186.26/5001,Slave 17
 GARHM11Mechanical,GEPQMII,GAR-HM11 Mech Equipment and LM11,Garage:ATS Room,,,10.40.186.26/5001,Slave 9
 RSF2MAIN,GEPQMII,SWBN Main Meter,,Building,,10.40.16.10/5001,Slave 1
 RSF2PV,GEPQMII,Rooftop Solar,,Solar,,10.40.16.10/5001,Slave 2
-RSF2HLTG,GEPQMII,"H2, H3, H4 and H5 Light",,Lighting,,10.40.16.10/5001,Slave 3
-RSF2L,GEPQMII,"L2, L3, L4 and L5 Series",,Plug,,10.40.16.10/5001,Slave 8
+RSF2HLTG,GEPQMII,H2 H3 H4 and H5 Light,,Lighting,,10.40.16.10/5001,Slave 3
+RSF2L,GEPQMII,L2 L3 L4 and L5 Series,,Plug,,10.40.16.10/5001,Slave 8
 RSF2ELVS,GEPQMII,Freight Elevator,,Elevator,,10.40.16.10/5001,Slave 4
 RSF2AC1,GEPQMII,AC Unit 1,,Thermal,,10.40.16.10/5001,Slave 7
 RSF2AC2,GEPQMII,AC Unit 2 and 2a,,Thermal,,10.40.16.10/5001,Slave 5
