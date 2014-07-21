@@ -3,7 +3,9 @@ package controllers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
+import models.PermissionType;
 import models.SdiColumn;
 import models.SecureTable;
 import models.message.DatasetColumnModel;
@@ -18,9 +20,14 @@ import org.slf4j.LoggerFactory;
 
 import play.mvc.Controller;
 
+import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.play.NoSql;
+
+import controllers.impl.RawTimeSeriesImpl;
+import controllers.modules2.framework.procs.RowMeta;
 
 public class ApiMetaRequest extends Controller {
 
@@ -62,6 +69,27 @@ public class ApiMetaRequest extends Controller {
 			jsonString = param + "(" + jsonString + ");";
 		}
 		renderJSON(jsonString);
+	}
+	
+	public static void deleteRange(String table, String start, String end) {
+		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+		PermissionType permission = SecurityUtil.checkSingleTable2(table);
+		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+			unauthorized("You don't have permission to modify the data in this table");
+		RawTimeSeriesImpl impl = new RawTimeSeriesImpl();
+		
+		String timeColumn = targetTable.getPrimaryKey().getColumnName();
+		List<String> names = new ArrayList<String>();
+		Set<String> keySet = targetTable.getNameToField().keySet();
+		for(String n : keySet) {
+			names.add(n);
+		}
+		
+		RowMeta rowMeta = new RowMeta(timeColumn, names);
+		NoSqlEntityManager mgr = NoSql.em();
+		
+		impl.init(targetTable.getTableMeta(), Long.valueOf(start), Long.valueOf(end), rowMeta, mgr);
+		impl.deleteRange();
 	}
 
 	private static List<DatasetColumnModel> formColumns(DboTableMeta tableMeta, SecureTable sdiTable) {

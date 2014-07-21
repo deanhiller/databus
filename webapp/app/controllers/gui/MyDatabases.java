@@ -124,9 +124,11 @@ public class MyDatabases extends Controller {
 		SecureSchema schema = schemaCheck(schemaName, user, PermissionType.ADMIN);
 		
 		SecureResourceGroupXref ref = NoSql.em().find(SecureResourceGroupXref.class, xrefId);
+		if(ref == null || ref.getResource() == null)
+			notFound("This schema and User are not tied together.  Try reloading the page that lists this User.");
 		String id = ref.getResource().getId();
 		if(!id.equals(schema.getId()))
-			notFound("this schema and xref are not tied together");
+			notFound("This schema and User are not tied together.  Try reloading the page that lists this User.");
 
 		//First, let's remove all the KeyToTableNames that the user may be in directly
 		Entity entity = ref.getUserOrGroup();

@@ -2,42 +2,79 @@ package controllers.gui;
 
 import gov.nrel.util.Utility;
 
-import java.util.Collection;
+import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.Set;
 
 import models.DataTypeEnum;
 import models.EntityUser;
 import models.KeyToTableName;
 import models.PermissionType;
-import models.RoleMapping;
-import models.SecureResource;
 import models.SecureSchema;
 import models.SecureTable;
-import models.SecurityGroup;
 
-import com.alvazan.orm.api.base.CursorToMany;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import play.mvc.Controller;
+import play.mvc.Http.Request;
+import play.mvc.With;
+import play.mvc.results.BadRequest;
+
 import com.alvazan.orm.api.base.NoSqlEntityManager;
+import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.orm.api.z8spi.meta.TypedColumn;
+import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
-import controllers.TableInfo;
+import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.auth.GuiSecure;
 import controllers.gui.util.ChartUtil;
-import play.mvc.Controller;
-import play.mvc.With;
-import play.mvc.Http.Request;
-import play.mvc.results.BadRequest;
+import controllers.impl.RawTimeSeriesImpl;
+import controllers.modules2.framework.TSRelational;
+import controllers.modules2.framework.procs.RowMeta;
 
 @With(GuiSecure.class)
 public class MyStuff extends Controller {
 	
 	private static final Logger log = LoggerFactory.getLogger(MyStuff.class);
+	
+	
+	public static void deleteRangeEmpty(String table) {
+		PermissionType permission = SecurityUtil.checkSingleTable2(table);
+		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+			unauthorized("You don't have permission to modify the data in this table");
+		
+		renderTemplate("gui/MyStuff/deleteRange.html", table);
+	}
+	
+	public static void deleteRange(String table, String start, String end) {
+		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+		PermissionType permission = SecurityUtil.checkSingleTable2(table);
+		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+			unauthorized("You don't have permission to modify the data in this table");
+		RawTimeSeriesImpl impl = new RawTimeSeriesImpl();
+		
+		String timeColumn = targetTable.getPrimaryKey().getColumnName();
+		List<String> names = new ArrayList<String>();
+		Set<String> keySet = targetTable.getNameToField().keySet();
+		for(String n : keySet) {
+			names.add(n);
+		}
+		
+		RowMeta rowMeta = new RowMeta(timeColumn, names);
+		NoSqlEntityManager mgr = NoSql.em();
+		
+		impl.init(targetTable.getTableMeta(), Long.valueOf(start), Long.valueOf(end), rowMeta, mgr);
+		impl.deleteRange();
+		render(table);
+	}
 	
 	public static void tableEdit(String table) {
 		EntityUser user = Utility.getCurrentUser(session);

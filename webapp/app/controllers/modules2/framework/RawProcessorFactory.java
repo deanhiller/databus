@@ -94,6 +94,7 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
 		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);
+
 		
 		nameToClazz.put("streamV1", FullStreamProcessor.class);
 		

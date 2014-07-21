@@ -12,11 +12,11 @@
 
 <div id="myModal${xref_index}" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-header">
-    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
     <h3 id="myModalLabel">Remove confirmation</h3>
   </div>
   <div class="modal-body">
-    <p>Are you sure you want to remove ${xref.userOrGroup.name} from the ${schema.name} database?</p>
+    <p>Are you sure you want to remove ${xref.userOrGroup.name} from the ${schema.name} database?  <br>If this schema contains many tables this operation could take some time.</p>
   </div>
   <div class="modal-footer">
     <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
@@ -24,8 +24,24 @@
   </div>
 </div>
 #{/form}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js">  
+</script>
+<script type="text/javascript">   
+   $(document).ready(function () {
+    $('#removeDbUser${xref_index}').submit(function () {
+        $(".btn").attr("disabled", true);
+        $(".close").attr("disabled", true);
+        return true;
+    });
+});
+
+</script>
+<!--script ends here-->
 
 #{/list}
+
+<!--script to disable the submit button -->
+
 
 <table class="table">
 	<thead>

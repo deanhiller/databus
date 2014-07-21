@@ -11,6 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import models.Entity;
 import models.EntityGroup;
@@ -57,6 +61,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
 import controllers.gui.Counter;
+import controllers.gui.OurRejectHandler;
 
 public class Utility {
 
@@ -66,6 +71,12 @@ public class Utility {
 	private static UniqueKeyGenerator generator = new UniqueKeyGenerator();
 
 	private static ObjectMapper mapper;
+	
+	private static ExecutorService executor;
+	static {
+		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000);
+		executor = new ThreadPoolExecutor(20, 20, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
+	}
 	
 	/**
 	 * Returns a unique id, given a prefix string
@@ -410,9 +421,14 @@ public class Utility {
 				String key = KeyToTableName.formKey(t.getName(), user.getUsername(), user.getApiKey());
 				KeyToTableName ref = NoSql.em().getReference(KeyToTableName.class, key);
 				NoSql.em().remove(ref);
-				
-				if(c.getCount() % 100 == 0)
+				c.increment();
+				if(c.getCount() % 1000 == 0) {
+					//if (log.isDebugEnabled())
+						log.warn("flushing deleted items, count: "+c.getCount());
 					NoSql.em().flush();
+						log.warn("finished flush, count: "+c.getCount());
+
+				}
 			}
 		}
 

@@ -1,0 +1,41 @@
+#{extends '/main_body_container.html' /}
+#{set tab:'home' /}
+#{set title:'Delete Data in Range' /}
+
+#{form @deleteRange(table), id:'deleterange', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
+    <legend>Delete Data from Table '${table}'</legend>
+    <input type="hidden" name="table" value="${table}">
+    
+    Think about what you are doing!  Once deleted, this data is unrecoverable.<br/>
+    Note that if you specify a wide time range this operation could take a very long time to complete.<br/><br/><br/>
+
+
+    #{formfield 'start'}
+    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>From Timestamp</label>
+        <div class="controls">
+            <textarea name="start" rows="1" cols="20" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${start}</textarea>
+            <span class="help-block">${errors.forKey('start')}</span>
+        </div>
+    </div>
+    #{/formfield}
+    
+    #{formfield 'end'}
+    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>To Timestamp</label>
+        <div class="controls">
+            <textarea name="end" rows="1" cols="20" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${end}</textarea>
+            <span class="help-block">${errors.forKey('end')}</span>
+        </div>
+    </div>
+    #{/formfield}
+    
+
+    <div class="control-group">
+       <div class="controls">
+		  <input type="submit" name="submit" value="Save" class="btn btn-primary" />
+		  *{ <a href="javascript:history.back()" class="btn">Cancel</a> }*
+		</div>
+	</div>
+#{/form}
+

@@ -79,6 +79,8 @@ POST /settings/deletechart/{id}         gui.Settings.postDeleteChart
 # GUI My Stuff (Databases, Usergroups, Tables, Aggregations etc)
 # ******************************************************************************
 # ******************************************************************************
+GET  /tables/deleterange/{table}            gui.MyStuff.deleteRangeEmpty
+POST /tables/deleterange/{table}/{start}/{end} gui.MyStuff.deleteRange
 GET  /tables/chart/{table}                 	gui.MyStuff.tableChart
 GET  /tables/createchart/{table}            gui.MyStuff.createChart
 GET  /tables/data/{table}                   gui.MyStuff.tableDataset
@@ -242,6 +244,7 @@ POST    /api/registerV1                      ApiRegistration.postRegisterTableNe
 POST    /api/postdataV1                      ApiPostDataPoints.postData
 POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
 GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
+GET     /api/deleterange/{table}/{start}/{end} ApiMetaRequest.deleteRange
 #GET     /api/getdataV2/{sql}                ApiSqlRequest.sqlRequest
 GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
 

@@ -23,6 +23,7 @@ public class SumStreamProcessor2 extends StreamsProcessor2 {
 	public String init(String path, ProcessorSetup nextInChain,
 			VisitorInfo visitor, Map<String, String> options) {
 		initializeProps(options);
+		super.getRowMeta();
 		return super.init(path, nextInChain, visitor, options);
 	}
 
