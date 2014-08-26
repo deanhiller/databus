@@ -3,10 +3,11 @@ package controllers.modules2.framework;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.TreeMap;
 
 import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 
-public class TSRelational extends HashMap<String, Object>{
+public class TSRelational extends TreeMap<String, Object>{
 
 	private static final long serialVersionUID = 1L;
 	

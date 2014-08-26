@@ -10,6 +10,7 @@ import org.codehaus.jackson.map.JsonDeserializer;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.KeyDeserializer;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.TypeDeserializer;
 import org.codehaus.jackson.map.deser.ValueInstantiator;
 import org.codehaus.jackson.map.deser.std.MapDeserializer;
@@ -32,6 +33,7 @@ public class TestJsonParsing {
 		ObjectMapper m = new ObjectMapper();
 		m.configure(useBigDecimalForFloats, true);
 		m.configure(useBigIntegerForInts, true);
+		m.configure(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY, true);
 		
 		TypeFactory factory = m.getTypeFactory();
 		MapType type = factory.constructMapType(TSRelational.class, String.class, Object.class);

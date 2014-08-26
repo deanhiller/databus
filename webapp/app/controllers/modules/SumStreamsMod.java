@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 
@@ -294,7 +295,7 @@ public class SumStreamsMod extends Controller {
 		// Second, for each Database, get all of the aggregations
 		// The SecureResourceGroupXref HAS the DB embedded in it which means each embedded
 		// db has all of its aggregations.  We dont need to hit the DB anymore
-		Map<String, List<String>> aggregationsByDb = new HashMap<String, List<String>>(); // <dbID, aggregationIDs>
+		Map<String, List<String>> aggregationsByDb = new TreeMap<String, List<String>>(); // <dbID, aggregationIDs>
 		for (SecureResourceGroupXref xref : dbs.values()) {
 			SecureSchema db = (SecureSchema)xref.getResource();
 			List<StreamAggregation> aggregations = db.getAggregations();

@@ -14,6 +14,7 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.SerializationConfig;
 import org.codehaus.jackson.map.DeserializationConfig.Feature;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -50,9 +51,11 @@ public class ProductionModule implements Module {
 		Feature useBigDecimalForFloats = DeserializationConfig.Feature.USE_BIG_DECIMAL_FOR_FLOATS;
 		Feature useBigIntegerForInts = DeserializationConfig.Feature.USE_BIG_INTEGER_FOR_INTS;
 		
+		
 		ObjectMapper m = new ObjectMapper();
 		m.configure(useBigDecimalForFloats, true);
 		m.configure(useBigIntegerForInts, true);
+		m.configure(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY, true);
 
 		binder.bind(ObjectMapper.class).toInstance(m);
 		binder.bind(TranslationFactory.class).annotatedWith(Names.named("json")).to(JsonToValuesFactory.class).asEagerSingleton();

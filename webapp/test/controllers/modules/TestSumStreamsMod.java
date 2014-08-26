@@ -140,7 +140,7 @@ public class TestSumStreamsMod {
 		String request2Uri = "/api/sumstreamsV1/listaggregations/";
 		String result2Body = Utility.sendRequest(httpclient, request2Uri, StartupForAggregations.AGGUSER2.getName(), StartupForAggregations.AGGUSER2.getApiKey());
 		
-		Assert.assertEquals("{\"aggregations\":[{\"database\":\"aggGroupDb\",\"group\":\"aggGroupDb\",\"aggregation\":[\"agg7_test\"]},{\"database\":\"agg2Db\",\"group\":\"agg2Db\",\"aggregation\":[\"agg4_test\",\"agg5_test\",\"agg6_test\"]}]}", result2Body);
+		Assert.assertEquals("{\"aggregations\":[{\"database\":\"agg2Db\",\"group\":\"agg2Db\",\"aggregation\":[\"agg4_test\",\"agg5_test\",\"agg6_test\"]},{\"database\":\"aggGroupDb\",\"group\":\"aggGroupDb\",\"aggregation\":[\"agg7_test\"]}]}", result2Body);
 	}
 	
 	private static void registerAggregations(DefaultHttpClient httpclient, RegisterAggregation request, EntityUser user) {
