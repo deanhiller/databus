@@ -10,11 +10,13 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.PlayPlugin;
 import play.mvc.Http.Outbound;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z8spi.conv.StorageTypeEnum;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -24,16 +26,20 @@ import com.alvazan.play.NoSql;
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.util.Line;
 
-public class SaveBatch implements Runnable {
+public class SaveBatch  extends PlayPlugin implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(SaveBatch.class);
-	private static final int FLUSH_SIZE = 500;
+	private static final int FLUSH_SIZE = 2500;
 	private List<Line> batch;
 	private DboTableMeta table;
+	private boolean tableIsTimeSeries = true;
 	private int count = 0;
 	
-	//this are precaculated outside the run loop for performance:
+	//these are precaculated outside the run loop for performance, some calls into this are surprisingly slow:
 	private String tableColumnFamily;
+	private List<DboColumnMeta> tableCols;
+	private List<String> tableColNames;
+	private List<StorageTypeEnum> colTypes;
 	
 	private long currentPartitionStart = 0;
 	private long currentPartitionEnd = 0;
@@ -48,6 +54,14 @@ public class SaveBatch implements Runnable {
 
 	public SaveBatch(DboTableMeta table, List<Line> batch2, SocketState state, Outbound outbound) {
 		this.table = table;
+		this.tableIsTimeSeries = table.isTimeSeries();
+		tableCols = new ArrayList<DboColumnMeta>(table.getAllColumns());
+		colTypes = new ArrayList<StorageTypeEnum>();
+		for (DboColumnMeta col:tableCols)
+			colTypes.add(col.getStorageType());
+		tableColNames = new ArrayList<String>();
+		for (DboColumnMeta col:tableCols)
+			tableColNames.add(col.getColumnName());
 		this.batch = batch2;
 		this.state = state;
 		this.outbound = outbound;
@@ -78,8 +92,8 @@ public class SaveBatch implements Runnable {
 					outbound.send("{ \"done\": true }");
 				}
 
-				if(log.isInfoEnabled())
-					log.info("csv upload - notify chunk complete.  count completed="+newCount+"/"+numSubmitted+" chars="+state.getCharactersDone()+"/"+state.getFileSize());
+				if(log.isDebugEnabled())
+					log.debug("csv upload - notify chunk complete.  count completed="+newCount+"/"+numSubmitted+" chars="+state.getCharactersDone()+"/"+state.getFileSize());
 			}
 
 		} catch(Exception e) {
@@ -119,7 +133,7 @@ public class SaveBatch implements Runnable {
 	}
 
 	private void processLine(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
-		if(table.isTimeSeries())
+		if(tableIsTimeSeries)
 			processLineTimeSeries(mgr, line, session);
 		else
 			processLineRel(mgr, line, session);
@@ -127,7 +141,6 @@ public class SaveBatch implements Runnable {
 
 	private void processLineTimeSeries(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
 		try {
-			List<DboColumnMeta> cols = new ArrayList<DboColumnMeta>(table.getAllColumns());
 			List<Object> nodes = new ArrayList<Object>();
 			String pkValue = line.getColumns().get("time");
 			if (pkValue == null)
@@ -137,25 +150,28 @@ public class SaveBatch implements Runnable {
 				pkValue = ""+Double.valueOf(pkValue).longValue();
 			}
 			
-			for (DboColumnMeta col:cols) {
-				String node = line.getColumns().get(col.getColumnName());
+			int colindx = 0;
+			for (DboColumnMeta col:tableCols) {
+				String node = line.getColumns().get(tableColNames.get(colindx));
 				if(node == null) {
-					if (log.isWarnEnabled())
-						log.warn("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
+					if (log.isInfoEnabled())
+						log.info("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
 					throw new RuntimeException("The table you are inserting requires column='"+col.getColumnName()+"' to be set and is not found in data");
 				}
 				if(!(col instanceof DboColumnIdMeta))
 					nodes.add(node.trim());
+				colindx++;
 			}
-			createPartitionIfNeeded(mgr, pkValue);
-			if (cols.size() > 1) {
-				Map<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.convertToStorage(cols, nodes);
-				ApiPostDataPointsImpl.postRelationalTimeSeriesImpl(mgr, table, pkValue, newValue, false);
+			BigInteger timestamp = new BigInteger((String)pkValue);
+			createPartitionIfNeeded(mgr, timestamp);
+			if (tableCols.size() > 1) {
+				LinkedHashMap<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.stringsToObjects(tableCols, colTypes, nodes);
+				ApiPostDataPointsImpl.postRelationalTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes, false, currentPartitionStart);
 			}
 			else {
-				Object newValue = ApiPostDataPointsImpl.convertToStorage(cols.get(0), nodes.get(0));
+				Object newValue = ApiPostDataPointsImpl.stringToObject(colTypes.get(0), nodes.get(0));
 				//ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, pkValue, newValue, false);
-				ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(mgr, table, pkValue, newValue, false, currentPartitionStart);
+				ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes.get(0), false, currentPartitionStart);
 			}
 
 		} catch(Exception e) {
@@ -178,8 +194,8 @@ public class SaveBatch implements Runnable {
 		}
 	}
 
-	private void createPartitionIfNeeded(NoSqlEntityManager mgr, String pkVal) {
-		long timestamp = Long.valueOf(pkVal);
+	private void createPartitionIfNeeded(NoSqlEntityManager mgr, BigInteger pkVal) {
+		long timestamp = pkVal.longValue();
 		if (! (currentPartitionStart <= timestamp && timestamp <= currentPartitionEnd)) {
 			currentPartitionStart = ApiPostDataPointsImpl.calculatePartitionId(timestamp, table.getTimeSeriesPartionSize());
 			currentPartitionEnd = currentPartitionStart + table.getTimeSeriesPartionSize();
@@ -196,7 +212,7 @@ public class SaveBatch implements Runnable {
 				//jsc:todo  Do we need to do a 'required' check here and throw an exception in some cases for blank???
 				if (StringUtils.isBlank(stringval))
 					continue;
-				Object val = ApiPostDataPointsImpl.convertToStorage(meta, stringval.trim());
+				Object val = ApiPostDataPointsImpl.stringToObject(meta.getStorageType(), stringval.trim());
 				if(meta instanceof DboColumnIdMeta)
 					row.setRowKey(val);
 				else

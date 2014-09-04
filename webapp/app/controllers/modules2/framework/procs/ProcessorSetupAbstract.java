@@ -25,11 +25,11 @@ import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.chain.DNegationProcessor;
 import controllers.modules2.framework.chain.FTranslatorValuesToJson;
 import controllers.modules2.framework.http.HttpStatus;
-
+import play.PlayPlugin;
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
-public abstract class ProcessorSetupAbstract implements ProcessorSetup {
+public abstract class ProcessorSetupAbstract extends PlayPlugin implements ProcessorSetup {
 
 	protected Path params;
 	private Map<String, String> options;

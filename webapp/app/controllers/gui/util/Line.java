@@ -2,10 +2,11 @@ package controllers.gui.util;
 
 import java.util.LinkedHashMap;
 
+import play.PlayPlugin;
 import controllers.gui.SocketState;
 import controllers.gui.SocketStateCSV;
 
-public class Line {
+public class Line extends PlayPlugin {
 
 	private int lineNumber;
 	private LinkedHashMap<String, String> columns = new LinkedHashMap<String, String>();

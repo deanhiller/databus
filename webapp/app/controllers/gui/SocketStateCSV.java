@@ -28,7 +28,8 @@ import controllers.gui.util.Line;
 public class SocketStateCSV extends SocketState {
 
 	private int lineNumber = 0;
-	protected List<DboColumnMeta> headers;
+	protected List<String> headers;
+	//protected List<DboColumnMeta> headers;
 	
 	public SocketStateCSV(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ExecutorService executor, Outbound outbound) {
 		this.factory = factory;
@@ -82,11 +83,11 @@ public class SocketStateCSV extends SocketState {
 			batch = new ArrayList<Line>();
 		}
 
-		if(log.isDebugEnabled() && lineNumber % 2000 == 0)
-			log.debug("Another 2000 rows was passed to Runnables to write to database.  last line number="+lineNumber);
+		if(log.isDebugEnabled() && lineNumber % BATCH_SIZE == 0)
+			log.debug("Another "+BATCH_SIZE+" rows was passed to Runnables to write to database.  last line number="+lineNumber);
 	}
 
-	private LinkedHashMap<String, String> getColumns(List<DboColumnMeta> headers, String row) {
+	private LinkedHashMap<String, String> getColumns(List<String> headers, String row) {
 		LinkedHashMap<String, String> columnsMap = new LinkedHashMap<String, String>();
 		int pos = 0, end;
 		int colIndex = 0;
@@ -101,7 +102,7 @@ public class SocketStateCSV extends SocketState {
 				reportErrorAndClose(msg);
 				return columnsMap;
         	}
-        	columnsMap.put(headers.get(colIndex).getColumnName(), row.substring(pos,end));
+        	columnsMap.put(headers.get(colIndex), row.substring(pos,end));
             pos = end + 1;
             colIndex++;
         }
@@ -111,7 +112,7 @@ public class SocketStateCSV extends SocketState {
     			reportErrorAndClose(msg);
     			return columnsMap;
         	}
-        	columnsMap.put(headers.get(colIndex).getColumnName(), row.substring(pos, row.length()));
+        	columnsMap.put(headers.get(colIndex), row.substring(pos, row.length()));
         }
 
         return columnsMap;
@@ -120,15 +121,15 @@ public class SocketStateCSV extends SocketState {
 	protected void readHeaders(String[] cols) {
 		SecureTable sTable = getSdiTable();
 		tableMeta = sTable.getTableMeta();
-		List<DboColumnMeta> columns = new ArrayList<DboColumnMeta>();
+		List<String> columns = new ArrayList<String>();
 		for(String theCol : cols) {
 			String col = theCol.trim();
 			DboColumnIdMeta idMeta = tableMeta.getIdColumnMeta();
 			DboColumnMeta colMeta = tableMeta.getColumnMeta(col);
 			if(colMeta != null) {
-				columns.add(colMeta);
+				columns.add(colMeta.getColumnName());
 			} else if(col.equals(idMeta.getColumnName())) {
-				columns.add(idMeta);
+				columns.add(idMeta.getColumnName());
 			} else {
 				throw new IllegalArgumentException("col="+col+" does not exist in this table");
 			}

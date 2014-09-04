@@ -1,7 +1,9 @@
 package controllers.modules2;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import play.mvc.results.Unauthorized;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z8spi.conv.StorageTypeEnum;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
@@ -107,9 +110,16 @@ public class LogProcessor extends PullProcessorAbstract {
 
 	private void saveTimeSeries(NoSqlTypedSession typedSession, TSRelational row2) {
 		String idName = tableMeta.getIdColumnMeta().getColumnName();
-		Object idVal = row2.get(idName);
+		BigInteger idVal = (BigInteger)row2.get(idName);
 		List<DboColumnMeta> allColumns = new ArrayList<DboColumnMeta>(tableMeta.getAllColumns());
+		List<StorageTypeEnum> colTypes = new ArrayList<StorageTypeEnum>();
 
+		//BigInteger timeStamp = new BigInteger((String)idVal);
+		long longTime = idVal.longValue();
+		Long partitionSize = tableMeta.getTimeSeriesPartionSize();
+		long partitionKey = ApiPostDataPointsImpl.calculatePartitionId(longTime, partitionSize);
+		ApiPostDataPointsImpl.putPartition(NoSql.em(), tableMeta, partitionKey);
+		
 		if (allColumns.size() > 1) {
 			List<Object> nodes = new ArrayList<Object>();
 			for (DboColumnMeta col:allColumns) {
@@ -117,16 +127,17 @@ public class LogProcessor extends PullProcessorAbstract {
 				
 				if(!(col instanceof DboColumnIdMeta))
 					nodes.add(node);
+				colTypes.add(col.getStorageType());
 			}
-			Map<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.convertToStorage(allColumns, nodes);
+			LinkedHashMap<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.stringsToObjects(allColumns, colTypes, nodes);
 			
-			ApiPostDataPointsImpl.postRelationalTimeSeriesImpl(NoSql.em(), tableMeta, idVal, newValue, false);
+			ApiPostDataPointsImpl.postRelationalTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, newValue, colTypes, false, partitionKey);
 		}
 		else {
 			DboColumnMeta singleCol = tableMeta.getAllColumns().iterator().next();
 			Object val = row2.get(singleCol.getColumnName());
 			
-			ApiPostDataPointsImpl.postTimeSeriesImpl(NoSql.em(), tableMeta, idVal, val, false);
+			ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, val, allColumns.get(0).getStorageType(), false, partitionKey);
 		}
 		
 	}

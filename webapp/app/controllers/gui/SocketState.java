@@ -7,9 +7,12 @@ import java.util.concurrent.ExecutorService;
 
 import models.SecureTable;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
+import play.PlayPlugin;
 import play.mvc.Http.Outbound;
 
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
@@ -19,10 +22,10 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 
 import controllers.gui.util.Line;
 
-public abstract class SocketState {
+public abstract class SocketState extends PlayPlugin {
 
 	protected static final Logger log = LoggerFactory.getLogger(SocketStateCSV.class);
-	protected static final int BATCH_SIZE = 5000;
+	protected static int BATCH_SIZE = 5000;
 	static final int ERROR_LIMIT = 10;
 	protected NoSqlEntityManagerFactory factory;
 	protected SecureTable sdiTable;
@@ -38,6 +41,9 @@ public abstract class SocketState {
 
 	public SocketState() {
 		super();
+		String configuredbatchsize = Play.configuration.getProperty("socket.upload.batch.size");
+		if (StringUtils.isNotBlank(configuredbatchsize))
+			BATCH_SIZE = Integer.parseInt(configuredbatchsize);
 	}
 
 	protected abstract void processFile(String s) throws IOException; 

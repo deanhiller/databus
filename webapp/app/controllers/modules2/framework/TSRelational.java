@@ -21,7 +21,7 @@ public class TSRelational extends TreeMap<String, Object>{
 		super(toCopy);
 	}
 	
-	public TSRelational(BigInteger time, BigDecimal value) {
+	public TSRelational(BigInteger time, Object value) {
 		this.put("time", time);
 		this.put("value", value);
 	}

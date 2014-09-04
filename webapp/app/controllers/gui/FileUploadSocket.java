@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ import models.SecureTable;
 import controllers.SecurityUtil;
 import controllers.gui.util.ExecutorsSingleton;
 import controllers.gui.util.Line;
+import play.Play;
 import play.mvc.Http.WebSocketClose;
 import play.mvc.Http.WebSocketEvent;
 import play.mvc.Http.WebSocketFrame;
@@ -43,14 +45,20 @@ public class FileUploadSocket extends WebSocketController {
 	private static final Logger log = LoggerFactory.getLogger(FileUploadSocket.class);
 	static final int ERROR_LIMIT = 10;
 	private static ExecutorService executor;
+	private static int numThreads = 10;
 	private static final ObjectMapper mapper = new ObjectMapper();
+	private static long startTime = 0;
 	
 	static {
 		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000);
-		executor = new ThreadPoolExecutor(20, 20, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
+		String configurednumthreads = Play.configuration.getProperty("socket.upload.num.threads");
+		if (StringUtils.isNotBlank(configurednumthreads))
+			numThreads = Integer.parseInt(configurednumthreads);
+		executor = new ThreadPoolExecutor(numThreads, numThreads, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
 	}
 	
 	public static void fileToWebSocket(String table) throws IOException {
+		startTime=System.currentTimeMillis();
 		if (request.isNew) {
 			PermissionType p = SecurityUtil.checkSingleTable2(table);
 			if (PermissionType.READ_WRITE.isHigherRoleThan(p))
@@ -107,6 +115,7 @@ public class FileUploadSocket extends WebSocketController {
 						+ state.getSdiTable().getName());
 			}
 		}
+		log.info("total time for web socket upload:  "+(System.currentTimeMillis()-startTime));
 	}
 	
 	public static void fileToWebSocketJSON(String table) throws IOException {
