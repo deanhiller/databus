@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import models.MetaDataTag;
 import models.SdiColumn;
 import models.SecureSchema;
 import models.SecureTable;
@@ -145,6 +146,7 @@ public class SearchUtils {
 	public static void indexTable(SecureTable t, DboTableMeta tableMeta, Collection<SolrInputDocument> solrDocs)
 			throws IOException, SAXException, ParserConfigurationException,
 			SolrServerException {
+		
 		// Solr server instance
 		SolrServer solrServer = Search.getSolrServer();
 		// Add this new table to the meta index...
@@ -167,6 +169,19 @@ public class SearchUtils {
 			doc.addField("isSearchable_texts", "true");
 		else
 			doc.addField("isSearchable_texts", "false");
+		
+		Set<String> allTagsSet = new HashSet<String>();
+		if (t.getTags() != null && t.getTags().size() >0) {
+			for (MetaDataTag m : t.getTags()) {
+				if (m.getLength().equals(1))
+					allTagsSet.add(m.getName());
+			}
+		}
+		doc.addField("tag_texts", allTagsSet);
+		doc.addField("tag_sms", allTagsSet);
+		if (t.isFullyGeolocated())
+			doc.addField("location", ""+t.getLat()+","+t.getLon());
+			
 
 		Set<String> allTermsSet = new HashSet<String>();
 		Set<String> columnsSet = new HashSet<String>();
@@ -183,6 +198,8 @@ public class SearchUtils {
 		allTermsSet.add((String) doc.getField("description_texts").getValue());
 
 		allTermsSet.addAll(columnsSet);
+		allTermsSet.addAll(allTagsSet);
+		
 		if (doc.getField("database_texts") != null) {
 			allTermsSet.add((String) doc.getField("database_texts").getValue());
 			allTermsSet.add((String) doc.getField("databaseDescription_texts").getValue());
@@ -263,6 +280,7 @@ public class SearchUtils {
 			SearchUtils.indexTable(table, meta, solrDocs);
 			
 			if (table.isSearchable()) {
+				
 				log.info("found a searchable table "+table.getName()+" indexing it.");
 				String sql = "select c from "+table.getTableName()+" as c";
 				Collection<SolrInputDocument> tablesolrDocs = new ArrayList<SolrInputDocument>();
@@ -294,7 +312,7 @@ public class SearchUtils {
 				catch (Exception e) {
 					System.out.println("got an exception while indexing a searchable table with the query (probably a corrupt index in playorm):");
 					System.out.println(sql);
-					//e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 			if (solrDocs.size() > REINDEX_BATCH_SIZE) {

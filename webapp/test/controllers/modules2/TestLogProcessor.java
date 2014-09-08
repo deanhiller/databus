@@ -26,7 +26,7 @@ public class TestLogProcessor {
 		
 		long r = System.currentTimeMillis();
 		String tableName = "logTestingTable"+r;
-		String json = RegisterPostAndGet.createJsonForRequest(tableName, true, null);
+		String json = RegisterPostAndGet.createJsonForRequest(tableName, true, null, null, null);
 		
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		
@@ -54,7 +54,7 @@ public class TestLogProcessor {
 		
 		long r = System.currentTimeMillis();
 		String tableName = "logTestingTable2"+r;
-		String json = RegisterPostAndGet.createJsonForRequest(tableName, false, null);
+		String json = RegisterPostAndGet.createJsonForRequest(tableName, false, null, null, null);
 		
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		

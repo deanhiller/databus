@@ -302,7 +302,7 @@ public class Search extends Controller {
 			}
 			//databusMeta:
 			else {
-				solrparams.put("facet.field", new String[]{"database_texts", "type", "creator_texts"});
+				solrparams.put("facet.field", new String[]{"database_texts", "type", "creator_texts", "tag_sms"});
 			}
 		}
 	}

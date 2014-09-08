@@ -1,5 +1,6 @@
 package models.message;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,6 +54,15 @@ public class RegisterMessage {
 	@JsonProperty("columns")
     @XmlElement(name="columns")
     public List<DatasetColumnModel> columns = new ArrayList<DatasetColumnModel>();
+	
+	@JsonProperty("lat")
+    @XmlElement(name="lat")
+	private BigDecimal lat;
+	
+	@JsonProperty("lon")
+    @XmlElement(name="lon")
+	private BigDecimal lon;
+	
 	
 	public boolean getIsSearchable() {
 		return isSearchable;
@@ -129,6 +139,22 @@ public class RegisterMessage {
 
 	public void setIsForLogging(Boolean isForLogging) {
 		this.isForLogging = isForLogging;
+	}
+
+	public BigDecimal getLat() {
+		return lat;
+	}
+
+	public void setLat(BigDecimal lat) {
+		this.lat = lat;
+	}
+
+	public BigDecimal getLon() {
+		return lon;
+	}
+
+	public void setLon(BigDecimal lon) {
+		this.lon = lon;
 	}
 
 } // Register

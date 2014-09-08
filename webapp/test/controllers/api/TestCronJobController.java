@@ -47,10 +47,10 @@ public class TestCronJobController {
 		long r = System.currentTimeMillis();
 		String database = StartupDetailed.GROUP1;
 		String tableName1 = "logTestingTable2"+r;
-		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null);
+		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null, null, null);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json1, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		String tableName2 = "logTestingTable2"+(r+1);
-		String reg2 = RegisterPostAndGet.createJsonForRequest(tableName2, true, null);
+		String reg2 = RegisterPostAndGet.createJsonForRequest(tableName2, true, null, null, null);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", reg2, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
 		String createTrigger1 = createTrigger(tableName1, StartupDetailed.GROUP1);
@@ -101,7 +101,7 @@ public class TestCronJobController {
 		long r = System.currentTimeMillis();
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 		String tableName1 = "logTestTable2"+r;
-		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null);
+		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null, null, null);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json1, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		
 		CronService mockSvc = new MockCronSvc();

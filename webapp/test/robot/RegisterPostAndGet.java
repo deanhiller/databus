@@ -6,6 +6,7 @@ import gov.nrel.util.StartupGroups;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -45,6 +46,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import controllers.Tuple;
+
 
 public class RegisterPostAndGet {
 	
@@ -60,6 +63,7 @@ public class RegisterPostAndGet {
 	ArrayList<String> equipmentTags = new ArrayList<String>();
 	ArrayList<String> randomTags = new ArrayList<String>();
 	
+	@Test
 	public void generateABunchOfTablesWithTags() throws JsonGenerationException, JsonMappingException, IOException {
 		
 		regionTags.addAll(Arrays.asList("r1","r2","r3","r4","r5","r6","r7","r8","r9","r10","r11","r12"));
@@ -73,25 +77,83 @@ public class RegisterPostAndGet {
 		equipmentTags.addAll(Arrays.asList("ac unit", "tv monitor", "computer", "led light", "fan", "fireplace", "solar panel"));
 		randomTags.addAll(Arrays.asList("tall", "short", "big", "small", "blue", "red", "hot", "cold", "happy", "sad"));
 
-		List<Long> timeResults = generateTablesWithRandomTags(3000, 10000);
+		List<Long> timeResults = generateTablesWithRandomTags(6009, 10000);
 		System.out.println("times!!!!!!");
 		for (int i =0; i< timeResults.size(); i++)
 			System.out.println(timeResults.get(i));
 		
 	}
 	
+	BigDecimal nrelTopLeftLat = new BigDecimal("39.743426");
+	BigDecimal nrelTopLeftLon = new BigDecimal("-105.177516");
+	BigDecimal nrelBottomRightLat = new BigDecimal("39.738230");
+	BigDecimal nrelBottomRightLon = new BigDecimal("-105.168101");
+	
+	BigDecimal denverTopLeftLat = new BigDecimal("39.896930");
+	BigDecimal denverTopLeftLon = new BigDecimal("-105.194778");
+	BigDecimal denverBottomRightLat = new BigDecimal("39.549423");
+	BigDecimal denverBottomRightLon = new BigDecimal("-104.693527");
+	
+	private Tuple getAGeoLocInNREL() {
+		BigDecimal somelat = pickANumberInside(nrelTopLeftLat, nrelBottomRightLat);
+		BigDecimal somelon = pickANumberInside(nrelTopLeftLon, nrelBottomRightLon);
+		Tuple t = new Tuple(""+somelat, ""+somelon);
+		return t;
+	}
+
+	private Tuple getAGeoLocOutsideNREL() {
+		BigDecimal somelat = pickANumberInsideExcludingRange(denverTopLeftLat, denverBottomRightLat, nrelTopLeftLat, nrelBottomRightLat);
+		BigDecimal somelon = pickANumberInsideExcludingRange(denverTopLeftLon, denverBottomRightLon, nrelTopLeftLon, nrelBottomRightLon);
+		Tuple t = new Tuple(""+somelat, ""+somelon);
+		return t;
+	}
+	
+	
+	
+
+	private BigDecimal pickANumberInsideExcludingRange(
+			BigDecimal first, BigDecimal second,
+			BigDecimal excludefirst, BigDecimal excludesecond) {
+		BigDecimal result;
+		do {
+			result = pickANumberInside(first, second);
+		} while (!(result.compareTo(excludefirst.min(excludesecond)) >= 0 && result.compareTo(excludefirst.max(excludesecond)) <= 0));
+		return result;
+	}
+
+	private BigDecimal pickANumberInside(BigDecimal first,
+			BigDecimal second) {
+		BigDecimal range = first.min(second).subtract(first.max(second));
+		BigDecimal scaledRange = range.multiply(new BigDecimal(1000000));
+		BigDecimal randomizedVal = new BigDecimal(new Random().nextLong()%scaledRange.longValue());
+		return first.min(second).add(randomizedVal.divide(new BigDecimal(1000000)));
+	}
+	
 	private List<Long> generateTablesWithRandomTags(int start, int end) throws JsonGenerationException, JsonMappingException, IOException {
 		DefaultHttpClient httpclient = new DefaultHttpClient();
 
 		ArrayList<Long> times = new ArrayList<Long>();
+		int errorcount = 0;
+		
 		for (int i = start; i < end; i++) {
 			String tableName = "tableWithTags"+i;
 			List<String> someTags = selectRandomTags();
 			long before = System.currentTimeMillis();
-			registerNewStream(httpclient, tableName, someTags);		
+			try{
+				Tuple loc = getAGeoLocInNREL();
+				if (i%2==0)
+					loc = getAGeoLocOutsideNREL();
+				registerNewStream(httpclient, tableName, someTags, new BigDecimal(loc.key), new BigDecimal(loc.value));
+			}
+			catch (Exception e) {
+				errorcount++;
+			}
 			long after = System.currentTimeMillis();
 			times.add(after - before);
 			System.out.println("  ^^^^^^ time for table tableWithTags"+i+":  "+(after-before));
+			if (errorcount > 0 ) {
+				System.out.println("we got errors!  "+errorcount);
+			}
 		}
 		return times;
 	}
@@ -115,10 +177,10 @@ public class RegisterPostAndGet {
 
 		long r = System.currentTimeMillis();
 		String tableName = "pinkBlobFromMarsData"+r;
-		registerNewStream(httpclient, tableName+"1jsc", Arrays.asList("a"));
-		registerNewStream(httpclient, tableName+"2jsc", Arrays.asList("a", "b"));
-		registerNewStream(httpclient, tableName+"3jsc", Arrays.asList("a", "b", "c"));
-		registerNewStream(httpclient, tableName, Arrays.asList("e", "b", "a", "c"));
+		registerNewStream(httpclient, tableName+"1jsc", Arrays.asList("a"), null, null);
+		registerNewStream(httpclient, tableName+"2jsc", Arrays.asList("a", "b"), null, null);
+		registerNewStream(httpclient, tableName+"3jsc", Arrays.asList("a", "b", "c"), null, null);
+		registerNewStream(httpclient, tableName, Arrays.asList("e", "b", "a", "c"), null, null);
 
 		String apiKey = StartupGroups.ROBOT_KEY;
 		postNewDataPoint(httpclient, 30, 34.5, apiKey, tableName);
@@ -186,11 +248,11 @@ public class RegisterPostAndGet {
 		return result;
 	}
 	
-	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName, List<String> tags) 
+	private RegisterResponseMessage registerNewStream(DefaultHttpClient httpclient, String tableName, List<String> tags, BigDecimal lat, BigDecimal lon) 
 			throws IOException, JsonGenerationException,
 			JsonMappingException, UnsupportedEncodingException,
 			ClientProtocolException, JsonParseException {
-		String json = createJsonForRequest(tableName, false, tags);
+		String json = createJsonForRequest(tableName, false, tags, lat, lon);
 		
 		String theString = Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 		
@@ -199,7 +261,7 @@ public class RegisterPostAndGet {
 		return resp;
 	}
 
-	public static String createJsonForRequest(String tableName, boolean isForLogging, List<String> tags) throws IOException,
+	public static String createJsonForRequest(String tableName, boolean isForLogging, List<String> tags, BigDecimal lat, BigDecimal lon) throws IOException,
 			JsonGenerationException, JsonMappingException {
 //		{"datasetType":"STREAM",
 //		 "modelName":"timeSeriesForPinkBlobZ",
@@ -215,6 +277,12 @@ public class RegisterPostAndGet {
 		msg.setSchema(StartupDetailed.GROUP1);
 		if (tags != null && tags.size() > 0)
 			msg.setTags(tags);
+		
+		if (lat != null && lon != null && !lat.equals(new BigDecimal("0.0")) && !lon.equals(new BigDecimal(0.0))) {
+			msg.setLat(lat);
+			msg.setLon(lon);
+		}
+		
 		if(isForLogging) //else leave null as this is an optional field
 			msg.setIsForLogging(isForLogging);
 		

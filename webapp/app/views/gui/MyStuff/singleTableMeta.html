@@ -48,7 +48,17 @@ Corrupt target table=${targetTable.tableName}
 
 <br/><br/><br/><br/>
 
-<H2>Tags:</H2>
+<H2>Information:</H2>
+<table class="table">
+<tr><td>
+Latitude: ${targetTable.getLat()}
+</td></tr>
+<tr> <td>
+Longitude: ${targetTable.getLon()}
+</td></tr>
+</table>
+
+<H3>Tags:</H3>
 <table class="table">
 	<tr>
 		#{list targetTable.getTags(), as:'tag'}

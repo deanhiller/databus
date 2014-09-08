@@ -49,7 +49,7 @@ public class TestPostTriggerController {
 		long r = System.currentTimeMillis();
 		String database = StartupDetailed.GROUP1;
 		String tableName1 = "triggerTestingTable2"+r;
-		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null);
+		String json1 = RegisterPostAndGet.createJsonForRequest(tableName1, true, null, null, null);
 		Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json1, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
 
 		String createTrigger1 = createPostTrigger(tableName1, StartupDetailed.GROUP1);

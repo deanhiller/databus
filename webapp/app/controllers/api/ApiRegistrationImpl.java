@@ -187,6 +187,10 @@ public class ApiRegistrationImpl {
 		t.setCreator(user);
 		t.setIsForLogging(msg.getIsForLogging());
 		t.setSearchable(msg.getIsSearchable());
+		if (msg.getLat() != null && !msg.getLat().equals(new BigDecimal(0.0))) 
+			t.setLat(msg.getLat());
+		if (msg.getLon() != null && !msg.getLon().equals(new BigDecimal(0.0))) 
+			t.setLon(msg.getLon());
 		
 		long before = System.currentTimeMillis();
 		//------ real code
