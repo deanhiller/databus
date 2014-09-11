@@ -74,10 +74,10 @@
 		
 		if(doc.type == 'aggregation') {
 			output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/aggregation_1_48.png"></td>';
-			output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">' + doc.id + '</td></tr>';
+			output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value"><a href="/tables/' + doc.id + '">' + doc.id + '</a></td></tr>';
 		} else if(doc.type == 'database') {
 			output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/database_1_48.png"></td>';
-			output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">' + doc.id + '</td></tr>';
+			output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value"><a href="/databases/' + doc.id + 'tables/">' + doc.id + '</a></td></tr>';
 		} else if(doc.type == 'table') {
 			
 			if (doc.hasOwnProperty("isSearchable_texts")) {
@@ -87,12 +87,12 @@
     					///////////////////////
     					
     					output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/table_3_48.png"></td>';
-					output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">';
+					    output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">';
     					output += '<a id="table_' + doc.id + '" href="' + url + '" class="searchable_result_title_value">' + doc.id + '</a>';
     				} else {
     					output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/table_2_48.png"></td>';
-					output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">';
-    					output += doc.id;
+					    output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">';
+    					output += '<a href="/tables/' + doc.id + '">' + doc.id + '</a>';
     				}
     			} else {
     				output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/table_2_48.png"></td>';

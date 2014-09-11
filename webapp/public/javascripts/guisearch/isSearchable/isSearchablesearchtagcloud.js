@@ -17,9 +17,11 @@
 				objectedItems.push({ facet: facet, count: count });
 			}
 			
-			objectedItems.sort(function (a, b) {
-				return a.facet < b.facet ? -1 : 1;
-			});
+			/** no idea why someone thought this was a good idea:
+				* objectedItems.sort(function (a, b) {
+				* 	return a.facet < b.facet ? -1 : 1;
+				* });
+				*/
 			
 			$(this.target).empty();
 			

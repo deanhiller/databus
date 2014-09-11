@@ -372,6 +372,7 @@ public class SearchUtils {
 			unload.setCoreName(coreName);
 			unload.process(Search.getSolrServer()); 
 		}
+		knownCores.clear();
 	}
 
 

@@ -52,7 +52,7 @@ public class SumStreamsMod extends Controller {
 		badRequest("Your url is invalid as you need sumstreamsV1/{name}/{start}/{end}... and start and end have to be longs");
 	}
 	
-	public static void go(String name, long start, long end) throws InterruptedException, ExecutionException, IOException {
+	public static void storedAggregation(String name, long start, long end) throws InterruptedException, ExecutionException, IOException {
 		
 		StreamAggregation agg = NoSql.em().find(StreamAggregation.class, name);
 		if(agg == null)

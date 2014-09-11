@@ -45,9 +45,11 @@
 					objectedItems.push({ facet: facet, count: count });
 				}
 				
-				objectedItems.sort(function (a, b) {
-					return a.facet < b.facet ? -1 : 1;
-				});
+				/** no idea why someone thought this was a good idea:
+				* objectedItems.sort(function (a, b) {
+				* 	return a.facet < b.facet ? -1 : 1;
+				* });
+				*/
 				
 				/**
 				 * We need to make these facet fields look like the rest of our search UI:
@@ -96,7 +98,6 @@
 				accordionDiv.append(accordionGroupDiv);
 				
 				var facetTable = $('<table class="search_nav_facet_table">');
-				
 				for (var i = 0, l = objectedItems.length; i < l; i++) {
 					var tr = $('<tr class="search_nav_facet_tr">');
 					var td1 = $('<td class="search_nav_facet_td">');

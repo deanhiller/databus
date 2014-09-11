@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import play.data.validation.Validation;
 import play.mvc.Controller;
+import play.mvc.Util;
 import play.mvc.With;
 
 import com.alvazan.orm.api.base.CursorToMany;
@@ -511,18 +512,8 @@ public class MyDatabases extends Controller {
 				if (log.isInfoEnabled())
 					log.info(" Adding new database: name=" + postedDatabase.getSchemaName());
 				
-				databaseToSave = new SecureSchema();
-				databaseToSave.setId(null);
-				databaseToSave.setSchemaName(postedDatabase.getSchemaName());
-				databaseToSave.setDescription(postedDatabase.getDescription());
+				createSchema(user, postedDatabase.getSchemaName(), postedDatabase.getDescription());
 				
-				NoSql.em().fillInWithKey(databaseToSave);
-				SecureResourceGroupXref xref = new SecureResourceGroupXref(user, databaseToSave, PermissionType.ADMIN);		
-				NoSql.em().put(xref);
-				
-				NoSql.em().put(databaseToSave);
-				NoSql.em().put(user);
-				NoSql.em().flush();
 				
 				successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been added.";
 			} else {
@@ -567,6 +558,23 @@ public class MyDatabases extends Controller {
 		flash.success(successMsg);
 		
 		myDatabases();
+	}
+	
+	@Util
+	public static SecureSchema createSchema(EntityUser user, String schemaName, String desc) {
+		SecureSchema databaseToSave = new SecureSchema();
+		databaseToSave.setId(null);
+		databaseToSave.setSchemaName(schemaName);
+		databaseToSave.setDescription(desc);
+		
+		NoSql.em().fillInWithKey(databaseToSave);
+		SecureResourceGroupXref xref = new SecureResourceGroupXref(user, databaseToSave, PermissionType.ADMIN);		
+		NoSql.em().put(xref);
+		
+		NoSql.em().put(databaseToSave);
+		NoSql.em().put(user);
+		NoSql.em().flush();
+		return databaseToSave;
 	}
 
 	public static void monitorAdd(String schemaName) {

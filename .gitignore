@@ -25,6 +25,7 @@ output/
 /webapp/play-1.2.5/framework/classes/
 /solr/data/*
 /solr/solr/data/*
+/solr/solr/databusmeta/*
 /.classpath
 /.project
 /.settings
@@ -35,3 +36,4 @@ output/
 /modbus/.project
 /modbus/.classpath
 /modbus/.settings
+/solr/solr/solr.xml

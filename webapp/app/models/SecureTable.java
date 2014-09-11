@@ -420,7 +420,7 @@ public class SecureTable extends SecureResource {
 	}
 	
 	public boolean isFullyGeolocated() {
-		return getLat()!=null&&getLon()!=null&&!getLat().equals(new BigDecimal("0.0"))&&getLon().equals(new BigDecimal("0.0"));
+		return getLat()!=null&&getLon()!=null&&!getLat().equals(new BigDecimal("0.0"))&&!getLon().equals(new BigDecimal("0.0"));
 	}
 
 	private static class MetaDataTagComparator implements Comparator<MetaDataTag> {

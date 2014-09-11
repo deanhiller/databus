@@ -70,6 +70,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.SearchPosting;
 import controllers.SecurityUtil;
+import controllers.gui.MyDatabases;
 
 public class ApiRegistrationImpl {
 
@@ -125,9 +126,19 @@ public class ApiRegistrationImpl {
 		ensureTableDoesNotAlreadyExist(msg);
 		EntityUser user = SecurityUtil.fetchUser(username, apiKey);
 
+		boolean isNewSchema = false;
 		SecureSchema schema = SecureSchema.findByName(NoSql.em(), schemaName);
-		if(schema == null)
-			throw new BadRequest("you must specify an existing schema or group");
+		if(schema == null) {
+			if (!msg.isCreateschema())
+				throw new BadRequest("you must specify an existing schema or group");
+			else {
+				SecureSchema newSchema = new SecureSchema();
+				newSchema.setSchemaName(schemaName);
+				MyDatabases.createSchema(user, schemaName, null);
+				schema = SecureSchema.findByName(NoSql.em(), schemaName);
+				isNewSchema=true;
+			}
+		}
 		
 		// Setup the table meta
 		DboTableMeta tm = new DboTableMeta();
@@ -176,7 +187,8 @@ public class ApiRegistrationImpl {
 		List<MetaDataTag>newtags = new ArrayList<MetaDataTag>();
 		if (msg.getTags() != null && msg.getTags().size() > 0) {
 			for (String s: msg.getTags()) {
-				newtags.add(MetaDataTag.getMetaDataTag(s, 1, NoSql.em()));
+				if (StringUtils.isNotEmpty(s))
+					newtags.add(MetaDataTag.getMetaDataTag(s, 1, NoSql.em()));
 			}
 		}
 			
@@ -221,20 +233,21 @@ public class ApiRegistrationImpl {
 		mgr.put(tm);
 		mgr.put(t);
 
-		if(t.isSearchable()) {
-			try {
-				ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
-				SearchUtils.indexTable(t, tm, solrDocs);
-				SearchPosting.saveSolr("table id = '" + tm.getColumnFamily() + "'", solrDocs, "databusmeta");
-				solrDocs = new ArrayList<SolrInputDocument>();
-			}
-			catch(Exception e) {
-				if (log.isInfoEnabled())
-					log.info("Got an exception preparing solr for a new searchable table - "+e.getMessage());
-				throw new RuntimeException("Got an exception preparing solr for a new searchable table, cancelling creation of table.  Try to reregister at a later time when solr is back online or make your table isSearchable=false..", e);
-			}
+
+		try {
+			if(isNewSchema)
+				SearchUtils.indexSchema(schema);
+			ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
+			SearchUtils.indexTable(t, tm, solrDocs);
+			SearchPosting.saveSolr("table id = '" + tm.getColumnFamily() + "'", solrDocs, "databusmeta");
+			solrDocs = new ArrayList<SolrInputDocument>();
 		}
-	
+		catch(Exception e) {
+			if (log.isInfoEnabled())
+				log.info("Got an exception preparing solr for a new searchable table - "+e.getMessage());
+			throw new RuntimeException("Got an exception preparing solr for a new searchable table, cancelling creation of table.  Try to reregister at a later time when solr is back online or make your table isSearchable=false..", e);
+		}
+
 		mgr.flush();
 		
 

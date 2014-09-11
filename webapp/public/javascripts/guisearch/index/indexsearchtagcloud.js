@@ -41,13 +41,13 @@
 					if (count > maxCount) {
 						maxCount = count;
 					}
-					
 					objectedItems.push({ facet: facet, count: count });
 				}
-				
-				objectedItems.sort(function (a, b) {
-					return a.facet < b.facet ? -1 : 1;
-				});
+				/** no idea why someone thought this was a good idea:
+				* objectedItems.sort(function (a, b) {
+				* 	return a.facet < b.facet ? -1 : 1;
+				* });
+				*/
 				
 				/**
 				 * DYNAMIC FACET DISCOVERY:
@@ -78,7 +78,9 @@
 				var accordionGroupDiv = $('<div class="accordion-group search_nav_group">');
 				var accordionHeadingDiv = $('<div class="accordion-heading">');
 				var tableLinksAnchor = $('<a id="' + facetItem + '_toggle" icon_ref="#' + facetItem + '_icon" class="accordion-toggle search_nav_title" data-toggle="collapse" data-parent="#accordion_' + facetItem + '" href="#collapse_' + facetItem + '">');
-				tableLinksAnchor.append("" + facetItem);
+				var facetDisplayName = facetItem.replace("_texts", "");
+				facetDisplayName = facetDisplayName.replace("_sms", "");
+				tableLinksAnchor.append("" + facetDisplayName);
 				var tableLinksIcon = $('<i id="' + facetItem + '_icon" class="icon-chevron-right" style="margin: 3px 10px 0px 0px;">');
 				tableLinksAnchor.append(" ");
 				tableLinksAnchor.append(tableLinksIcon);
@@ -99,7 +101,6 @@
 				accordionDiv.append(accordionGroupDiv);
 				
 				var facetTable = $('<table class="search_nav_facet_table">');
-				
 				for (var i = 0, l = objectedItems.length; i < l; i++) {
 					var tr = $('<tr class="search_nav_facet_tr">');
 					var td1 = $('<td class="search_nav_facet_td">');

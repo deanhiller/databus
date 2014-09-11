@@ -77,7 +77,8 @@ public class RegisterPostAndGet {
 		equipmentTags.addAll(Arrays.asList("ac unit", "tv monitor", "computer", "led light", "fan", "fireplace", "solar panel"));
 		randomTags.addAll(Arrays.asList("tall", "short", "big", "small", "blue", "red", "hot", "cold", "happy", "sad"));
 
-		List<Long> timeResults = generateTablesWithRandomTags(6009, 10000);
+		List<Long> timeResults = generateTablesWithRandomTags(6009, 6011);
+
 		System.out.println("times!!!!!!");
 		for (int i =0; i< timeResults.size(); i++)
 			System.out.println(timeResults.get(i));
@@ -143,7 +144,7 @@ public class RegisterPostAndGet {
 				Tuple loc = getAGeoLocInNREL();
 				if (i%2==0)
 					loc = getAGeoLocOutsideNREL();
-				registerNewStream(httpclient, tableName, someTags, new BigDecimal(loc.key), new BigDecimal(loc.value));
+				registerNewStream(httpclient, tableName, someTags, new BigDecimal(loc.value), new BigDecimal(loc.key));
 			}
 			catch (Exception e) {
 				errorcount++;
@@ -252,6 +253,7 @@ public class RegisterPostAndGet {
 			throws IOException, JsonGenerationException,
 			JsonMappingException, UnsupportedEncodingException,
 			ClientProtocolException, JsonParseException {
+		System.out.println("creating a point with lat="+lat+", lon"+lon);
 		String json = createJsonForRequest(tableName, false, tags, lat, lon);
 		
 		String theString = Utility.sendPostRequest(httpclient, "http://localhost:" + port + "/register", json, StartupGroups.ROBOT_USER, StartupGroups.ROBOT_KEY);
@@ -295,6 +297,7 @@ public class RegisterPostAndGet {
 		StringWriter out = new StringWriter();
 		mapper.writeValue(out, msg);
 		String json = out.toString();
+		System.out.println(json);
 		return json;
 	}
 

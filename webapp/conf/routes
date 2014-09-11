@@ -284,7 +284,7 @@ GET     /api/timeaverageV1/{type}/{<.*>path}       modules.TimeAverageMod.timeAg
 GET     /api/timeaverageV1/{type}/{adjustment}/{<.*>path} modules.TimeAverageMod.timeAggregation
 GET     /api/timeaverageV1/{<.*>path}              modules.TimeAverageMod.error
 
-#GET     /api/sumstreamsV1/{name}/{start}/{end}     modules.SumStreamsMod.go
+#GET     /api/sumstreamsV1/{name}/{start}/{end}     modules.SumStreamsMod.storedAggregation
 #GET     /api/sumstreamsV1/useraggregations/{name}  modules.SumStreamsMod.getAllAggregationsByUser
 GET     /api/sumstreamsV1/aggregation/{name}       modules.SumStreamsMod.getAggregation
 GET     /api/sumstreamsV1/listaggregations/      modules.SumStreamsMod.getAllAggregations

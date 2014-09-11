@@ -79,7 +79,6 @@
 		} else if(doc.type == 'table') {
 			output += '<td class="guisearch_result_icon_td"><img src="/public/images/icons/x48/table_2_48.png"></td>';
 		}
-		
 		output += '<td class="guisearch_result_summary_td"><table class="table outer_result_table"><tr><td class="result_title_value">' + doc.id + '</td></tr>';
 		output += snippet + '</table>';
 		output += "</td></tr></table>";

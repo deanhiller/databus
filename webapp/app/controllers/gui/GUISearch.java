@@ -30,7 +30,6 @@ import controllers.gui.solrsearch.SolrSearchResult;
 
 @With(GuiSecure.class)
 public class GUISearch extends Controller {
-	private static Map<String, Map<String, List<SearchItem>>> userIndexMapCache = new ConcurrentHashMap<String, Map<String, List<SearchItem>>>();
 	private static final Logger log = LoggerFactory.getLogger(GUISearch.class);
 
 	
@@ -57,11 +56,7 @@ public class GUISearch extends Controller {
 		 */
 		EntityUser user = Utility.getCurrentUser(session);
 		
-		if(!GUISearch.userIndexMapCache.containsKey(user.getId())) {
-			GUISearch.userIndexMapCache.put(user.getId(), GUISearch.getSearchableItems());
-		}
-		
-		Map<String, List<SearchItem>> searchableItems = GUISearch.userIndexMapCache.get(user.getId());
+		Map<String, List<SearchItem>> searchableItems = GUISearch.getSearchableItems();
 		//Phils original code:
 		//List<String> indexes = new ArrayList<String>(searchableItems.keySet());
 		List<String> indexes = new ArrayList<String>();

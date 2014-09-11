@@ -51,6 +51,10 @@ public class RegisterMessage {
 	@XmlElement(name="schema")
     public String schema;
 	
+	@JsonProperty("createschema")
+	@XmlElement(name="createschema")
+	private boolean createschema;
+	
 	@JsonProperty("columns")
     @XmlElement(name="columns")
     public List<DatasetColumnModel> columns = new ArrayList<DatasetColumnModel>();
@@ -155,6 +159,14 @@ public class RegisterMessage {
 
 	public void setLon(BigDecimal lon) {
 		this.lon = lon;
+	}
+
+	public boolean isCreateschema() {
+		return createschema;
+	}
+
+	public void setCreateschema(boolean createschema) {
+		this.createschema = createschema;
 	}
 
 } // Register
