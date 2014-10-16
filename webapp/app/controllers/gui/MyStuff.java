@@ -47,14 +47,19 @@ public class MyStuff extends Controller {
 	
 	
 	public static void deleteRangeEmpty(String table) {
+		if (log.isDebugEnabled())
+			log.debug("entering deleteRangeEmpty with table "+table);
 		PermissionType permission = SecurityUtil.checkSingleTable2(table);
 		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
 			unauthorized("You don't have permission to modify the data in this table");
-		
-		renderTemplate("gui/MyStuff/deleteRange.html", table);
+		String begin="0";
+		String finish="0";
+		renderTemplate("gui/MyStuff/deleteRange.html", table, begin, finish);
 	}
 	
 	public static void deleteRange(String table, String start, String end) {
+		if (log.isDebugEnabled())
+			log.debug("entering deleteRange with table "+table+" start: "+start+" end: "+end);
 		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
 		PermissionType permission = SecurityUtil.checkSingleTable2(table);
 		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
@@ -72,7 +77,11 @@ public class MyStuff extends Controller {
 		NoSqlEntityManager mgr = NoSql.em();
 		
 		impl.init(targetTable.getTableMeta(), Long.valueOf(start), Long.valueOf(end), rowMeta, mgr);
+		if (log.isDebugEnabled())
+			log.debug("calling deleteRange on Impl");
 		impl.deleteRange();
+		if (log.isDebugEnabled())
+			log.debug("done with deleteRange on Impl");
 		render(table);
 	}
 	
@@ -196,7 +205,7 @@ public class MyStuff extends Controller {
 
 	    } else if ("addTag".equals(action)) {
 	    	if (StringUtils.isBlank(tag)) {
-				flash.success("If you want to add a tag, fill in a value in the 'New Tag' field.");
+				flash.success("If you want to add a tag, fill in a value in the 'New Tag' field, then click 'Add Tag'.");
 	    		tableEdit(table);
 	    	}
 	    	SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);

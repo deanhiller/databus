@@ -2,6 +2,9 @@
 #{set tab:'home' /}
 #{set title:'Delete Data in Range' /}
 
+
+
+
 #{form @deleteRange(table), id:'deleterange', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
     <legend>Delete Data from Table '${table}'</legend>
     <input type="hidden" name="table" value="${table}">
@@ -11,20 +14,20 @@
 
 
     #{formfield 'start'}
-    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+    <div class="control-group ${errors.forKey('start') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>From Timestamp</label>
         <div class="controls">
-            <textarea name="start" rows="1" cols="20" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${start}</textarea>
+            <textarea name="start" rows="1" cols="20" class="input-xxlarge ${errors.forKey('start') ? 'has_error' : ''}">${start}</textarea>
             <span class="help-block">${errors.forKey('start')}</span>
         </div>
     </div>
     #{/formfield}
     
     #{formfield 'end'}
-    <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+    <div class="control-group ${errors.forKey('end') ? 'error' : ''}">
         <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>To Timestamp</label>
         <div class="controls">
-            <textarea name="end" rows="1" cols="20" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${end}</textarea>
+            <textarea name="end" rows="1" cols="20" class="input-xxlarge ${errors.forKey('end') ? 'has_error' : ''}">${end}</textarea>
             <span class="help-block">${errors.forKey('end')}</span>
         </div>
     </div>
