@@ -32,6 +32,11 @@ nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
 nosql.cassandra.clusterName=DemoCluster
 nosql.cassandra.seeds=localhost:9160
+#if you have authentication enabled on the cassandra side (authenticator: PasswordAuthenticator)
+#you can set username/password here.  If not(authenticator: AllowAllAuthenticator), 
+#leave these commented out.
+#nosql.cassandra.username=cassandra
+#nosql.cassandra.password=cassandra
 
 # Built-in Chart options
 # ~~~~~
@@ -83,6 +88,21 @@ application.secret=9lAKmZe1zQoiRknESDAhXnrVbwKBYURZlJVIaPkgpCgaH51aBQIMVZgmK5DxQ
 # Date format
 # ~~~~~
 date.format=yyyy-MM-dd
+
+# Performance tuning section.  Ideal values here might depend a great deal on your hardware or network speed.
+# ~~~~~~~~~~~~~~~~~
+# upload configuration.  This is how many items go into each 'batch' to be processed simultaniously.
+# This setting should always be larger than databus.commit.flush.size.  default 5000
+socket.upload.batch.size=5000
+# flush size for commits on large uploads.  default 2500
+databus.commit.flush.size=2500
+# Set this to the number of cores available, or # of cores-1 if you want the server to have some bandwith left over to handle other requests:
+socket.upload.num.threads=4
+
+# This is the size of the agressive pre-reader threads buffer.  It will read this number of items in advance of the thread that 
+# sends the items back to the user.  Default:2000
+databus.preread.buffer.size=2000
+
 
 # Server configuration
 # ~~~~~
@@ -139,3 +159,7 @@ monitor.rate=60000
 #want when we hit it for a test as we miss out on the real timing info(ie. wait long period then process it causes it to go fast...ask dean)
 play.pool=25
 
+#Don't touch this unless you know what you are doing.  
+#It wires in the DatabusStreamChunkAggregator so that we can do 
+#cunked uploads during file submits.
+play.netty.pipeline=play.server.FlashPolicyHandler,org.jboss.netty.handler.codec.http.HttpRequestDecoder,server.DatabusStreamChunkAggregator,org.jboss.netty.handler.codec.http.HttpResponseEncoder,org.jboss.netty.handler.stream.ChunkedWriteHandler,play.server.PlayHandler
