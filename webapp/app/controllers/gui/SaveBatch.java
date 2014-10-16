@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.PlayPlugin;
 import play.mvc.Http.Outbound;
 
@@ -27,9 +28,10 @@ import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.util.Line;
 
 public class SaveBatch  extends PlayPlugin implements Runnable {
+//public class SaveBatch  implements Runnable {
 
 	private static final Logger log = LoggerFactory.getLogger(SaveBatch.class);
-	private static final int FLUSH_SIZE = 2500;
+	private static int FLUSH_SIZE = 2500;
 	private List<Line> batch;
 	private DboTableMeta table;
 	private boolean tableIsTimeSeries = true;
@@ -51,8 +53,13 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 	private SocketState state;
 	private int characterCount;
 	private Outbound outbound;
+	private boolean done = false;
 
+	
 	public SaveBatch(DboTableMeta table, List<Line> batch2, SocketState state, Outbound outbound) {
+		
+		String flushsizeString = Play.configuration.getProperty("databus.commit.flush.size", "2500");
+		FLUSH_SIZE = Integer.parseInt(flushsizeString);
 		this.table = table;
 		this.tableIsTimeSeries = table.isTimeSeries();
 		tableCols = new ArrayList<DboColumnMeta>(table.getAllColumns());
@@ -86,10 +93,12 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 				int numSubmitted = state.getNumItemsSubmitted();
 				state.setDoneCount(newCount);
 				state.addTotalCharactersDone(characterCount);
-				outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
+				if (outbound != null)
+					outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
 				if(state.getCharactersDone() >= state.getFileSize()) {
 					log.info("We are done");
-					outbound.send("{ \"done\": true }");
+					if (outbound != null)
+						outbound.send("{ \"done\": true }");
 				}
 
 				if(log.isDebugEnabled())
@@ -100,6 +109,9 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			if (log.isWarnEnabled())
         		log.warn("csv upload - Exception processing batch.", e);
 			reportError("Error processing batch. exception="+e+" msg="+e.getMessage());
+		}
+		finally {
+			setDone(true);
 		}
 	}
 
@@ -240,6 +252,14 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 				log.debug("flush count: "+flushCount+", time to flush once: "+(postFlush-preFlush)+ ", time to clear "+(System.currentTimeMillis()-postFlush)+" total flush time: "+accumulatedFlushTime);
 			}
 		}
+	}
+
+	public boolean isDone() {
+		return done;
+	}
+
+	public void setDone(boolean done) {
+		this.done = done;
 	}
 
 }

@@ -7,6 +7,7 @@ import controllers.gui.SocketState;
 import controllers.gui.SocketStateCSV;
 
 public class Line extends PlayPlugin {
+//public class Line  {
 
 	private int lineNumber;
 	private LinkedHashMap<String, String> columns = new LinkedHashMap<String, String>();

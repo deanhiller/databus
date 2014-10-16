@@ -310,8 +310,9 @@ public class SearchUtils {
 					docsindexed+=solrDocs.size();
 				}
 				catch (Exception e) {
-					System.out.println("got an exception while indexing a searchable table with the query (probably a corrupt index in playorm):");
-					System.out.println(sql);
+					log.warn("got an exception while indexing a searchable table with the query (probably a corrupt index in playorm):");
+					log.warn(sql);
+					log.warn("underlying exception"+ e);
 					e.printStackTrace();
 				}
 			}

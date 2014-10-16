@@ -13,6 +13,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.PlayPlugin;
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
@@ -35,7 +36,8 @@ import controllers.modules2.framework.procs.PushProcessor;
 import controllers.modules2.framework.procs.EngineProcessor.TheRunnablePromise;
 import controllers.modules2.framework.translate.TranslationFactory;
 
-public class ModuleCore {
+public class ModuleCore extends PlayPlugin {
+//public class ModuleCore {
 
 	private static final Logger log = LoggerFactory.getLogger(ModuleCore.class);
 

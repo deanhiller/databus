@@ -30,7 +30,8 @@ import com.alvazan.play.NoSql;
 
 @NoSqlQueries({
 	@NoSqlQuery(name = "findByName", query = "select t from TABLE as t where t.tableName = :name"),
-	@NoSqlQuery(name="findAll", query="select u from TABLE as u")
+	@NoSqlQuery(name="findAll", query="select u from TABLE as u"),
+	@NoSqlQuery(name="findSearchable", query="select t from TABLE as t where t.isSearchable = true")
 })
 @NoSqlDiscriminatorColumn("sdiTable")
 public class SecureTable extends SecureResource {
@@ -89,6 +90,11 @@ public class SecureTable extends SecureResource {
 	
 	public static final transient String tagDelimiter = "_:_";
 
+	public static String getIdentifier() {
+		return "SecureTable";
+	}
+	
+	
 	public String getClassType() {
 		return classType;
 	}
@@ -197,6 +203,11 @@ public class SecureTable extends SecureResource {
 	public static Cursor<KeyValue<SecureTable>> findAllCursor(NoSqlEntityManager em) {
 		Query<SecureTable> query = em.createNamedQuery(SecureTable.class, "findAll");
 		return query.getResults("tableName");
+	}
+	
+	public static Cursor<KeyValue<SecureTable>> findAllSearchable(NoSqlEntityManager em) {
+		Query<SecureTable> query = em.createNamedQuery(SecureTable.class, "findSearchable");
+		return query.getResults("isSearchable");
 	}
 	
 	public static List<SecureTable> findAll(NoSqlEntityManager em, int rowNum, int maxResult) {

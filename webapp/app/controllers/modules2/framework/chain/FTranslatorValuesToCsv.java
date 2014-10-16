@@ -55,6 +55,8 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 	
 	@Override
 	public void complete(String url) {
+		if (log.isDebugEnabled())
+    		log.debug("finished streaming csv");
 		writeFooter(null, null);
 	}
 
@@ -129,6 +131,9 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 	public void incomingChunk(String url, TSRelational row, ProcessedFlag flag) {
 		Response response = Response.current();
 		rowCount++;
+		
+		if (log.isDebugEnabled() && rowCount%1000 == 0)
+    		log.debug("incoming chunk in csv "+rowCount);
 
 		translateToString(chunkToSend, row);
 

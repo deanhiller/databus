@@ -26,9 +26,9 @@ output/
 /solr/data/*
 /solr/solr/data/*
 /solr/solr/databusmeta/*
-/.classpath
-/.project
-/.settings
+.classpath
+.project
+.settings
 /master/.classpath
 /master/.project
 /master/.settings
@@ -37,3 +37,4 @@ output/
 /modbus/.classpath
 /modbus/.settings
 /solr/solr/solr.xml
+.DS_Store

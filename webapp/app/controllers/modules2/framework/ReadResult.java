@@ -1,7 +1,10 @@
 package controllers.modules2.framework;
 
+import play.PlayPlugin;
 
-public class ReadResult {
+
+public class ReadResult extends PlayPlugin {
+//public class ReadResult {
 
 	private String errorMsg;
 	private TSRelational row;

@@ -3,11 +3,14 @@ package controllers.modules2.framework;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
+import play.PlayPlugin;
+
 import com.ning.http.client.ListenableFuture;
 
 import controllers.modules2.framework.procs.PushProcessor;
 
-public class PipelineInfo {
+public class PipelineInfo extends PlayPlugin {
+//public class PipelineInfo {
 
 	private OurPromise<Object> promise;
 	private CountDownLatch latch;

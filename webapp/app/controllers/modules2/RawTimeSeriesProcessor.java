@@ -21,6 +21,7 @@ import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.RowMeta;
 
 public class RawTimeSeriesProcessor extends PlayPlugin implements RawSubProcessor {
+//public class RawTimeSeriesProcessor implements RawSubProcessor {
 
 	private static final Logger log = LoggerFactory.getLogger(RawTimeSeriesProcessor.class);
 

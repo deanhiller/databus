@@ -46,48 +46,4 @@ Corrupt target table=${targetTable.tableName}
 
 #{/else}
 
-<br/><br/><br/><br/>
 
-<H2>Information:</H2>
-<table class="table">
-<tr><td>
-Latitude: ${targetTable.getLat()}
-</td></tr>
-<tr> <td>
-Longitude: ${targetTable.getLon()}
-</td></tr>
-</table>
-
-<H3>Tags:</H3>
-<table class="table">
-	<tr>
-		#{list targetTable.getTags(), as:'tag'}
-		<tr>
-			<td>
-				<img alt="Tag" src="/public/images/rss_tag.png" />
-				</td><td>
-			${tag.name}</td> <td><input type="submit" name="submit" label="removeTag" value="Remove Tag ${tag.name}" class="btn btn-primary" /></td>
-		</tr>
-		#{/list} 
-		</tr>
-		
-		<td>
-				#{formfield 'tag'}
-				<div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
-		        	<label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>New Tag:</label>
-		        	<div class="controls">
-		            	<textarea name="tag" rows="1" cols="20" class="input-large ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}"></textarea>
-		            	<span class="help-block">${errors.forKey('tag')}</span>
-		        	</div>
-		    	</div>
-	    		#{/formfield}
-			</td>
-		</div></td>
-
-		<td><div class="control-group">
-        	<div class="controls" style="float: left;">
-		  		<input type="submit" name="submit" value="addTag" class="btn btn-primary" />
-			</div>
-			</td>
-
-</table>

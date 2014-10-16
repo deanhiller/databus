@@ -30,6 +30,7 @@ import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
 
 public abstract class ProcessorSetupAbstract extends PlayPlugin implements ProcessorSetup {
+//public abstract class ProcessorSetupAbstract implements ProcessorSetup {
 
 	protected Path params;
 	private Map<String, String> options;

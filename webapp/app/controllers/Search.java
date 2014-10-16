@@ -306,10 +306,31 @@ public class Search extends Controller {
 			}
 		}
 	}
+	
+	private static boolean userHasReadForSchema(SecureSchema schema) {
+		return true;
+	}
 
 	private static Map<String, List<String>> getTablesAvailableToUser(EntityUser user) {
 		Map<String, List<String>> combinedResults = new HashMap<String, List<String>>();
+		Cursor<KeyValue<SecureTable>> searchableTables = SecureTable.findAllSearchable(NoSql.em());
+		while (searchableTables.next()) {
+			KeyValue<SecureTable> kv = searchableTables.getCurrent();
+			SecureTable t = kv.getValue();
+			if (t != null) {
+				SecureSchema s = t.getSchema();
+				if (userHasReadForSchema(s)) {
+					List<String> tableNamesForSchema = combinedResults.get(s.getSchemaName());
+					if (tableNamesForSchema==null) {
+						tableNamesForSchema = new ArrayList<String>();
+						combinedResults.put(s.getSchemaName(), tableNamesForSchema);
+					}
+					tableNamesForSchema.add(t.getName());
+				}
+			}
+		}
 		
+		/*  I think starting at the table side will be faster than this:
 		Map<String, SecureResourceGroupXref> schemas = SecurityUtil.groupSecurityCheck();
 		for (Entry<String, SecureResourceGroupXref> ref:schemas.entrySet()) {
 			SecureResource target = ref.getValue().getResource();
@@ -327,6 +348,7 @@ public class Search extends Controller {
 			}
 			
 		}
+		*/
 		return combinedResults;
 	}
 

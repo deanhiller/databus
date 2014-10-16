@@ -3,20 +3,71 @@
 #{set title:'Edit Table' /}
 
 #{form @postTable(targetTable.tableName), id:'edittable', class:'form-horizontal', style:'min-width:500px;max-width:800px;margin: 0 auto'}
-    <legend>Edit ${targetTable.typeOfData.prettyName} Table '${targetTable.tableName}'</legend>
+    <H1>Edit ${targetTable.typeOfData.prettyName} Table '${targetTable.tableName}'</H1>
+    <br/><br/>
     <input type="hidden" name="targetTable.tableName" value="${targetTable?.tableName}">
 
-    #{formfield 'description'}
+    
+    
+	#{include './singleTableMeta.html'/}
+
+	<br/>
+	<H2>Information:</H2>
+	#{formfield 'description'}
     <div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
-        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Y-Axis 1</label>
+        <label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>Description</label>
         <div class="controls">
-            <textarea name="description" rows="15" cols="100" class="input-xxlarge ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}">${targetTable.description}</textarea>
+            <textarea name="description" rows="7" cols="100" class="input-xxlarge ${errors.forKey('targetTable.description') ? 'has_error' : ''}">${targetTable.description}</textarea>
             <span class="help-block">${errors.forKey('description')}</span>
         </div>
     </div>
     #{/formfield}
     
-	#{include './singleTableMeta.html'/}
+    <br/>
+
+
+<table class="table">
+<tr><td>
+Latitude: ${targetTable.getLat()}
+</td></tr>
+<tr> <td>
+Longitude: ${targetTable.getLon()}
+</td></tr>
+</table>
+
+<H3>Tags:</H3>
+<table class="table">
+	<tr>
+		#{list targetTable.getTags(), as:'tag'}
+		<tr>
+			<td>
+				<img alt="Tag" src="/public/images/rss_tag.png" />
+				</td><td>
+			${tag.name}</td> <td><input type="submit" name="submit" label="removeTag" value="Remove Tag ${tag.name}" class="btn btn-primary" /></td>
+		</tr>
+		#{/list} 
+		</tr>
+		
+		<td>
+				#{formfield 'tag'}
+				<div class="control-group ${errors.forKey('chart.axis1.name') ? 'error' : ''}">
+		        	<label class="control-label"><a href="#" rel="tooltip" title="${_help}"><i class="icon-info-sign"></i></a>New Tag:</label>
+		        	<div class="controls">
+		            	<textarea name="tag" rows="1" cols="20" class="input-large ${errors.forKey('chart.axis1.name') ? 'has_error' : ''}"></textarea>
+		            	<span class="help-block">${errors.forKey('tag')}</span>
+		        	</div>
+		    	</div>
+	    		#{/formfield}
+			</td>
+		</div></td>
+
+		<td><div class="control-group">
+        	<div class="controls" style="float: left;">
+		  		<input type="submit" name="submit" value="addTag" class="btn btn-primary" />
+			</div>
+			</td>
+
+</table>
 
     <div class="control-group">
        <div class="controls">

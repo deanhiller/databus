@@ -23,6 +23,7 @@ import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import controllers.gui.util.Line;
 
 public abstract class SocketState extends PlayPlugin {
+//public abstract class SocketState {
 
 	protected static final Logger log = LoggerFactory.getLogger(SocketStateCSV.class);
 	protected static int BATCH_SIZE = 5000;
@@ -46,7 +47,7 @@ public abstract class SocketState extends PlayPlugin {
 			BATCH_SIZE = Integer.parseInt(configuredbatchsize);
 	}
 
-	protected abstract void processFile(String s) throws IOException; 
+	public abstract void processFile(String s) throws IOException; 
 	public abstract int getNumItemsSubmitted();
 
 	public SecureTable getSdiTable() {
@@ -99,8 +100,10 @@ public abstract class SocketState extends PlayPlugin {
 			log.warn(msg);
 		if(errors.size() < ERROR_LIMIT)
 			errors.add(msg);
-		
-		sendErrorThenClose();		
+		if (outbound != null)
+			sendErrorThenClose();
+		else 
+			throw new RuntimeException(msg);
 	}
 
 	private void sendErrorThenClose() {

@@ -28,6 +28,7 @@ public abstract class Binder {
     public final static Object MISSING = new Object();
     private final static Object DIRECTBINDING_NO_RESULT = new Object();
     public final static Object NO_BINDING = new Object();
+    protected static Class<TypeBinder<?>> typeBinderAssignableClasses = null;
 
     static final Map<Class<?>, TypeBinder<?>> supportedTypes = new HashMap<Class<?>, TypeBinder<?>>();
 
@@ -552,7 +553,9 @@ public abstract class Binder {
         }
 
         // application custom types have higher priority. If unable to bind proceed with the next one
-        for (Class<TypeBinder<?>> c : Play.classloader.getAssignableClasses(TypeBinder.class)) {
+        if (typeBinderAssignableClasses == null)
+        	typeBinderAssignableClasses = Play.classloader.getAssignableClasses(TypeBinder.class);
+        for (Class<TypeBinder<?>> c : typeBinderAssignableClasses) {
             if (c.isAnnotationPresent(Global.class)) {
                 Class<?> forType = (Class) ((ParameterizedType) c.getGenericInterfaces()[0]).getActualTypeArguments()[0];
                 if (forType.isAssignableFrom(clazz)) {

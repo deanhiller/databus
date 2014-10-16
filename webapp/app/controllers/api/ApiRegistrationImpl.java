@@ -238,7 +238,7 @@ public class ApiRegistrationImpl {
 			if(isNewSchema)
 				SearchUtils.indexSchema(schema);
 			ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
-			//SearchUtils.indexTable(t, tm, solrDocs);
+			SearchUtils.indexTable(t, tm, solrDocs);
 			SearchPosting.saveSolr("table id = '" + tm.getColumnFamily() + "'", solrDocs, "databusmeta");
 			solrDocs = new ArrayList<SolrInputDocument>();
 		}
@@ -248,8 +248,7 @@ public class ApiRegistrationImpl {
 			throw new RuntimeException("Got an exception preparing solr for a new searchable table, cancelling creation of table.  Try to reregister at a later time when solr is back online or make your table isSearchable=false..", e);
 		}
 
-		mgr.flush();
-		
+		mgr.flush();		
 
 		if (log.isInfoEnabled())
 			log.info("Registered table="+msg.getModelName());

@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.PlayPlugin;
 import controllers.gui.util.ExecutorsSingleton;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.OurPromise;
@@ -50,7 +51,8 @@ public class EngineProcessor extends ProcessorSetupContainer {
 		isRunning = true;
 	}
 
-	public class TheRunnablePromise implements Runnable {
+	public class TheRunnablePromise extends PlayPlugin implements Runnable {
+	//public class TheRunnablePromise implements Runnable {
 
 		private PullProcessor source;
 		private PushProcessor nextInChain;

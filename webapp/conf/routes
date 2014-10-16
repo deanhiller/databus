@@ -21,6 +21,7 @@
 #POST /old/addgrouptoschema      			MySchemas.postAddGroupToSchema
 #POST /old/addusertoschema      			MySchemas.postAddUserToSchema
 
+GET     /api/{<.*>path}                 modules2.framework.ModuleController.startModules
 
 WS  /upload/{table}            			gui.FileUploadSocket.fileToWebSocket
 WS  /uploadJSON/{table}            		gui.FileUploadSocket.fileToWebSocketJSON
@@ -242,6 +243,10 @@ GET /search/{index}/{query}			gui.GUISearch.indexSearch
 # ******************************************************************************
 POST    /api/registerV1                      ApiRegistration.postRegisterTableNew
 POST    /api/postdataV1                      ApiPostDataPoints.postData
+POST    /api/asyncpostcsvV1/{table}          ChunkedCSVUpload.asyncPostDataCSV
+POST    /api/postcsvV1/{table}               ChunkedCSVUpload.syncPostDataCSV
+
+
 POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
 GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
 GET     /api/deleterange/{table}/{start}/{end} ApiMetaRequest.deleteRange
@@ -294,7 +299,6 @@ POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDel
 #GET     /api/sumstreamsV1/{<.*>path}               modules.SumStreamsMod.error
 GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
 GET     /api/lastvaluesV1/{<.*>path}               modules.lastValuesMod.error
-GET     /api/{<.*>path}                              modules2.framework.ModuleController.startModules
 #GET     /api/{name}/{<.*>path}                     modules.SdiCore.remoteModule
 
 # Search

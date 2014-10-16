@@ -61,6 +61,7 @@ import controllers.TableKey;
 import controllers.gui.util.ExecutorsSingleton;
 
 public class ApiPostDataPointsImpl extends PlayPlugin {
+//public class ApiPostDataPointsImpl {
 
 	private static final String STATE_COL_NAME = "_state";
 
@@ -224,7 +225,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 			nodes.add(node);
 		}
 		
-		BigInteger timeStamp = new BigInteger((String)pkValue);
+		BigInteger timeStamp = new BigInteger(""+pkValue);
 		long longTime = timeStamp.longValue();
 		Long partitionSize = table.getTimeSeriesPartionSize();
 		long partitionKey = calculatePartitionId(longTime, partitionSize);
@@ -443,7 +444,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		SearchPosting.addSolrDataDoc(row, sdiTable, solrDocs);
 	}
 
-	private static Object getTimeAsMillisFromString(String node, String format) {
+	private static String getTimeAsMillisFromString(String node, String format) {
 		DateTimeFormatter parser = ISODateTimeFormat.basicDateTimeNoMillis();
 		if (StringUtils.isNotBlank(format)) {
 			try {

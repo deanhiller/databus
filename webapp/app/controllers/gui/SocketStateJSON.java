@@ -51,7 +51,7 @@ public class SocketStateJSON extends SocketState {
 	
 	
 	@Override
-	protected void processFile(String s) throws IOException {
+	public void processFile(String s) throws IOException {
 		SecureTable sTable = getSdiTable();
 		tableMeta = sTable.getTableMeta();
 		setDoneCount(0);

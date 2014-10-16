@@ -132,7 +132,10 @@ public class FileUploadSocket extends WebSocketController {
 
 			if (sdiTable == null){
 				request.args.put("state", state);
-				state.reportErrorAndClose("No such table '"+table+"'");
+				if (outbound != null)
+					state.reportErrorAndClose("No such table '"+table+"'");
+				else 
+					throw new Unauthorized("No such table '"+table+"'");
 				log.info("user selected a non-existant table:'"+table+"'...");
 				return;
 			}

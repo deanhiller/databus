@@ -257,6 +257,7 @@ public class SecurityUtil {
 		return user;
 	}
 
+	@Util
 	public static boolean hasRoleOrHigher(String schemaId, PermissionType permission) {
 		Map<String, SecureResourceGroupXref> schemaIds = SecurityUtil.groupSecurityCheck();
 		SecureResourceGroupXref xref = schemaIds.get(schemaId);
@@ -269,6 +270,7 @@ public class SecurityUtil {
 		return true;
 	}
 
+	@Util
 	public static boolean isAdmin() {
 		Session session = Session.current();
 		EntityUser user = Utility.getCurrentUser(session);
@@ -285,12 +287,14 @@ public class SecurityUtil {
 		return false;
 	}
 	
+	@Util
 	public static void putUser(String user) {
 		Session session = Session.current();
 		String val = hashUser(user);
 		session.put(GuiSecure.KEY, val);
 	}
 
+	@Util
 	public static String getUser() {
 		Session session = Session.current();
 		String user = session.get(GuiSecure.KEY);

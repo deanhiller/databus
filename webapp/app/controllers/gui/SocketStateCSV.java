@@ -39,7 +39,7 @@ public class SocketStateCSV extends SocketState {
 	}
 	
 	@Override
-	protected void processFile(String s) throws IOException {
+	public void processFile(String s) throws IOException {
 		buffer.append(s);
 		
 		int index = buffer.indexOf("\n");
@@ -73,7 +73,14 @@ public class SocketStateCSV extends SocketState {
 			return;
 		}
 		
-		Line line = new Line(lineNumber, len, getColumns(headers, row));
+		LinkedHashMap<String, String> columns = getColumns(headers, row);
+		//special case for an empty line.  Just bail out with no error.
+		if (columns.size() == 0) {
+			//lets correct the line number to account for the empty line:
+			lineNumber--;
+			return;
+		}
+		Line line = new Line(lineNumber, len, columns);
 		batch.add(line);
         
 		//play.Logger.info("processing the string "+row+" count is "+count);
@@ -91,6 +98,10 @@ public class SocketStateCSV extends SocketState {
 		LinkedHashMap<String, String> columnsMap = new LinkedHashMap<String, String>();
 		int pos = 0, end;
 		int colIndex = 0;
+		if(StringUtils.trimToEmpty(row).length() == 0) {
+			//not an error, just an empty line, ignore it.
+			return columnsMap;
+		}
 		if(row.indexOf(',') < 0) {
 			String msg = "line number="+lineNumber+" contains no columns(no commas) so we are skipping the line";
 			reportErrorAndClose(msg);
