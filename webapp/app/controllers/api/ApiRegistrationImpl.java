@@ -235,12 +235,14 @@ public class ApiRegistrationImpl {
 
 
 		try {
-			if(isNewSchema)
-				SearchUtils.indexSchema(schema);
-			ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
-			SearchUtils.indexTable(t, tm, solrDocs);
-			SearchPosting.saveSolr("table id = '" + tm.getColumnFamily() + "'", solrDocs, "databusmeta");
-			solrDocs = new ArrayList<SolrInputDocument>();
+			if (SearchUtils.solrIsActivated()) {
+				if(isNewSchema)
+					SearchUtils.indexSchema(schema);
+				ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
+				SearchUtils.indexTable(t, tm, solrDocs);
+				SearchPosting.saveSolr("table id = '" + tm.getColumnFamily() + "'", solrDocs, "databusmeta");
+				solrDocs = new ArrayList<SolrInputDocument>();
+			}
 		}
 		catch(Exception e) {
 			if (log.isInfoEnabled())

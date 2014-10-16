@@ -1,5 +1,7 @@
 package controllers.api;
 
+import gov.nrel.util.SearchUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -37,6 +39,7 @@ import org.playorm.cron.impl.db.WebNodeDbo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import play.Play;
 import play.PlayPlugin;
 import play.mvc.Http.Request;
 import play.mvc.results.BadRequest;
@@ -151,8 +154,8 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		}
 		
 		s.flush();
-
-		SearchPosting.saveSolr(json, solrDocs, null);
+		if (SearchUtils.solrIsActivated())
+			SearchPosting.saveSolr(json, solrDocs, null);
 
 		return dataPoints.size();
 	}

@@ -202,6 +202,7 @@ public class StartupDetailed {
 		msg.setDatasetType(DatasetType.RELATIONAL_TABLE);
 		msg.setSchema(schemaName);
 		msg.setModelName(name);
+		msg.setIsSearchable(false);
 		
 		List<DatasetColumnModel> cols = new ArrayList<DatasetColumnModel>();
 		StartupUtils.createColumn(cols, "timeStart", "BigInteger", "oei:timestamp", true, true);

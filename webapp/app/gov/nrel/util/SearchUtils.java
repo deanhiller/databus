@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import play.Play;
 import play.mvc.Util;
 
 import com.alvazan.orm.api.exc.RowNotFoundException;
@@ -52,10 +53,16 @@ public class SearchUtils {
 	private static final int REINDEX_BATCH_SIZE = 500;
 	private static Map<String, String> knownCores = new HashMap<String, String>();
 	
+	public static boolean solrIsActivated() {
+		String prop = Play.configuration.getProperty("solr.mode");
+		return !"off".equals(prop);
+	}
 	
 	public static void indexAggregation(StreamAggregation aggregation, SecureSchema owningSchema) throws IOException, SAXException, ParserConfigurationException, SolrServerException {
 		// Solr server instance
 		SolrServer solrServer = Search.getSolrServer();
+		if (solrServer == null)
+			return;
 		// Add this new table to the meta index...
 		createCoreIfNeeded("databusmeta", "databusmeta", solrServer);
 		SolrInputDocument doc = new SolrInputDocument();
@@ -107,6 +114,8 @@ public class SearchUtils {
 			SolrServerException {
 		// Solr server instance
 		SolrServer solrServer = Search.getSolrServer();
+		if (solrServer == null)
+			return;
 		// Add this new table to the meta index...
 		createCoreIfNeeded("databusmeta", "databusmeta", solrServer);
 		SolrInputDocument doc = new SolrInputDocument();
@@ -149,6 +158,8 @@ public class SearchUtils {
 		
 		// Solr server instance
 		SolrServer solrServer = Search.getSolrServer();
+		if (solrServer == null)
+			return;
 		// Add this new table to the meta index...
 		createCoreIfNeeded("databusmeta", "databusmeta", solrServer);
 		SolrInputDocument doc = new SolrInputDocument();

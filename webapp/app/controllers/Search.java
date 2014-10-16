@@ -168,7 +168,10 @@ public class Search extends Controller {
 	public static SolrServer getSolrServer() throws IOException, ParserConfigurationException, SAXException {
 		if(solrServer == null) {
 			String prop = Play.configuration.getProperty("solr.mode");
-			if("embedded".equals(prop)) {
+			if (SearchUtils.solrIsActivated()) {
+				return null;
+			}
+			else if("embedded".equals(prop)) {
 				String solrHome = "../solr/solr";
 				System.setProperty("solr.solr.home", solrHome);
 				CoreContainer.Initializer initializer = new CoreContainer.Initializer();
@@ -188,7 +191,10 @@ public class Search extends Controller {
 	public static SolrServer getSolrCore(String coreName) throws IOException, ParserConfigurationException, SAXException {
 		if(cores.get(coreName) == null) {
 			String prop = Play.configuration.getProperty("solr.mode");
-			if("embedded".equals(prop)) {
+			if ("off".equals(prop)) {
+				return null;
+			}
+			else if("embedded".equals(prop)) {
 				//TODO:JSC - embedded and multicore... yes or no?
 				String solrHome = "../solr/solr/"+coreName;
 				System.setProperty("solr.solr.home", solrHome);
