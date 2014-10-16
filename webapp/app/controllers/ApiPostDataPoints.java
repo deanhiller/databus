@@ -2,57 +2,25 @@ package controllers;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import models.DataTypeEnum;
-import models.KeyToTableName;
-import models.SecureTable;
-import models.SecurityGroup;
-import models.EntityUser;
-
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.MDC;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.common.SolrInputDocument;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import play.Play;
-import play.libs.F.Promise;
 import play.mvc.Controller;
 import play.mvc.Http.Request;
-import play.mvc.results.BadRequest;
 
-import com.alvazan.orm.api.base.NoSqlEntityManager;
-import com.alvazan.orm.api.z3api.NoSqlTypedSession;
-import com.alvazan.orm.api.z3api.QueryResult;
-import com.alvazan.orm.api.z8spi.KeyValue;
-import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
-import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
-import com.alvazan.orm.api.z8spi.meta.TypedRow;
-import com.alvazan.play.NoSql;
 import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.ListenableFuture;
-import com.ning.http.client.Realm;
-import com.ning.http.client.RequestBuilder;
-import com.ning.http.client.Response;
-import com.ning.http.client.Realm.AuthScheme;
 
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.modules2.framework.ProductionModule;
@@ -87,6 +55,8 @@ public class ApiPostDataPoints extends Controller {
 			MDC.put("filter", old);
 		}
 	}
+	
+	
 	
 	public static void postData() throws SolrServerException, IOException, ParserConfigurationException, SAXException {
 		int numPoints = 0;
