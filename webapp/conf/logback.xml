@@ -44,7 +44,13 @@
     <!--logger name="org.playorm.cron" level="WARN"/-->
     
     <logger name="controllers.modules2.DataFillerProcessor" level="INFO"/>
-    <logger name="controllers.gui.SaveBatch" level="DEBUG"/>
+    <!--<logger name="controllers.gui.SaveBatch" level="DEBUG"/> 
+    <logger name="controllers.ChunkConsumingThread" level="DEBUG"/>
+    <logger name="controllers.modules2.framework.chain" level="DEBUG"/>
+    <logger name="controllers.gui.MyStuff" level="DEBUG"/> -->
+    
+        
+    
     
     <logger name="bytecodeparser" level="INFO"/>
     <!-- this config is a little more verbose, comment out any given line to be more verbose: -->
