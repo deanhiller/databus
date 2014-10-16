@@ -21,7 +21,6 @@
 #POST /old/addgrouptoschema      			MySchemas.postAddGroupToSchema
 #POST /old/addusertoschema      			MySchemas.postAddUserToSchema
 
-GET     /api/{<.*>path}                 modules2.framework.ModuleController.startModules
 
 WS  /upload/{table}            			gui.FileUploadSocket.fileToWebSocket
 WS  /uploadJSON/{table}            		gui.FileUploadSocket.fileToWebSocketJSON
@@ -300,6 +299,8 @@ POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDel
 GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
 GET     /api/lastvaluesV1/{<.*>path}               modules.lastValuesMod.error
 #GET     /api/{name}/{<.*>path}                     modules.SdiCore.remoteModule
+
+GET     /api/{<.*>path}                 modules2.framework.ModuleController.startModules
 
 # Search
 GET /search/results Search.results
