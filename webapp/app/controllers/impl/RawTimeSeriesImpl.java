@@ -7,8 +7,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
@@ -31,6 +33,7 @@ import com.alvazan.orm.api.z8spi.iter.Cursor;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
@@ -110,7 +113,8 @@ public class RawTimeSeriesImpl  {
 		long count = 0;
 		while (ts != null) {
 			//slow way:  get row, delete column.
-			TypedRow partition = getCurrentPartition();
+			TypedRow partition = getPartitionForTime(ts.getTime());
+
 			partition.removeColumn(meta.getIdColumnMeta().convertToStorage2(ApiPostDataPointsImpl.stringToObject(meta.getIdColumnMeta().getStorageType(), ""+ts.getTime())));
 			//partition.removeColumn(""+ts.getTime());
 			s.put(meta.getColumnFamily(), partition);
@@ -147,6 +151,25 @@ public class RawTimeSeriesImpl  {
 		}
 		
 		Collections.sort(existingPartitions);
+	}
+	
+	private TypedRow getPartitionForTime(long time) {
+		long previousKey = existingPartitions.get(0);
+		for (int i = 1; i < existingPartitions.size(); i++) {
+			long nextKey = existingPartitions.get(i);
+			if (previousKey <= time && nextKey > time)
+				return getPartition(previousKey);
+			previousKey=nextKey;
+		}
+		return null;
+	}
+	
+	public TypedRow getPartition(long partitionId) {
+		NoSqlTypedSession typedSession = mgr.getTypedSession();
+		TypedRow row = typedSession.createTypedRow(meta.getColumnFamily());
+		BigInteger rowKey = new BigInteger(""+partitionId);
+		row.setRowKey(rowKey);
+		return row;
 	}
 
 	protected int partition(long partitionSize) {
