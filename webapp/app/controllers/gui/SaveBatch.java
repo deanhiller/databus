@@ -96,7 +96,6 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 				if (outbound != null)
 					outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
 				if(state.getCharactersDone() >= state.getFileSize()) {
-					log.info("We are done");
 					if (outbound != null)
 						outbound.send("{ \"done\": true }");
 				}
