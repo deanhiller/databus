@@ -2,6 +2,7 @@ package play.data.binding;
 
 import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
+
 import play.Logger;
 import play.Play;
 import play.data.Upload;
@@ -28,7 +29,7 @@ public abstract class Binder {
     public final static Object MISSING = new Object();
     private final static Object DIRECTBINDING_NO_RESULT = new Object();
     public final static Object NO_BINDING = new Object();
-    protected static Class<TypeBinder<?>> typeBinderAssignableClasses = null;
+    protected static List<Class> typeBinderAssignableClasses = null;
 
     static final Map<Class<?>, TypeBinder<?>> supportedTypes = new HashMap<Class<?>, TypeBinder<?>>();
 
@@ -553,9 +554,11 @@ public abstract class Binder {
         }
 
         // application custom types have higher priority. If unable to bind proceed with the next one
-        if (typeBinderAssignableClasses == null)
+        if (typeBinderAssignableClasses == null) 
         	typeBinderAssignableClasses = Play.classloader.getAssignableClasses(TypeBinder.class);
-        for (Class<TypeBinder<?>> c : typeBinderAssignableClasses) {
+		
+        for (Class c1 : typeBinderAssignableClasses) {
+        	Class<TypeBinder<?>> c = (Class<TypeBinder<?>>)c1;
             if (c.isAnnotationPresent(Global.class)) {
                 Class<?> forType = (Class) ((ParameterizedType) c.getGenericInterfaces()[0]).getActualTypeArguments()[0];
                 if (forType.isAssignableFrom(clazz)) {

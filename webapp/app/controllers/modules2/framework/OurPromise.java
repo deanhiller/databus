@@ -27,35 +27,23 @@ public class OurPromise<T> extends Promise<List<T>> {
 	public synchronized void addResponse(T obj) {
 		//only invoke the invoke method once as we only need ONE runnable for
 		//all the responses in the List...
-
-		if(log.isDebugEnabled())
-			log.debug("adding response");
 		responses.add(obj);
-		
         callCallbacks();
 	}
 	
 	private void callCallbacks() {
-		if(log.isDebugEnabled())
-			log.debug("check on firing callback.  size="+responses.size()+" cbs="+callbacks+" suspended="+suspended);
 		if(responses.size() <= 0 || !suspended) {
 			return;			
 		}
-		
-		if(log.isDebugEnabled())
-			log.debug("firing all callbacks. callbacks="+callbacks);
+
 		suspended = false; //we are unsuspending the controller until suspended again.
 		for (F.Action<Promise<List<T>>> callback : callbacks) {
-			if(log.isDebugEnabled())
-				log.debug("firing callback");
 			callback.invoke(this);
 		}
 	}
 
 	public boolean isDone() {
 		boolean isDone = responses.size() > 0;
-		if(log.isDebugEnabled())
-			log.debug("isdone="+isDone);
 		return isDone;
 	}
 
@@ -67,8 +55,6 @@ public class OurPromise<T> extends Promise<List<T>> {
 
 	public synchronized List<T> resetAndGetResponses() {
 		//reset so it can be re-used...
-		if(log.isDebugEnabled())
-			log.debug("resetting invoked and returning responses");
 		super.invoked = false;
 		List<T> temp = responses;
 		responses = new ArrayList<T>();
@@ -77,11 +63,8 @@ public class OurPromise<T> extends Promise<List<T>> {
 	
     public synchronized void onRedeem(F.Action<Promise<List<T>>> callback) {
     	suspended = true;
-		if(log.isDebugEnabled())
-			log.debug("adding callback="+callback);
     	if(callbacks.size() == 0)
     		callbacks.add(callback);
-        	
     	callCallbacks();
     }
 }

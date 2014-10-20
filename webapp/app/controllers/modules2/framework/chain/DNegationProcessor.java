@@ -1,5 +1,6 @@
 package controllers.modules2.framework.chain;
 
+import java.math.BigInteger;
 import java.util.Map;
 
 import play.mvc.Http.Request;
@@ -8,6 +9,7 @@ import controllers.modules2.framework.EndOfChain;
 import controllers.modules2.framework.Path;
 import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.ReadResult;
+import controllers.modules2.framework.SuccessfulAbort;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.EngineProcessor;
@@ -29,9 +31,16 @@ public class DNegationProcessor extends PushOrPullProcessor {
 	
 	@Override
 	protected TSRelational modifyRow(TSRelational row) {
-		long time = getTime(row);
-		setTime(row, -time);
+		BigInteger time = getTimeBigInt(row);
+		row.put(timeColumn, time.negate());
 		return row;
+	}
+	
+	protected BigInteger getTimeBigInt(TSRelational row) {
+		BigInteger strVal = (BigInteger) row.get(timeColumn);
+		if(strVal == null)
+			throw new SuccessfulAbort("value is null, most modules can't handle that");
+		return strVal;
 	}
 
 }

@@ -21,6 +21,71 @@
 #POST /old/addgrouptoschema      			MySchemas.postAddGroupToSchema
 #POST /old/addusertoschema      			MySchemas.postAddUserToSchema
 
+# Databus API calls
+# ******************************************************************************
+# ******************************************************************************
+POST    /api/registerV1                      ApiRegistration.postRegisterTableNew
+POST    /api/postdataV1                      ApiPostDataPoints.postData
+POST    /api/asyncpostcsvV1/{table}          ChunkedCSVUpload.asyncPostDataCSV
+POST    /api/postcsvV1/{table}               ChunkedCSVUpload.syncPostDataCSV
+
+
+POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
+GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
+GET     /api/deleterange/{table}/{start}/{end} ApiMetaRequest.deleteRange
+#GET     /api/getdataV2/{sql}                ApiSqlRequest.sqlRequest
+GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
+
+#We need to remove this AFTER buildings group converts to the new urls...
+POST    /register                       ApiRegistration.postRegisterTableNew
+POST    /register/{registerKey}         ApiRegistration.postRegisterTable
+POST    /postdata                       ApiPostDataPoints.postData
+GET     /getdata/meta/{table}           ApiMetaRequest.getMeta
+GET     /getdata/{sql}                  ApiSqlRequest.sqlRequest
+#NOTE: stuff above this needs to be removed once buildings group as ported their stuff
+
+GET		/api/search							Search.searchAll
+GET		/api/search/searchableItems			Search.searchableItems
+GET		/api/search/{table}					Search.searchTable
+POST    /api/triggerV1/add                         api.CronJobController.postAdd
+POST    /api/cronjobV1/add                         api.CronJobController.postAdd
+POST    /api/triggerV1/delete/{triggerId}          api.CronJobController.postDelete
+POST    /api/cronjobV1/delete/{triggerId}          api.CronJobController.postDelete
+GET     /api/triggerV1/list/{database}             api.CronJobController.list
+GET     /api/cronjobV1/list/{database}             api.CronJobController.list
+#GET     /api/triggerV1/runall/{time}	           api.CronJobController.runall
+#GET     /api/triggerV1/run/{triggerId}/{time}	   api.CronJobController.runTrigger
+
+POST    /api/posttriggerV1/add                         api.TriggerController.postAdd
+POST    /api/posttriggerV1/delete/{tableName}          api.TriggerController.postDelete
+GET     /api/posttriggerV1/list/{database}             api.TriggerController.list
+
+GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path}         modules.StdDevMod.runStdDev
+GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData
+GET     /api/rawdataGeneratorV1/{table}/{start}/{end}      DataGenerator.generateData
+
+GET     /api/nullV1/{<.*>path}                     modules.NullMod.go
+#GET    /api/cacheV1/{<.*>path}                    modules.CacheMod.go
+#GET    /api/rangecleanV1/{min}/{max}/{<.*>path}   modules.CleanerMod.go
+#GET    /api/rangecleanV1/{<.*>path}               modules.CleanerMod.error
+GET     /api/timeaverageV1/{type}/{<.*>path}       modules.TimeAverageMod.timeAggregation
+GET     /api/timeaverageV1/{type}/{adjustment}/{<.*>path} modules.TimeAverageMod.timeAggregation
+GET     /api/timeaverageV1/{<.*>path}              modules.TimeAverageMod.error
+
+#GET     /api/sumstreamsV1/{name}/{start}/{end}     modules.SumStreamsMod.storedAggregation
+#GET     /api/sumstreamsV1/useraggregations/{name}  modules.SumStreamsMod.getAllAggregationsByUser
+GET     /api/sumstreamsV1/aggregation/{name}       modules.SumStreamsMod.getAggregation
+GET     /api/sumstreamsV1/listaggregations/      modules.SumStreamsMod.getAllAggregations
+POST    /api/sumstreamsV1/register                 modules.SumStreamsMod.postAggregation
+POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDelete
+
+#GET     /api/sumstreamsV1/{<.*>path}               modules.SumStreamsMod.error
+GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
+GET     /api/lastvaluesV1/{<.*>path}               modules.lastValuesMod.error
+#GET     /api/{name}/{<.*>path}                     modules.SdiCore.remoteModule
+
+GET     /api/{<.*>path}                 modules2.framework.ModuleController.startModules
+
 
 WS  /upload/{table}            			gui.FileUploadSocket.fileToWebSocket
 WS  /uploadJSON/{table}            		gui.FileUploadSocket.fileToWebSocketJSON
@@ -237,70 +302,6 @@ GET /search/globalSearch				gui.GUISearch.globalSearch
 GET /search/searchBar					gui.GUISearch.searchBar
 GET /search/{index}/{query}			gui.GUISearch.indexSearch
 
-# Databus API calls
-# ******************************************************************************
-# ******************************************************************************
-POST    /api/registerV1                      ApiRegistration.postRegisterTableNew
-POST    /api/postdataV1                      ApiPostDataPoints.postData
-POST    /api/asyncpostcsvV1/{table}          ChunkedCSVUpload.asyncPostDataCSV
-POST    /api/postcsvV1/{table}               ChunkedCSVUpload.syncPostDataCSV
-
-
-POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
-GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
-GET     /api/deleterange/{table}/{start}/{end} ApiMetaRequest.deleteRange
-#GET     /api/getdataV2/{sql}                ApiSqlRequest.sqlRequest
-GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
-
-#We need to remove this AFTER buildings group converts to the new urls...
-POST    /register                       ApiRegistration.postRegisterTableNew
-POST    /register/{registerKey}         ApiRegistration.postRegisterTable
-POST    /postdata                       ApiPostDataPoints.postData
-GET     /getdata/meta/{table}           ApiMetaRequest.getMeta
-GET     /getdata/{sql}                  ApiSqlRequest.sqlRequest
-#NOTE: stuff above this needs to be removed once buildings group as ported their stuff
-
-GET		/api/search							Search.searchAll
-GET		/api/search/searchableItems			Search.searchableItems
-GET		/api/search/{table}					Search.searchTable
-POST    /api/triggerV1/add                         api.CronJobController.postAdd
-POST    /api/cronjobV1/add                         api.CronJobController.postAdd
-POST    /api/triggerV1/delete/{triggerId}          api.CronJobController.postDelete
-POST    /api/cronjobV1/delete/{triggerId}          api.CronJobController.postDelete
-GET     /api/triggerV1/list/{database}             api.CronJobController.list
-GET     /api/cronjobV1/list/{database}             api.CronJobController.list
-#GET     /api/triggerV1/runall/{time}	           api.CronJobController.runall
-#GET     /api/triggerV1/run/{triggerId}/{time}	   api.CronJobController.runTrigger
-
-POST    /api/posttriggerV1/add                         api.TriggerController.postAdd
-POST    /api/posttriggerV1/delete/{tableName}          api.TriggerController.postDelete
-GET     /api/posttriggerV1/list/{database}             api.TriggerController.list
-
-GET     /api/stddevV1/{rowCount}/{factor}/{<.*>path}         modules.StdDevMod.runStdDev
-GET     /api/rawdataGeneratorV1/{table}/{start}/{end}/{frequency}/{highlimit}/{lowlimit}      DataGenerator.generateData
-GET     /api/rawdataGeneratorV1/{table}/{start}/{end}      DataGenerator.generateData
-
-GET     /api/nullV1/{<.*>path}                     modules.NullMod.go
-#GET    /api/cacheV1/{<.*>path}                    modules.CacheMod.go
-#GET    /api/rangecleanV1/{min}/{max}/{<.*>path}   modules.CleanerMod.go
-#GET    /api/rangecleanV1/{<.*>path}               modules.CleanerMod.error
-GET     /api/timeaverageV1/{type}/{<.*>path}       modules.TimeAverageMod.timeAggregation
-GET     /api/timeaverageV1/{type}/{adjustment}/{<.*>path} modules.TimeAverageMod.timeAggregation
-GET     /api/timeaverageV1/{<.*>path}              modules.TimeAverageMod.error
-
-#GET     /api/sumstreamsV1/{name}/{start}/{end}     modules.SumStreamsMod.storedAggregation
-#GET     /api/sumstreamsV1/useraggregations/{name}  modules.SumStreamsMod.getAllAggregationsByUser
-GET     /api/sumstreamsV1/aggregation/{name}       modules.SumStreamsMod.getAggregation
-GET     /api/sumstreamsV1/listaggregations/      modules.SumStreamsMod.getAllAggregations
-POST    /api/sumstreamsV1/register                 modules.SumStreamsMod.postAggregation
-POST    /api/sumstreamsV1/deleteagg/{name}         modules.SumStreamsMod.postDelete
-
-#GET     /api/sumstreamsV1/{<.*>path}               modules.SumStreamsMod.error
-GET     /api/lastvaluesV1/{number}/{<.*>path}      modules.lastValuesMod.lastValues
-GET     /api/lastvaluesV1/{<.*>path}               modules.lastValuesMod.error
-#GET     /api/{name}/{<.*>path}                     modules.SdiCore.remoteModule
-
-GET     /api/{<.*>path}                 modules2.framework.ModuleController.startModules
 
 # Search
 GET /search/results Search.results

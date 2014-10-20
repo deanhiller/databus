@@ -17,11 +17,16 @@ public class ModuleController extends Controller {
 	private static final Logger log = LoggerFactory.getLogger(ModuleController.class);
 	
 	private static ModuleCore core;
+	private static boolean isDevMode = false;
 
 	private static RawProcessorFactory theFactory;
 	
 	static {
 		core = createCore();
+		String mode = Play.configuration.getProperty("application.mode");
+		if("dev".equals(mode)) {
+			isDevMode = true;
+		}
 	}
 
 	public static ModuleCore createCore() {
@@ -39,8 +44,7 @@ public class ModuleController extends Controller {
 	}
 
 	public static ModuleCore fetchCore() {
-		String mode = Play.configuration.getProperty("application.mode");
-		if("dev".equals(mode)) {
+		if(isDevMode) {
 			core = createCore();
 		}
 		return core;
@@ -48,10 +52,8 @@ public class ModuleController extends Controller {
 	
 	public static void startModules(String path) {
 		//Because of the on-demand development recompile, dev mode has to recreate the core or changes won't be there
-		String mode = Play.configuration.getProperty("application.mode");
-		if("dev".equals(mode)) {
+		if(isDevMode) 
 			core = createCore();
-		}
 		
 		PipelineInfo info = core.initialize(path);
 		

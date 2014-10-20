@@ -35,6 +35,7 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 	private int chunkSize;
 	private int rowCount = 0;
 	private HttpStatus failedStatus;
+	private int keyListSize = 0;
 
 	private List<String> keyList = new ArrayList<String>();
 
@@ -131,9 +132,6 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 	public void incomingChunk(String url, TSRelational row, ProcessedFlag flag) {
 		Response response = Response.current();
 		rowCount++;
-		
-		if (log.isDebugEnabled() && rowCount%1000 == 0)
-    		log.debug("incoming chunk in csv "+rowCount);
 
 		translateToString(chunkToSend, row);
 
@@ -156,11 +154,11 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 	}
 
 	private void addRow(StringBuilder chunkToSend2, TSRelational r) {
-		for(int i = 0; i < keyList.size(); i++) {
+		for(int i = 0; i < keyListSize; i++) {
 			String k = keyList.get(i);
 			Object val = r.get(k);
 			chunkToSend2.append(val);
-			if(i < keyList.size()-1)
+			if(i < keyListSize-1)
 				chunkToSend2.append(",");
 		}
 	}
@@ -179,6 +177,7 @@ public class FTranslatorValuesToCsv extends PushProcessorAbstract implements Out
 			if(i < keyList.size()-1)
 				chunk.append(",");
 		}
+		keyListSize = keyList.size();
 	}
 
 	public void setCallbackParam(String callbackParam2) {

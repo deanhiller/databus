@@ -88,7 +88,7 @@ public class ModuleCore extends PlayPlugin {
 			
 		RawProcessorFactory.threadLocal.set(moduleName);
 		OutputProcessor toOutput = (OutputProcessor) procFactory.get();
-		toOutput.setChunkSize(200);
+		toOutput.setChunkSize(1000);
 		toOutput.setCallbackParam(callbackParam);
 		ProcessorSetup lastOne = toOutput;
 

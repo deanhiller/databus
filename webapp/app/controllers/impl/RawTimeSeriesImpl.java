@@ -44,7 +44,7 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
 import controllers.modules2.framework.procs.RowMeta;
 
-public class RawTimeSeriesImpl  {
+public class RawTimeSeriesImpl  extends PlayPlugin {
 
 	private static final Logger log = LoggerFactory.getLogger(RawTimeSeriesImpl.class);
 
@@ -192,8 +192,7 @@ public class RawTimeSeriesImpl  {
 			return null;
 		try {
 			TSRelational next = itemsQueue.take();
-			if (log.isDebugEnabled()) {
-				if (count %1000 == 0)
+			if (count %1000 == 0 && log.isDebugEnabled()) {
 					log.debug("Removing an item, the size of the queue is "+itemsQueue.size()+" we've loaded "+count+" items");
 			}
 			count++;
