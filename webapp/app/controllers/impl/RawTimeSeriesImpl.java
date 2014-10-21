@@ -81,27 +81,30 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 		this.timeColumn = rowMeta.getTimeColumn();
 		this.valueColumn = rowMeta.getValueColumn();
 		
-		this.start = start;
-		this.end = end;
 		loadPartitions(meta);
-		partitionSize = meta.getTimeSeriesPartionSize();
-		currentIndex = partition(partitionSize);
-
-		if(start != null)
-			this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
-		if(end != null)
-			this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
-
-		for (DboColumnMeta thismeta:meta.getAllColumns())
-			colMeta.add(thismeta);
-		if (log.isInfoEnabled())
-			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
-		
-		//jsc fire off read thread
-		String buffersizeString = Play.configuration.getProperty("databus.preread.buffer.size", "2000");
-		buffersize = Integer.parseInt(buffersizeString);
-		itemsQueue = new LinkedBlockingQueue<TSRelational>(buffersize);
-		new Thread(new AgressivePreReader()).start();
+		if (start != null && end != null) {
+			this.start = start;
+			this.end = end;
+			
+			partitionSize = meta.getTimeSeriesPartionSize();
+			currentIndex = partition(partitionSize);
+	
+			if(start != null)
+				this.startBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(start+""));
+			if(end != null)
+				this.endBytes = meta.getIdColumnMeta().convertToStorage2(new BigInteger(end+""));
+	
+			for (DboColumnMeta thismeta:meta.getAllColumns())
+				colMeta.add(thismeta);
+			if (log.isInfoEnabled())
+				log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
+			
+			//jsc fire off read thread
+			String buffersizeString = Play.configuration.getProperty("databus.preread.buffer.size", "2000");
+			buffersize = Integer.parseInt(buffersizeString);
+			itemsQueue = new LinkedBlockingQueue<TSRelational>(buffersize);
+			new Thread(new AgressivePreReader()).start();
+		}
 	}
 	
 	public void deleteRange() {
