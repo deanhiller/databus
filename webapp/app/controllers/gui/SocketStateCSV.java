@@ -15,7 +15,6 @@ import org.apache.commons.lang.StringUtils;
 import play.mvc.Http.Outbound;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
-
 import models.SecureTable;
 
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
@@ -33,6 +32,8 @@ public class SocketStateCSV extends SocketState {
 	
 	public SocketStateCSV(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ExecutorService executor, Outbound outbound) {
 		this.factory = factory;
+		if (sdiTable == null)
+			throw new NullPointerException("sdiTable cannot be null in SocketStateCSV constructor");
 		this.sdiTable = sdiTable;
 		this.executor = executor;
 		this.outbound = outbound;
