@@ -33,6 +33,9 @@ POST    /api/postcsvV1/{table}               ChunkedCSVUpload.syncPostDataCSV
 POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
 GET     /api/getdataV1/meta/{table}          ApiMetaRequest.getMeta
 GET     /api/deleterange/{table}/{start}/{end} ApiMetaRequest.deleteRange
+GET     /api/deleterangeV1/{table}/{start}/{end} ApiMetaRequest.deleteRange
+GET     /api/deletetable/{table}			 ApiMetaRequest.deleteTable
+GET     /api/deletetableV1/{table}			 ApiMetaRequest.deleteTable
 #GET     /api/getdataV2/{sql}                ApiSqlRequest.sqlRequest
 GET     /api/historyV1/{tableName}/{rowKey}  api.History.fetchHistory
 
