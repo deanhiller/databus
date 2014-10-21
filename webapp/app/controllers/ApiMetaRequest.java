@@ -91,6 +91,29 @@ public class ApiMetaRequest extends Controller {
 		impl.init(targetTable.getTableMeta(), Long.valueOf(start), Long.valueOf(end), rowMeta, mgr);
 		impl.deleteRange();
 	}
+	
+	public static void deleteTable(String table) {
+		SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);
+		PermissionType permission = SecurityUtil.checkSingleTable2(table);
+		if(PermissionType.READ_WRITE.isHigherRoleThan(permission))
+			unauthorized("You don't have permission to modify the data in this table");
+		RawTimeSeriesImpl impl = new RawTimeSeriesImpl();
+		
+		String timeColumn = targetTable.getPrimaryKey().getColumnName();
+		List<String> names = new ArrayList<String>();
+		Set<String> keySet = targetTable.getNameToField().keySet();
+		for(String n : keySet) {
+			names.add(n);
+		}
+		
+		RowMeta rowMeta = new RowMeta(timeColumn, names);
+		NoSqlEntityManager mgr = NoSql.em();
+		
+		impl.init(targetTable.getTableMeta(), Long.valueOf(0), Long.valueOf(Long.MAX_VALUE), rowMeta, mgr);
+		impl.deleteAll();
+		mgr.remove(targetTable);
+		mgr.flush();
+	}
 
 	private static List<DatasetColumnModel> formColumns(DboTableMeta tableMeta, SecureTable sdiTable) {
 		List<DatasetColumnModel> cols = new ArrayList<DatasetColumnModel>();
