@@ -77,6 +77,12 @@ public class SecureSchema extends SecureResource {
 			SecureTable t = tablesCursor.getCurrent();
 			//trigger a cache load as playframework is NOT going through getters/setters(if it was, we would NOT need to do this)
 			t.getTableName();
+			//also, check to make sure that the table has not been deleted.  if so, remove it from the index and skip it.
+			if (t.getPrimaryKey() == null) {
+				tablesCursor.removeCurrent();
+				i--;
+				continue;
+			}
 			tables.add(t);
 		}
 		return tables;
