@@ -137,6 +137,15 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 		}
 		
 	}
+	
+	public void deleteAll() {
+		for (long partitionid:existingPartitions) {
+			TypedRow partition = getPartition(partitionid);
+			mgr.getTypedSession().remove(meta.getColumnFamily(), partition);
+		}
+		mgr.flush();
+		
+	}
 
 	private void loadPartitions(DboTableMeta meta2) {
 		DboTableMeta tableMeta = mgr.find(DboTableMeta.class, "partitions");
@@ -161,6 +170,9 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 				return getPartition(previousKey);
 			previousKey=nextKey;
 		}
+		//special case, if time is in the very last partition we need to figure it out:
+		if (previousKey <= time && (previousKey + meta.getTimeSeriesPartionSize()) >time)
+			return getPartition(previousKey);
 		return null;
 	}
 	
