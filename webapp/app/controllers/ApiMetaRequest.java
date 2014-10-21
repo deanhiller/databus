@@ -109,9 +109,10 @@ public class ApiMetaRequest extends Controller {
 		RowMeta rowMeta = new RowMeta(timeColumn, names);
 		NoSqlEntityManager mgr = NoSql.em();
 		
-		impl.init(targetTable.getTableMeta(), Long.valueOf(0), Long.valueOf(Long.MAX_VALUE), rowMeta, mgr);
+		impl.init(targetTable.getTableMeta(), null, null, rowMeta, mgr);
 		impl.deleteAll();
 		mgr.remove(targetTable);
+		
 		mgr.flush();
 	}
 
