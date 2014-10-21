@@ -16,6 +16,7 @@ import com.alvazan.orm.api.base.anno.NoSqlQueries;
 import com.alvazan.orm.api.base.anno.NoSqlQuery;
 import com.alvazan.orm.api.z8spi.KeyValue;
 import com.alvazan.orm.api.z8spi.iter.Cursor;
+import com.alvazan.play.NoSql;
 
 @NoSqlDiscriminatorColumn("schema")
 @NoSqlQueries({
@@ -65,26 +66,26 @@ public class SecureSchema extends SecureResource {
 	public CursorToMany<SecureTable> getTablesCursor() {
 		if (tablesCursor == null)
 			tablesCursor = new CursorToManyImpl<SecureTable>();
-		return tablesCursor;
+		return new RemoveSafeCursor(tablesCursor) {
+			protected boolean isDeleted(Object next) {
+				return ((SecureTable)next).getPrimaryKey() == null?true:false;
+			}
+		};
 	}
 	
 	public List<SecureTable> getTables(int firstRow, int maxResults) {
 		List<SecureTable> tables = new ArrayList<SecureTable>();
-		for(int i = 0; i < firstRow && tablesCursor.next(); i++) {
+		CursorToMany<SecureTable> cursor = getTablesCursor();
+		for(int i = 0; i < firstRow && cursor.next(); i++) {
 		}
 		
-		for(int i = 0; i < maxResults && tablesCursor.next(); i++) {
-			SecureTable t = tablesCursor.getCurrent();
+		for(int i = 0; i < maxResults && cursor.next(); i++) {
+			SecureTable t = cursor.getCurrent();
 			//trigger a cache load as playframework is NOT going through getters/setters(if it was, we would NOT need to do this)
 			t.getTableName();
-			//also, check to make sure that the table has not been deleted.  if so, remove it from the index and skip it.
-			if (t.getPrimaryKey() == null) {
-				tablesCursor.removeCurrent();
-				i--;
-				continue;
-			}
 			tables.add(t);
 		}
+		NoSql.em().flush();
 		return tables;
 	}
 
