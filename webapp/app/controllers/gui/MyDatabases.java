@@ -298,7 +298,7 @@ public class MyDatabases extends Controller {
 			schema = SecureSchema.findByName(NoSql.em(), schemaName);
 			Set<PermissionType> roles = fetchRoles(schema, user);
 			if(roles.contains(PermissionType.ADMIN)) {
-				tables = schema.getTables(0, 50);				
+				tables = schema.getTables(0, 100);				
 			} else if(roles.size() == 0) {
 				notFound("Your user does not have access to this resource");
 			} else
