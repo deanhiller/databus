@@ -59,6 +59,8 @@ public class ChunkConsumingThread implements Runnable {
 			e.printStackTrace();
 			throw new Unauthorized("You do not have access to the table "+tableName+", or it does not exist.");
 		}
+		if (this.sdiTable == null)
+			throw new Unauthorized("You do not have access to the table "+tableName+", or it does not exist.");
 		String configurednumthreads = Play.configuration.getProperty("socket.upload.num.threads");
 		if (StringUtils.isNotBlank(configurednumthreads))
 			numThreads = Integer.parseInt(configurednumthreads);
