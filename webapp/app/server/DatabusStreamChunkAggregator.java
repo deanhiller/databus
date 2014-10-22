@@ -53,7 +53,7 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
     	try {
 	    	//initialize the listener classes from config:
 	    	//String chunkedListenerClassList = Play.configuration.getProperty("databus.chunked.listener.classes", "gov.nrel.util.ChunkedCSVUploadListener,gov.nrel.util.ChunkedJSONUploadListener");
-    		String chunkedListenerClassList = Play.configuration.getProperty("databus.chunked.listener.classes", "controllers.ChunkedUploader");
+    		String chunkedListenerClassList = Play.configuration.getProperty("databus.chunked.listener.classes", "controllers.ChunkedCSVUploader,controllers.ChunkedCSVUploader");
     		
 	    	String[] listenerClass = chunkedListenerClassList.split(",");  
 	        if(listenerClass.length != 0){
