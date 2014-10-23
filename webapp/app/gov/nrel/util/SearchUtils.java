@@ -371,20 +371,26 @@ public class SearchUtils {
 	private static void deleteExistingCores() throws SolrServerException, IOException, ParserConfigurationException, SAXException {
 		CoreAdminRequest request = new CoreAdminRequest();
 		request.setAction(CoreAdminAction.STATUS);
-		CoreAdminResponse cores = request.process(Search.getSolrServer());
+		try {
+			CoreAdminResponse cores = request.process(Search.getSolrServer());
+			// List of the cores
+			List<String> coreList = new ArrayList<String>();
+			for (int i = 0; i < cores.getCoreStatus().size(); i++) {
+			    coreList.add(cores.getCoreStatus().getName(i));
+			}
+			
+			for (String coreName:coreList) {
+				CoreAdminRequest.Unload unload = new CoreAdminRequest.Unload(true); 
+				unload.setCoreName(coreName);
+				unload.process(Search.getSolrServer()); 
+			}
+			knownCores.clear();
+		}
+		catch (Exception e) {
+			//in this case, there are no cores to delete...
+		}
 
-		// List of the cores
-		List<String> coreList = new ArrayList<String>();
-		for (int i = 0; i < cores.getCoreStatus().size(); i++) {
-		    coreList.add(cores.getCoreStatus().getName(i));
-		}
 		
-		for (String coreName:coreList) {
-			CoreAdminRequest.Unload unload = new CoreAdminRequest.Unload(true); 
-			unload.setCoreName(coreName);
-			unload.process(Search.getSolrServer()); 
-		}
-		knownCores.clear();
 	}
 
 
