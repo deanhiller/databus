@@ -91,14 +91,23 @@
 			   mode = play.Play.configuration.getProperty("application.mode");
 			   demomode = play.Play.configuration.getProperty("demo.mode");
 			   
-			   protocol = "http";
-			   if("prod".equals(mode) && !"true".equals(demomode)) {
-			   	protocol = "https";
-			   }
+			   //JSC:  this is not safe logic, some users run prod in http.
+			   //replaced with javascript below.
+			   //protocol = "http";
+			   //if("prod".equals(mode) && !"true".equals(demomode)) {
+			   //	protocol = "https";
+			   
 			}%
+			var _solrProtocol = 'http';
+
+			if (typeof window != 'undefined' && 
+			         window.document && 
+			         window.location.protocol == "https:") {
+			   	 _solrProtocol = "https";
+			   }
 			var _mode = '${mode}';
 			var _demomode = '${demomode}';
-			var _solrProtocol = '${protocol}';
+			
         </script>
 
     </body>
