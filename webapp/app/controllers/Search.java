@@ -168,7 +168,7 @@ public class Search extends Controller {
 	public static SolrServer getSolrServer() throws IOException, ParserConfigurationException, SAXException {
 		if(solrServer == null) {
 			String prop = Play.configuration.getProperty("solr.mode");
-			if (SearchUtils.solrIsActivated()) {
+			if (!SearchUtils.solrIsActivated()) {
 				return null;
 			}
 			else if("embedded".equals(prop)) {
