@@ -46,7 +46,7 @@ public class ChunkConsumingThread implements Runnable {
 	
 	public ChunkConsumingThread(File sharedFile, String table) {
 		this.sharedFile = sharedFile;
-		ChunkedCSVUpload.registeredListeners.put(sharedFile.getAbsolutePath(), this);
+		ChunkedUpload.registeredListeners.put(sharedFile.getAbsolutePath(), this);
 
 		this.tableName = table;
 		NoSqlPlugin plugin = new NoSqlPlugin();

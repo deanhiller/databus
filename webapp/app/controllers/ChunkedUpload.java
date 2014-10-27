@@ -31,9 +31,9 @@ import controllers.gui.SocketStateCSV;
 
 
 
-public class ChunkedCSVUpload extends Controller {
+public class ChunkedUpload extends Controller {
 
-	protected static final Logger log = LoggerFactory.getLogger(ChunkedCSVUpload.class);
+	protected static final Logger log = LoggerFactory.getLogger(ChunkedUpload.class);
 
 	public static Map<String, ChunkConsumingThread> registeredListeners = new HashMap<String, ChunkConsumingThread>();
 	private static int numThreads = 10;

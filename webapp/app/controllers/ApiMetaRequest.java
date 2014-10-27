@@ -1,9 +1,13 @@
 package controllers;
 
+import gov.nrel.util.SearchUtils;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import models.PermissionType;
 import models.SdiColumn;
@@ -12,11 +16,13 @@ import models.message.DatasetColumnModel;
 import models.message.DatasetType;
 import models.message.RegisterMessage;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import play.mvc.Controller;
 
@@ -112,6 +118,15 @@ public class ApiMetaRequest extends Controller {
 		impl.init(targetTable.getTableMeta(), null, null, rowMeta, mgr);
 		impl.deleteAll();
 		mgr.remove(targetTable);
+		
+		try {
+			SearchUtils.unindexTable(targetTable);
+		} catch (Exception e) {
+			//TODO:  how should I signify to the requestor that the delete succeeded, but unindex failed!?
+			//For now just call this a success and log the error.
+			log.warn("Unindexing the table failed on table deletion of "+targetTable.getTableName(), e);
+			e.printStackTrace();
+		}
 		
 		mgr.flush();
 	}

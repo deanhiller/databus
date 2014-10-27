@@ -1,5 +1,6 @@
 package controllers.gui;
 
+import gov.nrel.util.SearchUtils;
 import gov.nrel.util.Utility;
 
 import java.math.BigInteger;
@@ -17,6 +18,7 @@ import models.SecureSchema;
 import models.SecureTable;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,6 +34,7 @@ import com.alvazan.orm.api.z8spi.meta.TypedColumn;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
+import controllers.SearchPosting;
 import controllers.SecurityUtil;
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.auth.GuiSecure;
@@ -214,10 +217,23 @@ public class MyStuff extends Controller {
 				unauthorized("You don't have permission to change this resource");
 
 			targetTable.addTag(tag, NoSql.em());
+			boolean itemIndexed = true;
+			ArrayList<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
+			try {
+				SearchUtils.indexTable(targetTable, targetTable.getTableMeta(), solrDocs);
+			}
+			catch (Exception e) {
+				itemIndexed = false;
+			}
+			SearchPosting.saveSolr("table id = '" + targetTable.getTableMeta().getColumnFamily() + "'", solrDocs, "databusmeta");
 			NoSql.em().put(targetTable);
 			NoSql.em().flush();
 			
-			flash.success("Your changes were saved");
+			if (itemIndexed)
+				flash.success("Your changes were saved");
+			else
+				flash.success("Your changes were saved, but indexing the searchable information returned an error.  Your item may not appear on search results until the system is reindexed.");
+
 			tableEdit(table);	    
 		}  else if (action.startsWith("Remove Tag ")) {
 	    	SecureTable targetTable = SecureTable.findByName(NoSql.em(), table);

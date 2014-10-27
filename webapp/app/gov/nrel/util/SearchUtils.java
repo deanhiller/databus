@@ -151,6 +151,39 @@ public class SearchUtils {
 		}
 	}
 	
+
+	public static void unindexTable(SecureTable t) throws IOException, ParserConfigurationException, SAXException, SolrServerException {
+		SolrServer solrServer = Search.getSolrServer();
+		if (solrServer == null)
+			return;
+		
+		UpdateRequest request = new UpdateRequest();
+		request.setAction(AbstractUpdateRequest.ACTION.COMMIT, true, true);
+		request.deleteById(t.getTableName());
+		request.process(Search.getSolrCore("databusmeta"));
+		
+		if (t.isSearchable()) {
+			boolean coreExists = true;
+			try {
+				CoreAdminResponse statusResponse = CoreAdminRequest.getStatus(
+					t.getTableName(), solrServer);
+				coreExists = statusResponse.getCoreStatus(t.getTableName()).size() > 0;
+			}
+			catch (Exception e) {
+				coreExists = false;
+			}
+			
+			if (coreExists) {
+				CoreAdminRequest.Unload deleteReq = new CoreAdminRequest.Unload(true);
+				deleteReq.setCoreName(t.getTableName());
+				deleteReq.process(solrServer);
+			}
+			
+			
+			
+		}
+		
+	}
 	
 	public static void indexTable(SecureTable t, DboTableMeta tableMeta, Collection<SolrInputDocument> solrDocs)
 			throws IOException, SAXException, ParserConfigurationException,
