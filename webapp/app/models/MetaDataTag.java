@@ -78,7 +78,12 @@ public class MetaDataTag {
 	public CursorToMany<SecureTable> getTablesCursor() {
 		if (tablesCursor == null)
 			tablesCursor = new CursorToManyImpl<SecureTable>();
-		return tablesCursor;
+		
+		return new RemoveSafeCursor(tablesCursor) {
+			protected boolean isDeleted(Object next) {
+				return ((SecureTable)next).getPrimaryKey() == null?true:false;
+			}
+		};
 	}
 	
 	public void addTable(SecureTable t) {
@@ -96,19 +101,19 @@ public class MetaDataTag {
 	public void removeTable(SecureTable t) {
 
 		//long before = System.currentTimeMillis();
-		
-		tablesCursor.beforeFirst();
+		CursorToMany<SecureTable> myTablesCursor = getTablesCursor();
+		myTablesCursor.beforeFirst();
 		//boolean hasnext = tablesCursor.next();
-		while(tablesCursor.next()) {
-			SecureTable current = tablesCursor.getCurrent();
+		while(myTablesCursor.next()) {
+			SecureTable current = myTablesCursor.getCurrent();
 			current.getTableName();
 			if (current.getName().equals(t.getName())) {
-				tablesCursor.removeCurrent();
+				myTablesCursor.removeCurrent();
 				tableCount--;
 				break;
 			}
 		}
-		tablesCursor.beforeFirst();
+		myTablesCursor.beforeFirst();
 		//long after = System.currentTimeMillis();
 		//System.out.println("   **** time for loop in removeTable: "+(after-before));
 	}
