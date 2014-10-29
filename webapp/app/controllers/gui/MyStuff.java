@@ -244,7 +244,22 @@ public class MyStuff extends Controller {
 			targetTable.removeTag(action.substring("Remove Tag ".length()), NoSql.em());
 			NoSql.em().put(targetTable);
 			NoSql.em().flush();
-			
+			try {
+				SearchUtils.unindexTable(targetTable);
+			} catch (Exception e) {
+				//TODO:  how should I signify to the requestor that the delete succeeded, but unindex failed!?
+				//For now just call this a success and log the error.
+				log.warn("Unindexing the table failed on table deletion of "+targetTable.getTableName(), e);
+				e.printStackTrace();
+			}
+			try {
+				SearchUtils.indexTable(targetTable, targetTable.getTableMeta(), new ArrayList<SolrInputDocument>());
+			} catch (Exception e) {
+				//TODO:  how should I signify to the requestor that the delete succeeded, but unindex failed!?
+				//For now just call this a success and log the error.
+				log.warn("Unindexing the table failed on table deletion of "+targetTable.getTableName(), e);
+				e.printStackTrace();
+			}
 			flash.success("Your changes were saved");
 			tableEdit(table);	    
 		}else {
