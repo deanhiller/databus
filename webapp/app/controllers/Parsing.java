@@ -24,6 +24,8 @@ public class Parsing {
 		try {
 			Request request = Request.current();
 			InputStream in = request.body;
+			if (log.isDebugEnabled())
+				log.debug("fetching Json, the contents of request.body are:" + request.body);
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(in, writer);
 			String json = writer.toString();
