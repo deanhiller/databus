@@ -31,7 +31,8 @@ admins=dhiller2,jcollins
 nosql.nosqltype=cassandra
 nosql.cassandra.keyspace=databus
 nosql.cassandra.clusterName=DatabusClusterB
-nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a11:9160,a12:9160
+#nosql.cassandra.seeds=a1:9160,a2:9160,a3:9160,a4:9160,a5:9160,a6:9160,a7:9160,a8:9160,a9:9160,a10:9160,a11:9160,a12:9160
+nosql.cassandra.seeds=databus1:9160,databus2:9160,databus3:9160,databus4:9160,databus5:9160,databus6:9160,databus7:9160,databus8:9160,databus9:9160,databus10:9160,databus11:9160,databus12:9160
 #if you have authentication enabled on the cassandra side (authenticator: PasswordAuthenticator)
 #you can set username/password here.  If not(authenticator: AllowAllAuthenticator), 
 #leave these commented out.
@@ -70,10 +71,10 @@ email.fromaddress=dean.hiller@nrel.gov
 # When rendering templates with reverse-url-resoling (@@{..}) in Jobs (which do not have an inbound Http.Request),
 # ie if sending a HtmlMail, Play need to know which url your users use when accessing your app.
 # %test.application.baseUrl=http://localhost:9000/
-application.baseUrl=https://databus.nrel.gov
+application.baseUrl=https://databus.hpc.nrel.gov
 
 #The url that we turn around and make requests to(service chaining)
-application.requestUrl=http://databus.nrel.gov:81
+application.requestUrl=http://databus.hpc.nrel.gov:81
 
 # This is the main configuration file for the application.
 # ~~~~~
@@ -135,7 +136,7 @@ java.source=1.6
 
 # SOLR configuration
 solr.mode=server
-solr.url=http://b1:8983/solr
+solr.url=http://dbweb1:8983/solr
 solr.queryRequestHandler=select
 solr.defaultSearchField=allTerms_texts
 
