@@ -26,8 +26,8 @@
 # ******************************************************************************
 POST    /api/registerV1                      ApiRegistration.postRegisterTableNew
 POST    /api/postdataV1                      ApiPostDataPoints.postData
-POST    /api/asyncpostcsvV1/{table}          ChunkedCSVUploader.asyncPostDataCSV
-POST    /api/postcsvV1/{table}               ChunkedCSVUploader.syncPostDataCSV
+POST    /api/asyncpostcsvV1/{table}          ChunkedUpload.asyncPostDataCSV
+POST    /api/postcsvV1/{table}               ChunkedUpload.syncPostDataCSV
 
 
 POST    /api/dateformatV1/postdataV1         ApiPostDataPoints.postData
