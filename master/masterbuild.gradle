@@ -59,7 +59,7 @@ project(':webapp') {
         rename '(.*)prod.(.*)', '$1$2'
 	}
 
-    myZip.dependsOn('jar', ':master:copyJars')
+    myZip.dependsOn('jar', ':master:copyJars', ':master:copyGenJar')
 	assemble.dependsOn('myZip')
 
     //playframework has it's own generation of .classpath and .project fils so do not 
@@ -119,6 +119,7 @@ project(':webapp') {
 project(':master') {
 	project.ext.genLibDir = file('../webapp/lib')
 	project.ext.fixedLibDir = file('libother')
+	project.ext.utilLibDir = file('../webapp/output/libs')
 
 	configurations {
 	    compile.exclude module: 'commons'
@@ -174,9 +175,15 @@ project(':master') {
 	task copyJars(type: Copy) { 
 		from(configurations.compile) {}
 		from(fixedLibDir) {}
+		from(utilLibDir) {}
 		into genLibDir
 	}
 	
+	task copyGenJar(type: Copy) { 
+		from(utilLibDir) {}
+		into genLibDir
+	}
+
 	copyJars.dependsOn('deleteJars')
 	
 	assemble.dependsOn('copyJars')
