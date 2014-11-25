@@ -50,7 +50,7 @@ public class ChunkConsumingThread implements Runnable {
 
 		this.tableName = table;
 		NoSqlPlugin plugin = new NoSqlPlugin();
-    	plugin.onApplicationStart();
+    	//plugin.onApplicationStart();
     	plugin.beforeInvocation();
 		try {
 			this.sdiTable = SecureTable.findByName(NoSql.em(), tableName);
