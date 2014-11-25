@@ -35,25 +35,32 @@ public abstract class RemoveSafeCursor<T> implements CursorToMany<T> {
 
 	@Override
 	public void afterLast() {
-		// TODO Auto-generated method stub
+		delegate.afterLast();
 
 	}
 
 	@Override
 	public boolean previous() {
-		// TODO Auto-generated method stub
+		boolean delegateHasPrev = delegate.previous();
+		if (delegateHasPrev) {
+			if (isDeleted(delegate.getCurrent())) {
+				delegate.removeCurrent();
+				return previous();
+			}
+			return true;
+		}
 		return false;
 	}
 
 	@Override
 	public void removeCurrent() {
-		// TODO Auto-generated method stub
+		delegate.removeCurrent();
 
 	}
 
 	@Override
 	public void addElement(T element) {
-		// TODO Auto-generated method stub
+		delegate.addElement(element);
 
 	}
 
