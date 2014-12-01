@@ -245,7 +245,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 	}
 	
 	
-	public static synchronized void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, Object newValue, StorageTypeEnum type, boolean timeIsISOFormat, long partitionKey) {
+	public static void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, Object newValue, StorageTypeEnum type, boolean timeIsISOFormat, long partitionKey) {
 
 		if (timeIsISOFormat)
 			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
