@@ -9,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -33,7 +34,7 @@ public class SocketStateCSV extends SocketState {
 	protected List<String> headers;
 	//protected List<DboColumnMeta> headers;
 	
-	public SocketStateCSV(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ExecutorService executor, Outbound outbound) {
+	public SocketStateCSV(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ThreadPoolExecutor executor, Outbound outbound) {
 		this.factory = factory;
 		if (sdiTable == null)
 			throw new NullPointerException("sdiTable cannot be null in SocketStateCSV constructor");
@@ -90,6 +91,8 @@ public class SocketStateCSV extends SocketState {
 		//play.Logger.info("processing the string "+row+" count is "+count);
 		if((lineNumber%BATCH_SIZE) == 0) {
 			//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
+			if (log.isDebugEnabled())
+				log.debug("submitting new batch, executor.getActiveCount() is "+executor.getActiveCount()+", executor largestpoolsize is "+executor.getLargestPoolSize()+ ", executor.getCompletedTaskCount() is "+executor.getCompletedTaskCount());
 			executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
 			batch = new ArrayList<Line>();
 		}

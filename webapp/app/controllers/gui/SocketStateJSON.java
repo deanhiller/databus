@@ -10,13 +10,13 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import org.apache.commons.lang.StringUtils;
 
 import play.mvc.Http.Outbound;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
-
 import models.SecureTable;
 
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
@@ -39,7 +39,7 @@ public class SocketStateJSON extends SocketState {
 
 	
 	private int lineNumber = 0;
-	public SocketStateJSON(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ExecutorService executor, Outbound outbound) {
+	public SocketStateJSON(NoSqlEntityManagerFactory factory, SecureTable sdiTable, ThreadPoolExecutor executor, Outbound outbound) {
 		this.factory = factory;
 		this.sdiTable = sdiTable;
 		if (sdiTable != null)

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import models.SecureTable;
 
@@ -30,7 +31,7 @@ public abstract class SocketState extends PlayPlugin {
 	static final int ERROR_LIMIT = 10;
 	protected NoSqlEntityManagerFactory factory;
 	protected SecureTable sdiTable;
-	protected ExecutorService executor;
+	protected ThreadPoolExecutor executor;
 	protected Outbound outbound;
 	private int fileSize;
 	protected StringBuffer buffer = new StringBuffer();

@@ -44,7 +44,7 @@ public class FileUploadSocket extends WebSocketController {
 
 	private static final Logger log = LoggerFactory.getLogger(FileUploadSocket.class);
 	static final int ERROR_LIMIT = 10;
-	private static ExecutorService executor;
+	private static ThreadPoolExecutor executor;
 	private static int numThreads = 10;
 	private static final ObjectMapper mapper = new ObjectMapper();
 	private static long startTime = 0;

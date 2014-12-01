@@ -23,6 +23,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
+import com.alvazan.play.NoSqlPlugin;
 
 import controllers.api.ApiPostDataPointsImpl;
 import controllers.gui.util.Line;
@@ -119,6 +120,8 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 	}
 
 	private void runImpl() {
+		NoSqlPlugin p = new NoSqlPlugin();
+		p.beforeInvocation();
 		NoSqlEntityManagerFactory factory = state.getEntityManagerFactory();
 		NoSqlEntityManager mgr = factory.createEntityManager();
 		
