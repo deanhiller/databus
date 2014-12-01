@@ -90,18 +90,7 @@ public class SocketStateCSV extends SocketState {
 		//play.Logger.info("processing the string "+row+" count is "+count);
 		if((lineNumber%BATCH_SIZE) == 0) {
 			//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
-			
-			//ridiculously, tableMeta is not thread safe.  Get a new one for each thread:
-			DboTableMeta localmeta = null;
-			try {
-				SecureTable localSdiTable = SecureTable.findByName(NoSql.em(), tableMeta.getColumnFamily());
-				localmeta = localSdiTable.getTableMeta();
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-				throw new Unauthorized("You do not have access to the table "+tableMeta.getColumnFamily()+", or it does not exist.");
-			}
-			executor.execute(new SaveBatch(localmeta, batch, this, outbound));
+			executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
 			batch = new ArrayList<Line>();
 		}
 
