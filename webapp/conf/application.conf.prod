@@ -99,7 +99,7 @@ socket.upload.batch.size=5000
 # flush size for commits on large uploads.  default 2500
 databus.commit.flush.size=2500
 # Set this to the number of cores available, or # of cores-1 if you want the server to have some bandwith left over to handle other requests:
-socket.upload.num.threads=4
+socket.upload.num.threads=8
 
 # This is the size of the agressive pre-reader threads buffer.  It will read this number of items in advance of the thread that 
 # sends the items back to the user.  Default:2000
@@ -135,7 +135,7 @@ application.session.httpOnly=true
 java.source=1.6
 
 # SOLR configuration
-solr.mode=server
+solr.mode=off
 solr.url=http://dbweb1:8983/solr
 solr.queryRequestHandler=select
 solr.defaultSearchField=allTerms_texts
@@ -143,6 +143,9 @@ solr.defaultSearchField=allTerms_texts
 #Every server polls the tables this rate(in millis).  This is not the poll rate of the bacnet nor modbus clients but is
 # the poll rate of databus servers only for monitoring/cron jobs that are scheduled
 monitor.rate=60000
+
+# Store path for Blob content
+attachments.path=/opt/datastore/webtmp
 
 # HTTP Response headers control for static files
 # ~~~~~
