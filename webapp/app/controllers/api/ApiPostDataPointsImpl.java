@@ -245,7 +245,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 	}
 	
 	
-	public static void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, Object newValue, StorageTypeEnum type, boolean timeIsISOFormat, long partitionKey) {
+	public static synchronized void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, Object newValue, StorageTypeEnum type, boolean timeIsISOFormat, long partitionKey) {
 
 		if (timeIsISOFormat)
 			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
@@ -268,6 +268,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 
 		//This method also indexes according to the meta data as well
 		typedSession.put(cf, row);
+
 	}
 	
 	public static void postRelationalTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, LinkedHashMap<DboColumnMeta, Object> newValues, List<StorageTypeEnum> colTypes, boolean timeIsISOFormat, long partitionKey) {
