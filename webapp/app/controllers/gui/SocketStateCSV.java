@@ -15,11 +15,14 @@ import org.apache.commons.lang.StringUtils;
 import play.mvc.Http.Outbound;
 import play.mvc.Http.Request;
 import play.mvc.Http.Response;
+import play.mvc.results.Unauthorized;
 import models.SecureTable;
 
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.play.NoSql;
 
 import controllers.gui.util.ExecutorsSingleton;
 import controllers.gui.util.Line;
@@ -87,7 +90,18 @@ public class SocketStateCSV extends SocketState {
 		//play.Logger.info("processing the string "+row+" count is "+count);
 		if((lineNumber%BATCH_SIZE) == 0) {
 			//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
-			executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
+			
+			//ridiculously, tableMeta is not thread safe.  Get a new one for each thread:
+			DboTableMeta localmeta = null;
+			try {
+				SecureTable localSdiTable = SecureTable.findByName(NoSql.em(), tableMeta.getColumnFamily());
+				localmeta = localSdiTable.getTableMeta();
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw new Unauthorized("You do not have access to the table "+tableMeta.getColumnFamily()+", or it does not exist.");
+			}
+			executor.execute(new SaveBatch(localmeta, batch, this, outbound));
 			batch = new ArrayList<Line>();
 		}
 
