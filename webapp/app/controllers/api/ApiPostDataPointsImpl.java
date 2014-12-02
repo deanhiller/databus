@@ -266,8 +266,20 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		byte[] val = toBytes(type, newValue, col);
 		row.addColumn(colKey, val, null);
 
-		//This method also indexes according to the meta data as well
-		typedSession.put(cf, row);
+		//Temporary try block!  put turns out to be not threadsafe, but in my opinion it should be 
+		//and this is a bug in playorm.  I'm trying the timing to see 
+		//if its faster to synchronize this call or just retry a failure as a workaround until
+		//I can work out how to get this fixed in playorm.  It fails maybe 1 out of 50,000 times 
+		//on an 8 core (8 threaded) processor, much less often on 4 core (I don't even see it on 
+		//an upload of 1 million.
+		try {
+			//This method also indexes according to the meta data as well
+			typedSession.put(cf, row);
+		}
+		catch (Exception e) {
+			//retry once, then fail if it happens again.
+			typedSession.put(cf, row);
+		}
 
 	}
 	
