@@ -126,7 +126,8 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
                 this.file = new File(Play.tmpDir, localName);
                 this.file.createNewFile();
                 this.out = new FileOutputStream(file, true);
-                m.addHeader("chunkedBufferFile", file.getAbsolutePath());
+                if (chunkListenerInstances != null && !chunkListenerInstances.isEmpty())
+                	m.addHeader("chunkedBufferFile", file.getAbsolutePath());
 
             } else {
                 // Not a chunked message - pass through.
@@ -162,10 +163,12 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
                     this.out.flush();
                     this.out.close();
 
-                    Method shouldNotifyMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("shouldNotify", String.class);
-                	Method completeMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("dataComplete");
+                    //Method shouldNotifyMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("shouldNotify", String.class);
+                	//Method completeMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("dataComplete");
 
                     for (Object listener:chunkListenerInstances) {
+                    	Method shouldNotifyMethod = listener.getClass().getMethod("shouldNotify", String.class);
+	                	Method completeMethod = listener.getClass().getMethod("dataComplete", File.class, String.class);
                     	if ((Boolean)shouldNotifyMethod.invoke(listener,  ((DefaultHttpRequest)currentMessage).getUri())) {
                     		completeMethod.invoke(listener);
                     	}
