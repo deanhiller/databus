@@ -92,7 +92,7 @@ public class SocketStateCSV extends SocketState {
 		if((lineNumber%BATCH_SIZE) == 0) {
 			//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
 			if (log.isDebugEnabled())
-				log.debug("submitting new batch, executor.getActiveCount() is "+executor.getActiveCount()+", executor largestpoolsize is "+executor.getLargestPoolSize()+ ", executor.getCompletedTaskCount() is "+executor.getCompletedTaskCount());
+				log.debug("submitting new batch, executor.getActiveCount() is "+executor.getActiveCount()+", executor largestpoolsize is "+executor.getLargestPoolSize()+ ", executor.getQueue().size is "+ executor.getQueue().size()+", executor.getCompletedTaskCount() is "+executor.getCompletedTaskCount());
 			executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
 			batch = new ArrayList<Line>();
 		}
