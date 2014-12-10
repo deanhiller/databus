@@ -114,20 +114,25 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
 
             HttpMessage m = (HttpMessage) msg;
             if (m.isChunked()) {
-                final String localName = UUID.randomUUID().toString();
-                // A chunked message - remove 'Transfer-Encoding' header,
-                // initialize the cumulative buffer, and wait for incoming chunks.
-                List<String> encodings = m.getHeaders(HttpHeaders.Names.TRANSFER_ENCODING);
-                encodings.remove(HttpHeaders.Values.CHUNKED);
-                if (encodings.isEmpty()) {
-                    m.removeHeader(HttpHeaders.Names.TRANSFER_ENCODING);
-                }
-                this.currentMessage = m;
-                this.file = new File(Play.tmpDir, localName);
-                this.file.createNewFile();
-                this.out = new FileOutputStream(file, true);
-                if (chunkListenerInstances != null && !chunkListenerInstances.isEmpty())
-                	m.addHeader("chunkedBufferFile", file.getAbsolutePath());
+            	try {
+	                final String localName = UUID.randomUUID().toString();
+	                // A chunked message - remove 'Transfer-Encoding' header,
+	                // initialize the cumulative buffer, and wait for incoming chunks.
+	                List<String> encodings = m.getHeaders(HttpHeaders.Names.TRANSFER_ENCODING);
+	                encodings.remove(HttpHeaders.Values.CHUNKED);
+	                if (encodings.isEmpty()) {
+	                    m.removeHeader(HttpHeaders.Names.TRANSFER_ENCODING);
+	                }
+	                this.currentMessage = m;
+	                this.file = new File(Play.tmpDir, localName);
+	                this.file.createNewFile();
+	                this.out = new FileOutputStream(file, true);
+	                if (chunkListenerInstances != null && !chunkListenerInstances.isEmpty())
+	                	m.addHeader("chunkedBufferFile", file.getAbsolutePath());
+            	}
+            	catch (Exception ex) {
+            		ex.printStackTrace();
+            	}
 
             } else {
                 // Not a chunked message - pass through.
@@ -140,10 +145,10 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
             if (maxContentLength != -1 && (localFile.length() > (maxContentLength - chunk.getContent().readableBytes()))) {
                 currentMessage.setHeader(HttpHeaders.Names.WARNING, "play.netty.content.length.exceeded");
             } else {
-            	
-                IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
-                this.out.flush();
-                try {
+            	try {
+                	IOUtils.copyLarge(new ChannelBufferInputStream(chunk.getContent()), this.out);
+                	this.out.flush();
+                
 	                for (Object listener:chunkListenerInstances) {
 	                	Method shouldNotifyMethod = listener.getClass().getMethod("shouldNotify", String.class);
 	                	Method chunkMethod = listener.getClass().getMethod("chunk", File.class, String.class);
@@ -160,30 +165,35 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
                 	ex.printStackTrace();
                 }
                 if (chunk.isLast()) {
-                    this.out.flush();
-                    this.out.close();
-
-                    //Method shouldNotifyMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("shouldNotify", String.class);
-                	//Method completeMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("dataComplete");
-
-                    for (Object listener:chunkListenerInstances) {
-                    	Method shouldNotifyMethod = listener.getClass().getMethod("shouldNotify", String.class);
-	                	Method completeMethod = listener.getClass().getMethod("dataComplete", File.class, String.class);
-                    	if ((Boolean)shouldNotifyMethod.invoke(listener,  ((DefaultHttpRequest)currentMessage).getUri())) {
-                    		completeMethod.invoke(listener);
-                    	}
-                    }
-
-                    currentMessage.setHeader(
-                            HttpHeaders.Names.CONTENT_LENGTH,
-                            String.valueOf(localFile.length()));
-
-                    currentMessage.setContent(new FileChannelBuffer(localFile));
-                    this.out = null;
-                    this.currentMessage = null;
-                    this.file.delete();
-                    this.file = null;
-                    Channels.fireMessageReceived(ctx, currentMessage, e.getRemoteAddress());
+                	try {
+	                    this.out.flush();
+	                    this.out.close();
+	
+	                    //Method shouldNotifyMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("shouldNotify", String.class);
+	                	//Method completeMethod = Play.classloader.loadClass("server.DatabusStreamChunkAggregator$ChunkedListener").getMethod("dataComplete");
+	
+	                    for (Object listener:chunkListenerInstances) {
+	                    	Method shouldNotifyMethod = listener.getClass().getMethod("shouldNotify", String.class);
+		                	Method completeMethod = listener.getClass().getMethod("dataComplete");
+	                    	if ((Boolean)shouldNotifyMethod.invoke(listener,  ((DefaultHttpRequest)currentMessage).getUri())) {
+	                    		completeMethod.invoke(listener);
+	                    	}
+	                    }
+	
+	                    currentMessage.setHeader(
+	                            HttpHeaders.Names.CONTENT_LENGTH,
+	                            String.valueOf(localFile.length()));
+	
+	                    currentMessage.setContent(new FileChannelBuffer(localFile));
+	                    this.out = null;
+	                    this.currentMessage = null;
+	                    this.file.delete();
+	                    this.file = null;
+	                    Channels.fireMessageReceived(ctx, currentMessage, e.getRemoteAddress());
+                	}
+                	catch (Exception ex){
+                		ex.printStackTrace();
+                	}
                 }
             }
         }
