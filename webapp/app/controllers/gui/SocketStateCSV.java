@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.apache.cassandra.thrift.Cassandra.system_add_column_family_args;
 import org.apache.commons.lang.StringUtils;
 
 import play.mvc.Http.Outbound;
@@ -46,19 +47,20 @@ public class SocketStateCSV extends SocketState {
 	@Override
 	public void processFile(String s) throws IOException {
 		buffer.append(s);
-		
 		int index = buffer.indexOf("\n");
+		int prevIndex = 0;
 		while(index >= 0) {
-			String row = buffer.substring(0, index);
-			buffer.replace(0, index+1, "");
+			String row = buffer.substring(prevIndex, index);
 			try {
 				processItem(row, row.length()+1);
 			} catch(RuntimeException e) {
 				throw e;
 				//throw new RuntimeException("exception processing row="+row+"   "+e.getMessage(), e);
 			}
-			index = buffer.indexOf("\n");
+			prevIndex = index+1;
+			index = buffer.indexOf("\n", prevIndex);
 		}
+		buffer.replace(0, prevIndex, "");
 	}
 	
 	protected void processItem(String row, int len) {
@@ -91,27 +93,28 @@ public class SocketStateCSV extends SocketState {
 		//play.Logger.info("processing the string "+row+" count is "+count);
 		if((lineNumber%BATCH_SIZE) == 0) {
 			//play.Logger.info("calling into the executor with "+batch.size()+" items, row is "+row);
-			if (log.isDebugEnabled())
-				log.debug("submitting new batch, executor.getActiveCount() is "+executor.getActiveCount()+", executor largestpoolsize is "+executor.getLargestPoolSize()+ ", executor.getQueue().size is "+ executor.getQueue().size()+", executor.getCompletedTaskCount() is "+executor.getCompletedTaskCount());
+//			if (log.isDebugEnabled())
+//				log.debug("submitting new batch, executor.getActiveCount() is "+executor.getActiveCount()+", executor largestpoolsize is "+executor.getLargestPoolSize()+ ", executor.getQueue().size is "+ executor.getQueue().size()+", executor.getCompletedTaskCount() is "+executor.getCompletedTaskCount());
 			executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
 			batch = new ArrayList<Line>();
 		}
 
-		if(log.isDebugEnabled() && lineNumber % BATCH_SIZE == 0)
-			log.debug("Another "+BATCH_SIZE+" rows was passed to Runnables to write to database.  last line number="+lineNumber);
+//		if(log.isDebugEnabled() && lineNumber % BATCH_SIZE == 0)
+//			log.debug("Another "+BATCH_SIZE+" rows was passed to Runnables to write to database.  last line number="+lineNumber);
 	}
 
 	private LinkedHashMap<String, String> getColumns(List<String> headers, String row) {
 		LinkedHashMap<String, String> columnsMap = new LinkedHashMap<String, String>();
 		int pos = 0, end;
 		int colIndex = 0;
-		if(StringUtils.trimToEmpty(row).length() == 0) {
-			//not an error, just an empty line, ignore it.
-			return columnsMap;
-		}
+//		if(StringUtils.trimToEmpty(row).length() == 0) {
+//			//not an error, just an empty line, ignore it.
+//			return columnsMap;
+//		}
 		if(row.indexOf(',') < 0) {
 			String msg = "line number="+lineNumber+" contains no columns(no commas) so we are skipping the line";
-			reportErrorAndClose(msg);
+			//this is not correct, this isn't an error, don't errorandclose
+			//reportErrorAndClose(msg);
 			return columnsMap;
 		}
         while ((end = row.indexOf(',', pos)) >= 0) {
