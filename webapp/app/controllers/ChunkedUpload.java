@@ -60,12 +60,22 @@ public class ChunkedUpload extends Controller {
 		if (header != null && header.values != null)
 			chunkedKey = header.value();
 		
+		if (log.isDebugEnabled())
+			log.debug("entering postDataCSV, chunkedbufferfile header is "+header+" at "+System.currentTimeMillis());
 		if (chunkedKey != null) {
+			if (log.isDebugEnabled())
+				log.debug("in postDataCSV, chunkedKey is not null");
 			if (!async) {
+				if (log.isDebugEnabled())
+					log.debug("in postDataCSV, not async at "+System.currentTimeMillis());
 				ChunkConsumingThread asyncUploadingThread = registeredListeners.get(chunkedKey);
+				if (log.isDebugEnabled())
+					log.debug("in postDataCSV, asyncUploadingThread is "+asyncUploadingThread+" at "+System.currentTimeMillis());
 				asyncUploadingThread.setWaitingThread(Thread.currentThread());
 				if (asyncUploadingThread != null) {
 					while(!asyncUploadingThread.isProcessingComplete()) {
+						if (log.isDebugEnabled())
+							log.debug("in postDataCSV, parking waiting for asyncuploadingthread.isProcessingComplete() at "+System.currentTimeMillis());
 						LockSupport.parkNanos(10000000000l);  //thats 10 seconds.
 						if (log.isDebugEnabled())
 							log.debug("got through park() in csvupload, testing isProcessingComplete at "+System.currentTimeMillis());
@@ -79,6 +89,8 @@ public class ChunkedUpload extends Controller {
 				log.debug("ChunkedUpload already handled async it may have finished already, or might still be running");
 		}
 		else {
+			if (log.isDebugEnabled())
+				log.debug("in postDataCSV, chunkedKey IS NULL!!!!  THIS IS NOT A CHUNKED UPLOAD!");
 			try {
 				SecureTable sdiTable;
 				try {
