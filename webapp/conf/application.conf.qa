@@ -79,6 +79,7 @@ socket.upload.num.threads=4
 # This is the size of the agressive pre-reader threads buffer.  It will read this number of items in advance of the thread that 
 # sends the items back to the user.  Default:2000
 databus.preread.buffer.size=2000
+socket.upload.slurp.size=100000
 
 
 # Server configuration

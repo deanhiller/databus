@@ -42,6 +42,7 @@ public class ChunkConsumingThread implements Runnable {
 	private Thread myThread;
 	private Thread waitingThread;
 	private ThreadPoolExecutor executor;
+	private int numBytesPerSlurp = 100000;
 
 	
 	public ChunkConsumingThread(File sharedFile, String table) {
@@ -64,6 +65,11 @@ public class ChunkConsumingThread implements Runnable {
 		String configurednumthreads = Play.configuration.getProperty("socket.upload.num.threads");
 		if (StringUtils.isNotBlank(configurednumthreads))
 			numThreads = Integer.parseInt(configurednumthreads);
+		
+		String configuredslurpsize = Play.configuration.getProperty("socket.upload.slurp.size");
+		if (StringUtils.isNotBlank(configuredslurpsize))
+			numBytesPerSlurp = Integer.parseInt(configuredslurpsize);
+		
 		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000);
 
 		executor = new ThreadPoolExecutor(numThreads, numThreads, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
@@ -109,14 +115,13 @@ public class ChunkConsumingThread implements Runnable {
 	
 	
 	public void handleAvailable() {
-		int length = 100000;
 		Reader reader = null;
 		try {
 			reader = new InputStreamReader(in, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-		String nextNibble = slurp(reader, length);
+		String nextNibble = slurp(reader, numBytesPerSlurp);
 		try {
 			while (StringUtils.isNotEmpty(nextNibble)) {
 				if (StringUtils.isNotBlank(remain))
@@ -129,7 +134,7 @@ public class ChunkConsumingThread implements Runnable {
 					log.debug("ChunkConsumingThread submitted "+newSubmit+" new items, for a total of "+submittedCount);
 				}
 				remain = StringUtils.substringAfterLast(nextNibble, "\n");
-				nextNibble = slurp(reader, length);
+				nextNibble = slurp(reader, numBytesPerSlurp);
 			}
 			if (isDataComplete()) {
 				log.debug("async file processing complete");

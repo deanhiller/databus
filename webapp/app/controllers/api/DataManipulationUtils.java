@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.collections.CollectionUtils;
 
+import play.PlayPlugin;
 import play.mvc.results.BadRequest;
 
 import com.alvazan.orm.api.base.NoSqlEntityManager;
@@ -28,7 +29,7 @@ import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
 import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
 import com.alvazan.orm.api.z8spi.meta.TypedRow;
 
-public class DataManipulationUtils {
+public class DataManipulationUtils extends PlayPlugin {
 	
 	private final static Charset charset = StandardCharsets.UTF_8;
 
