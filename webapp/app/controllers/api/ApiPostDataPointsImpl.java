@@ -69,7 +69,6 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 	private static final String STATE_COL_NAME = "_state";
 
 	public static String HISTORY_PREFIX = "_history";
-	private final static Charset charset = StandardCharsets.UTF_8;
 
 	private static final Logger log = LoggerFactory.getLogger(ApiPostDataPointsImpl.class);
 	
@@ -231,185 +230,21 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		BigInteger timeStamp = new BigInteger(""+pkValue);
 		long longTime = timeStamp.longValue();
 		Long partitionSize = table.getTimeSeriesPartionSize();
-		long partitionKey = calculatePartitionId(longTime, partitionSize);
-		putPartition(NoSql.em(), table, partitionKey);
+		BigInteger partitionKey = DataManipulationUtils.calculatePartitionId(longTime, partitionSize);
+		DataManipulationUtils.putPartition(NoSql.em(), table.getColumnFamily(), partitionKey);
 				
 		if (cols.size() > 1) {
-			LinkedHashMap<DboColumnMeta, Object> newValue = stringsToObjects(cols, colTypes, nodes);
-			postRelationalTimeSeriesImplAssumingPartitionExists(NoSql.em(), table, timeStamp, newValue, colTypes, timeIsISOFormat, partitionKey);
+			LinkedHashMap<DboColumnMeta, Object> newValue = DataManipulationUtils.stringsToObjects(cols, colTypes, nodes);
+			DataManipulationUtils.postRelationalTimeSeriesImplAssumingPartitionExists(NoSql.em(), table, timeStamp, newValue, colTypes, timeIsISOFormat, partitionKey);
 		}
 		else {
-			Object newValue = stringToObject(cols.get(0).getStorageType(), nodes.get(0));
-			postTimeSeriesImplAssumingPartitionExists(NoSql.em(), table, timeStamp, newValue, colTypes.get(0), timeIsISOFormat, partitionKey);
+			Object newValue = DataManipulationUtils.stringToObject(cols.get(0).getStorageType(), nodes.get(0));
+			DataManipulationUtils.postTimeSeriesImplAssumingPartitionExists(NoSql.em(), table, timeStamp, newValue, colTypes.get(0), timeIsISOFormat, partitionKey);
 		}
 	}
 	
 	
-	public static void postTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, Object newValue, StorageTypeEnum type, boolean timeIsISOFormat, long partitionKey) {
-
-		if (timeIsISOFormat)
-			throw new BadRequest("Currently Iso Date Format is not supported with the TIME_SERIES table type");
-		NoSqlTypedSession typedSession = mgr.getTypedSession();		
-		String cf = table.getColumnFamily();
-
-		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-
-		//byte[] colKey = idColumnMeta.convertToStorage2(pkValue);
-		byte[] colKey = toBytes(StorageTypeEnum.INTEGER, pkValue, idColumnMeta);
-		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-		BigInteger rowKey = new BigInteger(""+partitionKey);
-		row.setRowKey(rowKey);
-		
-		Collection<DboColumnMeta> cols = table.getAllColumns();
-		DboColumnMeta col = cols.iterator().next();
-		//byte[] val = col.convertToStorage2(newValue);
-		byte[] val = toBytes(type, newValue, col);
-		row.addColumn(colKey, val, null);
-
-		//Temporary try block!  put turns out to be not threadsafe, but in my opinion it should be 
-		//and this is a bug in playorm.  I'm trying the timing to see 
-		//if its faster to synchronize this call or just retry a failure as a workaround until
-		//I can work out how to get this fixed in playorm.  It fails maybe 1 out of 50,000 times 
-		//on an 8 core (8 threaded) processor, much less often on 4 core (I don't even see it on 
-		//an upload of 1 million.
-		try {
-			//This method also indexes according to the meta data as well
-			typedSession.put(cf, row);
-		}
-		catch (Exception e) {
-			//retry once, then fail if it happens again.
-			typedSession.put(cf, row);
-		}
-
-	}
 	
-	public static void postRelationalTimeSeriesImplAssumingPartitionExists(NoSqlEntityManager mgr, DboTableMeta table, BigInteger pkValue, LinkedHashMap<DboColumnMeta, Object> newValues, List<StorageTypeEnum> colTypes, boolean timeIsISOFormat, long partitionKey) {
-		if (timeIsISOFormat)
-			throw new BadRequest("Currently Iso Date Format is not supported with the RELATIONAL_TIME_SERIES table type");
-		
-		NoSqlTypedSession typedSession = mgr.getTypedSession();		
-		String cf = table.getColumnFamily();
-
-		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-		
-		//byte[] colKey = idColumnMeta.convertToStorage2(pkValue);
-		byte[] colKey = toBytes(StorageTypeEnum.INTEGER, pkValue, idColumnMeta);
-		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-		BigInteger rowKey = new BigInteger(""+partitionKey);
-		row.setRowKey(rowKey);
-
-		ByteArrayOutputStream valStream = new ByteArrayOutputStream();
-
-		try {
-			int colinx = 0;
-			for (Entry<DboColumnMeta, Object> entry:newValues.entrySet()) {
-				DboColumnMeta col = entry.getKey();
-				Object newValue = entry.getValue();
-				//byte[] valarr = col.convertToStorage2(newValue);
-				byte[] valarr = toBytes(colTypes.get(colinx), newValue, col);
-
-				byte[] lenarr = ByteBuffer.allocate(4).putInt(valarr.length).array();
-				//byte len = (byte)valarr.length;
-				valStream.write(lenarr);
-				valStream.write(valarr, 0, valarr.length);
-				colinx++;
-			}
-		}
-		catch (IOException ioe) {
-			throw new RuntimeException(ioe);
-		}
-		row.addColumn(colKey, valStream.toByteArray(), null);
-		typedSession.put(cf, row);
-	}
-	
-	//this is a replacement for "convertToStorage2" which is quite slow.
-	//it takes the cases we care about (apx 100% of our data), and does it the quick way
-	private static byte[] toBytes(StorageTypeEnum type, Object source, DboColumnMeta fallbackmeta) {
-		if(source == null)
-			return null;
-		
-		switch (type) {
-			case STRING: return ((String)source).getBytes(charset);
-			case INTEGER: return ((BigInteger)source).toByteArray();
-			case DECIMAL: 	BigDecimal value = (BigDecimal) source;
-							BigInteger bi = value.unscaledValue();
-							Integer scale = value.scale();
-							byte[] bibytes = bi.toByteArray();
-							byte[] sbytes = intToBytes(scale);
-							byte[] bytes = new byte[bi.toByteArray().length+4];
-							
-							for (int i = 0 ; i < 4 ; i++) bytes[i] = sbytes[i];
-							for (int i = 4 ; i < bibytes.length+4 ; i++) bytes[i] = bibytes[i-4];
-				
-							return bytes;
-			default: return fallbackmeta.convertToStorage2(source);
-		}
-	}
-	
-	private static byte[] intToBytes(int val) {
-		try {
-			ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
-			DataOutputStream out = new DataOutputStream(outBytes);
-			out.writeInt(val);
-			byte[] outData = outBytes.toByteArray();
-			return outData;
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	//this is a replacement for "convertFromStorage2" which is quite slow.
-	//it takes the cases we care about (apx 100% of our data), and does it the quick way
-	private static Object fromBytes(StorageTypeEnum type, byte[] source, DboColumnMeta fallbackmeta) {
-		if(source == null)
-			return null;
-		else if(source.length == 0)
-			return null;
-		switch (type) {
-			case STRING: return new String(source, charset);
-			case INTEGER: return new BigInteger(source);
-			case DECIMAL: 	ByteBuffer buf = ByteBuffer.wrap(source);
-							int scale = buf.getInt();
-							byte[] bibytes = new byte[buf.remaining()];
-							buf.get(bibytes);
-							 
-							BigInteger bi = new BigInteger(bibytes);
-							return new BigDecimal(bi,scale);
-			default: return fallbackmeta.convertFromStorage2(source);
-		}
-	}
-
-
-	public static void putPartition(NoSqlEntityManager mgr, DboTableMeta table, long partitionKey) {
-		NoSqlTypedSession typedSession = mgr.getTypedSession();		
-
-		TypedRow row = typedSession.createTypedRow(table.getColumnFamily());
-		BigInteger rowKey = new BigInteger(""+partitionKey);
-		row.setRowKey(rowKey);
-
-		DboTableMeta meta = mgr.find(DboTableMeta.class, "partitions");
-		byte[] partitionsRowKey = StandardConverters.convertToBytes(table.getColumnFamily());
-		byte[] partitionBytes = StandardConverters.convertToBytes(rowKey);
-		Column partitionIdCol = new Column(partitionBytes, null);
-		NoSqlSession session = mgr.getSession();
-		List<Column> columns = new ArrayList<Column>();
-		columns.add(partitionIdCol);
-		session.put(meta, partitionsRowKey, columns);
-	}
-
-
-	public static long calculatePartitionId(long longTime, Long partitionSize) {
-		long partitionId = (longTime / partitionSize) * partitionSize;
-		if(partitionId < 0) {
-			//if partitionId is less than 0, it incorrectly ends up in the higher partition -20/50*50 = 0 and 20/50*50=0 when -20/50*50 needs to be -50 partitionId
-			if(Long.MIN_VALUE+partitionSize >= partitionId)
-				partitionId = Long.MIN_VALUE;
-			else
-				partitionId -= partitionSize; //subtract one partition size off of the id
-		}
-
-		return partitionId;
-	}
 
 	private static void postNormalTable(Map<String, String> json,
 			Collection<SolrInputDocument> solrDocs, KeyToTableName info,
@@ -421,7 +256,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		NoSqlTypedSession typedSession = NoSql.em().getTypedSession();
 		
 		DboColumnMeta idColumnMeta = table.getIdColumnMeta();
-		Object rowKey = stringToObject(idColumnMeta.getStorageType(), pkValue);
+		Object rowKey = DataManipulationUtils.stringToObject(idColumnMeta.getStorageType(), pkValue);
 		String cf = table.getColumnFamily();
 //		TypedRow row = typedSession.find(cf, rowKey);
 //		if(row == null) {
@@ -477,7 +312,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 
 
 	private static void addColumnData(boolean isUpdate, TypedRow row, DboColumnMeta col, Object node, long time) {
-		Object newValue = stringToObject(col.getStorageType(), node);
+		Object newValue = DataManipulationUtils.stringToObject(col.getStorageType(), node);
 		if(isUpdate) {
 			//okay, we are updating a row so we need to version this row then so we have the previous contents of the row as well
 			transferColToHistory(row, col, newValue, time);
@@ -537,36 +372,7 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 		row.addColumn(historyColName, valueRaw, null);
 	}
 	
-	public static LinkedHashMap<DboColumnMeta, Object> stringsToObjects(List<DboColumnMeta> cols, List<StorageTypeEnum> types, List<Object> someVals) {
-		LinkedHashMap<DboColumnMeta, Object> result = new LinkedHashMap<DboColumnMeta, Object>();
-		if(CollectionUtils.size(cols) ==0 || CollectionUtils.size(someVals)==0)
-			return result;
-		for (int i = 0; i<cols.size(); i++) {
-			
-			DboColumnMeta col = cols.get(i);
-			Object someVal = someVals.get(i);
-			result.put(col, stringToObject(types.get(i), someVal));		
-		}
-		return result;
-	}
-
-	public static Object stringToObject(StorageTypeEnum type, Object someVal) {
-		
-		if(someVal == null)
-			return null;
-		else if("null".equals(someVal))
-			return null; //a fix for when they pass us "null" instead of null
-		
-		String val = ""+someVal;
-		if(val.length() == 0)
-			val = null;
-		switch (type) {
-			case DECIMAL: return new BigDecimal(val);
-			case INTEGER: return new BigInteger(val);
-			default: return val;
-		}
-		
-	}
+	
 	
 	private static void checkSize(Map<String, String> jsonMap) {
 		//JsonNode jsonNode = mapper.valueToTree(jsonMap);

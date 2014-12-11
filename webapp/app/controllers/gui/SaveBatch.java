@@ -17,6 +17,9 @@ import play.mvc.Http.Outbound;
 import com.alvazan.orm.api.base.NoSqlEntityManager;
 import com.alvazan.orm.api.base.NoSqlEntityManagerFactory;
 import com.alvazan.orm.api.z3api.NoSqlTypedSession;
+import com.alvazan.orm.api.z5api.NoSqlSession;
+import com.alvazan.orm.api.z8spi.action.Column;
+import com.alvazan.orm.api.z8spi.conv.StandardConverters;
 import com.alvazan.orm.api.z8spi.conv.StorageTypeEnum;
 import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
 import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
@@ -26,6 +29,7 @@ import com.alvazan.play.NoSql;
 import com.alvazan.play.NoSqlPlugin;
 
 import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.DataManipulationUtils;
 import controllers.gui.util.Line;
 
 public class SaveBatch  extends PlayPlugin implements Runnable {
@@ -35,6 +39,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 	private static int FLUSH_SIZE = 2500;
 	private List<Line> batch;
 	private DboTableMeta table;
+	private BigInteger tablePartitionSize;
 	private boolean tableIsTimeSeries = true;
 	private int count = 0;
 	
@@ -44,8 +49,8 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 	private List<String> tableColNames;
 	private List<StorageTypeEnum> colTypes;
 	
-	private long currentPartitionStart = 0;
-	private long currentPartitionEnd = 0;
+	private BigInteger currentPartitionStart = new BigInteger("0");
+	private BigInteger currentPartitionEnd = new BigInteger("0");
 
 	
 	//jsc for performance tracking:
@@ -62,6 +67,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 		String flushsizeString = Play.configuration.getProperty("databus.commit.flush.size", "2500");
 		FLUSH_SIZE = Integer.parseInt(flushsizeString);
 		this.table = table;
+		this.tablePartitionSize=new BigInteger(""+table.getTimeSeriesPartionSize());
 		this.tableIsTimeSeries = table.isTimeSeries();
 		tableCols = new ArrayList<DboColumnMeta>(table.getAllColumns());
 		colTypes = new ArrayList<StorageTypeEnum>();
@@ -87,22 +93,23 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			
 			if(state.getErrors().size() > 0)
 				return; //exit out since someone else reported and error
-				
-			synchronized(state) {
-				int count = state.getDoneCount();
-				int newCount = count+batchsize;
-				int numSubmitted = state.getNumItemsSubmitted();
-				state.setDoneCount(newCount);
-				state.addTotalCharactersDone(characterCount);
-				if (outbound != null)
-					outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
-				if(state.getCharactersDone() >= state.getFileSize()) {
+			if (outbound != null) {	
+				synchronized(state) {
+					int count = state.getDoneCount();
+					int newCount = count+batchsize;
+					int numSubmitted = state.getNumItemsSubmitted();
+					state.setDoneCount(newCount);
+					state.addTotalCharactersDone(characterCount);
 					if (outbound != null)
-						outbound.send("{ \"done\": true }");
+						outbound.send("{ \"numdone\":"+state.getCharactersDone()+"}");
+					if(state.getCharactersDone() >= state.getFileSize()) {
+						if (outbound != null)
+							outbound.send("{ \"done\": true }");
+					}
+	
+					if(log.isDebugEnabled())
+						log.debug("csv upload - notify chunk complete.  count completed="+newCount+"/"+numSubmitted+" chars="+state.getCharactersDone()+"/"+state.getFileSize());
 				}
-
-				if(log.isDebugEnabled())
-					log.debug("csv upload - notify chunk complete.  count completed="+newCount+"/"+numSubmitted+" chars="+state.getCharactersDone()+"/"+state.getFileSize());
 			}
 
 		} catch(Exception e) {
@@ -160,9 +167,9 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			if (pkValue == null)
 				throw new RuntimeException("The time cannot be null!");
 			//workaround for scientific notation which can't currently be parsed by playorm:
-			if (StringUtils.containsIgnoreCase(pkValue, "e")) {
-				pkValue = ""+Double.valueOf(pkValue).longValue();
-			}
+//			if (StringUtils.containsIgnoreCase(pkValue, "e")) {
+//				pkValue = ""+Double.valueOf(pkValue).longValue();
+//			}
 			
 			int colindx = 0;
 			for (DboColumnMeta col:tableCols) {
@@ -179,13 +186,12 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			BigInteger timestamp = new BigInteger((String)pkValue);
 			createPartitionIfNeeded(mgr, timestamp);
 			if (tableCols.size() > 1) {
-				LinkedHashMap<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.stringsToObjects(tableCols, colTypes, nodes);
-				ApiPostDataPointsImpl.postRelationalTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes, false, currentPartitionStart);
+				LinkedHashMap<DboColumnMeta, Object> newValue = DataManipulationUtils.stringsToObjects(tableCols, colTypes, nodes);
+				DataManipulationUtils.postRelationalTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes, false, currentPartitionStart);
 			}
 			else {
-				Object newValue = ApiPostDataPointsImpl.stringToObject(colTypes.get(0), nodes.get(0));
-				//ApiPostDataPointsImpl.postTimeSeriesImpl(mgr, table, pkValue, newValue, false);
-				ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes.get(0), false, currentPartitionStart);
+				Object newValue = DataManipulationUtils.stringToObject(colTypes.get(0), nodes.get(0));
+				DataManipulationUtils.postTimeSeriesImplAssumingPartitionExists(mgr, table, timestamp, newValue, colTypes.get(0), false, currentPartitionStart);
 			}
 
 		} catch(Exception e) {
@@ -207,14 +213,19 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			}
 		}
 	}
-
+	
 	private void createPartitionIfNeeded(NoSqlEntityManager mgr, BigInteger pkVal) {
-		long timestamp = pkVal.longValue();
-		if (! (currentPartitionStart <= timestamp && timestamp <= currentPartitionEnd)) {
-			currentPartitionStart = ApiPostDataPointsImpl.calculatePartitionId(timestamp, table.getTimeSeriesPartionSize());
-			currentPartitionEnd = currentPartitionStart + table.getTimeSeriesPartionSize();
-			ApiPostDataPointsImpl.putPartition(mgr, table, currentPartitionStart);
+		//I hate working with bigints.  this is the code if this were longs:
+		//if (timestamp <= currentPartitionStart || timestamp >= currentPartitionEnd) {
+		if (pkVal.compareTo(currentPartitionStart) <= 0 || pkVal.compareTo(currentPartitionEnd) >= 0) {
+			long timestamp = pkVal.longValue();
+			if (log.isDebugEnabled())
+				log.debug("SaveBacth creating a partition for timestamp "+timestamp+" start is "+currentPartitionStart+" end is "+currentPartitionEnd);
+			currentPartitionStart = DataManipulationUtils.calculatePartitionId(timestamp, tablePartitionSize.longValue());
+			currentPartitionEnd = currentPartitionStart.add(tablePartitionSize);
+			DataManipulationUtils.putPartition(mgr, table.getColumnFamily(), pkVal);
 		}
+		
 	}
 
 	private void processLineRel(NoSqlEntityManager mgr, Line line, NoSqlTypedSession session) {
@@ -226,7 +237,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 				//jsc:todo  Do we need to do a 'required' check here and throw an exception in some cases for blank???
 				if (StringUtils.isBlank(stringval))
 					continue;
-				Object val = ApiPostDataPointsImpl.stringToObject(meta.getStorageType(), stringval.trim());
+				Object val = DataManipulationUtils.stringToObject(meta.getStorageType(), stringval.trim());
 				if(meta instanceof DboColumnIdMeta)
 					row.setRowKey(val);
 				else

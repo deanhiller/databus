@@ -38,6 +38,7 @@ import com.alvazan.orm.api.z8spi.meta.TypedRow;
 import com.alvazan.play.NoSql;
 
 import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.DataManipulationUtils;
 import controllers.modules2.RawTimeSeriesProcessor;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
@@ -120,7 +121,7 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 			//slow way:  get row, delete column.
 			TypedRow partition = getPartitionForTime(ts.getTime());
 
-			partition.removeColumn(meta.getIdColumnMeta().convertToStorage2(ApiPostDataPointsImpl.stringToObject(meta.getIdColumnMeta().getStorageType(), ""+ts.getTime())));
+			partition.removeColumn(meta.getIdColumnMeta().convertToStorage2(DataManipulationUtils.stringToObject(meta.getIdColumnMeta().getStorageType(), ""+ts.getTime())));
 			//partition.removeColumn(""+ts.getTime());
 			s.put(meta.getColumnFamily(), partition);
 			if (count%flushSize == 0) {

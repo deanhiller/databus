@@ -24,6 +24,7 @@ import com.alvazan.play.NoSql;
 
 import controllers.SecurityUtil;
 import controllers.api.ApiPostDataPointsImpl;
+import controllers.api.DataManipulationUtils;
 import controllers.modules2.framework.ReadResult;
 import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.VisitorInfo;
@@ -117,8 +118,8 @@ public class LogProcessor extends PullProcessorAbstract {
 		//BigInteger timeStamp = new BigInteger((String)idVal);
 		long longTime = idVal.longValue();
 		Long partitionSize = tableMeta.getTimeSeriesPartionSize();
-		long partitionKey = ApiPostDataPointsImpl.calculatePartitionId(longTime, partitionSize);
-		ApiPostDataPointsImpl.putPartition(NoSql.em(), tableMeta, partitionKey);
+		BigInteger partitionKey = DataManipulationUtils.calculatePartitionId(longTime, partitionSize);
+		DataManipulationUtils.putPartition(NoSql.em(), tableMeta.getColumnFamily(), partitionKey);
 		
 		if (allColumns.size() > 1) {
 			List<Object> nodes = new ArrayList<Object>();
@@ -129,15 +130,15 @@ public class LogProcessor extends PullProcessorAbstract {
 					nodes.add(node);
 				colTypes.add(col.getStorageType());
 			}
-			LinkedHashMap<DboColumnMeta, Object> newValue = ApiPostDataPointsImpl.stringsToObjects(allColumns, colTypes, nodes);
+			LinkedHashMap<DboColumnMeta, Object> newValue = DataManipulationUtils.stringsToObjects(allColumns, colTypes, nodes);
 			
-			ApiPostDataPointsImpl.postRelationalTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, newValue, colTypes, false, partitionKey);
+			DataManipulationUtils.postRelationalTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, newValue, colTypes, false, partitionKey);
 		}
 		else {
 			DboColumnMeta singleCol = tableMeta.getAllColumns().iterator().next();
 			Object val = row2.get(singleCol.getColumnName());
 			
-			ApiPostDataPointsImpl.postTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, val, allColumns.get(0).getStorageType(), false, partitionKey);
+			DataManipulationUtils.postTimeSeriesImplAssumingPartitionExists(NoSql.em(), tableMeta, idVal, val, allColumns.get(0).getStorageType(), false, partitionKey);
 		}
 		
 	}
