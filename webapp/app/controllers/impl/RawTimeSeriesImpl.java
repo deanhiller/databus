@@ -100,8 +100,8 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 
 		for (DboColumnMeta thismeta:meta.getAllColumns())
 			colMeta.add(thismeta);
-		if (log.isInfoEnabled())
-			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
+//		if (log.isInfoEnabled())
+//			log.info("Setting up for reading partitions, partId="+currentIndex+" partitions="+existingPartitions+" start="+start);
 		
 		//jsc fire off read thread
 		String buffersizeString = Play.configuration.getProperty("databus.preread.buffer.size", "2000");

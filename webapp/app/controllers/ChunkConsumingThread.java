@@ -70,7 +70,8 @@ public class ChunkConsumingThread implements Runnable {
 		if (StringUtils.isNotBlank(configuredslurpsize))
 			numBytesPerSlurp = Integer.parseInt(configuredslurpsize);
 		
-		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(1000);
+		int queuesize = Math.max(numThreads*2, 10);
+		LinkedBlockingQueue<Runnable> queue = new LinkedBlockingQueue<Runnable>(queuesize);
 
 		executor = new ThreadPoolExecutor(numThreads, numThreads, 5, TimeUnit.MINUTES, queue, new OurRejectHandler());
 		
@@ -131,7 +132,7 @@ public class ChunkConsumingThread implements Runnable {
 				if (log.isDebugEnabled()) {
 					long newSubmit = StringUtils.countMatches(onlyCompleteLines, "\n");
 					submittedCount += newSubmit;
-					log.debug("ChunkConsumingThread submitted "+newSubmit+" new items, for a total of "+submittedCount);
+					log.debug("ChunkConsumingThread submitted "+newSubmit+" new items, for a total of "+submittedCount+" pool info: active, queuesize, completed: "+executor.getActiveCount()+", "+executor.getQueue().size()+", "+executor.getCompletedTaskCount());
 				}
 				remain = StringUtils.substringAfterLast(nextNibble, "\n");
 				nextNibble = slurp(reader, numBytesPerSlurp);

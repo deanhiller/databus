@@ -223,7 +223,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 				log.debug("SaveBacth creating a partition for timestamp "+timestamp+" start is "+currentPartitionStart+" end is "+currentPartitionEnd);
 			currentPartitionStart = DataManipulationUtils.calculatePartitionId(timestamp, tablePartitionSize.longValue());
 			currentPartitionEnd = currentPartitionStart.add(tablePartitionSize);
-			DataManipulationUtils.putPartition(mgr, table.getColumnFamily(), pkVal);
+			DataManipulationUtils.putPartition(mgr, table.getColumnFamily(), currentPartitionStart);
 		}
 		
 	}

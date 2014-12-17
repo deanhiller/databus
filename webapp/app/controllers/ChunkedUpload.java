@@ -72,11 +72,14 @@ public class ChunkedUpload extends Controller {
 				if (log.isDebugEnabled())
 					log.debug("in postDataCSV, asyncUploadingThread is "+asyncUploadingThread+" at "+System.currentTimeMillis());
 				asyncUploadingThread.setWaitingThread(Thread.currentThread());
+				
 				if (asyncUploadingThread != null) {
+					
 					while(!asyncUploadingThread.isProcessingComplete()) {
+						asyncUploadingThread.moreData();
 						if (log.isDebugEnabled())
 							log.debug("in postDataCSV, parking waiting for asyncuploadingthread.isProcessingComplete() at "+System.currentTimeMillis());
-						LockSupport.parkNanos(10000000000l);  //thats 10 seconds.
+						LockSupport.parkNanos(1000000000l);  //thats 1 second.
 						if (log.isDebugEnabled())
 							log.debug("got through park() in csvupload, testing isProcessingComplete at "+System.currentTimeMillis());
 					}

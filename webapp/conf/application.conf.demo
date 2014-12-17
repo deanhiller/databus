@@ -104,6 +104,9 @@ socket.upload.num.threads=4
 databus.preread.buffer.size=2000
 socket.upload.slurp.size=100000
 
+databus.time.series.partition.size=2592000000
+databus.relational.partition.size=2592000000
+
 
 # Server configuration
 # ~~~~~

@@ -66,7 +66,7 @@ public class RawTimeSeriesReversedImpl extends RawTimeSeriesImpl {
 			currentIndex--;
 			if(cursor.previous())
 				return cursor;
-		} while(!hasReachedEnd(start));
+		} while(!hasReachedEnd(end));
 
 		return null;	
 	}
@@ -74,9 +74,7 @@ public class RawTimeSeriesReversedImpl extends RawTimeSeriesImpl {
 	private boolean hasReachedEnd(Long end) {
 		if(currentIndex < 0)
 			return true;
-		Long partId = existingPartitions.get(currentIndex);
-		if(start > partId+partitionSize)
-			return true;
+		
 		return false;
 	}
 }

@@ -149,7 +149,8 @@ public class ApiRegistrationImpl {
 
 			String modelName = msg.getModelName();
 			String realCf = Utility.createCfName(modelName);
-			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+			String partitionSizeString = Play.configuration.getProperty("databus.time.series.partition.size", ""+TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS));
+			long partitionSize = Long.parseLong(partitionSizeString);
 			tm.setTimeSeries(true);
 			tm.setTimeSeriesPartionSize(partitionSize);
 			tm.setup(msg.getModelName(), realCf, false, null);
@@ -158,7 +159,8 @@ public class ApiRegistrationImpl {
 		} else if  (msg.getDatasetType() == DatasetType.RELATIONAL_TIME_SERIES) {
 			String modelName = msg.getModelName();
 			String realCf = Utility.createCfName(modelName);
-			long partitionSize = TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS);
+			String partitionSizeString = Play.configuration.getProperty("databus.relational.partition.size", ""+TimeUnit.MILLISECONDS.convert(30, TimeUnit.DAYS));
+			long partitionSize = Long.parseLong(partitionSizeString);
 			tm.setTimeSeries(true);
 			tm.setTimeSeriesPartionSize(partitionSize);
 			tm.setup(msg.getModelName(), realCf, false, null);

@@ -38,4 +38,8 @@ public class Line extends PlayPlugin {
 	public void setLength(int newlen) {
 		length = newlen;
 	}
+	
+	public String toString() {
+		return "lineNum:"+lineNumber+", len:"+length+", columns:"+columns;
+	}
 }
