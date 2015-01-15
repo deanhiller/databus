@@ -163,6 +163,7 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
                 }
                 catch (Exception ex) {
                 	ex.printStackTrace();
+                	throw new RuntimeException(ex);
                 }
                 if (chunk.isLast()) {
                 	try {

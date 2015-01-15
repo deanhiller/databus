@@ -511,11 +511,14 @@ public class MyDatabases extends Controller {
 				 */
 				if (log.isInfoEnabled())
 					log.info(" Adding new database: name=" + postedDatabase.getSchemaName());
+				if(!DboTableMeta.isValidTableName(postedDatabase.getSchemaName())) {
+					Validation.addError("postedDatabase.schemaName", "Database name is invalid, it much match regular expression=[a-zA-Z_][a-zA-Z_0-9]*");
+				}
+				else {
+					createSchema(user, postedDatabase.getSchemaName(), postedDatabase.getDescription());
+					successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been added.";
+				}
 				
-				createSchema(user, postedDatabase.getSchemaName(), postedDatabase.getDescription());
-				
-				
-				successMsg = "Database \"" + postedDatabase.getSchemaName() + "\" has been added.";
 			} else {
 				/**
 				 * This is an edit to an existing db

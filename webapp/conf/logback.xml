@@ -26,13 +26,14 @@
 		</encoder>
 		<target>System.err</target>
 	</appender>
-	
+	<!--  this causes performance problems in production, enable for dev or test if desired, but disable for prod
     <turboFilter class="com.alvazan.play.logging.MDCLevelFilter">
        <MDCKey>filter</MDCKey>
        <Value>true</Value>
        <ThisLevelOrBelow>INFO</ThisLevelOrBelow>
        <OnMatch>DENY</OnMatch>
     </turboFilter>
+    -->
   
     <!--  these can effect performance greatly, if doing any performance testing uncomment these lines! -->
     <!--  hierarchical entries left on purpose to make it easier to get just what you want  -->

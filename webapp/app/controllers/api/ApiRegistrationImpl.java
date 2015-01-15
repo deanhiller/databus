@@ -132,6 +132,9 @@ public class ApiRegistrationImpl {
 			if (!msg.isCreateschema())
 				throw new BadRequest("you must specify an existing schema or group");
 			else {
+				if(!DboTableMeta.isValidTableName(schemaName)) {
+					throw new BadRequest("Database name is invalid, it much match regular expression=[a-zA-Z_][a-zA-Z_0-9]*");
+				}
 				SecureSchema newSchema = new SecureSchema();
 				newSchema.setSchemaName(schemaName);
 				MyDatabases.createSchema(user, schemaName, null);
