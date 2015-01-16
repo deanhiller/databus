@@ -297,15 +297,23 @@ public class ApiPostDataPointsImpl extends PlayPlugin {
 
 	private static String getTimeAsMillisFromString(String node, String format) {
 		DateTimeFormatter parser = ISODateTimeFormat.basicDateTimeNoMillis();
+		Long UtcMillis = new Long(0);
 		if (StringUtils.isNotBlank(format)) {
-			try {
-				parser = DateTimeFormat.forPattern(format);
+			//special case for epoch seconds from unix instead of millis we expect usually
+			if (format.equals("ssssssssss")) {
+				UtcMillis = Long.valueOf(node)*1000;
 			}
-			catch (IllegalArgumentException iae) {
-				throw new RuntimeException("The date time format you provided is not legal, see this page for valid date formatting http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html");
+			else {
+				try {
+					parser = DateTimeFormat.forPattern(format);
+				}
+				catch (IllegalArgumentException iae) {
+					throw new RuntimeException("The date time format you provided is not legal, see this page for valid date formatting http://joda-time.sourceforge.net/apidocs/org/joda/time/format/DateTimeFormat.html");
+				}
+				UtcMillis = parser.parseDateTime(node).getMillis();
 			}
 		}
-		Long UtcMillis = parser.parseDateTime(node).getMillis();
+		
 		return ""+UtcMillis;
 		
 	}
