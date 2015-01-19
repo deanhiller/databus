@@ -143,6 +143,7 @@ public class DatabusStreamChunkAggregator extends SimpleChannelUpstreamHandler {
             // Merge the received chunk into the content of the current message.
             final HttpChunk chunk = (HttpChunk) msg;
             if (maxContentLength != -1 && (localFile.length() > (maxContentLength - chunk.getContent().readableBytes()))) {
+            	Logger.warn("max content length exceeded!  Size is "+localFile.length());
                 currentMessage.setHeader(HttpHeaders.Names.WARNING, "play.netty.content.length.exceeded");
             } else {
             	try {
