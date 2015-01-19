@@ -89,22 +89,32 @@ public class ChunkConsumingThread implements Runnable {
 	}
 	
 	public void runLoop() {
-		
-		while (!datacomplete) {
-			handleAvailable();
-			LockSupport.park();
-		}
-		//one last time to handle any missed chunks:
-		handleAvailable();
-		setProcessingComplete(true);
-		executor.shutdown();
 		try {
-			while (!executor.isTerminated())
-				executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
-		} catch (InterruptedException e) {}
-		if (log.isDebugEnabled())
-			log.debug("calling unpark at time "+System.currentTimeMillis());
-		LockSupport.unpark(getWaitingThread());
+			while (!datacomplete) {
+				handleAvailable();
+				LockSupport.park();
+			}
+			//one last time to handle any missed chunks:
+			handleAvailable();
+			setProcessingComplete(true);
+			executor.shutdown();
+			try {
+				while (!executor.isTerminated())
+					executor.awaitTermination(2000, TimeUnit.MILLISECONDS);
+			} catch (InterruptedException e) {}
+			if (log.isDebugEnabled())
+				log.debug("calling unpark at time "+System.currentTimeMillis());
+			LockSupport.unpark(getWaitingThread());
+		}
+		finally {
+			try {
+				in.close();
+			} catch (Exception ignore) {}
+			try {
+				this.sharedFile.delete();
+			} catch (Exception ignore) {}
+			this.sharedFile = null;
+		}
 	}
 	
 	public void moreData() {
