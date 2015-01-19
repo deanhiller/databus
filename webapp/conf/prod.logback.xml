@@ -3,12 +3,14 @@
 
     <!-- If MDC contains user=__postdata__ then that dude is getting a huge amount of traffic
          that we do not want to log.. -->
+         <!--  this causes performance problems in production, enable for dev or test if desired, but disable for prod
     <turboFilter class="com.alvazan.play.logging.MDCLevelFilter">
        <MDCKey>filter</MDCKey>
        <Value>true</Value>
        <ThisLevelOrBelow>INFO</ThisLevelOrBelow>
        <OnMatch>DENY</OnMatch>
     </turboFilter>
+    -->
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
