@@ -64,6 +64,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 	
 	public SaveBatch(DboTableMeta table, List<Line> batch2, SocketState state, Outbound outbound) {
 		
+		this.batch = batch2;
 		String flushsizeString = Play.configuration.getProperty("databus.commit.flush.size", "2500");
 		FLUSH_SIZE = Integer.parseInt(flushsizeString);
 		this.table = table;
@@ -76,7 +77,6 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 		tableColNames = new ArrayList<String>();
 		for (DboColumnMeta col:tableCols)
 			tableColNames.add(col.getColumnName());
-		this.batch = batch2;
 		this.state = state;
 		this.outbound = outbound;
 		this.tableColumnFamily = table.getColumnFamily();
@@ -116,6 +116,7 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 			if (log.isWarnEnabled())
         		log.warn("csv upload - Exception processing batch.", e);
 			reportError("Error processing batch. exception="+e+" msg="+e.getMessage());
+
 		}
 		finally {
 			setDone(true);
