@@ -119,6 +119,10 @@ public class SaveBatch  extends PlayPlugin implements Runnable {
 		}
 		finally {
 			setDone(true);
+			batch=null;
+			tableColNames=null;
+			colTypes=null;
+			tableCols=null;
 		}
 	}
 

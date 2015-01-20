@@ -108,6 +108,7 @@ public class ChunkConsumingThread implements Runnable {
 		}
 		finally {
 			try {
+				state=null;
 				in.close();
 			} catch (Exception ignore) {}
 			try {

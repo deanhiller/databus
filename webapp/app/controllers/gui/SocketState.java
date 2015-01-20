@@ -90,6 +90,7 @@ public abstract class SocketState extends PlayPlugin {
 	public void endOfData() {
 		//execute the last batch
 		executor.execute(new SaveBatch(tableMeta, batch, this, outbound));
+		batch=null;
 	}
 
 	public int getFileSize() {
