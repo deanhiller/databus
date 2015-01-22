@@ -381,7 +381,7 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 		private TSRelational translateTS(Column current, Object time, byte[] value) {
 			if (valueType == null)
 				valueType = colMeta.get(0).getStorageType();
-			return new TSRelational((BigInteger)time, fromBytes(valueType, value, colMeta.get(0)));
+			return new TSRelational(timeColumn, (BigInteger)time, valueColumn, fromBytes(valueType, value, colMeta.get(0)));
 		}
 		
 	}

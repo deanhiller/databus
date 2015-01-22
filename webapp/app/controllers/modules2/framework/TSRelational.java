@@ -25,6 +25,11 @@ public class TSRelational extends TreeMap<String, Object>{
 		this.put("time", time);
 		this.put("value", value);
 	}
+	
+	public TSRelational(String timeColName, BigInteger time, String valueColName, Object value) {
+		this.put(timeColName, time);
+		this.put(valueColName, value);
+	}
 
 	public long getTime() {
 		BigInteger timeStr = (BigInteger) this.get("time");

@@ -194,7 +194,9 @@ public class RawProcessor extends EndOfChain implements PullProcessor {
 		} else
 			subprocessor = new RawStreamProcessor();
 		
-		rowMeta = new RowMeta("time", "value");
+		if (getRowMeta() == null)
+			rowMeta = new RowMeta("time", "value");
+			
 		
 		subprocessor.init(meta, start, end, params.getPreviousPath(), visitor, rowMeta);
 		return res;
