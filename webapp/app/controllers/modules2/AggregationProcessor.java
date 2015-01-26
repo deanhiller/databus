@@ -53,22 +53,24 @@ public class AggregationProcessor extends StreamsProcessor {
 	public String init(String path, ProcessorSetup nextInChain,
 			VisitorInfo visitor, Map<String, String> options) {
 		String res = super.init(path, nextInChain, visitor, options);
-		for (String url:urls) {
-			String entryName = getRawDataSource(url);
-			if (entryNames.containsValue(entryName)) {
-				Set<Entry<String, String>> entries = entryNames.entrySet();
-				for (Entry<String, String> entry:entries) {
-					if (entry.getValue() != null && entry.getValue().equals(entryName)) {
-						String origEntry = entry.getKey();
-						entryNames.remove(origEntry);
-						entryNames.put(origEntry, origEntry);
-						entryNames.put(url, url);
-						break;
+		if (!isDynamic()) {
+			for (String url:urls) {
+				String entryName = getRawDataSource(url);
+				if (entryNames.containsValue(entryName)) {
+					Set<Entry<String, String>> entries = entryNames.entrySet();
+					for (Entry<String, String> entry:entries) {
+						if (entry.getValue() != null && entry.getValue().equals(entryName)) {
+							String origEntry = entry.getKey();
+							entryNames.remove(origEntry);
+							entryNames.put(origEntry, origEntry);
+							entryNames.put(url, url);
+							break;
+						}
 					}
 				}
+				else
+					entryNames.put(url, entryName);
 			}
-			else
-				entryNames.put(url, entryName);
 		}
 		
 		String dropIncompleteStr = options.get("dropIncomplete");
@@ -105,7 +107,7 @@ public class AggregationProcessor extends StreamsProcessor {
 				total = total.add(val);
 			}
 			
-			if(newFramework) {
+			if(newFramework || isDynamic()) {
 				for(Entry<String, Object> entry : row.entrySet()) {
 					if(timeColumn.equals(entry.getKey())) 
 						continue; //skip time column

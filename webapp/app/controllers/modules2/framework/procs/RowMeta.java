@@ -23,12 +23,23 @@ public class RowMeta {
 	public String getTimeColumn() {
 		return timeColumn;
 	}
+	
 	public String getValueColumn() {
 		if(valueColumns.size() > 0)
 			return valueColumns.get(0);
 		return null;
 	}
+	
 	public List<String> getValueColumns() {
 		return valueColumns;
+	}
+	
+	public void setValueColumns(List<String> valueCols) {
+		valueColumns = valueCols;
+	}
+	
+	public void setValueColumn(String valCol) {
+		valueColumns = new ArrayList<String>();
+		valueColumns.add(valCol);
 	}
 }

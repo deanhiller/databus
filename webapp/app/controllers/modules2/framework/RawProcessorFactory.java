@@ -18,6 +18,8 @@ import controllers.modules2.AggregationProcessorOld;
 import controllers.modules2.ColumnSelectProcessor;
 import controllers.modules2.DataFillerProcessor;
 import controllers.modules2.DateFormatMod;
+import controllers.modules2.DynamicAggregationPipeProcessor;
+import controllers.modules2.DynamicAggregationProcessor;
 import controllers.modules2.FirstValuesProcessor;
 import controllers.modules2.FullStreamProcessor;
 import controllers.modules2.GapProcessor;
@@ -90,7 +92,9 @@ public class RawProcessorFactory implements Provider<ProcessorSetup> {
 		nameToClazz.put("columnselectV1", ColumnSelectProcessor.class);
 		nameToClazz.put("aggregation", AggregationProcessorOld.class);
 		nameToClazz.put("aggregationV1", AggregationProcessor.class);
+		nameToClazz.put("dynamicaggregationV1", DynamicAggregationProcessor.class);
 		nameToClazz.put("aggregationpipeV1", AggregationPipeProcessor.class);
+		nameToClazz.put("dynamicaggregationpipeV1", DynamicAggregationPipeProcessor.class);
 		nameToClazz.put("fillerV1", DataFillerProcessor.class);
 		nameToClazz.put("dateformatV1", DateFormatMod.class);
 		nameToClazz.put("relationalsummaryV1", RelationalSummaryProcessor.class);

@@ -62,18 +62,6 @@ public abstract class ProcessorSetupAbstract extends PlayPlugin implements Proce
 		int numParams = getNumParams();
 		List<String> result = new ArrayList<String>();
 		String[] pieces = path.split("/");
-		int i = 1;
-		for(; i < numParams+1; i++) {
-			result.add(pieces[i]);
-		}
-		String newPath ="";
-		for(int n = i; n < pieces.length; n++) {
-			newPath += pieces[n];
-			if(n+1 < pieces.length)
-				newPath+="/";
-		}
-		
-		
 		Long start = null;
 		Long end;
 		String to   = pieces[pieces.length-1];
@@ -91,8 +79,41 @@ public abstract class ProcessorSetupAbstract extends PlayPlugin implements Proce
 				//there is no times, so let's create our own
 				start = null;
 			}
-		}		
+		}	
+
+		String newPath ="";
+		//start with a path that doesn't have a trailing slash for consistency:
+		path = path.substring(0, path.length() - (path.endsWith("/") ? 1 : 0));
+		// -1 means consume all the rest of the url (except for start and end) as a parameter to this
+		if (numParams < 0) {
+			String pathWithoutModuleName = StringUtils.substringAfter(path, "/");
+			if (start==null && end==null) {   // ../dynamicaggregationpipeV1/every/thing/here
+				result.add(pathWithoutModuleName);
+				newPath="";
+			}
+			else if (to!=null && start==null) {	  // ../dynamicaggregationpipeV1/every/thing/here/100010101
+				newPath = "/"+end;
+				result.add(pathWithoutModuleName.substring(0, pathWithoutModuleName.length()-newPath.length()));
+			}
+			else {    // ../dynamicaggregationpipeV1/every/thing/here/100010101/2020202
+				newPath = "/"+start+"/"+end;
+				result.add(pathWithoutModuleName.substring(0, pathWithoutModuleName.length()-newPath.length()));
+			}
+		}
+		else {
+			int i = 1;
+			for(; i < numParams+1; i++) {
+				result.add(pieces[i]);
+			}
+			for(int n = i; n < pieces.length; n++) {
+				newPath += pieces[n];
+				if(n+1 < pieces.length)
+					newPath+="/";
+			}
+				
+		}
 		return new Path(result, path, newPath, start, end, visitor.isReversed());
+
 	}
 	
 	protected int getNumParams() {
