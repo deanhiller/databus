@@ -380,7 +380,7 @@ System.out.println(sourceUrl);
 			TSRelational row = result.getRow();
 			//if it only has 'time' and 1 value, replace the value name
 			//or if it has any number of vals, but one is 'value', replace its name
-			if (row.size() == 2 || row.containsKey("value")){
+			if (row != null && (row.size() == 2 || row.containsKey("value"))){
 				Object value = row.get(row.getValCol());
 				row.remove(row.getValCol());
 				row.setValCol(name);
