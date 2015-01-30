@@ -30,7 +30,7 @@ public abstract class StreamsProcessor extends PullProcessorAbstract {
 	static final String DYNAMIC_SOURCE_PREFIX = "src";
 	static final String DYNAMIC_SOURCE_NAME_PREFIX = "srcName";
 	static final String RAW_DATA_MODULE_NAME = "rawdataV1";
-	static final int MAX_DYNAMIC_SOURCES = 8;
+	static final int MAX_DYNAMIC_SOURCES = 12;
 	static final Logger log = LoggerFactory.getLogger(StreamsProcessor.class);
 
 	protected Long currentTimePointer;
