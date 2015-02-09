@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -284,13 +285,17 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 			TSRelational nextItem = nextResult();
 			while (nextItem != null) {
 				try {
-					itemsQueue.put(nextItem);
-					nextItem = nextResult();
-					if (log.isDebugEnabled()) {
-						if (count %1000 == 0)
-							log.debug("Adding an item, the size of the queue is "+itemsQueue.size()+" we've loaded "+count+" items");
+					if (itemsQueue.offer(nextItem, 5, TimeUnit.SECONDS)) {
+						nextItem = nextResult();
+						if (log.isDebugEnabled()) {
+							if (count %1000 == 0)
+								log.debug("Adding an item, the size of the queue is "+itemsQueue.size()+" we've loaded "+count+" items");
+						}
+						count++;
 					}
-					count++;
+					else {
+						break;
+					}
 				}
 				catch (InterruptedException ie) {
 					ie.printStackTrace();
