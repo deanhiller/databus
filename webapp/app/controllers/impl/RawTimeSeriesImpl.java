@@ -303,7 +303,7 @@ public class RawTimeSeriesImpl  extends PlayPlugin {
 				}
 			}
 			try {
-				itemsQueue.put(END_OF_DATA_TOKEN);
+				itemsQueue.offer(END_OF_DATA_TOKEN, 5, TimeUnit.SECONDS);
 			} catch (InterruptedException e) {
 				//ignore
 			}
