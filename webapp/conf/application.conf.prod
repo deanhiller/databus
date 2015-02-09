@@ -71,10 +71,10 @@ email.fromaddress=dean.hiller@nrel.gov
 # When rendering templates with reverse-url-resoling (@@{..}) in Jobs (which do not have an inbound Http.Request),
 # ie if sending a HtmlMail, Play need to know which url your users use when accessing your app.
 # %test.application.baseUrl=http://localhost:9000/
-application.baseUrl=https://databus.hpc.nrel.gov
+application.baseUrl=https://databus.nrel.gov
 
 #The url that we turn around and make requests to(service chaining)
-application.requestUrl=http://databus.hpc.nrel.gov:81
+application.requestUrl=http://databus.nrel.gov:81
 
 # This is the main configuration file for the application.
 # ~~~~~
