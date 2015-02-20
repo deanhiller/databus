@@ -1,4 +1,3 @@
-
 # Databus
 
 NREL works off of this repository for databus development.  
