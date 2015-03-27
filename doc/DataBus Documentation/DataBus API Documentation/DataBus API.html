@@ -1,0 +1,2075 @@
+<head>
+    <title>DataBus | API</title>
+    <script type="text/javascript" src="prettify.js"></script>
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="panel-test.css">
+    <link rel="stylesheet" type="text/css" href="natural.min.css">
+    <!--<link rel="stylesheet" type="text/css" href="earthsong-light.css">-->
+    <!--<link rel="stylesheet" type="text/css" href="github.css">-->
+</head>
+<body>
+<h1 class="db_page_title">DataBus API Documentation</h1>
+    <p>There are three primary ways to interact with DataBus</p>
+    <ol>
+        <li>Transferring data</li>
+        <li>Querying and viewing data</li>
+        <li>Managing data</li>
+    </ol>
+    <p>This section discusses and provides examples of working with DataBus via the API.  Each example contains the general blueprint for the request followed by a specifc example using your specific authentication credentials.</p>
+    
+<h3>DataBus API Specification</h3>
+    <p>First, let's revisit the parameters for communication with DataBus that were introduced in the <a href="../GetStarted#Provisioning DataBus">Provisioning DataBus</a> section.  The DataBus API uses <span class="label label-info">JSON</span> as the mechanism for transferring data to and from the DataBus server.  All API calls require the POST payload of a request to be in the <span class="label label-info">JSON</span> format.  The following information is relevant to making DataBus API calls.</p>
+    <h4>Header</h4>
+      <p>The request method header should always specify a Content-Type of JSON:</p>
+    <pre>Header:	Content-Type:application/json</pre>
+    <h4>Authentication</h4>
+<p>We will use your DataBus User account and API Key to authenticate with the DataBus Server:</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+		<table width="50%" cellspacing="0">
+			<tbody><tr style="border-bottom: 0;">
+				<td width="20%" style="color: #01355e;"><b> User Name: </b></td>
+				<td>{user's name}</td>
+                </tr><tr>
+				<td width="25%" style="color: #01355e;"><b> DataBus API Key: </b></td>
+				<td>{user's api key}</td>
+			</tr>
+		</tbody></table>
+	</div>
+<h4>URL</h4>
+    <p>The URL of the DataBus Server is:</p>
+    <pre class="">
+        <b style="display:inline-block;width:150px;color:#01355e;">URL:</b> <b style="color:#01355e;">https://databus.nrel.gov/</b>
+    </pre>
+    <p>Each type of request has a different path associated with it.  The examples below provide the full URL path needed to perform the request.</p>
+    
+<h4>HTTP Request Methods</h4>
+    <h5>GET Method</h5>
+    <p>Use the GET method to fetch data.  Here is an example of how a GET request to DataBus should be constructed:</p>
+    <pre class="">$ curl GET -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/{moduleName}/{tableName}</pre>
+    <br>
+    <p>The examples used in this documentation place the authentication in the curl arguments.  An alternative way to structure the request that is not dependent on the curl command is to put the credentials within the url itself:</p>
+    <pre>$ curl GET -i -H "Accept: application/json" -H "Content-Type: application/json" https://your_username:your_api_key@databus.nrel.gov/api/{moduleName}/{tableName}</pre>
+    <br>
+    <p>GET requests can be used with modules to pre-process raw data before a download.  The module is defined in the URL path:</p>
+    <pre>$ curl GET -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/{moduleName}/{tableName}</pre>
+    <br>
+    <p>Modules can be "stacked" in a sequence within the URL path to refine results:</p>
+    <pre>$ curl GET -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/{module1}/{module2}/{module3}/{tableName}</pre>
+    <br>
+    <p>See the <a href="#databus-modules">DataBus Modules</a> section and examples below for more information about using modules.</p
+    <br><br>
+    <h5>POST Method</h5>
+    <p>Use the POST method to create tables or insert data.  Here is an example of how a POST request to DataBus should be constructed:</p>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @yourJSONdefinition.txt https://databus.nrel.gov/api/registerV1</pre>
+    <br>
+    <p>The examples used in this documentation place the authentication in the curl arguments.  An alternative way to structure the request that is not dependent on the curl command is to put the credentials within the url itself:</p>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" -d @yourJSONdefinition.txt http://your_username:your_api_key@databus.nrel.gov/api/registerV1</pre>
+    <br>
+<h4>HTTP Response</h4>
+    <p>The DataBus server will respond to your request.  If your request was successful, you will receive a <span class="label label-success">RESULT CODE of 200</span>:</p>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @yourJSONdefinition.txt https://databus.nrel.gov/api/registerV1<br>{"modelName":"ExampleTable","groups":[]}<br>RESULT CODE:200</pre>
+    <br>
+    <p>If your request was unsuccessful, the response message and RESULT CODE from the server will provide you with information describing what the error was:</p>
+<pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @yourJSONdefinition.txt https://databus.nrel.gov/api/registerV1<br>Sorry, table with tablename='ExampleTable' is already in use<br>RESULT CODE:400</pre>
+    <br>
+<h2>Create Table</h2>
+    <p>Before data is able to be uploaded (written) to DataBus, the data must be provisioned.  A simple example is provided here that demonstrates creating a database and a table.  Please refer to the <a href="../GetStarted#Provisioning DataBus">Provisioning DataBus</a> in the Getting Started section for complete details on creating databases and tables.</p>
+    <h5>Create a table and schema:</h5>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleTable.txt https://databus.nrel.gov/api/registerV1</pre>
+    <h5>ExampleTableDefinition payload:</h5>
+    <pre class="prettyprint prettyprinted" style="width: 90%;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"TIME_SERIES"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"ExampleTable"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"ExampleDatabase"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"createschema"</span><span class="pun">:</span><span class="str">"true"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"time"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigInteger"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">},</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"value"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">]</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+<h2>Uploading Data</h2>
+    <p>After creating a database and table, you can start inserting data. To upload (write) data to the DataBus server make sure the data is formatted correctly for DataBus and use a POST request to insert it.</p>
+<section id="uploading-data" class="panel panel-default">
+
+<div class="panel-heading"><div style="overflow:hidden"><h4>Uploading Requirements</h4></div></div>
+<div class="panel-body">
+    <p>There are a few key things to keep in mind when preparing to upload data</p>
+    <ul class="list-group">
+        <li class="list-group-item">Uploading data will require the authentication.  This will be either your DataBus user name and API key or the credentials for a robot you have created.</li>
+        <li class="list-group-item">The name of the table you are inserting data into.</li>
+        <li class="list-group-item">The type of the table you are inserting data into.</li>
+        <li class="list-group-item">The data, of course.</li>
+    </ul>
+    <h4>Data Format</h4>
+    <p>You can upload data in <span class="label label-info">JSON</span> or <span class="label label-success">CSV</span> format.</p>
+    <p>If uploading a <span class="label label-success">CSV</span>, be sure the format of the file meets the following criteria:</p>
+    <ul class="list-group">
+        <li class="list-group-item">A header line that contains field names for each column in your table.</li>
+        <li class="list-group-item">The header must ONLY contain field names that exist in the table you are uploading to.</li>
+        <li class="list-group-item">The header field names must match the column names (including case) in the table you are uploading to.</li>
+        <li class="list-group-item">The field names in the header can be in any order.</li>
+        <li class="list-group-item">The header does NOT have to contain all columns in the table.  Any data uploaded in a CSV where a column in the table does not have a corresponding entry in the header line will have blank values in the columns that are not represented in the CSV header.</li>
+        <li class="list-group-item">In the data lines each values type must correctly match the type of data in the corresponding column in the table being uploaded to.  This is important for numeric values, a column of type BigDecimal can have a value '1.0' as an entry in the CSV, but a column of type BigInteger must be '1', not '1.0'.</li>
+    </ul>
+    <h4>Upload URL</h4>
+    <pre> https://databus.nrel.gov/api/postdataV1 </pre>
+    <br>
+    <h4>Data Upload POST Request</h4>
+    <p>Here is an example of how a POST request to upload data should be constucted:</p>
+    <b>!!!--TEST POST--</b><i>this contained a bug at the time of writing...</i>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key --data-binary @yourData.csv -o out.txt https://databus.nrel.gov/api/{postdataV1 OR postcsvV1}/ExampleTable</pre>
+</div>    
+</div>
+</section>
+<br>
+<h3>Uploading Multiple Entries in a Single POST</h3>
+    <p>Multiple entries can be uploaded to a table in a single POST request.  This is done by simply adding more entries to the <span class="label label-info">JSON</span> file.</p>
+    <div id="upload-error" class="alert alert-danger alert-dismissible alert-block offset2">
+	  One <b>extremely</b> important consideration when making multiple entry uploads is that if there is any single error in the <span class="label label-info">JSON</span> payload, it will cause the entire POST request to fail.
+	  <br><br>
+	  This means that if there are thousands of entries in a single file and a just one entry contains a spelling mistake in the table name, all of the entries will fail and nothing will be uploaded.
+	</div>
+<br>
+<section id="example-upload-stream" class="panel panel-success">
+<div class="panel-heading"><h5>Example: Uploading Time Series Data</h5>
+</div>
+<div class="panel-body">
+    <p>This example demonstrates uploading <span class="label label-info">JSON</span> data to a TIME_SERIES table. It is presumed that a table named <span class="label label-warning">ExampleTable</span> already exists and belongs to the database <span class="label label-warning">ExampleDatabase</span>.</p>
+    <p>Recall that TIME_SERIES data should only contain two columns, time and value.  Also recall that the <b>time</b> column should contain time and date values as an epoch timestamp.  Refer to the <a href="../DataBus DataModel#Time Specification">Time Specification</a> section for more details about time and date format in DataBus.</p>
+    <br>
+    <h4>Example Table Structure</h4>
+    <pre class="prettyprint">
+{"datasetType":"TIME_SERIES",
+ "modelName":"ExampleTable",
+ "schema":"ExampleDatabase",
+ "columns":[
+           {"name":"time", "dataType":"BigInteger", "isIndex":true, "isPrimaryKey":true},
+           {"name":"value", "dataType":"BigDecimal", "isIndex":true, "isPrimaryKey":false}
+           ]
+}
+    </pre>
+    <br>
+    <h4>Single Entry Upload</h4>
+    <p>The <span class="label label-info">JSON</span> to send a single entry to this table should look like this:</p>
+    <pre class="prettyprint">
+{"_dataset":[
+            {"_tableName":"ExampleTable","time":1360006291000,"value":162.6911}
+            ]
+}
+    </pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>SingleExampleData.txt</code></p>
+    <br>
+        <h4>Multiple Entry Upload</h4>  
+    <p>Send multiple entries to a table in the same POST.  Add more entries to the <span class="label label-info">JSON</span> file:</p>
+    <pre class="prettyprint">
+{"_dataset":[
+            {"_tableName":"ExampleTable","time":1360006292000,"value":162.6911},
+            {"_tableName":"ExampleTable","time":1360006293000,"value":163.6911},
+            {"_tableName":"ExampleTable","time":1360006294000,"value":164.6911},
+            {"_tableName":"ExampleTable","time":1360006295000,"value":165.6911},
+            {"_tableName":"ExampleTable","time":1360006296000,"value":166.6911},
+            {"_tableName":"ExampleTable","time":1360006297000,"value":167.6911}
+            ]
+}
+    </pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>SingleExampleData.txt</code></p>
+    <br>
+    <h4>Data Upload POST Request</h4>
+    <p>Here is an example of how a POST request to upload data should be constucted:</p>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @SingleExampleData.txt https://databus.nrel.gov/api/postdataV1</pre>
+</div>  
+</section>  
+<br>
+<section id="example-upload-relational" class="panel panel-success">
+<div class="panel-heading"><h5>Example: Uploading RELATIONAL_TABLE Data</h5>
+</div>
+<div class="panel-body">
+    <p>This example demonstrates uploading <span class="label label-info">JSON</span> data to a RELATIONAL_TABLE table. It is presumed that a table named <span class="label label-warning">ExampleRelationalTable</span> already exists and belongs to the database <span class="label label-warning">ExampleDatabase</span>.</p>
+    <br>
+    <h4>Example Table Structure</h4>
+    <pre class="prettyprint">
+{"datasetType":"RELATIONAL_TABLE", 
+  "modelName":"ExampleRelationalTable", 
+  "schema":"ExampleDatabase", 
+  "columns":[ 
+            {"name":"time","dataType":"BigInteger","isIndex":true,"isPrimaryKey":true}, 
+            {"name":"color","dataType":"string","isIndex":false,"isPrimaryKey":false}, 
+            {"name":"volume","dataType":"BigDecimal","isIndex":false,"isPrimaryKey":false} 
+            ] 
+}
+    </pre>
+    <br>
+    <h4>Multiple Relational Entry Upload</h4>
+    <p>The <span class="label label-info">JSON</span> to send a multiple entries to a relational table should look like this:</p>
+    <pre class="prettyprint">
+{"_dataset":[ 
+            {"_tableName":"ExampleRelationalTable", "time":10,"color":"grey","volume":23.2}, 
+            {"_tableName":"ExampleRelationalTable", "time":0,"color":"grey","volume":23.2}, 
+            {"_tableName":"ExampleRelationalTable", "time":53,"color":"grey","volume":23.2} 
+            ] 
+}
+    </pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>RelationalExampleData.txt</code></p>
+    <br>
+    <h4>Data Upload POST Request</h4>
+    <p>Here is an example of how a POST request to upload data should be constucted:</p>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @RelationalExampleData.txt https://databus.nrel.gov/api/postdataV1</pre>
+</div>    
+</section>  
+<br>
+<h3>Uploading to Multiple Tables in a Single POST</h3>
+    <p>It is possible to upload multiple sets of data to multiple tables at once with the DataBus API.  This is done by defining the multiple tables and entries in the <span class="label label-info">JSON</span> file.</p>
+    <div class="alert alert-danger alert-dismissible alert-block offset2">
+	  Uploading to multiple tables in a single POST has the same risks as noted <a href="#upload-error">above</a> for uploading multiple entries.
+	  <br><br>
+	  This means that if that if there is any single error in the <span class="label label-info">JSON</span> payload, it will cause the entire POST request to fail.
+	</div>
+    <br>
+<section id="example-upload-relational" class="panel panel-success">
+<div class="panel-heading"><h5>Example: Uploading to Multiple Tables</h5>
+</div>
+<div class="panel-body">
+    <p>This example demonstrates a <span class="label label-info">JSON</span> data file that uploads data to 5 different tables in a single POST.  It is presumed that the tables already exist and belong to a common existing database.</p>
+    <br>
+    <h4>Multiple Table Entry Upload</h4>
+    <p>The <span class="label label-info">JSON</span> to send a multiple entries to a relational table should look like this:</p>
+    <pre class="prettyprint">
+{"_dataset":[  
+            {"_tableName":"ExampleRelationalTable", "time":75,"color":"purple","volume":741.66},
+            {"_tableName":"ExampleTable","time":1360006298000,"value":2.0},
+            {"_tableName":"ExampleTable2", "lat":39.741201, "long":-105.168514, "description":"This is where NREL is."},
+            {"_tableName":"AnotherRelationalTableExample", "depth":432.03, "depth_units":"meters", "temp":5.6, "temp_units":"C"},
+            {"_tableName":"AnotherTimeSeriesExample","time":1360006299000,"value":563.22}
+            ] 
+}
+    </pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>MultiTableExampleData.txt</code></p>
+    <br>
+    <h4>Data Upload POST Request</h4>
+    <p>Here is an example of how a POST request to upload data should be constucted:</p>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @MultiTableExampleData.txt https://databus.nrel.gov/api/postdataV1</pre>
+</div>    
+</section>  
+<br><br>
+<h2>Downloading Data</h2>
+        <p>Data from DataBus can be accessed with a GET request.  You can also view data in a web browser by placing the URL provided in the following examples in the address bar.</p>
+    <br>
+<section id="downloading-data" class="panel panel-default"><div class="panel-heading"><div style="overflow:hidden"><h4>Downloading Requirements</h4></div>
+</div>
+<div class="panel-body">
+    <p>There are a few key things to have prepared when getting ready to download (read) data:</p>
+    <ul class="list-group">
+        <li class="list-group-item">The name of the table you are reading from.</li>
+        <li class="list-group-item">The type of the table you are reading from.</li>
+        <li class="list-group-item">The start time in milliseconds since the epoch.</li>
+        <li class="list-group-item">The end time in milliseconds since the epoch.</li>
+        <li class="list-group-item">The format to be returned, <span class="label label-success">CSV</span> or <span class="label label-info">JSON</span>.</li>
+    </ul>
+    <div class="alert alert-info alert-block offset2">
+        It is important to note that TIME_SERIES examples may use a <span class="label label-warning">startTime</span> and <span class="label label-warning">endTime</span>.  The default unit of time used by DataBus for GET requests is in milliseconds.  Use <a href="http://www.epochconverter.com/">Epoch Converter</a> to convert date to time in milliseconds.
+    </div>
+</div>    
+</section>
+<Br>
+<h3>GET Request</h3>
+    <p>Your GET request will need to contain the following in order to read data from DataBus:</p>
+    <ul class="list-group">
+        <li class="list-group-item">The GET request method header should always specify the Content-Type as <span class="label label-info">JSON</span>:<br><br><pre class="">Header: Content-Type:application/json</pre></li>
+        <li class="list-group-item">Reading data will require the authentication.  This will be either your DataBus user name and API key or the credentials for a robot you have created:<br><br><pre>your_username:your_api_key</pre><span style="margin-left:90px;">OR</span><pre>robot_name:robot_api_key</pre></li>
+        <li class="list-group-item">The URL the GET request will be sent to:<br><br>
+            <!--<div class="col-lg-6">-->
+            <div class="input-group" style="margin:0 80px;">
+                <input type="text" class="form-control" placeholder="https://databus.nrel.gov/api/{moduleName}/{tableName}/{startTime}/{endTime}" disabled>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Copy</button>
+                </span>
+            </div><!-- /input-group -->
+            <!--</div><!-- /.col-lg-6 -->
+        </li>
+    </ul>
+<section id="downloading-data" class="panel panel-default"><div class="panel-heading"><div style="overflow:hidden"><h4>GET Request URL Construction</h4></div>
+</div>
+<div class="panel-body">
+    <p>The URL for a GET request has two primary parts, the server location (host name) and request parameters (path name).  The server location is where you are storing your tables.  The path name will contain the parameters for your query.</p>
+    <b>The minimum requirements for a path name are:</b>
+    <ul class="list-group">
+        <li class="list-group-item">/api/</li>
+        <li class="list-group-item">/data source module/
+            <br><br>
+            <i style="margin-left:80px">For TIME_SERIES and RELATIONAL_TIME_SERIES types, use the <a href="#Raw Data Module">Raw Data Module</a></i><br>
+            <i style="margin-left:80px">For the RELATIONAL_TABLE type, use the <a href="#Get Data Module">Get Data Module</a></i>
+        </li>
+        <li class="list-group-item">/the table name/</li>
+    </ul>
+    <b>Basic URL for a GET request</b>
+    <p>Using the minimum requirements, the most basic URL for a GET request is:</p>
+    <pre>https:databus.nrel.gov/api/{rawdataV1 <i>OR</i> getdataV1}/{tableName}</pre>
+    <br>
+    <p>The basic URL will return all results for the queried table.  In some cases this may be exactly what you need.  In most cases, users are searching for specific data from a table, to refine the returned results you'll want to use some of the optional parameters.</p>
+    <br>
+    <b>Optional</b>
+    <p>The <span class="label label-warning">startTime</span> and <span class="label label-warning">endTime</span> parameters can be added after the table name to specify specific date ranges (formatted as epoch).  Also, additional modules can be used in sequence within the path name to better refine the results you are searching for.  See the <a href="#Modules">Modules</a> section below to learn more.</p>
+    <p>Here is an example of what a URL may look like using optional parameters:</p>
+    <!--<div class="col-lg-6">-->
+            <div class="input-group" style="margin:0 80px;">
+                <input type="text" class="form-control" placeholder="https://databus.nrel.gov/api/{optionalModuleName}/{rawdataV1 OR getdataV1}/{tableName}/{startTime}/{endTime}" disabled>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="button">Copy</button>
+                </span>
+            </div><!-- /input-group -->
+            <!--</div><!-- /.col-lg-6 -->
+</div>    
+</section>
+<section id="basic-get-request" class="panel panel-info"><div class="panel-heading"><div style="overflow:hidden"><h5>Example: GET request URL</h5></div></div></div>
+<div class="panel-body">
+    <p>The most basic method of reading data from DataBus is to simply input the constructed URL into the address bar of a web browser.  the browser will perform the GET request (it may open a dialog box requesting credentials) and display the results in your browser window.</p>
+</div>
+<div class="panel-footer">
+    <pre>https://databus.nrel.gov/api/rawdataV1/ExampleTable</pre>
+</div>
+</section>
+<br>
+<section id="example-get-request" class="panel panel-info"><div class="panel-heading"><div style="overflow:hidden"><h5>Example: Basic GET request</h5></div></div>
+<div class="panel-body">
+    <p>The construced URL may also be used in the command line with an application such as curl.  This is an example of a raw data request with curl, using the example URL from above.  Results will be displayed in your command line interface.</p>
+    </div>
+<div class="panel-footer">
+    <pre>$ curl -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/rawdataV1/ExampleTable</pre>
+</div>
+</section>
+<br>
+<section id="download-get-request" class="panel panel-info"><div class="panel-heading"><div style="overflow:hidden"><h5>Example: Download GET request to a file</h5></div></div>
+<div class="panel-body">
+    <p>You can use the command line interface to download and save the GET request results locally.  This is an example of using curl to save a raw data request to a local file.  The file will be saved to the directory you were in when the command was executed.</p>
+</div>
+<div class="panel-footer">
+    <pre>$ curl -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/rawdataV1/ExampleTable -o "getMyTestData.txt"</pre>
+</div>
+</section>
+<br>
+<section id="load-balance" class="panel panel-default"><div class="panel-heading"><div style="overflow:hidden"><h4>Load Balancing</h4></div></div>
+<div class="panel-body">
+    <p>If you have a very large result set you want to download, you should code the client to download in chunks and download subset ranges of the data as our load balancer can do the retries for you if there is a failure when we do our rolling upgrade so that you get all your data.</p>
+    <p>The <span class="label label-info">JSON</span> response is STREAMED back to you such that very large datasets can be sent back without running out of memory. The result format will be similar to the following example (depending on your table's meta data):</p>
+    <pre class="prettify">
+{ "data": [
+    {"time":"0", "color":"grey","volume":"23.2"},
+    {"time":"10","color":"grey","volume":"23.2"},
+    {"time":"11","color":"grey","volume":"23.2"},
+    {"time":"30","color":"pink","volume":"34.5"},
+    {"time":"51","color":"grey","volume":"23.2"},
+    {"time":"53","color":"grey","volume":"23.2"}
+          ] 
+}
+    </pre>
+</div>
+</section>
+<br>
+<h2 id="databus-modules">DataBus Modules</h2>
+    <p>GET requests can be used with modules to pre-process raw data before a download.  Modules are defined in the URL path.  Modules can also be "stacked" in the URL path, allowing you to use multiple modules to further refine your results.  The following examples provide a description of each module and provide an example URL of it in use.</p>
+<br>
+<h3>Data Source</h3>
+    <p>The data source is based on the type of table that is being queried.  A data source module is <span style="font-style:italic;font-weight:bold;">required</span>.  There are two available modules:</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#raw-module" class="list-group-item">Raw Data Module</a>
+        <a href="#getdata-module" class="list-group-item">Get Data Module</a>
+    </div>
+    <p>The Raw Data module works with TIME_SERIES and RELATIONAL_TIME_SERIES</p>
+<section id="raw-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Raw Data Module</h5>
+    <div style="overflow:">
+        <code style="padding:10px 5px;">/rawdataV1/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>raw data module</b> allows users to get raw data from a time series or relational time series table.  Most of the other modules can be combined in sequence with this module.</p>
+    <p>Because DataBus is optimized for time series data, most GET requests will utilize this module.</p></p>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+        <div class="well well-sm spec">
+            The version should be defined at the end of the module declaration
+        </div>
+        <div class="well well-sm spec">
+            Should always be the last module defined in the URL path
+        </div>
+</div>
+<div class="panel-body"> 
+    <b>Parameters:</b>
+        <div class="well well-sm param">
+            none
+        </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+    <p>The Get Data module works with RELATIONAL_TABLE</p>
+<section id="getdata-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Get Data Module</h5>
+    <div style="overflow:">
+        <code style="padding:10px 5px;">/getdataV1/{sqlQuery}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>get data module</b> allows users to get data from a relational table.  It uses an SQL query format to define the table rather than simply listing the table name like the raw module example does.  The query structure in the DataBus API requires that all spaces from a standard SQL query be replaced with + characters.</p>
+    <p>The most basic URL structure for using this module is:</p>
+    <pre>https://databus.nrel.gov/api/getdataV1/select+t+from+{tableName}+as+t</pre>
+    <br>
+    <p>The <b>get data module</b> can utilize other SQL statements, such as using the WHERE clause to only return filtered results that occur after a certain start time:</p>
+    <pre>https://databus.nrel.gov/api/getdataV1/select+t+from+{tableName}+as+t+where+t.{columnName}>1359763200000</pre>
+    <p style="margin:10px 80px;">Where {columnName} has to be the primary key for the table.  Or, within a range:</p>
+    <pre>https://databus.nrel.gov/api/getdataV1/select+t+from+{tableName}+as+t+where+t.{columnName}>1359763200000+and+t.{columnName}<=1364083200000</pre>
+    <p style="margin:10px 80px;">Or performing a join.  Since the SQL query follows more of an object query language, you can use c.owner knowing owner is a foreign key.</p>
+    <pre>https://databus.nrel.gov/api/getdataV1/select+c+from+{tableName}+as+c+left+join+c.owner+as+table+where+table.{columnName}='joinExample'</pre>
+</div>
+<div class="panel-body">    
+    <p>This module is only compatible with a few of the other modules:
+        <div class="list-group" style="width:25%;margin-left:80px;">
+            <a href="#csv-module" class="list-group-item">CSV Module</a>
+            <a href="#json-module" class="list-group-item">JSON Module</a>
+            <a href="#relational-module" class="list-group-item">Relational Module</a>
+            <a href="#column-select" class="list-group-item">Column Select Module</a>
+        </div>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+    <div class="well well-sm spec">
+        Should always be the last module defined in the URL path
+    </div>
+</div>
+<div class="panel-body"> 
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        SQL SELECT statement to retrieve data from a table
+    </div>
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/getdataV1/select+t+from+ExampleTable+as+t</pre>
+</div>    
+</section>
+<br>
+<h3>Data Format</h3>
+    <p>Data can be returned in one of two different formats:</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#json-module" class="list-group-item">JSON Module</a>
+        <a href="#csv-module" class="list-group-item">CSV Module</a>
+    </div>
+    <p>The default format type is <span class="label label-info">JSON</span>, if a download type is not defined your GET request will be formatted as <span class="label label-info">JSON</span>.</p>
+<section id="json-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">JSON Module</h5>
+    <div style="">
+        <code class="mod-code">/json/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>json module</b> allows users to receive <span class="label label-info">JSON</span> back.  This module is installed by default, and is not requried to be specified.  However, if you would like to specify it to maintain consistency among your requests, it can be explicitly defined.</p>
+    <pre>https://databus.nrel.gov/api/json/{other modules}/{tableName}</pre>
+    <p style="margin:10px 80px;">is the same as</p> <pre>https://databus.nrel.gov/api/{other modules}/{tableName}</pre>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        Should be the first module defined in the URL path
+    </div>
+</div>
+<div class="panel-body"> 
+    <b>Parameters:</b>
+        <div class="well well-sm param">
+            none
+        </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <!--<div class="col-lg-6">-->
+    <div class="input-group">
+      <input type="text" class="form-control" placeholder="https://databus.nrel.gov/api/json/rawdataV1/ExampleTable" disabled>
+        <span class="input-group-btn">
+        <button class="btn btn-default" type="button">Copy</button>
+      </span>
+    </div><!-- /input-group -->
+  <!--</div><!-- /.col-lg-6 -->
+</div>    
+</section>    
+<br>
+<p>To return data as a <span class="label label-success">CSV</span>, it must be specified within the URL path.</p>
+<section id="csv-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">CSV Module</h5>
+    <div>
+        <code class="mod-code">/csv/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>csv module</b> allows users to receive data in <span class="label label-success">CSV</span> format instead of the default <span class="label label-info">JSON</span> format.</p>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        Should be the first module defined in the URL path
+    </div>
+</div>
+<div class="panel-body"> 
+    <b>Parameters:</b>
+        <div class="well well-sm param">
+            none
+        </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/csv/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+<h3>Time and Date Format</h3>
+    <p>Recall that the <b>time</b> column contains time and date values as an epoch timestamp.  Refer to the <a href="../DataBus DataModel#Time Specification">Time Specification</a> section for more details about time and date format in DataBus.</p>  
+<section id="date-format-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Date Format<br>Module</h5>
+    <div>
+        <code class="mod-code">/dateformatV1(dateFormat={parameters})/</code>
+        <a href="#" class="btn btn-sm btn-info" style="margin-bottom:10px;">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>All dates in DataBus (in and out) are in the form of 'epoch offset' in milliseconds.  This module converts the epoch timestamp to a human readable output.</p>
+</div>
+<div class="panel-body">
+    <b>Basic Structure:</b>
+    <pre class="">https://databus.nrel.gov/api/dateformatV1/{dataSource}/{tableName}</pre>
+    <p style="margin:10px 80px;">The basic use of the <b>date format</b> module will return dates in the following format:<br><code>20130203T065700Z</code></p>
+    <p style="margin:10px 80px;">The results are displayed as single strings.  Breaking the string apart we find it contains the following values in this order:</p>
+    <p style="margin:10px 80px;"><span class="label label-success">Year</span><span class="label label-info">Month</span><span class="label label-default">Day</span><span class="label label-primary">Time(T)</span><span class="label label-warning">Hour</span><span class="label label-danger">Minute</span><span class="label label-default">Second</span><span class="label label-primary">Zone(Z)</span></p>
+    <p style="margin:10px 80px;"><code>20130203T065700Z</code> = <span class="label label-success">2013</span><span class="label label-info">02</span><span class="label label-default">03</span><span class="label label-primary">T</span><span class="label label-warning">06</span><span class="label label-danger">57</span><span class="label label-default">00</span><span class="label label-primary">Z</span></p>
+    <p style="margin:10px 80px;">While this is certainly easier to read than the epoch timestamp, the time and date results can be formatted in a variety of ways using additional parameters that make them even easier to read.</p>
+    <b>Formatted Date Structure:</b>
+    <pre class="">https://databus.nrel.gov/api/dateformatV1(dateFormat={time and date parameters})/{dataSource}/{tableName}</pre>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration.
+    </div>
+    <div class="well well-sm spec">
+        dateFormat parameters are used to define time and date formats, this should follow the module declaration in parenthesis.
+    </div>
+    <div class="well well-sm spec">
+        Use the time and date parameters listed below in any order within the dateFormat declaration.<br><i>(e.g. yyyy-MM-dd hh:mm:ss, hh:mm:ss MM-dd-yyyy, MM-yyyy hh:mm z, etc.)</i>
+    </div>
+</div>
+<div class="panel-body">
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        yyyy = Year
+    </div>
+    <div class="well well-sm param">
+        MM = Month (01,02,...,12,etc.) <i>or</i> M = Month (1,2,...,12,etc.)
+    </div>
+    <div class="well well-sm param">
+        dd = Day
+    </div>
+    <div class="well well-sm param">
+        hh = Hour
+    </div>
+    <div class="well well-sm param">
+        mm = Minute
+    </div>
+    <div class="well well-sm param">
+        ss = Second
+    </div>
+    <div class="well well-sm param">
+        z = Time Zone
+    </div>
+    <div class="well well-sm param">
+        Use a dash <code>-</code> as the seperator for date variables
+    </div>
+    <div class="well well-sm param">
+        Use a colon <code>:</code> as the seperator for time variables
+    </div>
+    <div class="well well-sm param">
+        Use a space <code>%20</code> as the seperator between variable types
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/dateformatV1(dateFormat=MM-dd-yyyy%20hh:mm:ss%20z)/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+<h3>Order</h3>
+    <p>By default, GET request results are returned in order from earliest to latest.  All of the examples in the documentation to this point return the oldest data in the table first and display it in ascending order.  To retrieve the most recent data first, use the the reverse parameter in your URL.</p>
+<section id="reverse-parameter" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Reverse Parameter</h5>
+    <div>
+        <code class="mod-code">?reverse=true</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The reverse parameter sorts the time column in descending order before returning your GET request results.  Using this parameter displays the most recent data in your table first.</p>
+    <pre>?reverse=true</pre>
+    <p style="margin:10px 80px;">If this parameter is not defined, results will be displayed in order from oldest to newest by default.  This parameter can be defined as false, which will also list results from oldest to newest.</p>
+    <pre>https://databus.nrel.gov/api/rawdataV1/{tableName}?reverse=false</pre>
+    <p style="margin:10px 80px;">is the same as</p>
+    <pre>https://databus.nrel.gov/api/rawdataV1/{tableName}</pre>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        Should always be added to the very end of your URL
+    </div>
+</div>
+<div class="panel-body">
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        true = sort from newest to oldest
+    </div>
+        <div class="well well-sm param">
+        false = sort from oldest to newest
+    </div>
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/rawdataV1/ExampleTable?reverse=true</pre>
+</div>    
+</section>
+<br>
+<h3>Selection Limit</h3>    
+    <p>The basic GET request structure will return all available results when performed.  In some cases this is ideal, but often a user might be interested in more specific results, such as data recorded during a certain period of time or the most recent values.  GET request results can be limited by defining a start and end time and/or by using the first values module.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">        
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+        <a href="#firstvalues-module" class="list-group-item">First Values Module</a>
+    </div>
+<section id="time-range" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Time Range Query</h5>
+    <div>
+        <code class="mod-code">/{tableName}/{startTime}/{endTime}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>Querying a time range does not require a specific module, it is a set of parameters that are defined after the table in the URL.  The values for the start and end times must be an epoch timestamp, with a time precision in milliseconds.  If no data matches the defined start and end timestamps, no values will be returned.</p>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        {startTime} is located in the URL just after the {tableName}
+    </div>
+    <div class="well well-sm spec">
+        {endTime} is located in the URL just after the {startTime}
+    </div>
+        <div class="well well-sm spec">
+        Times should be specified as an epoch timestamp with precision in milliseconds
+    </div>
+</div>
+<div class="panel-body">
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {startTime} = The start time in milliseconds since the epoch
+    </div>
+    <div class="well well-sm param">
+        {endTime} = The end time in milliseconds since the epoch
+    </div>
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <p style="margin:10px 80px;">This query will return all points as <span class="label label-info">JSON</span> from 1/1/2014 to 2/1/2014</p>
+    <pre>https://databus.nrel.gov/api/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>
+<section id="firstvalues-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">First Values Module</h5>
+    <div>
+        <code class="mod-code">/firstvaluesV1/{<i>n</i>}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>fist values module</b> retrieves the first <i>n</i> values from the table defined in your GET request.  Specify <i>n</i> with the number of values you would like returned.  The value for <i>n</i> must be greater than zero.</p>
+    <p>If <i>n</i> is set to 2000, the first 2000 results from the query will be returned.  The order will be based on whether or not the ?reverse parameter is set.  If <code>?reverse=true</code>, the most recent 2000 values will be returned.  If <code>?reverse=false</code>, or the reverse parameter is not defined, the oldest 2000 values will be returned.</p>
+    <p>You do not need to provide the {start} and {end} times when using this module.  However, they can be defined.  If you choose to use a time range, the module will return the first <i>n</i> results within the specified time range.  Again, the returned order will be determined by the reverse parameter.</p>
+</div>
+<div class="panel-body">
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+    <div class="well well-sm spec">
+        {<i>n</i>} must be an integer that is greater than zero
+    </div>
+    <div class="well well-sm spec">
+        {<i>n</i>} must be added to the URL immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {<i>n</i>} = the number of results to be returned
+    </div>    
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/firstvaluesV1/2000/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+<section id="example-one" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Module Sequence</div></div>
+<div class="panel-body">
+    <p>As mentioned above, DataBus modules can be used in a sequence within a single GET request.  This allows a user to filter and format data for their individual needs.  In this example, we will provide a basic sequence structure that uses several modules to give you an idea of how the URL might be constructed.</p>
+</div>
+<div class="panel-body">
+    <h4>Example 1</h4>
+    <p style="margin:10px 80px;">For this example, let's return the 200 most recent points from the ExampleTable in a <span class="label label-success">CSV</span> format.  Also, we want to format the date so we can easily read the results.</p>
+    <p style="margin:10px 80px;">This request will use the <b>first values</b> module along with the <b>reverse</b> parameter to return the most recent 200 data points from ExampleTable.  The request uses the <b>csv</b> module to return those results in a <span class="label label-success">CSV</span> format.  The <b>date format</b> module will convert the time column in the <span class="label label-success">CSV</span> from epoch offset to a Month-Day-Year Hour:Minute:Second TimeZone format. </p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#csv-module" class="list-group-item">CSV Module</a>
+        <a href="#date-format-module" class="list-group-item">Date Format Module</a>
+        <a href="#firstvalues-module" class="list-group-item">First Values Module</a>
+        <a href="#raw-module" class="list-group-item">Raw Data Module</a>
+        <a href="#reverse-parameter" class="list-group-item">Reverse Parameter</a>
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Example 1 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/csv/dateformatV1(dateFormat=MM-dd-yyyy%20hh:mm:ss%20z)/firstvaluesV1/200/rawdataV1/ExampleTable?reverse=true</pre>
+</div> 
+<br>
+<div class="panel-body">
+    <h4>Example 2</h4>
+    <p style="margin:10px 80px;">Now, let's consider that we are interested in data from the ExampleTable that were recorded between Jan.1 2013 and March 1 2013.</p>
+    <p style="margin:10px 80px;">We will modify the request from the above example, and remove the <b>first values</b> module from the URL.  Our updated request will continue to use the <b>date format</b> module and the <b>csv</b> module, and we will add a {startTime} and {endTime} to the request, just after the table name, but before the reverse parameter.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#csv-module" class="list-group-item">CSV Module</a>
+        <a href="#date-format-module" class="list-group-item">Date Format Module</a>
+        <a href="#raw-module" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+        <a href="#reverse-parameter" class="list-group-item">Reverse Parameter</a>
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Example 2 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/csv/dateformatV1(dateFormat=MM-dd-yyyy%20hh:mm:ss%20z)/rawdataV1/ExampleTable/1356998400000/1362096000000?reverse=true</pre>
+</div>    
+</section>
+<br>
+<h3>Data Formatting</h3>
+    <p>There are modules that allow you to format the results of a GET request.  This might include renaming or aliasing a column name or only returning specific columns from a RELATIONAL_TIME_SERIES or RELATIONAL_TABLE.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#column-select" class="list-group-item">Column Select Module</a>
+        <a href="#line-break" class="list-group-item">Line Break Module</a>
+    </div>
+<section id="column-select" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Column Select Module</h5>
+    <div>
+        <code class="mod-code">/columnselect/{column1},{column2}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>column select</b> module can be used to "narrow" the GET request results.  For example, it can be used to reduce the number of columns displayed from a RELATIONAL_TIME_SERIES table to make it appear more like a simple TIME_SERIES table, with only time and value columns.  This module may also be used to return specified columns from a RELATIONAL_TABLE.</p>
+    <p>The module doesn't make any changes to the actual table, it just formats the data being returned to match the GET request.</p>
+    <b>Basic Structure</b>
+    <p style="margin:10px 80px;">Use with TIME_SERIES or RELATIONAL_TIME_SERIES</p>
+    <pre>https://databus.nrel.gov/api/columnselect/{column1},{column2}/rawdataV1/{tableName}</pre>
+    <p style="margin:10px 80px;">Or, use with RELATIONAL_TABLE</p>
+    <pre>https://databus.nrel.gov/api/columnselect/{column1},{column2}/getdataV1/select+t+from+{tableName}+as+t</pre>
+    <p style="margin:10px 80px;">The displayed results will only include those columns defined after the module declaration.</p>
+    <b>Column Alias</b>
+    <p style="margin:10px 80px;">This module can also be used to rename or alias a column name using the following structure:</p>
+    <pre>https://databus.nrel.gov/api/columnselect/time as startTime,value as aliasName/rawdataV1/{tableName}</pre>
+    <p style="margin:10px 80px;">The module can be used with an aggregation rather than a table.  To use with an aggregation replace the {dataSource}/{tableName} with the aggregation module along with the {aggregationID} and a {startTime} and {endTime}:</p>
+    <pre>https://databus.nrel.gov/api/columnselect/time as startTime,value as aliasName/aggregation/{aggregationID}/{startTime}/{endTime}</pre>
+    <p style="margin:10px 80px;">See the <a href="#aggregations">aggregation</a> section for more details about using the aggregation module.</p>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>column select</b> module consists of two parts, the module declaration and the column parameters
+    </div>
+    <div class="well well-sm spec">
+        The column parameters must be added to the URL immediately following the module declaration
+    </div>
+    <div class="well well-sm spec">
+        To rename or alias a column, specify the existing column name followed by <b>as {newName}</b><br><i>(e.g. time as newTime)</i>
+    </div>
+    <div class="well well-sm spec">
+        The alias option can be applied to one or both columns
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {column1} = The first column to select, typically a time column
+    </div>
+    <div class="well well-sm param">
+        {column2} = The second column to select, typically a value column
+    </div>
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/columnselect/time as testTime, value as testValue/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+<section id="line-break" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Line Break Module</h5>
+    <div>
+        <code class="mod-code">/linebreak/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        No specification currently available
+    </div>
+</div>
+<div class="panel-footer"> 
+    <b>Usage:</b>
+    <pre>no example available</pre>
+</div>    
+</section>    
+<br>
+<h3>Rollup</h3>
+    <p>The rollup module involves summarizing data along a dimension.<p>
+<section id="time-average" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Time Average Module</h5>
+    <div>
+        <code class="mod-code">/timeaverageV2/{interval}/{epochOffset}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>time average</b> module allows users to average intervals of points in a request.  The interval is specified in milliseconds and then aligned with the {epochOffset}.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/timeaverageV2/{interval}/{epochOffset}/{other modules}/{tableName}</pre>    
+    <p class="shift">For example, if you want a point every 24 hours at midnight in Mountain Time, you will need to supply the GMT offset from Mountain Time as the {epochOffset} in milliseconds.  The output time point is the start of the interval being averaged.</p>
+    <pre>https://databus.nrel.gov/api/timeaverageV2/{86400000}/{-25200000}/{other modules}/{tableName}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>time average</b> module consists of three parts: the module declaration, the interval and the offset
+    </div>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The interval must be added to the URL immediately following the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The offset must be added to the URL immediately following the interval
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {interval} = the time difference between the data points to be averaged, specified in milliseconds
+    </div>
+    <div class="well well-sm param">
+        {epochOffset} = the initial time to use as a converted epoch offset timestamp, a value of zero uses GMT
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/timeaverageV2/60000/0/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>
+<h3>Data Cleaning</h3>
+    <p>There are modules available to remove data points that are outside of a given set of parameters.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+        <a href="#variability-clean" class="list-group-item">Variability Clean Module</a>
+    </div>
+<section id="range-clean" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Range Clean Module</h5>
+    <div>
+        <code class="mod-code">/rangecleanV1/{min}/{max}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>range clean</b> module allows users to remove data points that have values outside of a given range.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/rangecleanV1/{min}/{max}/{other modules}/{tableName}</pre>    
+    <p class="shift">For example, if you were to query a TIME_SERIES table that contained thermostat temperature values, you may only want to view data points that are between 50 degrees and 85 degrees:</p>
+    <pre>https://databus.nrel.gov/api/rangecleanV1/50/85/{other modules}/{tableName}</pre>
+    <p class="shift">All values that are outside of that range will be removed from the results.</p>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>range clean</b> module consists of three parts: the module declaration, the min value and the max value
+    </div>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The min value must be added to the URL immediately following the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The max value must be added to the URL immediately following the min value
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {min} = the minimum value allowed to be returned
+    </div>
+    <div class="well well-sm param">
+        {max} = the maximum value allowed to be returned
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/rangecleanV1/-100/100/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>    
+<section id="variability-clean" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Variability Clean Module</h5>
+    <div>
+        <code class="mod-code">/variabilityclean(correctionMethod={method},comparison={type})/{allowedVariation}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>variability clean</b> module allows users to remove data points that are outside an allowed variation.  It has options to define an allowed variation for the data values.  If any values are outside of the allowed varition, there are options on what to do with it (correctionMethod).  There are also options for define the type of comparison to be performed (comparison).</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/variabilityclean(correctionMethod={method},comparison={type})/{allowedVariation}/{other modules}/{tableName}</pre>    
+    <p class="shift">For example, to remove all values that are more than 20% different:</p>
+    <pre>https://databus.nrel.gov/api/variabilityclean(correctionMethod=REMOVE,comparison=PERCENT)/0.2/{other modules}/{tableName}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>variability clean</b> module consists of three parts: the module declaration, the parameter options and the allowed variation
+    </div>
+    <div class="well well-sm spec">
+        The parameter options must be added to the URL in parenthesis following the module declaration name
+    </div>
+    <div class="well well-sm spec">
+        The allowed variation must be added to the URL immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {method} = the correction method to use on any data values that are outside of the allowed variation.  If a data point has a value that is outside of the allowed variation, it applies on of the following options to its value:
+        <ul>
+            <li>PREVIOUS - use the value of the previous data point.</li>
+            <li>ZERO - replace the value with 0.</li>
+            <li>REMOVE - remove the row entirely.  This is the default option.</li>
+        </ul>
+    </div>
+    <div class="well well-sm param">
+        {type} = the type of comparison to use on any data values that are outside of the allowed variation.
+        <ul>
+            <li>PERCENT - anything more than <i>n</i> percent different will have correction applied<br><i>(e.g. - 0.2 for 20%)</i></li>
+            <li>SCALAR - anything more than <i>n</i> different will have correction applied<br><i>(e.g. - 100)</i></li>
+        </ul>
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/variabilityclean(correctionMethod=REMOVE,comparison=PERCENT)/0.2/rawdataV1/ExampleTable</pre>
+</div>    
+</section>
+<br>    
+<h3>Interpolation and Time Alignment</h3>   
+    <p>DataBus has several modules available to perform interpolations and time alignment.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#linear-interpolation" class="list-group-item">Linear Interpolation Module</a>
+        <a href="#spline-module" class="list-group-item">Splines Module</a>
+        <a href="#relational-summary-module" class="list-group-item">Relational Summary Module</a>
+    </div>
+<section id="linear-interpolation" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Linear Interpolation Module</h5>
+    <div>
+        <code class="mod-code">/linearV1/(interval={interval},epochOffset={epochOffset}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>linear interpolation</b> module allows users to perform linear interpolations on data points.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/linearV1/(interval={interval},epochOffset={epochOffset}/{other modules}/{tableName}</pre>    
+    <p class="shift">The epochOffset parameter is useful if you want every value returned to be MST midnight instead of GMT midnight (GMT midnight would be an offset of 0).  This will automatically default to a number using the start time and interval. All returned times then line up beginning with the start time as the first point, the start time + the set interval value for the second point, the second point time + the interval for the third point and so on for all consecutive returned data points.</p>
+    <pre>https://databus.nrel.gov/api/linearV1(interval=60000,epochOffset=300)/{other modules}/{tableName}/{startTime}/{endTime}</pre>
+    <p class="shift">Not specifying epochOffset is for situations where you may not want the points returned to line up with start time at all.</p>
+    <pre>https://databus.nrel.gov/api/linearV1(interval=60000)/{other modules}/{tableName}/{startTime}/{endTime}</pre>
+    <b>??? - is this correct? the existing explanation is terrible...</b>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>linear interpolation</b> module consists of two parts: the module declaration and the parameter options
+    </div>
+    <div class="well well-sm spec">
+        {interval} and {epochOffset} parameters are defined in parenthesis, immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {interval} = the amount of time, in milliseconds, to return each datapoint<br><i>(defaults to 60000 ms (1 minute) if not specified)</i>
+    </div>
+    <div class="well well-sm param">
+        {epochOffset} = the initial time to use, add <i>n</i> intervals to this time point to return values
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/linearV1(interval=60000,epochOffset=300)/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>    
+<section id="spline-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Splines<br>Module</h5>
+    <div>
+        <code class="mod-code">/splinesV3(type={type},interval={interval},epochOffset={epochOffset},maxToStopSplining={max},bufferSize={bufferSize})/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>splines</b> module is another module for performing interpolations on data points.  You select an interval for the spline to return.  The default interval is 60000 ms (1 minute).  Using the default interval value, the spline will return a data point every 60 seconds.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/splinesV3/(type={type},interval={interval},epochOffset={epochOffset}/{other modules}/{tableName}/{startTime}/{endTime}</pre>    
+    <p class="shift">This module has several options, which are set using the listed parameters.  Not all options are required, and some have defaults if they are not defined.</p>
+    <p>Need Basic vs limit derivative content...</p>
+    <p>The max to stop splining option is a multiple of the interval of when to stop splining and return null values instead. For small cases of missing data like one interval of data was missing, most users want to still spline but for a long outage like 6 hours, users can use this value to make sure we return nulls during the outage so your graphs still show the outage.</p>
+    <p>The buffer size option will not be used by most users.  It is for a case when data coming back has multiple columns and 2 or more of those columns are being splined.  The default of 20 rows.  In the case of one column having an outage(ie. no data) and another having data, we need to keep buffering the rows due to the outage and can't return a row until we this buffer is full or we get some rows with valid data such that we can spline the column with the outage (as long as outage time < maxToStopSplining time)</p>
+    <b>??? - is this correct? the existing explanation is terrible...</b>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>splines</b> module consists of two parts: the module declaration and the parameter options
+    </div>
+    <div class="well well-sm spec">
+        The parameters are defined in parenthesis, immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {type} = either basic or limitderivative<br><i>(defaults to basic if not specified)</i>
+    </div>
+    <div class="well well-sm param">
+        {interval} = the amount of time, in milliseconds, to return each datapoint<br><i>(defaults to 60000 ms (1 minute) if not specified)</i>
+    </div>
+    <div class="well well-sm param">
+        {epochOffset} = the initial time to use, add <i>n</i> intervals to this time point to return values
+    </div>    
+    <div class="well well-sm param">
+        {max} = a multiple of the interval of when to stop splining and return null values instead<br><i>The default for this is 5 intervals of data (e.g. 5 * interval setting above)</i>
+    </div>    
+    <div class="well well-sm param">
+        {bufferSize} = for a case when returned data has multiple columns and 2 or more of those columns are being splined<br><i>(default is 20 rows)</i>
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/splinesV3(type=basic,interval=60000,epochOffset=0)/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+    <pre>https://databus.nrel.gov/api/splinesV3(type=limitderivative)/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>        
+<section id="relational-summary-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Relational<br>Summary</h5>
+    <div>
+        <code class="mod-code">/relationalsummaryV1(columnsToSummarize={summaryColumn1};{summaryColumn2})/{summaryInterval}/{epochOffset}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>relational summary</b> module summarizes columns from RELATIONAL_TIME_SERIES tables or aggregations.  You select the columns to be summarized.  The default interval is 60000 ms (1 minute).</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/relationalsummary/(columnsToSummarize={summaryColumn1};{summaryColumn2})/{summaryInterval}/{epochOffset}/{other modules}/{tableName}/{startTime}/{endTime}</pre>    
+    <p class="shift">This module has several options, which are set using the listed parameters.</p>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>relational summary</b> module consists of several parts: the module declaration, the parameter options, the summary interval and the epoch offset.
+    </div>
+    <div class="well well-sm spec">
+        The parameters are defined in parenthesis, immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {summaryColumn1} = the first column to be summarized
+    </div>
+    <div class="well well-sm param">
+        {summaryColumn2} = the second column to be summarized
+    </div>
+    <div class="well well-sm param">
+        {summaryInterval} = the period of time column summaries are based on<br><i>(defaults to 60000 ms if not specified)</i>
+    </div>
+    <div class="well well-sm param">
+        {epochOffset} = the initial time to use, add <i>n</i> intervals to this time point to return values
+    </div>     
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+ <pre>https://databus.nrel.gov/api/relationalsummaryV1/(columnsToSummarize=testColumn1;testColumn2)/3600000/0/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>     
+<h3>Mathematical Operations</h3>
+    <p>DataBus has several modules for performing mathematical operations in requests.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#relational-module" class="list-group-item">Relational Module</a>
+        <a href="#standard-deviation-module" class="list-group-item">Standard Deviation Module</a>     
+        <a href="#invert-module" class="list-group-item">Invert Module</a>
+    </div>
+<section id="relational-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Relational Module</h5>
+    <div>
+        <code class="mod-code">/relational/{new value}={value}{operation}{<i>n</i>}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>relational</b> module is can perform two primary functions.  It can be used to simply return many columns in a RELATIONAL_TIME_SERIES table and it can be used to perform basic mathematical operations on table columns.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/relational/{new value}={value}{operation}{<i>n</i>}/{other modules}/{tableName}/{startTime}/{endTime}</pre>    
+    <p class="shift">This module can be used to perform simple operations, such as addition, subtraction, multiplication or division.  The module will perform the operation on the specified original value and then introduce a new column containing the results of the operation.  This module can also be used to overwrite an existing column value or simply duplicate a column.  It can be used multiple times within the same URL for performing several basic operations, or more complex calculations.</p>
+    <b>Duplicate a Column</b>
+    <p class="shift">To duplicate a column value, use the following example for guidance:</p>
+    <pre>https://databus.nrel.gov/api/relational/{duplicate value}={value}/{other modules}/{tableName}</pre>
+    <b>Overwrite a Column</b>
+    <p class="shift">To overwrite a column value, use the following example for guidance:</p>
+    <pre>https://databus.nrel.gov/api/relational/{value}={value}{operation}{<i>n</i>}/{other modules}/{tableName}</pre>
+    <b>Basic Operations</b>
+    <p class="shift">Addition</p>
+    <pre>https://databus.nrel.gov/api/relational/{new value}={value}+{<i>n</i>}/{other modules}/{tableName}</pre>
+    <p class="shift">Subtraction</p>
+    <pre>https://databus.nrel.gov/api/relational/{new value}={value}-{<i>n</i>}/{other modules}/{tableName}</pre>
+    <p class="shift">Multiplication</p>
+    <pre>https://databus.nrel.gov/api/relational/{new value}={value}*{<i>n</i>}/{other modules}/{tableName}</pre>
+    <p class="shift">Division</p>
+    <pre>https://databus.nrel.gov/api/relational/{new value}={value}&#247;{<i>n</i>}/{other modules}/{tableName}</pre>    
+    <p class="shift"><i>(Note the use of the &#247; symbol, use of this symbol helps to maintain a clean URL and it is easier to identify what is being done.  To type the &#247; symbol on Windows, hold down the ALT key and type 0247.  To type the &#247; symbol on Mac OS, hold down the Option key and press / (backslash))</i></p>    
+    <b>Multiple Operations</b>
+        <p class="shift">To perform multiple operations, and add multiple result columns:</p>
+    <pre>https://databus.nrel.gov/api/relational/value2=value*1000/relational/value3=value*.5/relational/value4=&#247;2/{other modules}/{tableName}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>relational</b> module consists of two parts: the module declaration and the parameter options
+    </div>
+    <div class="well well-sm spec">
+        The parameters are defined immediately following the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {new value} = the name of the new result column that will be added from the operation
+    </div>
+    <div class="well well-sm param">
+        {value} = the original value column to perform the operation on
+    </div>
+    <div class="well well-sm param">
+        {operation} = the mathematical operation to be performed
+    </div>    
+    <div class="well well-sm param">
+        {<i>n</i>} = the number to be used in the mathematical experssion
+    </div>    
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/relational/new_value=value*2/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>     
+<section id="standard-deviation-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Standard Deviation Module</h5>
+    <div>
+        <code class="mod-code">/stddevV1/{rowCount}/{factor}/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The standard deviation (<b>stddev</b>) module is used to remove data points with values that are outside of a given multiplier of the standard deviation.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/stddevV1/{rowCount}/{factor}/{other modules}/{tableName}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>stddev</b> module consists of three parts: the module declaration, the rowCount parameter and the factor parameter
+    </div>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The rowCount parameter is added to the URL immediately following the module declaration
+    </div>
+    <div class="well well-sm spec">
+        The factor parameter is added to the URL immediately following the rowCount parameter
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {rowCount} = the window over which to calculate the standard deviation<br><i>Zero denotes infinity</i>
+    </div>
+    <div class="well well-sm param">
+        {factor} = the multiple of standard deviation<br><i>Data outside of the factor will be removed from the results</i>
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/stddevV1/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>  
+<section id="standard-deviation-examples" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Standard Deviation</div></div>
+<div class="panel-body">
+    <p>The standard deviation (<b>stddev</b>) module removes data points that are outside of supplied mutliplier of the standard deviation.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#standard-deviation-module" class="list-group-item">Standard Deviation Module</a>
+        <a href="#raw-module" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example 1</h4>
+    <p style="margin:10px 80px;">For this example, the <b>stddev</b> module will remove all values that are outside of half of a standard deviation of the entire dataset, to that point (infinite window).</p>
+</div>
+<div class="panel-footer">
+    <b>Example 1 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/stddevV1/0/0.5/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 2</h4>
+    <p style="margin:10px 80px;">In example 2, the <b>stddev</b> module will remove all values that are outside of one standard deviation of the of 200 values.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 2 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/stddevV1/200/1/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>   
+</section>
+<br>      
+<section id="invert-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Invert Module</h5>
+    <div>
+        <code class="mod-code">/invertV1/</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>invert</b> module is used to negate all data points in a request.  Negative values become positive (-5 becomes 5) and positive values become negative (10 becomes -10)</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/invertV1/{other modules}/{tableName}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        none
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/invertV1/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>
+<h3>Logging Data</h3>
+    <p>The <b>log</b> module is a way for users save modified results that are generated by using other modules.  this is an easy way to access the data from the request results directly without having to regenerate the data again using a new request.  Before using this module, another table must be <a href="">registered</a> with an additional attribute in the <span class="label label-info">JSON</span> that states: <code>"isForLogging":true</code>.</p>
+<section id="log-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Log Module</h5>
+    <div>
+        <code class="mod-code">/logV1/{loggingTable}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/logV1/{loggingTable}/{other modules}/{tableName}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {loggingTable} = the name of the table where the request results will be saved
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/logV1/LoggingTable/rawdataV1/ExampleTable/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>  
+<section id="logging-results-example" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Logging Results</div></div>
+<div class="panel-body">
+    <p>Using the (<b>log</b>) module is a practice that will save data from a request so it is easily accessible without having to run the request again to regenerte the data.  As noted in the module description, the <b>log</b> module requires that a table has been registered that has <code>"isForLogging":true</code> set.  This is the location where the <b>log</b> module will save the data.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#log-module" class="list-group-item">Log Module</a>
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+        <a href="#spline-module" class="list-group-item">Splines Module</a>
+        <a href="#standard-deviation-module" class="list-group-item">Standard Deviation Module</a>
+        <a href="#raw-module" class="list-group-item">Raw Data Module</a>    
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Register the log table</h4>
+    <p style="margin:10px 80px;">Before using the <b>log</b> module, we need to create the table it will save data to.</p>
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @LoggingTable.txt https://databus.nrel.gov/api/registerV1</pre>
+    <p style="margin:10px 80px;">Table register payload:</p>
+    <pre class="prettyprint prettyprinted" style="width: 90%;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"TIME_SERIES"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"ExampleTable"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"ExampleDatabase"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"isForLogging"</span><span class="pun">:</span><span class="str">"true"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"time"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigInteger"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">},</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"value"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">]</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>LoggingTable.txt</code></p>
+</div>
+<div class="panel-body">
+    <h4>Log Example</h4>
+    <p style="margin:10px 80px;">After creating the table, we can begin the GET request and define the <b>log</b> module along with the newly registered table name in the URL.  For this example, we will build a request that applies logic to the results.  Rather than run this request every time we want to see the data, we can run it once and save it to the log table.</p>
+    <p style="margin:10px 80px;">Let's build a URL that will return data from our ExampleTable, that have values between -100 and 100, are interpolated using a minutely interval, are within one standard deviation of 200 values and are within a specified time range of 1388534400000 to 1391212800000.</p>
+</div>
+<div class="panel-footer">
+    <b>Example URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/logV1/rawdataV1/LoggingTable/rangecleanV1/-100/100/splinesV3(type=basic,interval=60000,epochOffset=0)/stddevV1/200/1/ExampleTable/1388534400000/1391212800000</pre>
+</div>
+</section>
+    
+    
+<h3 id="aggregations">Aggregations</h3>
+    <p>An aggregation can be created to group table columns.  The aggregation groups can then be queried using the API and modules.  There are several ways to query aggregated data, and depending on what is desired, different ways to use aggregations.</p>
+    <p>There are two different aggregation concepts, one requires values to be time aligned and one that does not.  The <b>aggregation</b> module requires values to be time aligned and should be used in most situations, especially where calculations are being performed.  The aggregation pipe (<b>aggregationpipe</b>) module does not require values to be time aligned, and is useful for graphing or other situations where it is not essential if the different values are time aligned.  If aggregations are used with the spline module, they will be time aligned.</p>
+    <p>There are also two types of aggregation modules, basic and dynamic.  The basic aggregation modules (<b>aggregation</b> and <b>aggregationpipe</b>) are used to query a single aggregation group.  The dynamic aggregation modules (<b>dynamicaggregationV1</b> and <b>dynamicaggregationpipeV1</b>) are used to build 'sub' URLs that can be placed in a single request.  This allows a user to query multiple aggregation groups in that single request.</p>
+    <p>To use these modules, you must create or use an existing aggregation.  In this section, we will cover creating an aggregation, listing available aggregations and usage of the aggregation modules.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#create-aggregation" class="list-group-item">Create an Aggregation</a>
+        <a href="#list-aggregation" class="list-group-item">List Available Aggregations</a>
+        <a href="#get-aggregation" class="list-group-item">Aggregation Requests</a>
+        <a href="#delete-aggregation" class="list-group-item">Delete Aggregation</a>
+        <a href="#basic-aggregation" class="list-group-item">Basic Aggregation Modules</a>
+        <a href="#dynamic-aggregation" class="list-group-item">Dynamic Aggregation Modules</a>
+    </div>
+<br>
+<section id="create-aggregation" class="panel panel-success">
+<div class="panel-heading"><h5>Example: Create an Aggregation</h5></div>
+<div class="panel-body">
+    <p>This is an example of how to create, or modify, an aggregation.  An aggregation takes all values from the included time streams at time <i>n</i> and adds them together.  Basically, the aggregation will take all the values for time 1 from the specified data streams and add them together.  Likewise, it will do this for all values at time 2, time 3, etc.  An aggregation POST requires using the <a href="#sumstream-module">sumstream</a> module, see below for specification on this module.</p>
+    <br>
+    <b>Example POST URL</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/registerV1</pre>
+    <b>Example Structure</b>
+    <p style="margin:10px 80px;">The <span class="label label-info">JSON</span> for an aggregation:</p>
+    <pre class="prettyprint">
+{"name":"{AggregationID}",
+ "group":"{GroupID}",
+ "urls":[
+    "{URL1}",
+    "{URL2}"
+ ]
+}</pre>
+    <p style="margin:10px 80px;">Save the <span class="label label-info">JSON</span> to a file: <code>ExampleAggregation.txt</code></p>
+    <b>Example Aggregation</b>
+    <p style="margin:10px 80px;">A <span class="label label-info">JSON</span> example, using modules, to create an aggregation.</p>
+    <pre class="prettyprint">
+{"name":"TEST_AGGREGATION",
+ "group":"testgroup",
+ "urls":["timveaverageV2/60000/rangecleanV1/-2000/2000/rawdataV1/ExampleTable
+ ]
+}</pre>
+    <br>
+    <h4>Data Upload POST Request</h4>
+    <p>Here is an example of how a POST request to upload data should be constucted:</p>
+</div>
+<div class="panel-footer">
+    <pre>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleAggregation.txt https://databus.nrel.gov/api/sumstreamsV1/registerV1</pre>
+</div>    
+</section>
+<br>
+<section id="list-aggregation" class="panel panel-info">
+<div class="panel-heading"><h5>Example: GET Aggregation List</h5></div>
+<div class="panel-body">
+    <p>You can use a GET request to list the aggregations you have created, or that are available to you.  The request will return the each available aggregation along with info about the database it belongs to.  Paste the URL into a browser address bar or use it in the command line with an application such as curl.</p>
+    <br>
+    <b>GET Request URL</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/listaggregations/</pre>
+    <br>
+    <b>Example GET Request</b>
+    <pre class="prettyprint">$ curl -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/sumstreamsV1/listaggregations/</pre>
+</div>
+</section>
+<br> 
+<section id="get-aggregation" class="panel panel-info">
+<div class="panel-heading"><h5>Example: GET Aggregation Data</h5></div>
+<div class="panel-body">
+    <p>You can use a GET request to view data from an aggregation you have created, or that is available to you.  This request is similar to getting data from a table.  You can use most API modules with aggregated data.  In most of the previous examples, you can switch the table name with an aggregation.</p>
+    <br>
+    <b>GET request URL for a specific aggregation</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/aggregation/{AggregationID}</pre>
+    <br>
+</div>
+<div class="panel-footer">
+    <pre class="prettyprint">$ curl -i -H "Accept: application/json" -H "Content-Type: application/json" --user your_username:your_api_key https://databus.nrel.gov/api/sumstreamsV1/aggregation/{AggregationID}</pre>
+</div>
+</section>
+<br>
+<h3 id="delete-aggregation">Delete an Aggregation</h3>
+<section id="dynamic-aggregation-example2" class="panel panel-danger">
+<div class="panel-heading"><div >Delete an Aggregation</div></div>
+<div class="panel-body">
+    <p>To delete an aggregation you have created, use the POST method.  Do <b><i>not</i></b> use a GET request.  There is no body required, simply perform a POST that is similar to the basic structure.</p>
+</div>
+<div class="panel-body">
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/deleteagg/{AggregationID}</pre>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre class="prettyprint prettyprinted">$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key https://databus.nrel.gov/api/sumstreamsV1/deleteagg/ExampleAggregation</pre>
+</div>
+</section>
+<br> 
+<h3 id="basic-aggregation">Basic Aggregation Modules</h3>
+    <p>The basic modules are used to create, modify or view aggregation data.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#aggregation-module" class="list-group-item">Aggregation Module</a>
+        <a href="#aggregation-pipe" class="list-group-item">Aggregation Pipe Module</a>
+        <a href="#sumstreams" class="list-group-item">Sum Streams Module</a>
+        <a href="#relational-summary" class="list-group-item">Relational Summary</a>
+    </div>
+<br>
+<section id="aggregation-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Aggregation Module</h5>
+    <div>
+        <code class="mod-code">/aggregation/{aggregationID}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>aggregation</b> module tells the request to query an aggregation rather than a table.  It is used to view specific aggregations, and can be used in combination with other modules to return results from available aggregations.  Basically, it replaces the <b>rawdata</b> and <b>getdata</b> modules in a URL.  Values should be time aligned with this module.</p>
+    <p>The following URL structure will return all of the aggregation values:</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/aggregation/{aggregationID}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>aggregation</b> module must be used with aggregations and not tables and come just before the aggregation ID in the URL
+    </div>    
+    <div class="well well-sm spec">
+        It should be included just before the aggregation ID in the URL
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {aggregationID} = the ID of the aggregation
+    </div>
+    <div class="well well-sm param">
+        {startTime} = (<i>optional</i>) the start time of a range query
+    </div>    
+    <div class="well well-sm param">
+        {endTime} = (<i>optional</i>) the end time of a range query
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>
+<section id="aggregation-pipe" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Aggregation Pipe Module</h5>
+    <div>
+        <code class="mod-code">/aggregationpipe/{aggregationID}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>aggregation pipe</b> module tells the request to query an aggregation rather than a table.  It is similar to the <b>aggregation</b> module, except that values are not required to be time aligned with <b>aggregation pipe</b>.  This module is most useful if the returned data will be used for graphing purposes.</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/aggregationpipe/{aggregationID}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>aggregation pipe</b> module must be used with aggregations and not tables and come just before the aggregation ID in the URL
+    </div>    
+    <div class="well well-sm spec">
+        It should be included just before the aggregation ID in the URL
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {aggregationID} = the ID of the aggregation
+    </div>
+    <div class="well well-sm param">
+        {startTime} = (<i>optional</i>) the start time of a range query
+    </div>    
+    <div class="well well-sm param">
+        {endTime} = (<i>optional</i>) the end time of a range query
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/aggregationpipe/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br> 
+<section id="sumstreams" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Sum Streams Module</h5>
+    <div>
+        <code class="mod-code">/sumstreamsV1/{aggregationID}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>sumstreams</b> module takes all values from the included time streams at time n and adds them together. Basically, the aggregation will take all the values for time 1 from the specified data streams and add them together. Likewise, it will do this for all values at time 2, time 3, etc.  This module can be used to POST or GET data.</p>
+    <p>The following URL structure will return the sum of the aggregation values:</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/{aggregationID}/{startTime}/{endTime}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>sumstreams</b> module must be used with aggregations and not tables
+    </div>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {aggregationID} = the ID of the aggregation
+    </div>
+    <div class="well well-sm param">
+        {startTime} = (<i>optional</i>) the start time of a range query
+    </div>    
+    <div class="well well-sm param">
+        {endTime} = (<i>optional</i>) the end time of a range query
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV1/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>    
+</section>
+<br>
+<section id="sumstreamsV2" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Sum Streams V2 Module (BETA)</h5>
+    <div>
+        <code class="mod-code">/sumstreamsV2(aggregation={aggregationID},enableNulls={true or false})</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>sumstreams</b> version 2 module is a beta version of the <b>sumstreams</b> module with enhanced capability. It works similarly to <b>sumstreamsV1</b>, except that it has an option to disable null values.  If enableNulls is set to true, this module will return null values in cases where one of the streams from the aggregation has no data.  This will enable a graph to go null when at least one stream is returning null values.  If enableNulls is set to false, then the module will return all streams added up (explained in <b>sumstreamsV1</b>), except for the stream with no or null data.</p>
+    <p>The following URL structure will return the sum of the aggregation values:</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV2/(aggregation={aggregationID},enableNulls={true or false})</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The <b>sumstreamsV2</b> module must be used with aggregations and not tables
+    </div>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {aggregationID} = the ID of the aggregation
+    </div>
+    <div class="well well-sm param">
+        {true} = (<i>optional</i>) if enableNulls is set to true, this will return null values when returned data is missing
+    </div>     
+    <div class="well well-sm param">
+        {false} = (<i>default</i>) if enableNulls is set to false, this will return all values except any that are null or missing
+    </div>    
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/sumstreamsV2(aggregation=ExampleAggregation,enableNulls=true)</pre>
+</div>    
+</section>
+<br>
+<section id="basic-aggregation-examples" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Aggregation Basics</div></div>
+<div class="panel-body">
+    <p>Here are a few simple examples of working with aggregations.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#sumstreams" class="list-group-item">Sum Streams Module</a>
+        <a href="#aggregation-module" class="list-group-item">Aggregation Module</a>
+        <a href="#relational-summary" class="list-group-item">Relational Summary Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example 1</h4>
+    <p style="margin:10px 80px;">Let's start by viewing the data for a specific aggregation.  The <b>sumstreams</b> and <b>aggregation</b> modules will be used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 1 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/sumstreamsV1/aggregation/ExampleAggregation</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 2</h4>
+    <p style="margin:10px 80px;">Now, let's just view the sum of the ExampleAggregation values within a specific time range.  The <b>sumstreams</b> and <b>time range query</b> modules are used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 2 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/sumstreamsV1/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>   
+<br>
+<div class="panel-body">
+    <h4>Example 3</h4>
+    <p style="margin:10px 80px;">For this example, let's view all of the ExampleAggregation values that are within a specific time range.  The <b>aggregation</b> and <b>time range query</b> modules are used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 3 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 4</h4>
+    <p style="margin:10px 80px;">For the last basic example, let's do an hourly summary of the columns in the ExampleAggregation within a specific time range.  The <b>relational summary</b>, <b>aggregation</b> and <b>time range query</b> modules are used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 4 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/relationalsummaryV1(columnsToSummarize=ExampleColumn1;ExampleColumn2)/3600000/0/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>   
+</section>
+<br>      
+<section id="basic-aggregation-math" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Basic Aggregation Mathematical Operations</div></div>
+<div class="panel-body">
+    <p>Here are a few simple examples of using relational operations with aggregations.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#relational-module" class="list-group-item">Relational Module</a>
+        <a href="#aggregation-module" class="list-group-item">Aggregation Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example 1</h4>
+    <p style="margin:10px 80px;">In this example, let's add a new column named TestSum to the results that is the sum of the components from the ExampleAggregation.  The <b>relational</b> and <b>aggregation</b> modules will be used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 1 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/relational/TestSum=ExampleColumn1+ExampleColumn2+ExampleColumn3/aggregation/ExampleAggregation</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 2</h4>
+    <p style="margin:10px 80px;">Just like using the relational module with tables, it is possible to modify the data being returned.  Let's modify the results to overwrite an existing column with a value that might be a bit more useful for us, taking the original value and multiplying by 1000.  The <b>relational</b> and <b>aggregation</b> modules will be used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 2 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/relational/ExampleColumn1=ExampleColumn1*1000/aggregation/ExampleAggregation</pre>
+</div>
+</section>
+<br>
+<section id="modify-aggregation-results" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Modify Aggregation Results</div></div>
+<div class="panel-body">
+    <p>Here are a few simple examples of modifying the results returned from an aggregation.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#aggregation-module" class="list-group-item">Aggregation Module</a>
+        <a href="#column-select" class="list-group-item">Column Select</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example 1</h4>
+    <p style="margin:10px 80px;">In this example, let's consider that ExampleAggregation is a RELATIONAL_TIME_SERIES but we want our results to appear narrow, like a TIME_SERIES.  The <b>column select</b>, <b>aggregation</b> and <b>time range query</b> modules will be used.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 1 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/columnselect/time,value/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 2</h4>
+    <p style="margin:10px 80px;">The column names can also be modified using the <b>column select</b> module.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 2 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/columnselect/time as starttime, value as sum/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example 3</h4>
+    <p style="margin:10px 80px;">The above example output can be used as the input of another module.  This is particularly useful if the input for the other module is a column name that is not named the same.  For this example, let's use a column from a RELATIONAL_TIME_SERIES aggregation as an input for a <b>range clean</b> module.</p>
+</div>
+<div class="panel-footer">
+    <b>Example 3 URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/rangecleanV1/1000/5500/columnselect/time, ExampleColumn1 as value/aggregation/ExampleAggregation/1388534400000/1391212800000</pre>
+</div>
+</section>
+<br> 
+<h3 id="dynamic-aggregation">Dynamic Aggregation Modules</h3>
+    <p>The dynamic modules are used to work with multiple tables and URLs in a single request.</p>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#dynamic-aggregation-module" class="list-group-item">Dynamic Aggregation Module</a>
+        <a href="#dynamic-aggregation-pipe" class="list-group-item">Dynamic Aggregation Pipe Module</a>
+    </div>
+<br>   
+<section id="dynamic-aggregation-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Dynamic Aggregation Module</h5>
+    <div>
+        <code class="mod-code">/dynamicaggregationV1/rawdataV1/{startTime}/{endTime}?src1={source1}&src2={source2}...</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>dynamic aggregation</b> module can query a series of URLs and return them in a single request.  This module can get results for up to 8 tables in a single request.  Values should be time aligned with this module.</p>
+    <p>The following URL structure will return all of the aggregation values:</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/dynamicaggregationV1/rawdataV1/{startTime}/{endTime}?src1={source1}&src2={source2}&src3={source3}&src4={source4}&src5={source5}&src6={source6}&src7={source7}&src8={source8}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>    
+    <div class="well well-sm spec">
+        The module should be included just before the <b>raw data</b> module in the URL
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {source<i>N</i>} = the data source, this will be a table name.  There can be up to 8 sources in a single URL
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/dynamicaggregationV1/rawdataV1/1388534400000/1391212800000?src1=Table1&src2=Table2&src3=Table3</pre>
+</div>    
+</section>
+<br>
+<section id="dynamic-aggregation-module" class="panel panel-info">
+<div class="panel-heading"><h5 class="mod-title">Dynamic Aggregation Pipe Module</h5>
+    <div>
+        <code class="mod-code">/dynamicaggregationpipeV1/rawdataV1/{startTime}/{endTime}?src1={source1}&src2={source2}</code>
+        <a href="#" class="btn btn-sm btn-info">Copy</a>
+    </div>
+</div>
+<div class="panel-body">
+    <p>The <b>dynamic aggregation pipe</b> module can query a series of URLs and return them in a single request.  This module can get results for up to 8 tables in a single request.  It is similar to the <b>dynamic aggregation</b> module, except that values are not required to be time aligned with <b>dynamic aggregation pipe</b>.  This module is most useful if the returned data will be used for graphing purposes.</p>
+    <p>The following URL structure will return all of the aggregation values:</p>
+    <b>Basic Structure</b>
+    <pre>https://databus.nrel.gov/api/dynamicaggregationpipeV1/rawdataV1/{startTime}/{endTime}?src1={source1}&src2={source2}&src3={source3}&src4={source4}&src5={source5}&src6={source6}&src7={source7}&src8={source8}</pre>
+</div>
+<div class="panel-body"> 
+    <b>Specification:</b>
+    <div class="well well-sm spec">
+        The version should be defined at the end of the module declaration
+    </div>    
+    <div class="well well-sm spec">
+        The module should be included just before the <b>raw data</b> module in the URL
+    </div>
+</div>
+<div class="panel-body">    
+    <b>Parameters:</b>
+    <div class="well well-sm param">
+        {source<i>N</i>} = the data source, this will be a table name.  There can be up to 8 sources in a single URL
+    </div>
+</div>
+<div class="panel-footer">
+    <b>Usage:</b>
+    <pre>https://databus.nrel.gov/api/dynamicaggregationpipeV1/rawdataV1/1388534400000/1391212800000?src1=Table1&src2=Table2&src3=Table3</pre>
+</div>    
+</section>
+<br> 
+<section id="dynamic-aggregation-example1" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Dynamic Aggregation Basics</div></div>
+<div class="panel-body">
+    <p>This is a simple example of returning data from multiple tables using the <b>dynamic aggregation</b> modules.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#dynamic-aggregation-module" class="list-group-item">Dynamic Aggregation Pipe Module</a>
+        <a href="#raw-data" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example</h4>
+    <p style="margin:10px 80px;">A simple request to get raw data from 3 different tables for a specified time range.  There is no need for the data to be time aligned.  The example tables we will be working with are: ExamplePower, ExampleSpeed and ExampleTemp.</p>
+</div>
+<div class="panel-footer">
+    <b>Example URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/dynamicaggregationpipeV1/rawdataV1/1388534400000/1391212800000?src1=ExamplePower&src2=ExampleSpeed&src3=ExampleTemp</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example Results</h4>
+    <p style="margin:10px 80px;">The above URL will return results that look like this:</p>
+    <pre class="prettyprint">
+{"data": 
+    [{"ExamplePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534400000
+     },
+     {"ExamplePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534600000
+     },
+     ...
+    ]
+}
+    </pre>
+    <p style="margin:10px 80px;">The dynamic aggregation is really building three sub-URLs that look something like this:</p>
+    <pre>
+    .../rawdataV1/ExamplePower/...
+    
+    .../rawdataV1/ExampleSpeed/...
+    
+    .../rawdataV1/ExampleTemp/...</pre>
+</div>
+</section>
+<br>
+<section id="dynamic-aggregation-example2" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Dynamic Aggregation Applied Logic</div></div>
+<div class="panel-body">
+    <p>You can use other modules to apply logic to a <b>dynamic aggregation</b> request.  To do this, include the desired modules in the URL after the <b>dynamic aggregation</b> declaration.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#dynamic-aggregation-module" class="list-group-item">Dynamic Aggregation Pipe Module</a>
+        <a href="#spline-module" class="list-group-item">Splines Module</a>
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+        <a href="#raw-data" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example</h4>
+    <p style="margin:10px 80px;">This request will get data from 3 different tables that is interpolated using a minutely interval with values between a specified range during a specified time range.  Again, there is no need to time align the values and the example tables we will be working with are: ExamplePower, ExampleSpeed and ExampleTemp.</p>
+</div>
+<div class="panel-footer">
+    <b>Example URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/dynamicaggregationpipeV1/splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/1388534400000/1391212800000?src1=ExamplePower&src2=ExampleSpeed&src3=ExampleTemp</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example Results</h4>
+    <p style="margin:10px 80px;">This example will yield similar to results as the previous example, but will exclude any values that met the logic criteria from the <b>splines</b> and <b>range clean</b> modules:</p>
+    <pre class="prettyprint">
+{"data": 
+    [{"ExamplePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534400000
+     },
+     {"ExamplePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534600000
+     },
+     ...
+    ]
+}
+    </pre>
+    <p style="margin:10px 80px;">This aggregation request is applying the logic to the three sub-URLs, and looks something like this:</p>
+    <pre>
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExamplePower/...
+    
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExampleSpeed/...
+            
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExampleTemp/...</pre>
+</div>
+</section>
+<br>
+<section id="dynamic-aggregation-example3" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Renaming in a Dynamic Aggregation</div></div>
+<div class="panel-body">
+    <p>You can rename the tables in a <b>dynamic aggregation</b> request.  To do this, supply a new parameter in the URL structure.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#dynamic-aggregation-module" class="list-group-item">Dynamic Aggregation Pipe Module</a>
+        <a href="#spline-module" class="list-group-item">Splines Module</a>
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+        <a href="#raw-data" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example</h4>
+    <p style="margin:10px 80px;">This is the same request from the last example.  However, consider that there might be a reason to rename one (or all) of the tables in the query.  After specifying a source in the URL, you can also specify an alias to rename the table in your results.  Again, there is no need to time align the values and the example tables we will be working with are: ExamplePower, ExampleSpeed and ExampleTemp.</p>
+</div>
+<div class="panel-footer">
+    <b>Example URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/dynamicaggregationpipeV1/splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/1388534400000/1391212800000?src1=ExamplePower&srcName1=MorePower&src2=ExampleSpeed&src3=ExampleTemp</pre>
+</div>
+<br>
+<div class="panel-body">
+    <h4>Example Results</h4>
+    <p style="margin:10px 80px;">This example will yield similar to results as the previous example, but will rename all values from the ExamplePower to MorePower.</p>
+    <p style="margin:10px 80px;">Results display as:</p>
+    <pre class="prettyprint">
+{"data": 
+    [{"MorePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534400000
+     },
+     ...
+    ]
+}
+    </pre>
+    <p style="margin:10px 80px;">Instead of:</p>
+    <pre class="prettyprint">
+{"data": 
+    [{"ExamplePower": 0.4,
+      "ExampleSpeed": 40,
+      "ExampleTemp": 71.6044,
+      "time": 1388534400000
+     },
+     ...
+    ]
+}
+    </pre>
+    <p style="margin:10px 80px;">The sub-URLs still appear the same as in the previous example, no change to the table name here:</p>
+    <pre>
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExamplePower/...
+    
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExampleSpeed/...
+        
+    .../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExampleTemp/...</pre>
+</div>
+</section>
+<br>
+<section id="dynamic-aggregation-example4" class="panel panel-warning">
+<div class="panel-heading"><div >Example: Applying different logic to different tables in a Dynamic Aggregation</div></div>
+<div class="panel-body">
+    <p>You can apply different types of logic to different tables in a <b>dynamic aggregation</b> request.  To do this, supply the table specific logic in the URL structure where the source tables are defined.  You can even have two sources that are from the same table with different logic applied to them.</p>
+    <b>Modules Used</b>
+    <div class="list-group" style="width:25%;margin-left:80px;">
+        <a href="#dynamic-aggregation-module" class="list-group-item">Dynamic Aggregation Pipe Module</a>
+        <a href="#spline-module" class="list-group-item">Splines Module</a>
+        <a href="#range-clean" class="list-group-item">Range Clean Module</a>
+        <a href="#raw-data" class="list-group-item">Raw Data Module</a>
+        <a href="#time-range" class="list-group-item">Time Range Query</a>
+        <a href="#relational-module" class="list-group-item">Relational Module</a>
+    </div>
+</div>
+<div class="panel-body">
+    <h4>Example</h4>
+    <p style="margin:10px 80px;">This example continues to build on the request from the previous examples.  This time we will want to apply different logic to each table.  This example also shows how to have two sources from the same table, but each having different logic applied to them.  The ExampleSpeed</p>
+</div>
+<div class="panel-footer">
+    <b>Example URL:</b>
+    <pre class="prettyprint prettyprinted">https://databus.nrel.gov/api/dynamicaggregationpipeV1/splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/-20000000/20000000/rawdataV1/1388534400000/1391212800000?src1=ExamplePower&srcName1=MorePower&srcName2=MorePowerCleaned&src2=/rangecleanV1/0/100/ExamplePower&src3&srcName3=ExampleSpeedScaled&src3=relational/value=value*1000/ExampleSpeed&src4=ExampleTemp</pre>
+</div>
+<br>
+<div class="panel-body">
+    <b>URL Breakdown</b>
+    <p style="margin:10px 80px;">The URL example above is becoming complex and starting to get difficult to read.  Let's break it down so it is more clear what is happening here.</p>
+    <p style="margin:10px 80px;">This includes the URL for the DataBus server and the logic (modules) that will be applied to all of the tables in the dynamic aggregation:</p> 
+    <pre>https://databus.nrel.gov/api/dynamicaggregationpipeV1/splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/-20000000/20000000/rawdataV1/1388534400000/1391212800000?</pre>
+    <p style="margin:10px 80px;">Then, we are defining the first source/table and renaming it:</p>
+    <pre>src1=ExamplePower&srcName1=MorePower</pre>
+    <p style="margin:10px 80px;">Next, the second source/table is defined.  We are using the ExamplePower table again, but we want to apply the <b>range clean</b> module to this set of results:</p>
+    <pre>&srcName2=MorePowerCleaned&src2=/rangecleanV1/0/100/ExamplePower</pre>
+    <p style="margin:10px 80px;">The third source/table will use the <b>relational</b> to multiply the values from the ExampleSpeed table by 1000 and add those new values to the results using the a new name, ExampleSpeedScaled:</p>
+    <pre>&src3&srcName3=ExampleSpeedScaled&src3=relational/value=value*1000/ExampleSpeed</pre>
+    <p style="margin:10px 80px;">The last source/table is still the ExampleTemp, there is additional logic applied to this table.  Recall though, that the logic from the first part of the URL path is still being applied (/splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000):
+        <pre>&src4=ExampleTemp</pre>
+</div>
+<div class="panel-body">
+    <h4>Example Results</h4>
+    <p style="margin:10px 80px;">This example will yield the scaled and cleaned logic to results.</p>
+    <p style="margin:10px 80px;">Results display as:</p>
+    <pre class="prettyprint">
+{"data": 
+    [{"MorePower": 0.4,
+      "MorePowerCleaned": 0.4,
+      "ExampleSpeedScaled": 40000,
+      "ExampleTemp": 71.6044,
+      "time": 1388534400000
+     },
+     ...
+    ]
+}
+    </pre>
+    <p style="margin:10px 80px;">The sub-URLs are also getting more complex, and now appear similar to this:</p>
+    <pre>
+.../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExamplePower/...
+    
+.../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000//rangecleanV1/0/100/rawdataV1/ExamplePower/...
+    
+.../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/relational/value=value*1000/rawdataV1/ExampleSpeed/...
+        
+.../splinesV2/limitderivative/60000/0/rangecleanV1/-20000000/20000000/rawdataV1/ExampleTemp/...</pre>
+</div>
+</section>
+
+
+    
+</body>

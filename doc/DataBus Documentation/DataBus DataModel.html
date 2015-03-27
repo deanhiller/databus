@@ -1,0 +1,107 @@
+<head>
+    <title>DataBus | Data Model</title>
+    <!--
+*Data Specification
+-data model
+-data types
+    #relational
+    #time series
+    #relational time series (wide)
+-requirements for data
+-data naming and structure
+-->
+</head>
+<body>
+<h1>Data Model</h1>
+    <p>DataBus is a system designed to work store and retrieve large amounts of data, and works very well with time series data.  In order for DataBus to work with your data, it must be provisioned so that it knows the type of data it will be working with.  This section will help you to learn more about the components and data storage in DataBus.  If you are already familiar with these concepts, you can move on to the <a href="../GetStarted#Provisioning DataBus">Provisioning DataBus</a> section.</p>
+    <p>The two main components for storing data are <b>Databases</b> and <b>Tables</b>.  Databases group distinct data into one overall container that stores tables.  Tables are a collection of related data, in a structured format stored in a database.</p>
+    <p>A table can contain any combination of values but they must be defined as one of the following types:</p>
+    <ul>
+        <li><span style="display:inline-block;width:350px;color:#01355e;">RELATIONAL_TABLE</span><br>Relational tables are the "standard" data storage table.  These tables can consist of any number of rows and columns describing the data you want to store.</li>
+        <br>
+        <li><span style="display:inline-block;width:350px;color:#01355e;">TIME_SERIES</span><br>Time series tables contain time series data.  These tables consist of a <i>single</i> TIME column and a <i>single</i> VALUE column.</li>
+        <br>
+        <li><span style="display:inline-block;width:350px;color:#01355e;">RELATIONAL_TIME_SERIES</span><br>Relational time series tables are a combination of relational and time series tables.  It allows quick access by time, just like a time series table, but it can contain multiple values for a time recording, similar to how a relational table can contains multiple values for a primary key.  What is sacrificed is the ability of a relational table to index and query data by the value columns.  You can only retrieve the data by timestamp.
+</li>
+    </ul>
+    <br>
+<h2>Table Definition Specifics</h2>
+    <p>Regardless of the type of table you choose, there are some rules that must be followed when creating a table:</p>
+    <ul>
+        <li>Table names must be unique within the entire system</li>
+        <li><b>CURRENT DOCUMENTATION STATES THAT THIS WILL BE CONSTRAINED TO INDIVIDUAL DATABASES IN THE NEAR FUTURE, CHECK TO SEE IF THIS HAS BEEN IMPLEMENTED</b></li>
+        <li>Table names must not have spaces or whitespace in their names.</li>
+        <li>There can only ever be one column in a table that has the "isPrimaryKey" set to true.</li>
+        <li>Each column can utilize the "isIndex" column which speeds lookups for that column data.</li>
+        <li>Each column must declare a "dataType" for that column. Currently, there are 3 types available:
+            <ul>
+                <li>BigInteger - covers all numeric types excluding floating point values.</li>
+                <li>BigDecimal - covers all floating point values.</li>
+                <li>string - all text values.</li>
+            </ul>
+        </li>
+    </ul>
+    <p>The Time Series table (<b>TIME_SERIES</b>) has some constraints that the <b>RELATIONAL_TABLE</b> does not:</p>
+    <ul>
+        <li>Can only have 2 columns. The first column must be named "time" and the second must be named "value".</li>
+        <li>The "time" column must have a dataType of "BigInteger".</li>
+        <li>The "value" column must have a dataType of "BigDecimal".</li>
+        <li>The "time" column must have "isIndex" set to true.</li>
+        <li>It is highly recommended that the "time" column have "isPrimaryKey" set to true (although it is not required).</li>
+    </ul>
+    <p>The JSON definition syntax for RELATIONAL_TABLE tables looks like:</p>
+    <pre class="prettyprint prettyprinted" style="width: 90%; margin-top: 2px;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"RELATIONAL_TABLE"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"yourTableName"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"yourDatabaseName"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}},</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}},</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}}</span><span class="pln"> 
+         </span><span class="pun">]</span><span class="pln"> 
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+    <br>
+    <p>The JSON definition syntax for TIME_SERIES tables looks like:</p>
+    <pre class="prettyprint prettyprinted" style="width: 90%; margin-top: 2px;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"TIME_SERIES"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"yourTableName"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"yourDatabaseName"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">]</span><span class="pln">
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+    <br>
+    <p>The JSON definition syntax for RELATIONAL_TIME_SERIES tables looks like:</p>
+    <pre class="prettyprint prettyprinted" style="width: 90%; margin-top: 2px;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"RELATIONAL_TIME_SERIES"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"yourTableName"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"yourDatabaseName"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}},</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}},</span><span class="pln"> 
+         </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"{COLUMN NAME}"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"{TYPE}"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">},</span><span class="str">"isPrimaryKey"</span><span class="pun">:{</span><span class="kwd">true</span><span class="pun">/</span><span class="kwd">false</span><span class="pun">}}</span><span class="pln"> 
+         </span><span class="pun">]</span><span class="pln"> 
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+    <br>
+<h2>Time Specification</h2>
+    <p>All time and dates in DataBus are formatted an epoch timestamp.  The default precision of the epoch is in milliseconds.  The timestamp for data uploading (writing) should be in this format.  Likewise, data downloading (reading) from DataBus will return timestamps in this format.</p>
+    <p>For help with converting date and time values to an epoch value, use <a href="http://www.epochconverter.com/">Epoch Converter.</a></p>
+    <p>DataBus has a <a href="../DataBus API#date format">module</a> that will convert data returned in a GET request from epoch to a human readable form.</p>
+    <br>
+<h2>Data Structure</h2>
+    <p>Because DataBus utilizes Cassandra for data storage, it is worth understanding the Cassandra data model.</p>
+    <p>The Cassandra data model is a dynamic schema, column-oriented data model.  This means that, unlike a relational database, you do not need to model all of the columns required by your application up front, as each row is not required to have the same set of columns.  Columns and their metadata can be added by your application as they are needed without incurring downtime to your application.</p>
+    <p>When comparing Cassandra to a relational database, the column family is similar to a table in that it is a container for columns and rows.  In a relational database, you define tables, which have defined columns.  The table defines the column names and their data types, and the client application then supplies rows conforming to that schema: each row contains the same fixed set of columns.</p>
+    <p>In Cassandra, you define column families.  Column families can (and should) define metadata about the columns, but the actual columns that make up a row are determined by the client application.  Each row can have a different set of columns.</p>
+    <p>For more information about Cassandra's data model, visit the <a href="http://www.datastax.com/documentation/cql/3.1/cql/ddl/ddl_intro_c.html">DataStax Documentaion CQL for Cassandra 2.x</a> web page.</p>
+    <br>
+<h2>Next Steps</h2>
+    <p>Now that you understand the concepts of the DataBus data model, it is time to provision DataBus.  Your next steps will be to follow the procedure in <a href="../DataBus/GetStarted">Working With DataBus</a> to get DataBus ready for your data.</p>
+</body>

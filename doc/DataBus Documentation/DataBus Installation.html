@@ -1,0 +1,179 @@
+<head>
+    <title>DataBus | Installation</title>
+    <!--
+    *Installation & Configuration
+        -DataBus Requirements/Dependencies (BS->Quickstart->Prerequisites)
+        -Understanding Code Structure (BS->Quickstart->structure of code) -- move to developer section
+        -Installation Options (BS->Quickstart->#3-#6)
+    #Setting up DataBus w/ in-memory database w/o search support
+        EDIT: should not download entire GIT repository, instead get latest version
+    #Setting up DataBus w Cassandra on one node w/ search support
+    #Setting up DataBus w Cassandra cluster on 3 nodes w/ search support
+    #Modbus Installation
+
+    Recommended Option???-->
+</head>
+<body>
+<h1 class="db_page_title">DataBus Installation</h1>
+    <p>This installation guide covers installing DataBus and the procedure for the recommended configuration.</p>
+<h2>Dependencies</h2>
+<h4>Operating System</h4>
+    <p>DataBus was developed on and tested in a Linux environment.  Because of this, use of the <a href="http://www.ubuntu.com/">Ubuntu</a> operating system is encouraged for running DataBus.  In some cases, it may be ideal to set up DataBus in a virtual environment that is running Ubuntu as the OS.</p>
+<h4>Java</h4>
+    <p>Both DataBus and Cassandra require Java from <a href="http://www.java.com/download/">Oracle</a>.  It is recommended that you use the most stable version of Java 7 for DataBus and Cassandra.</p>
+<h5>Java Installation Help</h5>
+    <p>DataBus and Cassandra require specific Java installation and configuration, for help visit:<br><a href="http://www.datastax.com/documentation/cassandra/2.0/cassandra/install/installJREJNAabout_c.html">DataStax Documentation Apache Cassandra 2.0: Installing the Oracle JRE and the JNA</a></p>
+    <p>Currently, Cassandra requires the most stable version of Java 7 you can deploy <i style="font-size:smaller;">(02/20/2015)</i>.  Before installing, please check the prerequisites in the <a href="http://wiki.apache.org/cassandra/GettingStarted#Step_0:_Prerequisites_and_Connecting_to_the_Community">Cassandra documention from DataStax</a> to see the required version.  DataBus was developed and tested using Java 6, but should work fine with Java 7.</p>
+<h4>Git</h4>
+    <p>Make sure Git is installed on the operating system.</p>
+    <h5><a href="http://git-scm.com/book/en/v2/Getting-Started-Installing-Git">Git Installation Help</a></h5>
+    <p>Or, if you already have Git installed, you can get the latest development version via Git itself:</p>
+    <code>git clone https://github.com/git/git</code>
+<h4>Cassandra</h4>
+    <p>It is recommended to download the latest stable release of <a href="http://planetcassandra.org/cassandra/">DataStax Community Edition Apache Cassandra</a> v2.0.x</p>
+    <p><b>Note:</b> There may be multiple active releases of Cassandra.  DataBus has been tested with v2.0, installing v2.1.1 or later may not be compatible with DataBus.</p>
+    <h5>Cassandra Installation</h5>
+    <p>There are several options and resources available for downloading Cassandra and installation documentation.  It is recommended that you refer to these links for installation help and reference with Cassandra.</p>
+    <ul>
+        <li>For instructions on installing DataStax Community Edition Apache Cassandra 2.0, vist:</li>
+        <span><a href="http://www.datastax.com/documentation/cassandra/2.0/cassandra/install/install_cassandraTOC.html">DataStax Documentation Apache Cassandra 2.0: Installing DataStax Community</a><br>Then select your system.</span>
+        <br><br>
+        <li>For download and instructions from the official Apache Cassandra site, visit:</li>
+        <span><a href="http://cassandra.apache.org/download/">http://cassandra.apache.org/download/</a></span>
+        <br><br>
+        <li>For download and instructions from the Cassandra Wiki, visit:</li>
+        <span><a href="http://wiki.apache.org/cassandra/GettingStarted">Cassandra Wiki: Getting Started</a></span>
+    </ul>
+    <p>CQL???</p>
+    <p>Gradle???</p>
+<h4>Solr</h4>
+    <p>DataBus uses <a href="http://lucene.apache.org/solr/">Apache Solr</a> for built in search features.  There is one instance of Solr in the DataBus codebase which can be used for development and testing.  For production use, please download latest stable release of <a href="http://lucene.apache.org/solr/mirrors-solr-latest-redir.html">Solr</a>.</p>
+    <h5><a href="http://lucene.apache.org/solr/quickstart.html">Solr Installation Help</a></h5>
+<br>
+<h2>Installing the DataBus Application</h2>
+    <p>Download the application from GitHub repository.  For most users, simply checking out the latest source code is recommended.  Do this by <a href="https://github.com/deanhiller/databus/archive/master.zip">downloading the zip file</a> from the <a href="https://github.com/deanhiller/databus">GitHub page</a> or fetch a shallow clone with:</p>
+    <code>$ git clone --depth 1 https://github.com/deanhiller/databus.git</code>
+    <p>Contributing developers will want to fetch the full repository with history.</p>
+<h2>DataBus Configuration</h2>
+    <p>Once the application and dependency installations are complete, it is necessary to configure DataBus for use.  These steps cover DataBus setup using a single Cassandra node and Solr search support.  Visit the <a href="../DataBus/Developer.html">DataBus Developer</a> section for alternative configuration options.</p>
+<h3>DataBus Demo Mode</h3>
+    <p>The DataBus download includes demo data.  You can explore DataBus, using the included demo data, to familiarize yourself with DataBus features, such as databases, tables and graphs.</p>
+    <p>To run DataBus in demo mode, make the following changes before proceeding:</p>
+    <ol>
+        <li>Locate the following file in the DataBus install location:</li>
+        <code>webapp/conf/application.conf</code>
+        <br><br>
+        <li>Find and set the following properties in the <code>application.conf</code> file:</li>
+        <code>domain=none<br>demo.mode=true</code>
+    </ol>
+    <p>In demo mode, the DataBus login credentials are:</p>
+    <code>jcollins/nreliscool</code>
+    <p>To stop demo mode, follow the above procedure to access the <code>application.conf</code> file and set <code>demo.mode=false</code></p>
+<h3>Starting Cassandra</h3>
+    <p>These instructions are for <b>starting Cassandra as a stand-alone process</b>.  Additional instructions for various installation and service types can be found in the <a href="http://www.datastax.com/documentation/cassandra/2.0/cassandra/reference/referenceStartStopTOC.html">DataStax Documentation Apache Cassandra 2.0: Starting and Stopping Cassandra</a>.</p>
+    <p>On initial start-up, each node must be started one at a time, starting with your seed nodes.</p>
+    <ul>
+        <li>To start Cassandra in the background:</li>
+        <ol>
+            <li><code>$ cd install_location </code></li>
+            <li><code>$ bin/cassandra</code></li>
+        </ol>
+        <br>
+        <li>To start Cassandra in the foreground:</li>
+        <ol>
+            <li><code>$ cd install_location</code></li>
+            <li><code>$ bin/cassandra -f</code></li>
+        </ol>
+    </ul>
+    <h4>Stopping Cassandra</h4>
+    <p>To stop Cassandra as a stand-alone process, find the Cassandra Java process ID (PID), and then kill the process using its PID number:</p>
+    <ol>
+        <li><code>$ ps auwx | grep cassandra</code></li>
+        <li><code>$ sudo kill pid</code></li>
+    </ol>
+    <p>Additional instructions for stopping Cassandra can be found in the <a href="http://www.datastax.com/documentation/cassandra/2.0/cassandra/reference/referenceStartStopTOC.html">DataStax Documentation Apache Cassandra 2.0: Starting and Stopping Cassandra</a>.</p>
+    <h4>Configure Cassandra:</h4>
+    <p>Most users won't need to adjust the default Cassandra configuration.  Try running the default configuration with DataBus first, before attempting any configuration adjustments.  If you do need to change the Cassandra config files, consult these resources for help:</p>
+    <ul>
+        <li><a href="http://www.datastax.com/documentation/cassandra/2.0/cassandra/configuration/configTOC.html">DataStax Documentation Apache Cassandra 2.0: Configuration</a></li>
+        <li><a href="http://wiki.apache.org/cassandra/GettingStarted#Step_2:_Basic_Configuration">Cassandra Wiki: Basic Configuration</a></li>
+    </ul>
+    <p>Additional information about recommended production settings for Cassandra and initializing multiple node clusters can be found in the <a href="../DataBus/Developer.html">DataBus Developer</a> section.</p>
+    <br>
+<h3>DataBus Configuration</h3>
+    <p>The DataBus configuration files can be found in:</p>
+    <code>$ install_location/databus/webapp/conf/</code>
+    <p>The <code>conf</code> directory contains several <code>application.conf</code> files.  These are used to run DataBus in differnt modes.</p>
+    <h4>DataBus Modes</h4>
+    <p>Scripts for starting the DataBus application in different modes are in <code>install_location/databus/webapp/</code>, they include:</p>
+    <ul><code>
+        <li>startProduction.sh</li>
+        <li>startDemo.sh</li>
+        <li>startQa.sh</li>
+    </code></ul>
+    <p>The <code>application.conf</code> file is "dev" mode for test environments.  Starting DataBus without specifying a mode will enable this mode.  The single node Cassandra mode is recommended.  The in memory mode would only be used for development and testing or as a way to quickly fire up DataBus without using or installing Cassandra.</p>
+    <p>The <code>application.conf.prod</code> file is for production use.  To enable production mode, run the <code>startProduction.sh</code> script, in production mode there are overrides to default property values.</p>
+    <div class="alert alert-info alert-block offset2"><b>Note:</b> It may be necessary to customize the start script to work with your run environment.</div>
+    <h4>User Authentication</h4>
+    <p>DataBus can use an Active Directory (AD) or a internal user list for user authetication.  For AD, your IT should have an SRV record in DNS on the location of the AD server and port information.  Supplying your domain allows DataBus to use DNS to lookup the SRV record and find your Active Directory.  Using a value of <code>none</code> disables AD lookup, users are then authenticated against the internal DataBus user list.</p>
+    <ul>
+        <li>Internal user list: <code>domain=none</code></li>
+        <li>Active Directory: <code>domain=your_domain.com</code></li>
+    </ul>
+    <h4>Configure DataBus for Cassandra</h4>
+    <p>The recommended configuration for DataBus is for use with a single node Cassandra database.  To enable this configuration, make sure the following property is set as shown in your config file:<br><code>nosqltype.nosqltype=cassandra</code></p>
+    <p>For production use, make sure you modify the other <code>nosql.cassandra.seeds</code> list to your node hostnames OR name your nodes <i>(e.g.: a1, a2, etc. etc.)</i></p>
+    <p>If you are installing Cassandra on same machine with DataBus, you may be able to leave the other <code>nosql</code> properties at the default settings.</p>
+    <br>
+<h3>Start DataBus</h3>
+    <p>Once DataBus is installed and configured, it is ready to be run.  To start DataBus, peform the following steps:</p>
+    <ol>
+        <li>Navigate to the DataBus install location in terminal<br><code>$cd install_location/databus</code></li>
+        <br>
+        <li>Build the application<br><code>$ ./build.sh build</code></li>
+        <br>
+        <li>Navigate to the webapp directory<br><code>$ cd webapp </code></li>
+        <br>
+        <li>Run the Play Framework<br><code>$ ./play run</code></li>
+    </ol>
+    <p>If DataBus is installed on a Windows OS:</p>
+    <ul><code>
+        <li>c:\databus>build.bat build</li>
+        <li>c:\databus>cd webapp</li>
+        <li>c:\databus\webapp>play-1.2.5\play run</li>
+    </code></ul>
+    <p>Once started, the app should be running at: <a href="http://localhost:9000/">http://localhost:9000/</a>.</p>
+<h3>Search Configuration (Solr)</h3>
+    <p>To enable search features, configure your config file as follows to enable Solr:</p>
+    <ul><code>
+        <li>solr.mode=server</li>
+        <li>solr.url=http://localhost:8983/solr</li>
+        <li>solr.queryRequestHandler=select</li>
+        <li>solr.defaultSearchField=allTerms_texts</li>
+    </code></ul>
+    <p>Solr is turned on by default in demo mode.  If you do not wish to use the search feature, simply turn off Solr:</p>
+    <code>solr.mode=off</code>
+
+<h3>Start Solr</h3>
+    <p>After setting the Solr configuration, you'll need to start Solr for use in DataBus:</p>
+    <ol>
+        <li>Navigate to the Solr install location in terminal
+            <ul>
+                <li>To use the included DataBus Solr instance:<br><code>$cd install_location/databus/solr/</code></li>
+            </ul>
+        </li>
+        <li>Run Solr<br><code>$ java -jar start.jar
+</code></li>
+    </ol>
+<h2>Modbus Installation</h2>
+    <p>Modbus</p>
+<h2>Ancillary Tools</h2>
+    <p>There are a few other tools that will help you to communicate with DataBus and take advantage of the available API.  The Databus API uses the HTTP protocol so any application that can access a server while attaching a "POST" payload can be used.  The examples provided in the DataBus documentation use curl.</p>
+    <p><a href="http://curl.haxx.se/">curl</a> is usually pre-installed on Linux and OSX.  It is not typically pre-installed on Windows.</p>
+    <h5><a href="http://curl.haxx.se/download.html">Install cURL</a></h5>
+    <p>Or, you can research other alternatives to curl <a href="http://curl.haxx.se/libcurl/competitors.html">here</a>.</p>
+<br>
+<h2>Next Steps</h2>
+    <p>This concludes the recommended basic installation and configuration.  Now that you have DataBus installed and running, if is useful to <a href="../DataModel">learn about the data model</a> that DataBus works with.  Your next steps will be to follow the procedure in <a href="../DataBus/GetStarted">Getting Started</a> to become familiar with working with DataBus.</p>
+    <p>DataBus is flexible, and can be modified and configured to work with your unique environment.  Additional configuration details can be found in the <a href="../DataBus/Developer.html">DataBus Developer</a> section.</p>
+</body>

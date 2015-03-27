@@ -1,0 +1,156 @@
+<head>
+    <title>DataBus | Fundamentals</title>
+</head>
+<body>
+<h1 class="db_page_title">DataBus Fundamentals</h1>
+Within DataBus there are three main components that define how the data is structured, stored and accessed: Databases, Tables and Modules.
+    
+<h3>Databases</h3>
+    <p>Databases are top level components that define a set of data in relation to Users, User Groups and Tables. Basically, a database would be the highest level container for a customer to store and access data (although a customer is not limited to just one Database). An example of a Database could be:</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:150px;color:#01355e;font-weight:bold;">Database Name:</span> Western_United_States_Wind_Data
+    </div>    
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:150px;color:#01355e;font-weight:bold;">Users:</span> JSmith, BMiller
+    </div>    
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:150px;color:#01355e;font-weight:bold;">User Groups:</span> Wind_Research_Group, Statistical_Analysis
+    </div>    
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:150px;color:#01355e;font-weight:bold;">Tables:</span> wind103WUV, wind103WTWC500nm, wind103WDirTotal
+    </div>
+<br>
+<h3>Tables</h3>
+    <p>Tables describe the data coming from a source of user defined values. A table can be any combination of values that are important to the user defining the table but must fall within two main table types that DataBus offers: STREAM and RELATIONAL_TABLE.</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <b style="color:#01355e;">STREAM</b> tables are for time series data.  These tables consist of a single TIME column and a single VALUE column.
+    </div>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <b style="color:#01355e;">RELATIONAL_TABLE</b> tables are for relational data.  These tables can consist of any number of columns describing the data you want to store.
+    </div>
+<br>
+<h3>Modules</h3>
+    <p>Modules are advanced components that allow you to translate data into many different forms when requesting that data from DataBus. Most Modules are specific to a single Table type and cannot be used for data that is stored in a table not of that type. An exception would be the SQL Module which provides SQL-like queries on a table whose structure is known by the one using the module. One powerful feature of the Modules component is that they can be chained together to provide multiple translations on a single request. Some examples of modules are:</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:350px;color:#01355e;">Standard Deviation (StdDevMod)</span>Type: <b style="color:#01355e;">STREAM</b>
+    </div>     
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:350px;color:#01355e;">Splines (SplinesMod)</span>Type: <b style="color:#01355e;">STREAM</b>
+    </div>     
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <span style="display:inline-block;width:350px;color:#01355e;">SQL Module (SQL)</span>Type: <b style="color:#01355e;">RELATIONAL_TABLE, STREAM</b>
+    </div> 
+<br>
+<br>
+<h2>User Roles</h2>
+    <p>There are three distinct <i>end user</i> roles for accessing DataBus: Users, Robots and Groups.</p>
+    <p style="margin-left:20px;"><b style="color:#01355e;">Users</b> are Active Directory system accounts that are allowed access to the DataBus system. A <b>user</b> will be responsible for the creation and maintenance of system components such as <b>Databases, Tables, Robots, User Groups</b> and other <b>Users</b>.</p> 
+    <p style="margin-left:20px;"><a  href="#robots" style="color:#01355e;font-weight:bold;">Robots</a> are DataBus system accounts that "act" like <b>Users</b> when running certain DataBus functions. <b>Robots</b> are used to allow access to the system in an automated way without exposing <b>User</b> Credentials for authentication. They should mainly be used for automated services and are considered an Advanced feature of the DataBus system.</p>
+    <p style="margin-left:20px;"><a href="#user-groups" style="color:#01355e;font-weight:bold;">User Groups</a> are combinations of <b>Users</b> and <b>Robots</b> that make it easy to give common system privelages to many end user roles at once.</p>
+<br>
+<h2>First Time User</h2>
+    <p>As a first time user, you either want access to someone elses data or want to upload your own so we divide this help into two sections. The first section is for those who wish to upload data into the system and use that data. The second is for those who want to look around and find data sets and request access to those datasets.</p>
+<br>
+<h3>First Time User to Upload Data</h3>
+    <p>These are generally the first steps you will take as a first time user:</p>
+    <ol>
+        <li>First, you should click My DataBus > Databases</li>
+        <li>Next, click the button create database</li>
+        <li>Now that you have a database, you can click <a href="#">Provisioning DataBus</a> to find out how to create tables to upload data to them.</li>
+    </ol>
+    <p>Next, you may want to create a user group: <i>(Optional)</i></p>
+    <ol>
+        <li>Click on My DataBus > Groups</li>
+        <li>Click on Create Group</li>
+        <li>Click save once you have filled the information in</li>
+        <li>You are automatically an admin member of this group</li>
+        <li>You can request other users to give your group access to their databases</li>
+    </ol>
+<h3>First Time User to Read Data</h3>
+    <ol>
+        <li>The first thing to look through is the list of all databases so click on My DataBus->Summary and scroll down to Databases</li>
+        <li>Find the database you are interested in and look at the list of admin users or admin groups</li>
+        <li>If there is an admin user, you can contact that user to request access to that database</li>
+        <li>If there is only admin groups, you can scroll back up to the Groups section and find the group and look at the Groups admins</li>
+        <li>Now, you can contact the Group's admins to ask for access to the database</li>
+    </ol>
+    <p>Once you have access, you can move onto the section <a href="#">Downloading Data</a></p>
+<br>
+<h2 id="robots">Robots</h2>
+    <p><b>Robots</b> are user accounts that can perform most DataBus functions, just like a normal <b>User</b> and are considered an Advanced Feature of the DataBus System.</p>
+    <p>The main use for <b>Robot</b> accounts are to interface with the DataBus system in an automated way. Since all DataBus functionality requires authentication, there needed to be a way to perform routine and automated interactions with the system in which <b>User</b> account credentials were not stored.</p>
+    <p>Functions that are available to <b>Robots</b>:</p>
+    <ul>
+        <li>Can create Databases</li>
+        <li>Can create Tables</li>
+        <li>Can insert data into Tables</li>
+        <li>Can update existing Table data</li>
+        <li>Can read existing Table data</li>
+    </ul>
+    <p>How <b>Robots</b> differ from a normal <b>User</b>:</p>
+    <ul>
+        <li><b>Robots</b> only exist as part of a group.</li>
+        <li><b>Robots</b> access is available to everyone in the group the <b>Robot</b> belongs to.</li>
+        <li><b>Robots</b> accounts cannot be used to log into the DataBus User Interface.</li>
+        <li><b>Robots</b> cannot create other <b>Robots</b> or <b>User Groups</b>.</li>
+    </ul>
+<h3>Creating a Robot</h3>
+    <p>To create a <b>Robot</b>, log into your <a href="#groups">Groups</a> page and click one of the <b>User Groups</b> that you have either created or are associated with. Under the "Members" section, click the "Create robot" link. Enter in the "User Name" of your <b>Robot</b> and make sure that "Member" is the chosen "Membership Type".</p>
+    <p>Once the <b>Robot</b> is created, you will see it listed in the "Members" section for this particular <b>User Group</b> along with its associated "API Key". When interacting with the DataBus System as a <b>Robot</b>, the <i>Username</i> will be the "<b>Robot</b> Name" and the <i>Password</i> will be the <b>Robot</b> "API Key".</p>
+    <p>The current list of <b>Robots</b> that are available to you are:</p>
+    <div style="margin-left: 20%">
+<br>
+    <table class="table table-collapse db_border_bottom" style="width:75%;">
+        <tbody><tr style="background-color:#d5d5d5; font-weight: bold;">
+            <td>Robot Username</td>
+            <td>API Key</td>
+            <td>User Group</td>
+         </tr>
+        </tbody>
+    </table>
+</div>
+    <div class="alert alert-warning alert-block db_border offset1 span8" style="width: 80%; padding-top: 0px;">
+	<h4 style="margin-bottom:0px; padding-bottom:5px">SECURITY NOTE:</h4>
+	<b>Robots</b> only have access to what you give them access to.  If a <b>Robot</b> is in a <b>User Group</b> that
+	has full access, the <b>Robot</b> has full access. <b>Robots</b> can be added to other groups via the "Add existing robot to
+	this group" link within a specific <b>User Group</b> page. The owner of the <b>Robot</b> is the <b>User Group</b> selected
+	during <b>Robot</b> creation and is managed by all Admins within that group.
+	<br><br>
+	<b>Robots</b> can only be deleted by the Admins
+	of the group the <b>Robot</b> belongs to.  Deleting a <b>Robot</b> from a group that the <b>Robot</b> does not belong to, 
+	only removes the <b>Robots'</b> membership to that group.
+	</div>
+<br>
+<br>
+<h2 id="user-groups">User Groups</h2>
+    <p>A <b>User Group</b> is a DataBus system account that groups <b>Users</b> together in order to
+make it easy to give common system privilages and data access to many users at once.</p>
+    <p>Once the group is created, the administrator can then perform the following tasks for the group:</p>
+    <ul class="subdefine" style="margin-left: 20px;">
+        <li>  Add existing <b>Users</b> to the group.</li>
+        <li>Associate existing <b>Databases</b> with the group.</li>
+        <li>Associate existing <b>Robots</b> with the group.</li>
+        <li>Create and associate new <b>Robots</b> with the group.</li>
+    </ul>
+    <p>When adding a <b>User</b> to a group, that user can have a "Membership Type" of either:</p>
+    <ul>
+        <li>Member</li>
+        <li>Group Admin</li>
+    </ul>
+    <p>A Member account can access all data associated with the <b>User Group</b> whereas a Group Admin can create new group <b>Users</b> and new group <b>Robots</b>.</p>
+    <div class="alert alert-info alert-block offset2 span8">
+		All users that are within a group can access all information about all Databases associated with
+		that group.  All users of a group can also access and use all <b>Robots</b> that are associated with
+		the group.
+	</div>
+<h3>Creating a User Group</h3>
+    <p>To create a <b>User Group</b>, log into the <a href="https://databus.nrel.gov/addgroup">Add User Group</a> Interface and complete the form. The corporate user account that creates the <b>User Group</b> will become the administrator of the group.</p>
+    <p>The groups you currently have access to are:</p>
+    <table class="table table-collapse db_border_bottom" style="width:90%;">
+	<tbody><tr style="background-color:#d5d5d5; font-weight: bold;">
+        <td style="width: 33%;">Group Name</td>
+        <td>Administrator</td>
+        <td>Description</td>
+     </tr>
+    </tbody></table>
+</body>

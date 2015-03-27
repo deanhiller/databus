@@ -1,0 +1,598 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>TimeSeries.Guru REST API</title><link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootswatch/3.1.1/flatly/bootstrap.min.css"><link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css"><link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,700|Inconsolata|Raleway:200"><style>pre code{display:block;padding:.5em;color:#333}
+/* Highlight.js Theme Tomorrow */
+body {
+    margin:1em;
+}
+.hljs-comment,.hljs-title{color:#8e908c}.hljs-variable,.hljs-attribute,.hljs-tag,.hljs-regexp,.ruby .hljs-constant,.xml .hljs-tag .hljs-title,.xml .hljs-pi,.xml .hljs-doctype,.html .hljs-doctype,.css .hljs-id,.css .hljs-class,.css .hljs-pseudo{color:#c82829}.hljs-number,.hljs-preprocessor,.hljs-pragma,.hljs-built_in,.hljs-literal,.hljs-params,.hljs-constant{color:#f5871f}.ruby .hljs-class .hljs-title,.css .hljs-rules .hljs-attribute{color:#eab700}.hljs-string,.hljs-value,.hljs-inheritance,.hljs-header,.ruby .hljs-symbol,.xml .hljs-cdata{color:#718c00}.css .hljs-hexcolor{color:#3e999f}.hljs-function,.python .hljs-decorator,.python .hljs-title,.ruby .hljs-function .hljs-title,.ruby .hljs-title .hljs-keyword,.perl .hljs-sub,.javascript .hljs-title,.coffeescript .hljs-title{color:#4271ae}.hljs-keyword,.javascript .hljs-function{color:#8959a8}.hljs{display:block;background:white;color:#4d4d4c;padding:.5em}.coffeescript .javascript,.javascript .xml,.tex .hljs-formula,.xml .javascript,.xml .vbscript,.xml .css,.xml .hljs-cdata{opacity:.5}</style><style>body,
+h4,
+h5 {
+  font-family: 'Roboto' sans-serif !important;
+}
+h1,
+h2,
+h3,
+.aglio {
+  font-family: 'Raleway' sans-serif !important;
+}
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a {
+  display: none;
+}
+h1:hover a,
+h2:hover a,
+h3:hover a,
+h4:hover a,
+h5:hover a {
+  display: inline;
+}
+code {
+  color: #444;
+  background-color: #ddd;
+  font-family: 'Inconsolata' monospace !important;
+}
+a[data-target] {
+  cursor: pointer;
+}
+h4 {
+  font-size: 100%;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.back-to-top {
+  position: fixed;
+  z-index: 1;
+  bottom: 0px;
+  right: 24px;
+  padding: 4px 8px;
+  background-color: #eee;
+  text-decoration: none !important;
+  border-top: 1px solid rgba(0,0,0,0.1);
+  border-left: 1px solid rgba(0,0,0,0.1);
+  border-right: 1px solid rgba(0,0,0,0.1);
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.panel {
+  overflow: hidden;
+}
+.panel-heading code {
+  margin-left: 3px;
+  background-color: rgba(255,255,255,0.7);
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+.panel-heading h3 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+a.list-group-item:hover {
+  background-color: #f8f8f8;
+  border-left: 2px solid #555;
+  padding-left: 15px;
+}
+.indent {
+  display: block;
+  text-indent: 16px;
+}
+.list-group-item {
+  padding-left: 16px;
+}
+.list-group-item .toggle .open {
+  display: block;
+}
+.list-group-item .toggle .closed {
+  display: none;
+}
+.list-group-item.collapsed .toggle .open {
+  display: none;
+}
+.list-group-item.collapsed .toggle .closed {
+  display: block;
+}
+a.list-group-item:hover {
+  background-color: #f5f5f5;
+  border-left-color: #555;
+}
+a.list-group-item {
+  font-size: 13px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+a.list-group-item.heading {
+  font-size: 15px;
+  background-color: #ecf0f1;
+}
+a.list-group-item.heading:hover {
+  background-color: #f5f5f5;
+}
+.list-group-item.collapse {
+  display: none;
+}
+.list-group-item.collapse.in {
+  display: block;
+}
+.list-group-item a span.closed {
+  display: none;
+}
+.list-group-item a span.open {
+  display: block;
+}
+.list-group-item a.collapsed span.closed {
+  display: block;
+}
+.list-group-item a.collapsed span.open {
+  display: none;
+}
+#nav {
+  width: inherit;
+  margin-top: 38px;
+  max-width: 255px;
+  top: 0;
+  bottom: 0;
+  padding-right: 12px;
+  padding-bottom: 12px;
+  overflow-y: auto;
+}
+@media (max-width: 1199px) {
+  #nav {
+    max-width: 212px;
+  }
+}
+</style></head><body><a href="#top" class="text-muted back-to-top"><i class="fa fa-toggle-up"></i>&nbsp;Back to top</a><div class="container"><div class="row"><div class="col-md-3"><nav id="nav" class="hidden-sm hidden-xs affix nav"><div class="list-group"><a data-toggle="collapse" data-target="#time-series-menu" href="#time-series" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Time Series</a><div id="time-series-menu" class="collapse"><a href="#time-series-list" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List</a><a href="#time-series-create" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Create</a><a href="#time-series-insert-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Insert data</a><a href="#time-series-delete-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-danger"><i class="fa fa-times"></i></span>Delete data</a><a href="#time-series-latest-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Latest data</a><a href="#time-series-query-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Query data</a><a href="#time-series-aggregate-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Aggregate data</a><a href="#time-series-join-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Join data</a><a href="#time-series-correlate-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Correlate data</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#database-menu" href="#database" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Database</a><div id="database-menu" class="collapse"><a href="#database-list" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List</a><a href="#database-get" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get</a><a href="#database-create" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Create</a><a href="#database-modify" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-warning"><i class="fa fa-pencil"></i></span>Modify</a><a href="#database-start/stop" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-warning"><i class="fa fa-pencil"></i></span>Start/Stop</a><a href="#database-bulk-insert-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Bulk insert data</a><a href="#database-delete-data" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-danger"><i class="fa fa-times"></i></span>Delete data</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#job-menu" href="#job" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Job</a><div id="job-menu" class="collapse"><a href="#job-list-jobs" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List Jobs</a><a href="#job-get-job" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>Get Job</a><a href="#job-list-job-logs" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List Job Logs</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#import-menu" href="#import" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Import</a><div id="import-menu" class="collapse"><a href="#import-s3" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>S3</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#storage-menu" href="#storage" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Storage</a><div id="storage-menu" class="collapse"><a href="#storage-list" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#token-menu" href="#token" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Token</a><div id="token-menu" class="collapse"><a href="#token-list" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-info"><i class="fa fa-arrow-down"></i></span>List</a><a href="#token-create" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Create</a><a href="#token-delete" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-danger"><i class="fa fa-times"></i></span>Delete</a></div></div><div class="list-group"><a data-toggle="collapse" data-target="#cost-calculator-menu" href="#cost-calculator" class="list-group-item heading collapsed"><span class="toggle pull-right"><span class="open fa fa-angle-down"></span><span class="closed fa fa-angle-right"></span></span>Cost Calculator</a><div id="cost-calculator-menu" class="collapse"><a href="#cost-calculator-calculate" style="border-top-left-radius: 0; border-top-right-radius: 0" class="list-group-item"><span class="badge alert-success"><i class="fa fa-plus"></i></span>Calculate</a></div></div><p style="text-align: center; word-wrap: break-word;"><a href="https://www.timeseries.guru">https://www.timeseries.guru</a></p></nav></div><div class="col-md-8"><div><header><div class="page-header"><h1 id="top">TimeSeries.Guru REST API</h1></div></header><div class="description"><p>This is the API documentation for the relaxing <a href="https://www.timeseries.guru">hosted time series database TimeSeries.Guru</a>.</p>
+<p>Depending on the region your database is running the API endpoint will be <code>https://{region}-api.timeseries.guru</code>. So if your database region is eu-west-1 you need to make calls to <code>https://eu-west-1-api.timeseries.guru</code>.</p>
+<ul>
+<li><p>For CSV set the Content-Type and/or Accept header to text/csv. We use the comma as delimiter.</p></li>
+<li><p>For JSON set the Content-Type and/or Accept header to application/json.</p></li>
+<li><p>For XML set the Content-Type and/or Accept header to application/xml.</p></li>
+<li><p>For humans set the Accept header to text/plain.</p></li>
+</ul>
+<script type="text/javascript">
+    (function() {
+    var ul = document.createElement('script'); ul.type = 'text/javascript'; ul.async = true;
+    ul.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'userlike-cdn-widgets.s3-eu-west-1.amazonaws.com/326411634a13a425bd2519600e288d751189874efb87c89da3b6b13f86b171bd.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ul);
+    })();
+</script>
+<script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+<pre><code>ga('create', 'UA-35685929-6', 'auto');
+ga('set', 'anonymizeIp', true);
+ga('send', 'pageview');
+</code></pre>
+</script>
+</div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="time-series">Time Series&nbsp;<a href="#time-series"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>A time series is comparable to a table with two columns: timestamp and value. Each time series belongs to a database.</p>
+<h4 id="time-series-list">List&nbsp;<a href="#time-series-list"><i class="fa fa-link"></i></a></h4><p>Get time series.</p>
+<section id="time-series-list-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-list-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#06f50ffb98cc6124e496028b8e0bddc5" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="06f50ffb98cc6124e496028b8e0bddc5" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#1a74ed792c2c6b4fee0771d2719a580c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="1a74ed792c2c6b4fee0771d2719a580c" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">timeseriesID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad_sensor01"</span></span>,
+    "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"sensor01"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"created"</span></span>,
+    "<span class="hljs-attribute">values</span>": <span class="hljs-value"><span class="hljs-number">123456789</span>
+</span>}]
+</code></pre></li></ul></section><h4 id="time-series-create">Create&nbsp;<a href="#time-series-create"><i class="fa fa-link"></i></a></h4><p>Create time series.</p>
+<section id="time-series-create-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#time-series-create-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#60750bfec18e22fe022f6b3ee07a08b0" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="60750bfec18e22fe022f6b3ee07a08b0" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"sensor02"</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#6306f2085f2754b0f5a6f3df5bb3fe91" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6306f2085f2754b0f5a6f3df5bb3fe91" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/databases/8f49ab0fa6c243f99f44a3f8c6c0a8ad/timeseries/8f49ab0fa6c243f99f44a3f8c6c0a8ad_sensor02</span><br></code></pre></li></ul></section><h4 id="time-series-insert-data">Insert data&nbsp;<a href="#time-series-insert-data"><i class="fa fa-link"></i></a></h4><p>Add single data point to time series.</p>
+<section id="time-series-insert-data-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#time-series-insert-data-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName}/data</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#85bfcb7cdfca1821f815da610aaf5e0d" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="85bfcb7cdfca1821f815da610aaf5e0d" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>34.543
+</code></pre></li><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#3531f56d9895445047d2c3a3740c42ac" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="3531f56d9895445047d2c3a3740c42ac" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">34.543</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#2607e497cbe669dfa0c31dae77cfb2af" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="2607e497cbe669dfa0c31dae77cfb2af" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"34.543"</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="time-series-delete-data">Delete data&nbsp;<a href="#time-series-delete-data"><i class="fa fa-link"></i></a></h4><p>Deleting data can take some time. Therefore we create a job for each delete request. Jobs can then be monitored.</p>
+<section id="time-series-delete-data-delete" class="panel panel-danger"><div class="panel-heading"><div style="float:left"><a href="#time-series-delete-data-delete" class="btn btn-xs btn-danger">DELETE</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName}/data{?beginDay,endDay}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series</p>
+</dd><dt>beginDay</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20141111</span></span><p>YYYYMMDD</p>
+</dd><dt>endDay</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20141112</span></span><p>YYYYMMDD</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#ee59bd37bb67e6a649a131d0af12da58" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="ee59bd37bb67e6a649a131d0af12da58" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/databases/8f49ab0fa6c243f99f44a3f8c6c0a8ad/jobs/se05b26707c5211e482f80800200c9a66</span><br></code></pre></li></ul></section><h4 id="time-series-latest-data">Latest data&nbsp;<a href="#time-series-latest-data"><i class="fa fa-link"></i></a></h4><p>Get latest data point from time series.</p>
+<section id="time-series-latest-data-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-latest-data-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName}/latest</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#398fabc17c59b2490c0e0897cb2afd7e" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="398fabc17c59b2490c0e0897cb2afd7e" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>404</code></strong></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#5c3a32f595b3fe13efb2353e5993a56a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5c3a32f595b3fe13efb2353e5993a56a" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br></code></pre><h5>Body</h5><pre><code>{
+      "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span></span>,
+      "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">34.543</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#6954bd60a4affd82d7856ba2054d1358" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6954bd60a4affd82d7856ba2054d1358" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">timestamp</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"34.543"</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#20098781ddcf83d529c9d86e713953ba" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="20098781ddcf83d529c9d86e713953ba" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br></code></pre><h5>Body</h5><pre><code>1297327781715,34.543
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#4ff4684a825676d65e68cc34dd8349dd" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="4ff4684a825676d65e68cc34dd8349dd" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br></code></pre><h5>Body</h5><pre><code>2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:41</span><span class="hljs-class">.715Z</span>,34<span class="hljs-class">.543</span>
+</code></pre></li></ul></section><h4 id="time-series-query-data">Query data&nbsp;<a href="#time-series-query-data"><i class="fa fa-link"></i></a></h4><p>Get data points from time series.</p>
+<section id="time-series-query-data-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-query-data-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName}/data{?limit,offset,resolution,beginTimestamp,endTimestamp}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Data points result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd><dt>resolution</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>1d</span></span><p>Number + Enum[&quot;ns&quot;, &quot;us&quot;, &quot;ms&quot;, &quot;s&quot;, &quot;m&quot;, &quot;h&quot;, “d”]. If you only need some of your values you can specify a resolution in nano seconds, micro seconds, milli seconds, seconds, minutes, hours or days</p>
+</dd><dt>beginTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to begin with</p>
+</dd><dt>endTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to end with</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#4df59a7787e271b7a7acab8c3118a864" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="4df59a7787e271b7a7acab8c3118a864" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#7b68db664f8c9abd0c3b8d828e24398a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="7b68db664f8c9abd0c3b8d828e24398a" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">timestamp</span>": <span class="hljs-value">[<span class="hljs-number">1297327781715</span>, <span class="hljs-number">1297327782714</span>]</span>,
+    "<span class="hljs-attribute">values</span>": <span class="hljs-value">[<span class="hljs-number">34.543</span>, <span class="hljs-number">27.198</span>]
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#0a7e423b6ce47427f4ee4f94249e34e5" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="0a7e423b6ce47427f4ee4f94249e34e5" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">timestamp</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"34.543"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">timestamp</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"27.198"</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#06ee8c416c2536e93efd8ff0e780352f" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="06ee8c416c2536e93efd8ff0e780352f" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>1297327781715,34.543
+1297327782714,27.19
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#5f8b2cfbc11da27af97d12d49a5284ce" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5f8b2cfbc11da27af97d12d49a5284ce" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:41</span><span class="hljs-class">.715Z</span>,34<span class="hljs-class">.543</span>
+2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:42</span><span class="hljs-class">.714Z</span>,27<span class="hljs-class">.19</span>
+</code></pre></li></ul></section><h4 id="time-series-aggregate-data">Aggregate data&nbsp;<a href="#time-series-aggregate-data"><i class="fa fa-link"></i></a></h4><p>Get aggregated data points from time series.</p>
+<section id="time-series-aggregate-data-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-aggregate-data-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName}/aggregation/&lt;window&gt;{?limit,offset,beginTimestamp,endTimestamp}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series</p>
+</dd><dt>window</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>1d</span></span><p>Number + Enum[&quot;ns&quot;, &quot;us&quot;, &quot;ms&quot;, &quot;s&quot;, &quot;m&quot;, &quot;h&quot;, “d”]. Specify the aggregation window in nano seconds, micro seconds, milli seconds, seconds, minutes, hours or days.</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Data points result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd><dt>beginTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to begin with</p>
+</dd><dt>endTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to end with</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#5fc4a8625924936806242e8f340ba661" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5fc4a8625924936806242e8f340ba661" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#678aae752aec1eb5b3a9e2f251c91836" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="678aae752aec1eb5b3a9e2f251c91836" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-collection">[
+    <span class="hljs-collection">{
+        <span class="hljs-string">"timestamps"</span>: <span class="hljs-collection">{
+            <span class="hljs-string">"first"</span>: <span class="hljs-number">1297327781715</span>,
+            <span class="hljs-string">"last"</span>: <span class="hljs-number">1297327782714</span>
+        }</span>,
+        values: <span class="hljs-collection">{
+            <span class="hljs-string">"first"</span>: <span class="hljs-number">18.70281</span>,
+            <span class="hljs-string">"last"</span>: <span class="hljs-number">44.88619</span>,
+            <span class="hljs-string">"avg"</span>: <span class="hljs-number">50.62323</span>,
+            <span class="hljs-string">"count"</span>: <span class="hljs-number">1000</span>,
+            <span class="hljs-string">"sum"</span>: <span class="hljs-number">50623.23</span>,
+            <span class="hljs-string">"sumsquares"</span>: <span class="hljs-number">3386253</span>,
+            <span class="hljs-string">"dev"</span>: <span class="hljs-number">28.69742</span>,
+            <span class="hljs-string">"var"</span>: <span class="hljs-number">823.5419</span>,
+            <span class="hljs-string">"min"</span>: <span class="hljs-number">0.230901</span>,
+            <span class="hljs-string">"max"</span>: <span class="hljs-number">99.88041</span>
+        }</span>
+    }</span>, <span class="hljs-collection">{
+        <span class="hljs-string">"timestamps"</span>: <span class="hljs-collection">{
+            <span class="hljs-string">"first"</span>: <span class="hljs-number">1297327782715</span>,
+            <span class="hljs-string">"last"</span>: <span class="hljs-number">1297327783714</span>
+        }</span>,
+        values: <span class="hljs-collection">{
+            <span class="hljs-string">"first"</span>: <span class="hljs-number">8.70281</span>,
+            <span class="hljs-string">"last"</span>: <span class="hljs-number">74.88619</span>,
+            <span class="hljs-string">"avg"</span>: <span class="hljs-number">43.62323</span>,
+            <span class="hljs-string">"count"</span>: <span class="hljs-number">800</span>,
+            <span class="hljs-string">"sum"</span>: <span class="hljs-number">43623.23</span>,
+            <span class="hljs-string">"sumsquares"</span>: <span class="hljs-number">1386253</span>,
+            <span class="hljs-string">"dev"</span>: <span class="hljs-number">18.69742</span>,
+            <span class="hljs-string">"var"</span>: <span class="hljs-number">723.5419</span>,
+            <span class="hljs-string">"min"</span>: <span class="hljs-number">1.230901</span>,
+            <span class="hljs-string">"max"</span>: <span class="hljs-number">78.88041</span>
+        }</span>
+    }</span>
+]</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#9d5f38a4d1fecc1328c72d66761a1476" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9d5f38a4d1fecc1328c72d66761a1476" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>&lt;?xml <span class="hljs-variable">version=</span><span class="hljs-string">"1.0"</span> <span class="hljs-variable">encoding=</span><span class="hljs-string">"UTF-8"</span> <span class="hljs-variable">standalone=</span><span class="hljs-string">"yes"</span>?&gt;
+&lt;guru&gt;
+    &lt;aggregation&gt;
+        &lt;timestamps <span class="hljs-variable">first=</span><span class="hljs-string">"1297327781715"</span> <span class="hljs-variable">last=</span><span class="hljs-string">"1297327782714"</span> /&gt;
+        &lt;values <span class="hljs-variable">first=</span><span class="hljs-string">"18.70281"</span> <span class="hljs-variable">last=</span><span class="hljs-string">"44.88619"</span> <span class="hljs-variable">avg=</span><span class="hljs-string">"50.62323"</span> <span class="hljs-variable">count=</span><span class="hljs-string">"1000"</span> <span class="hljs-variable">sum=</span><span class="hljs-string">"50623.23"</span> <span class="hljs-variable">sumsquares=</span><span class="hljs-string">"3386253"</span> <span class="hljs-variable">dev=</span><span class="hljs-string">"28.69742"</span> <span class="hljs-variable">var=</span><span class="hljs-string">"823.5419"</span> <span class="hljs-variable">min=</span><span class="hljs-string">"0.230901"</span> <span class="hljs-variable">max=</span><span class="hljs-string">"99.88041"</span> /&gt;
+    &lt;/aggregation&gt;
+    &lt;aggregation&gt;
+        &lt;timestamps <span class="hljs-variable">first=</span><span class="hljs-string">"1297327782715"</span> <span class="hljs-variable">last=</span><span class="hljs-string">"1297327783714"</span> /&gt;
+        &lt;values <span class="hljs-variable">first=</span><span class="hljs-string">"8.70281"</span> <span class="hljs-variable">last=</span><span class="hljs-string">"74.88619"</span> <span class="hljs-variable">avg=</span><span class="hljs-string">"43.62323"</span> <span class="hljs-variable">count=</span><span class="hljs-string">"800"</span> <span class="hljs-variable">sum=</span><span class="hljs-string">"43623.23"</span> <span class="hljs-variable">sumsquares=</span><span class="hljs-string">"1386253"</span> <span class="hljs-variable">dev=</span><span class="hljs-string">"18.69742"</span> <span class="hljs-variable">var=</span><span class="hljs-string">"723.5419"</span> <span class="hljs-variable">min=</span><span class="hljs-string">"1.230901"</span> <span class="hljs-variable">max=</span><span class="hljs-string">"78.88041"</span> /&gt;
+    &lt;/aggregation&gt;
+&lt;/guru&gt;
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#d5e001d91273b533b745b47b5f9fbd5b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="d5e001d91273b533b745b47b5f9fbd5b" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>1297327781715,1297327782714,18.70281,44.88619,50.62323,1000,50623.23,3386253,28.69742,823.5419,0.230901,99.88041
+1297327782715,1297327783714,8.70281,74.88619,43.62323,800,43623.23,1386253,18.69742,723.5419,1.230901,78.88041
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#c8c3aed2b8c47874f057941cb8aa8a21" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c8c3aed2b8c47874f057941cb8aa8a21" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:41</span><span class="hljs-class">.715Z</span>,2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:42</span><span class="hljs-class">.714Z</span>,18<span class="hljs-class">.70281</span>,44<span class="hljs-class">.88619</span>,50<span class="hljs-class">.62323</span>,1000,50623<span class="hljs-class">.23</span>,3386253,28<span class="hljs-class">.69742</span>,823<span class="hljs-class">.5419</span>,0<span class="hljs-class">.230901</span>,99<span class="hljs-class">.88041</span>
+2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:42</span><span class="hljs-class">.715Z</span>,2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:43</span><span class="hljs-class">.714Z</span>,8<span class="hljs-class">.70281</span>,74<span class="hljs-class">.88619</span>,43<span class="hljs-class">.62323</span>,800,43623<span class="hljs-class">.23</span>,1386253,18<span class="hljs-class">.69742</span>,723<span class="hljs-class">.5419</span>,1<span class="hljs-class">.230901</span>,78<span class="hljs-class">.88041</span>
+</code></pre></li></ul></section><h4 id="time-series-join-data">Join data&nbsp;<a href="#time-series-join-data"><i class="fa fa-link"></i></a></h4><p>Combine the values of two time series by time.</p>
+<section id="time-series-join-data-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-join-data-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName1}/join/{timeseriesName2}/data/{day}{?limit,offset,resolution,beginTimestamp,endTimestamp}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName1</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series 1</p>
+</dd><dt>timeseriesName2</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series 2</p>
+</dd><dt>day</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20141111</span></span><p>YYYYMMDD</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Data points result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd><dt>resolution</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>1d</span></span><p>Number + Enum[&quot;ns&quot;, &quot;us&quot;, &quot;ms&quot;, &quot;s&quot;, &quot;m&quot;, &quot;h&quot;, “d”]. If you only need some of your values you can specify a resolution in nano seconds, micro seconds, milli seconds, seconds, minutes, hours or days</p>
+</dd><dt>beginTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to begin with</p>
+</dd><dt>endTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to end with</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#ec2ad5ed415a50dc16d1c2ede0031592" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="ec2ad5ed415a50dc16d1c2ede0031592" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#bc40c9bcc09b7858f2d41eeaac7a5ed6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="bc40c9bcc09b7858f2d41eeaac7a5ed6" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">timestamps</span>": <span class="hljs-value">[<span class="hljs-number">1297327781715</span>, <span class="hljs-number">1297327782714</span>]</span>,
+    "<span class="hljs-attribute">values1</span>": <span class="hljs-value">[<span class="hljs-number">34.543</span>, <span class="hljs-number">27.198</span>]</span>,
+    "<span class="hljs-attribute">values2</span>": <span class="hljs-value">[<span class="hljs-number">70.437</span>, <span class="hljs-number">19.323</span>]
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#9f3bbec9155b239eb61a15101dd69d8a" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9f3bbec9155b239eb61a15101dd69d8a" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">timestamp</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">value1</span>=<span class="hljs-value">"34.543"</span> <span class="hljs-attribute">value2</span>=<span class="hljs-value">"70.437"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">timestamp</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">value1</span>=<span class="hljs-value">"27.198"</span> <span class="hljs-attribute">value2</span>=<span class="hljs-value">"19.323"</span> /&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#21c0fd05d2ae176c9fc605da7df68e22" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="21c0fd05d2ae176c9fc605da7df68e22" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>1297327781715,34.543,70.437
+1297327782714,27.19,19.323
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#27c144c6c5f589d24de232905343dd4d" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="27c144c6c5f589d24de232905343dd4d" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:41</span><span class="hljs-class">.715Z</span>,34<span class="hljs-class">.543</span>,70<span class="hljs-class">.437</span>
+2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:42</span><span class="hljs-class">.714Z</span>,27<span class="hljs-class">.19</span>,19<span class="hljs-class">.323</span>
+</code></pre></li></ul></section><h4 id="time-series-correlate-data">Correlate data&nbsp;<a href="#time-series-correlate-data"><i class="fa fa-link"></i></a></h4><p>Correlate the values of two time series. You must page to the end to get the end result!</p>
+<section id="time-series-correlate-data-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#time-series-correlate-data-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/timeseries/{timeseriesName1}/join/{timeseriesName2}/correlation/{resolution}{?limit,offset,beginTimestamp,endTimestamp}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>timeseriesName1</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series 1</p>
+</dd><dt>timeseriesName2</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>Name of time series 2</p>
+</dd><dt>resolution</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>1d</span></span><p>Number + Enum[&quot;ns&quot;, &quot;us&quot;, &quot;ms&quot;, &quot;s&quot;, &quot;m&quot;, &quot;h&quot;, “d”]. If you only need some of your values you can specify a resolution in nano seconds, micro seconds, milli seconds, seconds, minutes, hours or days</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Data points result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd><dt>beginTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to begin with</p>
+</dd><dt>endTimestamp</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<p>Timestamp to end with</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#e0af422d18806ed47e7f93cc0b27b8d6" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="e0af422d18806ed47e7f93cc0b27b8d6" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#bae29d72e3db619f6f6670794cfa10fa" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="bae29d72e3db619f6f6670794cfa10fa" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">page</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">timestamps</span>": <span class="hljs-value">{
+            "<span class="hljs-attribute">first</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span></span>,
+            "<span class="hljs-attribute">last</span>": <span class="hljs-value"><span class="hljs-number">1297327782714</span>
+        </span>}</span>,
+        "<span class="hljs-attribute">covariance</span>": <span class="hljs-value"><span class="hljs-number">45.32</span></span>,
+        "<span class="hljs-attribute">correlation</span>": <span class="hljs-value">-<span class="hljs-number">0.6434</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">total</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">covariance</span>": <span class="hljs-value"><span class="hljs-number">33.78</span></span>,
+        "<span class="hljs-attribute">correlation</span>": <span class="hljs-value">-<span class="hljs-number">0.5234</span>
+    </span>}
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#5634756e4c6bb7538273b995fdcd51a3" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5634756e4c6bb7538273b995fdcd51a3" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">page</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">timestamps</span> <span class="hljs-attribute">first</span>=<span class="hljs-value">"1297327781715"</span> <span class="hljs-attribute">last</span>=<span class="hljs-value">"1297327782714"</span>/&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">covariance</span>&gt;</span>45.32<span class="hljs-tag">&lt;/<span class="hljs-title">covariance</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">correlation</span>&gt;</span>-0.6434<span class="hljs-tag">&lt;/<span class="hljs-title">correlation</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">page</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">total</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">covariance</span>&gt;</span>33.78<span class="hljs-tag">&lt;/<span class="hljs-title">covariance</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">correlation</span>&gt;</span>-0.5234<span class="hljs-tag">&lt;/<span class="hljs-title">correlation</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">total</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#1719aa84c49a20b72c6d7bb91e324f7b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="1719aa84c49a20b72c6d7bb91e324f7b" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>1297327781715,1297327782714,45.32,-0.6434,33.78,-0.5234
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#9592ae483ba2ea1e6e6012a62fa97ef0" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9592ae483ba2ea1e6e6012a62fa97ef0" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/plain</span><br><span class="hljs-attribute">X-Runtime</span>: <span class="hljs-string">123456</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/.../?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:41</span><span class="hljs-class">.715Z</span>,2011<span class="hljs-tag">-02-10T08</span><span class="hljs-pseudo">:49</span><span class="hljs-pseudo">:42</span><span class="hljs-class">.714Z</span>,45<span class="hljs-class">.32</span>,<span class="hljs-tag">-0</span><span class="hljs-class">.6434</span>,33<span class="hljs-class">.78</span>,<span class="hljs-tag">-0</span><span class="hljs-class">.5234</span>
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="database">Database&nbsp;<a href="#database"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>A database is responsible for managing several time series persisted to storages (Disk) running on (shared) resources (CPU and Memory).</p>
+<h4 id="database-list">List&nbsp;<a href="#database-list"><i class="fa fa-link"></i></a></h4><p>Get databases.</p>
+<section id="database-list-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#database-list-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#62daf7ee6242d7b8e6608e3d46de5831" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="62daf7ee6242d7b8e6608e3d46de5831" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#245b42be54a662afb1cd642db2f41f23" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="245b42be54a662afb1cd642db2f41f23" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">databaseID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"dedicated"</span></span>,
+    "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Metrics"</span></span>,
+    "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+    "<span class="hljs-attribute">az</span>": <span class="hljs-value"><span class="hljs-string">"a"</span></span>,
+    "<span class="hljs-attribute">ec2Type</span>": <span class="hljs-value"><span class="hljs-string">"c3.xlarge"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"starting"</span></span>,
+    "<span class="hljs-attribute">retentionPeriod</span>": <span class="hljs-value">undefined
+</span>}]
+</code></pre></li></ul></section><h4 id="database-get">Get&nbsp;<a href="#database-get"><i class="fa fa-link"></i></a></h4><p>Get database.</p>
+<section id="database-get-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#database-get-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#0b7b525511c147c7d259da6df8dac7ed" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="0b7b525511c147c7d259da6df8dac7ed" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#06b6d49d18c1c69e8241698af7d8559d" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="06b6d49d18c1c69e8241698af7d8559d" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">databaseID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"dedicated"</span></span>,
+    "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Metrics"</span></span>,
+    "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+    "<span class="hljs-attribute">az</span>": <span class="hljs-value"><span class="hljs-string">"a"</span></span>,
+    "<span class="hljs-attribute">ec2Type</span>": <span class="hljs-value"><span class="hljs-string">"c3.xlarge"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"starting"</span></span>,
+    "<span class="hljs-attribute">retentionPeriod</span>": <span class="hljs-value">undefined
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>404</code></strong></li></ul></section><h4 id="database-create">Create&nbsp;<a href="#database-create"><i class="fa fa-link"></i></a></h4><p>Create database.</p>
+<section id="database-create-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#database-create-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/databases</code></div></div><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#1d073e2a3c18df81a9458121a262eb90" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="1d073e2a3c18df81a9458121a262eb90" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">database</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"dedicated"</span></span>,
+        "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Metrics"</span></span>,
+        "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+        "<span class="hljs-attribute">az</span>": <span class="hljs-value"><span class="hljs-string">"a"</span></span>,
+        "<span class="hljs-attribute">ec2Type</span>": <span class="hljs-value"><span class="hljs-string">"c3.xlarge"</span></span>,
+        "<span class="hljs-attribute">retentionPeriod</span>": <span class="hljs-value">undefined
+    </span>}</span>,
+    "<span class="hljs-attribute">storages</span>": <span class="hljs-value"><span class="hljs-number">1</span></span>,
+    "<span class="hljs-attribute">storage</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"ssd"</span></span>,
+        "<span class="hljs-attribute">capacity</span>": <span class="hljs-value"><span class="hljs-number">100</span></span>,
+        "<span class="hljs-attribute">iops</span>": <span class="hljs-value"><span class="hljs-number">3000</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">timeseries</span>": <span class="hljs-value">[{
+        "<span class="hljs-attribute">name</span>": <span class="hljs-value"><span class="hljs-string">"sensor01"</span>
+    </span>}]
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#702572ed305e02574d5f4c701daa5e4c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="702572ed305e02574d5f4c701daa5e4c" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/databases/8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li></ul></section><h4 id="database-modify">Modify&nbsp;<a href="#database-modify"><i class="fa fa-link"></i></a></h4><p>Modify database.</p>
+<section id="database-modify-put" class="panel panel-warning"><div class="panel-heading"><div style="float:left"><a href="#database-modify-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/databases/{databaseID}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#9ca768a2858c3938ff6a4b6f4930d3c1" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9ca768a2858c3938ff6a4b6f4930d3c1" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-rules">{
+    <span class="hljs-rule"><span class="hljs-attribute">retentionPeriod</span>:<span class="hljs-value"> <span class="hljs-number">10</span>
+</span></span></span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="database-start/stop">Start/Stop&nbsp;<a href="#database-start/stop"><i class="fa fa-link"></i></a></h4><p>Start or stop database.</p>
+<section id="database-start/stop-put" class="panel panel-warning"><div class="panel-heading"><div style="float:left"><a href="#database-start/stop-put" class="btn btn-xs btn-warning">PUT</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/state</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#9150df164b7302ead6cc217503d7c690" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9150df164b7302ead6cc217503d7c690" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">action</span>": <span class="hljs-value"><span class="hljs-string">"start"</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="database-bulk-insert-data">Bulk insert data&nbsp;<a href="#database-bulk-insert-data"><i class="fa fa-link"></i></a></h4><p>Add multiple data points to several time series. (much more efficient than single add)</p>
+<section id="database-bulk-insert-data-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#database-bulk-insert-data-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/data</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#c245161b4f768d4e718b07afaaaa8c6b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c245161b4f768d4e718b07afaaaa8c6b" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">text/csv</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>se<span class="hljs-label">nsor01</span>,<span class="hljs-number">34.543</span>
+se<span class="hljs-label">nsor02</span>,<span class="hljs-number">14.543</span>
+</code></pre></li><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#cf138bc44a6122bbfffc0104f0fbd2ab" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="cf138bc44a6122bbfffc0104f0fbd2ab" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>[
+    {
+        "<span class="hljs-attribute">timeseriesName</span>": <span class="hljs-value"><span class="hljs-string">"sensor01"</span></span>,
+        "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">34.543</span>
+    </span>}, {
+        "<span class="hljs-attribute">timeseriesName</span>": <span class="hljs-value"><span class="hljs-string">"sensor02"</span></span>,
+        "<span class="hljs-attribute">value</span>": <span class="hljs-value"><span class="hljs-number">14.543</span>
+    </span>}
+]
+</code></pre></li><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#9bfd1d6b6dca4371310e3d93829e8070" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9bfd1d6b6dca4371310e3d93829e8070" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/xml</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code><span class="hljs-pi">&lt;?xml version="1.0" encoding="UTF-8" standalone="yes"?&gt;</span>
+<span class="hljs-tag">&lt;<span class="hljs-title">guru</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">timeseries</span> <span class="hljs-attribute">timeseriesName</span>=<span class="hljs-value">"sensor01"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"34.543"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">timeseries</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">timeseries</span> <span class="hljs-attribute">timeseriesName</span>=<span class="hljs-value">"sensor02"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">datapoint</span> <span class="hljs-attribute">value</span>=<span class="hljs-value">"14.543"</span> /&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">timeseries</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">guru</span>&gt;</span>
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section><h4 id="database-delete-data">Delete data&nbsp;<a href="#database-delete-data"><i class="fa fa-link"></i></a></h4><p>Delete days of data. Deleting data can take some time. Therefore we create a job for each delete request. Jobs can then be monitored.</p>
+<section id="database-delete-data-delete" class="panel panel-danger"><div class="panel-heading"><div style="float:left"><a href="#database-delete-data-delete" class="btn btn-xs btn-danger">DELETE</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/data{?beginDay,endDay}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>beginDay</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20141111</span></span><p>YYYYMMDD</p>
+</dd><dt>endDay</dt><dd><code>number</code>&nbsp;<span class="required">(required)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>20141112</span></span><p>YYYYMMDD</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#727c6520b586251455510e921ed6d3fe" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="727c6520b586251455510e921ed6d3fe" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/databases/8f49ab0fa6c243f99f44a3f8c6c0a8ad/jobs/se05b26707c5211e482f80800200c9a66</span><br></code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="job">Job&nbsp;<a href="#job"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>Some tasks (impot, export) take some time. Jobs represent such activity.</p>
+<h4 id="job-list-jobs">List Jobs&nbsp;<a href="#job-list-jobs"><i class="fa fa-link"></i></a></h4><p>Get jobs.</p>
+<section id="job-list-jobs-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#job-list-jobs-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/jobs{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#a9db306b7a2c2600fa540a5d45ebb4d2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a9db306b7a2c2600fa540a5d45ebb4d2" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">jobID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"import"</span></span>,
+    "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"S3"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"running"</span></span>,
+    "<span class="hljs-attribute">created</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span>
+</span>}]
+</code></pre></li></ul></section><h4 id="job-get-job">Get Job&nbsp;<a href="#job-get-job"><i class="fa fa-link"></i></a></h4><p>Get job.</p>
+<section id="job-get-job-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#job-get-job-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/jobs/{jobID}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>jobID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of job</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#24c9f385a85d6d3a367702ddc8b64af1" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="24c9f385a85d6d3a367702ddc8b64af1" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">jobID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"import"</span></span>,
+    "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"S3"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"running"</span></span>,
+    "<span class="hljs-attribute">created</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span>
+</span>}
+</code></pre></li></ul></section><h4 id="job-list-job-logs">List Job Logs&nbsp;<a href="#job-list-job-logs"><i class="fa fa-link"></i></a></h4><p>Get job logs.</p>
+<section id="job-list-job-logs-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#job-list-job-logs-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/jobs/{jobID}/logs{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>jobID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of job</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#5006bcffd885e3be6bbe3edc482cbf19" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="5006bcffd885e3be6bbe3edc482cbf19" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">created</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span></span>,
+    "<span class="hljs-attribute">level</span>": <span class="hljs-value"><span class="hljs-string">"INFO"</span></span>,
+    "<span class="hljs-attribute">message</span>": <span class="hljs-value"><span class="hljs-string">"Import started"</span>
+</span>}]
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="import">Import&nbsp;<a href="#import"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>Importing data can take some time. Therefore we create a job for each import. Jobs can then be monitored.</p>
+<h4 id="import-s3">S3&nbsp;<a href="#import-s3"><i class="fa fa-link"></i></a></h4><p>Import CSV files from S3 Bucket.</p>
+<section id="import-s3-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#import-s3-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/import/s3</code></div></div><div class="panel-body"><p>The CSV files are lines of time,value pairs. Time formated as (hh:mm:ss.SSS) in UTC. Ordered by time starting with 00:00:00.000 ending with 23:59:59.999. A single file looks like this (no header row!):</p>
+<pre><code>18:01:20.344,9939.0
+18:01:20.360,9939.5
+18:01:20.376,9939.0
+18:01:21.030,9939.5
+18:01:21.046,9939.5
+</code></pre>
+<p>The files must be placed inside “folders” named with the date (yyyy.mm.dd). The filenames must match the time series. The  following “directory” structure within the bucket is required:</p>
+<pre><code>2014.12.01/
+2014.12.01/sensor01.csv
+2014.12.01/sensor02.csv
+2014.12.02/
+2014.12.02/sensor01.csv
+2014.12.02/sensor02.csv
+2014.12.03/
+2014.12.03/sensor01.csv
+</code></pre>
+<p>If your bucket contains not only files to import you may set the <code>prefix</code> attribute to <code>files2import/</code>:</p>
+<pre><code>files2import/
+files2import/2014.12.01/
+files2import/2014.12.01/sensor01.csv
+files2import/2014.12.01/sensor02.csv
+files2import/2014.12.02/
+files2import/2014.12.02/sensor01.csv
+files2import/2014.12.02/sensor02.csv
+files2import/2014.12.03/
+files2import/2014.12.03/sensor01.csv
+</code></pre>
+<p>The AWS user must have this IAM access policy:</p>
+<pre><code>{
+    &quot;Version&quot;: &quot;2012-10-17&quot;,
+    &quot;Statement&quot;: [{
+        &quot;Sid&quot;: &quot;Stmt1414405541000&quot;,
+        &quot;Effect&quot;: &quot;Allow&quot;,
+        &quot;Action&quot;: [
+            &quot;s3:GetObject&quot;,
+            &quot;s3:ListBucket&quot;
+        ],
+        &quot;Resource&quot;: [
+            &quot;arn:aws:s3:::your-bucket-name&quot;,
+            &quot;arn:aws:s3:::your-bucket-name/*&quot;
+        ]
+    }]
+}
+</code></pre>
+<p>Keep in mind that an import overrides the time series!</p>
+</div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#6e1a54bf0efb9675c2c1325fc745e6ae" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="6e1a54bf0efb9675c2c1325fc745e6ae" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">accessKey</span>": <span class="hljs-value"><span class="hljs-string">"AXIXIX5XBX2RXM3X5TXQ"</span></span>,
+    "<span class="hljs-attribute">accessSecret</span>": <span class="hljs-value"><span class="hljs-string">"KXE1XDGSX94pMXZfM0X+UEXyAzXaNXULXvIX9BXn"</span></span>,
+    "<span class="hljs-attribute">bucket</span>": <span class="hljs-value"><span class="hljs-string">"your-bucket-name"</span></span>,
+    "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+    "<span class="hljs-attribute">prefix</span>": <span class="hljs-value"><span class="hljs-string">""</span>
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#d56f843074b9631df4d3bd29660f3f9d" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="d56f843074b9631df4d3bd29660f3f9d" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/databases/8f49ab0fa6c243f99f44a3f8c6c0a8ad/jobs/se05b26707c5211e482f80800200c9a66</span><br></code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="storage">Storage&nbsp;<a href="#storage"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>Storage is an abstraction for disk space. Your time series data is stored on storages.</p>
+<h4 id="storage-list">List&nbsp;<a href="#storage-list"><i class="fa fa-link"></i></a></h4><p>Get storages.</p>
+<section id="storage-list-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#storage-list-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/databases/{databaseID}/storages{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>databaseID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of database</p>
+</dd><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#a13a2f4a3b8cfd96e58f68d4c83f4ba2" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="a13a2f4a3b8cfd96e58f68d4c83f4ba2" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#ab38bf280b82ae3cb736ab4beeb3cf6c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="ab38bf280b82ae3cb736ab4beeb3cf6c" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">storageID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"ssd"</span></span>,
+    "<span class="hljs-attribute">label</span>": <span class="hljs-value"><span class="hljs-string">"Storage 1"</span></span>,
+    "<span class="hljs-attribute">capacity</span>": <span class="hljs-value"><span class="hljs-number">100</span></span>,
+    "<span class="hljs-attribute">iops</span>": <span class="hljs-value"><span class="hljs-number">2000</span></span>,
+    "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+    "<span class="hljs-attribute">az</span>": <span class="hljs-value"><span class="hljs-string">"a"</span></span>,
+    "<span class="hljs-attribute">state</span>": <span class="hljs-value"><span class="hljs-string">"unattached"</span></span>,
+    "<span class="hljs-attribute">usage</span>": <span class="hljs-value"><span class="hljs-number">55</span>
+</span>}]
+</code></pre></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="token">Token&nbsp;<a href="#token"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><p>Tokens are needed to access the API. There are two types of token. Temporary tokens with expiry and durable tokens without expiry</p>
+<h4 id="token-list">List&nbsp;<a href="#token-list"><i class="fa fa-link"></i></a></h4><p>Get tokens.</p>
+<section id="token-list-get" class="panel panel-info"><div class="panel-heading"><div style="float:left"><a href="#token-list-get" class="btn btn-xs btn-info">GET</a></div><div style="overflow:hidden"><code>/tokens{?limit,offset}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>limit</dt><dd><code>number</code>&nbsp;<span>(optional)</span>&nbsp;<span class="text-muted example"><strong>Example:&nbsp;</strong><span>500</span></span><p>Result limit</p>
+</dd><dt>offset</dt><dd><code>string</code>&nbsp;<span>(optional)</span>&nbsp;<p>Use the Link header to get the next offset.</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#c38497d6e032315454bd9c8dc5861417" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="c38497d6e032315454bd9c8dc5861417" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#b24b00ce59911c7639a4e07a69c9bbfa" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="b24b00ce59911c7639a4e07a69c9bbfa" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Link</span>: <span class="hljs-string">&lt;https://api.timeseries.guru/...?offset=123ABCabc&gt;; rel=next"</span><br></code></pre><h5>Body</h5><pre><code>[{
+    "<span class="hljs-attribute">tokenID</span>": <span class="hljs-value"><span class="hljs-string">"8f49ab0fa6c243f99f44a3f8c6c0a8ad"</span></span>,
+    "<span class="hljs-attribute">expiry</span>": <span class="hljs-value"><span class="hljs-number">1297327781715</span>
+</span>}, {
+    "<span class="hljs-attribute">tokenID</span>": <span class="hljs-value"><span class="hljs-string">"e05b26707c5211e482f80800200c9a66"</span></span>,
+    "<span class="hljs-attribute">expiry</span>": <span class="hljs-value">undefined
+</span>}]
+</code></pre></li></ul></section><h4 id="token-create">Create&nbsp;<a href="#token-create"><i class="fa fa-link"></i></a></h4><p>Create token.</p>
+<section id="token-create-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#token-create-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/tokens</code></div></div><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#9d3f94b70be4a0f681eea6561f1d7987" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="9d3f94b70be4a0f681eea6561f1d7987" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">expiry</span>": <span class="hljs-value">undefined
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>201</code></strong><a data-toggle="collapse" data-target="#0ed2dd6bf5d75a86bc5974494c72f102" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="0ed2dd6bf5d75a86bc5974494c72f102" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Location</span>: <span class="hljs-string">https://api.timeseries.guru/tokens/e05b26707c5211e482f80800200c9a66</span><br></code></pre></li></ul></section><h4 id="token-delete">Delete&nbsp;<a href="#token-delete"><i class="fa fa-link"></i></a></h4><p>Delete token.</p>
+<section id="token-delete-delete" class="panel panel-danger"><div class="panel-heading"><div style="float:left"><a href="#token-delete-delete" class="btn btn-xs btn-danger">DELETE</a></div><div style="overflow:hidden"><code>/tokens/{tokenID}</code></div></div><ul class="list-group"><li class="list-group-item bg-default"><strong>Parameters</strong></li><li class="list-group-item"><dl class="dl-horizontal"><dt>tokenID</dt><dd><code>string</code>&nbsp;<span class="required">(required)</span>&nbsp;<p>ID of token</p>
+</dd></dl></li></ul><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#8eb7699eeda3f7c7c8e687c0aee6e125" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="8eb7699eeda3f7c7c8e687c0aee6e125" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Authorization</span>: <span class="hljs-string">Token 8f49ab0fa6c243f99f44a3f8c6c0a8ad</span><br></code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>204</code></strong></li></ul></section></div></div></div><div><div class="panel panel-default"><div class="panel-heading"><h3 id="cost-calculator">Cost Calculator&nbsp;<a href="#cost-calculator"><i class="fa fa-link"></i></a></h3></div><div class="panel-body"><h4 id="cost-calculator-calculate">Calculate&nbsp;<a href="#cost-calculator-calculate"><i class="fa fa-link"></i></a></h4><p>Calculate costs.</p>
+<section id="cost-calculator-calculate-post" class="panel panel-success"><div class="panel-heading"><div style="float:left"><a href="#cost-calculator-calculate-post" class="btn btn-xs btn-success">POST</a></div><div style="overflow:hidden"><code>/costcalc</code></div></div><ul class="list-group"><li class="list-group-item"><strong>Request</strong><a data-toggle="collapse" data-target="#0978679b0ab8c12c66f7856499625e3b" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="0978679b0ab8c12c66f7856499625e3b" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">database</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"dedicated"</span></span>,
+        "<span class="hljs-attribute">region</span>": <span class="hljs-value"><span class="hljs-string">"eu-west-1"</span></span>,
+        "<span class="hljs-attribute">ec2Type</span>": <span class="hljs-value"><span class="hljs-string">"c3.xlarge"</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">storage</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">type</span>": <span class="hljs-value"><span class="hljs-string">"ssd"</span></span>,
+        "<span class="hljs-attribute">capacity</span>": <span class="hljs-value"><span class="hljs-number">100</span></span>,
+        "<span class="hljs-attribute">iops</span>": <span class="hljs-value"><span class="hljs-number">3000</span></span>,
+        "<span class="hljs-attribute">iorequests</span>": <span class="hljs-value"><span class="hljs-number">10</span>
+    </span>}</span>,
+    "<span class="hljs-attribute">traffic</span>": <span class="hljs-value">{
+        "<span class="hljs-attribute">in</span>": <span class="hljs-value"><span class="hljs-number">10</span></span>,
+        "<span class="hljs-attribute">out</span>": <span class="hljs-value"><span class="hljs-number">20</span>
+    </span>}
+</span>}
+</code></pre></li><li class="list-group-item"><strong>Response&nbsp;&nbsp;<code>200</code></strong><a data-toggle="collapse" data-target="#3212def23e3a39e18c52ac379497dc4c" class="pull-right collapsed"><span class="closed">Show</span><span class="open">Hide</span></a></li><li id="3212def23e3a39e18c52ac379497dc4c" class="list-group-item panel-collapse collapse"><h5>Headers</h5><pre><code><span class="hljs-attribute">Content-Type</span>: <span class="hljs-string">application/json</span><br></code></pre><h5>Body</h5><pre><code>{
+    "<span class="hljs-attribute">database</span>": <span class="hljs-value"><span class="hljs-number">50</span></span>,
+    "<span class="hljs-attribute">storage</span>": <span class="hljs-value"><span class="hljs-number">30</span></span>,
+    "<span class="hljs-attribute">traffic</span>": <span class="hljs-value"><span class="hljs-number">2</span>
+</span>}
+</code></pre></li></ul></section></div></div></div></div></div></div><p style="text-align: center;" class="text-muted">Generated by&nbsp;<a href="https://github.com/danielgtaylor/aglio" class="aglio">aglio</a>&nbsp;on 19 Feb 2015</p><div id="localFile" style="display: none; position: absolute; top: 0; left: 0; width: 100%; color: white; background: red; font-size: 150%; text-align: center; padding: 1em;">This page may not display correctly when opened as a local file. Instead, view it from a web server.
+
+</div></body><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><script src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script><script>(function() {
+  if (location.protocol === 'file:') {
+    document.getElementById('localFile').style.display = 'block';
+  }
+
+}).call(this);
+</script><script>(function() {
+  $('table').addClass('table');
+
+}).call(this);
+</script></html>

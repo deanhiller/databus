@@ -1,0 +1,44 @@
+<head>
+    <title>DataBus | Overview</title>
+</head>
+<body>
+<h1 class="db_page_title">DataBus Help Documentation</h1>
+<h2>Overview</h2>
+    <p>As part of its ongoing mission to advance renewable energy and energy efficiency technologies, the National Renewable Energy Laboratory (NREL) has created the Energy DataBus - a system for organizations to store and process their energy data (or any time-series data). This is a special system that allows NREL to conduct energy informatics (EI) research and development, while delivering this research to the industry in the form of plug-ins to DataBus. Organizations that have DataBus can use these plug-ins for their own energy data research.</p>
+    <p>DataBus is part of NREL's portfolio of EI projects and was developed to be a free software solution that collects massive amounts of energy-related data at the one-second interval, stores it in a massive scalable database, and turns it into useful information. This database can scale down to one node or easily up to thousands of nodes fitting any organization's needs.</p>
+    <p>With the increase in energy system instrumentation, operators know more about the real-time performance of their energy systems than ever. However, applying this information to more efficiently operate, design, and maintain these energy systems is not easy or straightforward. Even after the data from various systems has been collected and aggregated at a single location, it may not be clear how to interpret and make decisions using this information. Obtaining quality data is not just a matter of collecting, storing, and accessing; to be useful and informative, the data needs to be structured, cleaned, aggregated, and then visualized to allow it to be explored in a variety of useful ways.</p>
+<hr/>
+<h2>Understanding Time Series Data</h2>
+    <p>A time series is defined as a sequence of numerical data points collected in successive order, usually at regular intervals, over a period of time.  While the collection of time series data for analysis is not new, with advancements in technology, larger amounts of data can be collected at more refined and smaller intervals.</p>
+    <p>Time series data is commonly classified as either continuous or discrete.  Time series observations can be broken into different components of variation, which include:
+        <ol>
+            <li>trend: long term movement in time</li>
+            <li>cyclical: regular fluctuations</li>
+            <li>seasonal: movement which is dependent on the time of year</li>
+            <li>irregular/noise: any movement that occurred at a specific point in time, but is unrelated to a season or cycle</li>
+        </ol>
+    DataBus is capable of collecting/accepting large amounts of both discrete and continuous data, and charting that data to identify any variation in the series.</p>
+<br>
+<h2>Why DataBus?</h2>
+    <p>The energy space has been slow to integrate big data technologies. The primary obstacle to adoption has been that existing energy data platforms are not accessible, adaptable and definitely not easy to master for basic researchers. DataBus was designed to be accessible to a wide range of users from basic researchers to advanced programmers.</p>
+    <p>DataBus uses open-source software, which not only saves the high cost of licensed software, but also gives users an opportunity to   collaborate with the software developer community. Because the software is open, users can customize it to meet their specific needs and benefit from the continuous improvement by the community of users.  Ongoing development makes DataBus more robust and capable, with all module and feature enhancements made available to the DataBus community.</p>
+    <p>The value of a platform like the Energy DataBus is in its adoption. The greater the adoption rate, the greater the generative value for all that use the platform. It is for this reason that NREL is releasing this software for free and helping to seed this technology in industry.</p>        
+        <!--<p>DataBus is easily adapted to evolving data and big data technologies through a set of standard abstractions and protocols. DataBus makes the messy task of collecting and analyzing data from energy systems easier.</p>
+        <p>DataBus is a software solution that enables collecting, storing and requesting time series data; allowing for data sharing, processing and download. Using DataBus, data can be managed using the interface or API and processed using the installed modules.  Module usage examples include:</p>
+    <ol>
+        <li>Downloading a spline of the data over a 60 second interval</li>
+        <li>Downloading a time average of the data</li>
+        <li>Downloading a clean data set</li>
+        <li>Downloading your stored raw data</li>
+    </ol>-->
+<br>
+<h2>Key Concepts</h2>
+<p>DataBus is a Java application that was developed to work with Apache Cassandra, a NoSQL Database.   Cassandra is a row oriented database, designed to handle big data workloads across multiple nodes with no single point of failure.  <!--probably need to edit the following-->The framework on which DataBus is based, PlayOrm, interacts with Cassandra using Thrift protocol and Scalable-SQL to query the database, which is optimal because it requires fewer resources from the Cassandra cluster than CQL queries.</p>
+<p>By leveraging Cassandra, DataBus offers elastic scalability and flexible data storage with fast linear-scale performance.  The no single point of failure architecture means that DataBus is always there when you need it, with continuous availability.</p>
+    
+</body>
+
+<!--
+http://planetcassandra.org/what-is-apache-cassandra/
+http://www.datastax.com/documentation/cassandra/2.0/cassandra/architecture/architectureIntro_c.html
+-->

@@ -1,0 +1,197 @@
+<head>
+    <title>DataBus | Developer</title>
+</head>
+<body>
+<h1 class="db_page_title">DataBus Developer Notes</h1>
+        <!--MOVE TO DEVELOPER SECTION
+<h2>Code Structure</h2>
+    <p>The root folder of DataBus contains following main folders:</p>
+    <ul>
+        <li><b>client:</b> This is the modbus client that users can install to read from modbus controllers/devices and that client then writes the information to databus such that users can install and configure to get data into databus.</li>
+        <li><b>modbus:</b> Click <a href="#modbus">here</a> for installing modbus.</li>
+        <li><b>service_files:</b> This has utilities for using DataBus as a "System V"-style system service on Ubuntu GNU/Linux. Click <a href="https://github.com/deanhiller/databus/tree/master/service_files">here</a> for more details.</li>
+        <li><b>webapp:</b> This is the main web application which is based on <a href="https://www.playframework.com/">Play</a> framework.</li>
+    </ul>
+<br>-->
+    code structure
+    It was indeed committed by someone else.  I don’t actually like having it in our repo, but it’s nice to say someone else committed something…
+I don’t like it because it ONLY works in a System V service.  Others try to use the scripts in a normal environment and it’s confusing.
+You are probably best of warning users away from those scripts unless they know what they are doing, and instead using the scripts in 
+the /webapp dir (startProduction.sh in particular).
+    
+    
+    
+    installing Cassandra without root permissions
+    2.0
+    http://www.datastax.com/documentation/cassandra/2.0/cassandra/install/installTarball_t.html
+    1.2
+    http://www.datastax.com/documentation/getting_started/doc/getting_started/gettingStartedInstallTarNoSudo_t.html
+    
+    
+    <h4>Demo Mode</h4>
+    
+    
+<h4>Set up for Eclipse</h4>
+    In order to use Eclipse for this project, a couple commands must be executed before importing into the IDE.
+
+$ cd databus
+$ ./build.sh build
+$ cd webapp
+$ ./play eclipsify
+Doing these 2 steps will ensure that:
+
+Project dependencies has been correctly resolved
+Play’s framework has correctly been set up for the Eclipse IDE
+To import into Eclipse, just open Import->Existing Projects into Workspace and use the “databus/webapp ” directory as the root directory:
+    
+    
+    
+    In memory mode
+    to enable the in memory mode, edit the <code>application.config</code> file in <code>$ install_location/databus/webapp/conf/</code>
+    DataBus in memory mode<br><code>nosqltype.nosqltype=inmemory</code>
+    
+    
+
+    Cassandra config-
+    Recommended production settings 
+    http://www.datastax.com/documentation/cassandra/2.0/cassandra/install/installRecommendSettings.html
+    
+    multiple node cluster:
+    Initializing a multiple node cluster (single data center) 
+    http://www.datastax.com/documentation/cassandra/2.0/cassandra/initialize/initializeSingleDS.html
+    
+    Initializing a multiple node cluster (multiple data centers) 
+    http://www.datastax.com/documentation/cassandra/2.0/cassandra/initialize/initializeMultipleDS.html
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    Using the Demo data:
+
+Databus comes ready with some demo data. It is highly recommended that you explore Databus with demo data to view the databases, tables, graphs and explore the complete feature etc. For that, stop your server and in webapp/conf/application.conf file, change two properties as follows:
+
+domain=none
+demo.mode=true
+and restart the server as above. Then you can login with jcollins/nreliscool and follow the steps given in the demo and start using Databus.
+
+Here, please note that it is not recommended to use this way for starting databus in production. We recommend to use  a cassandra cluster and running without demo data. However, you may use this for development and QA. Another method to start databus is by using the shell scripts provided. So, you can use respective shell script for starting Databus in Demo, QA and Production mode.
+
+    
+    
+    
+    
+    
+    # Built-in Chart options
+# ~~~~~
+# DataBus includes a demo version of the Highcharts JS scripting library (http://www.highcharts.com/)
+#  for creating charts in the GUI.
+# You may use highcharts with the free demo, or purchase a license from Highcharts, or use a different library.
+# Note that you must purchase a highcharts license for commercial use. 
+# Select GUI charts enable/disable, and if enabled, which charting library
+#    OPTIONS: highcharts_disabled - Disable highcharts.
+#             highcharts - Use the free demo mode of highcharts.
+#             highcharts_licensed  - You have purchased a highcharts license
+gui.charting.enabled=true
+gui.charting.library=highcharts_licensed
+
+    
+    
+    
+
+Unit Tests – Gradle
+
+The build must be run at least once in order to acquire needed dependencies. From main SDI directory:
+
+$ cd databus
+$ ./build.sh build
+Once the normal build is run, kick off unit tests with:
+
+$ ./build.sh runSDITests
+
+    
+    set username and password in /webapp/conf/application.config.prod
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    # Performance tuning section.  Ideal values here might depend a great deal on your hardware or network speed.
+# ~~~~~~~~~~~~~~~~~
+# upload configuration.  This is how many items go into each 'batch' to be processed simultaniously.
+# This setting should always be larger than databus.commit.flush.size.  default 5000
+socket.upload.batch.size=5000
+# flush size for commits on large uploads.  default 2500
+databus.commit.flush.size=2500
+# Set this to the number of cores available, or # of cores-1 if you want the server to have some bandwith left over to handle other requests:
+socket.upload.num.threads=4
+
+# This is the size of the agressive pre-reader threads buffer.  It will read this number of items in advance of the thread that 
+# sends the items back to the user.  Default:2000
+databus.preread.buffer.size=2000
+socket.upload.slurp.size=100000
+
+databus.time.series.partition.size=2592000000
+databus.relational.partition.size=2592000000
+
+# Server configuration
+# ~~~~~
+# If you need to change the HTTP port, uncomment this (default is set to 9000)
+http.port=9000
+
+XForwardedSupport=all
+
+#
+# By default the server listen for HTTP on the wilcard address.
+# You can restrict this.
+# http.address=127.0.0.1
+    
+    
+    
+    
+    There are several other options, please refer to the notes in the <code>application.config.prod</code> file for further details.
+    
+    
+    
+    
+    
+    
+    
+    modbus installation
+    <div class="incsub_wiki_content"><ol>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">git clone</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">in databus, run ./build.sh build</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">copy modbus/output/distributions/modbus.tar.gz to a linux machine where you plan to run it.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">tar -xvf modbus.tar.gz to extract the file to a directory.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Login to your databus website.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Click on My Databus -&gt; Databases and make sure you create a database if you don’t have one already.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Click on My Databus -&gt; Groups and click create group.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Type in a group name like “campusUsers” and click save.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">The page refreshes with you as a user in that group as an admin of that group.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Click on Create robot and enter “writer” for the user name and click save (notice he shows up in that group now and this group owns that robot)</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Copy and paste the robot-writer’s key in the table to a clipboard for later user. This is the robot’s password that the modbus client will need.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Click on My Databus -&gt; Databases and then click on the database you created</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">scroll down to add user and enter the username “robot-writer” and choose “Admin” as the Membership type.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Now edit modbus/conf/meters.csv to contain your meters. The first column serial number must be unique and the model will be looked up in meterModels.json and the ip/port and slave numbers need to be correct.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Also, edit the meterModels.json file so your models have the info on registers to read from</span></span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;"><br>
+</span></span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Next, edit the ModBusClient.properties and set the DATABUS_HOST_URL to the url of databus.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">In ModBusClient.properties, set the database to the name of the database you chose above.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Set the user to “robot-writer” instead of “robot-modbus”.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Set the key to the key you copied in the earlier step.</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">go into modbus/bin and run ./start.sh if you are on Linux. If you are on Windows, then use start.bat<br>
+</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">You can view the logs at modbus/logs directory (they rotate and only use 10 files so they never run you out of space)</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Next, you can query all the data in a table like so http://localhost:9000/api/getdataV1/select+f+from+TABLE+as+f if running on</span></span><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">localhost(you may need to change the port and domain and definitely need to change the TABLE)</span></span></span></span></span></li>
+<li><span style="color: #333333;"><span style="font-family: 'Bitstream Charter', serif;"><span style="font-size: medium;"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">Another way to query that gets into the modules that databus has is of the format http://localhost:9000/api/rawdataV1/{table}/{starttime}/{endtime} where start and end time must be in milliseconds since the epoch. Please use http://www.epochconverter.com/ to convert from a date to milliseconds or any software library has a function for this.</span></span></span></span></span></li>
+</ol>
+<p><span style="color: #333333;">&nbsp;</span><a href="http://buffalosw.com/products/databus/databus-documentation/"><span style="font-family: Georgia, 'Times New Roman', 'Bitstream Charter', Times, serif;"><span style="font-size: small;">&lt;&lt; Back to Documentation Index</span></span></a></p>
+</div>
+</body>

@@ -1,0 +1,192 @@
+<head>
+    <title>DataBus | Getting Started</title>
+    <!--
+*Working with DataBus
+-Accessing DataBus
+    #UI
+    #API
+-Provisioning DataBus (or here?)
+    #Creating a DB
+    #Creating tables
+-Uploading (write) Data
+    #upload examples
+-Downloading (read) Data
+    #download examples
+-DataBus Modules
+    #list of modules
+    #relational modules(?)
+-->
+</head>
+<body>
+<h1 class="db_page_title">Getting Started with DataBus</h1>
+    <p>This section is an introduction to accessing DataBus and how to provision the system for your data.</p>
+    <br>
+<h2>Accessing DataBus</h2>
+    <p>There are two distinct ways to access and work with DataBus:</p>
+    <ol>
+        <li><h3>DataBus User Interface</h3></li>
+            <p>The DataBus User Interface (UI) is a built in web interface that can be used for administering the DataBus system components, and visualizing data in your dashboard with charts and graphs.</p>
+        <li><h3>DataBus API</h3></li>
+        <p>The DataBus API provides a direct HTTP connection to the underlying DataBus system.</p>
+    </ol>
+<p>While both interfaces provide overlapping functionality, the DataBus User Interface is optimal for administration uses and the API interface is more optimal for lower level functionality such as provisioning, uploading and downloading data.</p>
+    <div class="alert alert-info alert-block offset2">
+		The major difference between accessing the two interfaces is that the DataBus User Interface requires
+		full Active Directory User Authentication (username + password) while the DataBus API requires DataBus Authentication
+		(username + API Key).
+	</div>
+<h3>Access the DataBus UI</h3>
+    <p>DataBus must be <a href="../Installation#Start DataBus">installed and running</a> in order to use the included user interface.  Once running, the application UI should be available at <a href="http://localhost:9000/">http://localhost:9000/</a>, or your custom port setting if it has been changed in the <a href="../Developer"><code>config</code></a> file.</p>
+<h3>Access the DataBus API</h3>
+    <p>The DataBus API can be accessed with your corporate username and your DataBus generated API Key. The DataBus generated API Key is created the first time a user logs into the DataBus system. The API Key is used as a password of sorts so that your corporate credentials cannot be compromised. </p>
+    <p>Your generated API Key is: </p>
+    <div style="margin-left: 20%">
+        <br>
+        <table class="table table-collapse db_border_bottom" style="width:75%;">
+            <tbody><tr style="background-color:#d5d5d5; font-weight: bold;">
+                <td>Username</td>
+                <td>API Key</td>
+             </tr>
+            </tbody>
+        </table>
+    </div>
+    <p>Your API Key should be used everywhere a password is requested when accessing the DataBus API. </p>
+    <br>
+    <h3>Robot API Access</h3>
+    <p>An alternative to accessing the DataBus API with your User account is to use a Robot account.  These are accounts that have been created by a group administrator for the specific purpose of accessing restricted data but without exposing User credentials.  The Robot name and API Key must be known in order to access DataBus as a Robot.</p>
+    <p>The current list of Robots that are available to you are:</p>
+    <div style="margin-left: 20%">
+        <br>
+        <table class="table table-collapse db_border_bottom" style="width:75%;">
+            <tbody><tr style="background-color:#d5d5d5; font-weight: bold;">
+                <td>Robot Username</td>
+                <td>API Key</td>
+             </tr>
+            </tbody>
+        </table>
+    </div>
+    <br>
+    <div class="alert alert-warning alert-block offset2">
+        One limitation of the <b>Robot</b> account is that it cannot log directly into the User Interface nor can it create <b>User Groups</b> or other <b>Robots</b>.  In order to perform these actions, you must log in with your <b>User</b> account.
+    </div>
+    <br>
+<h2>Provisioning DataBus</h2>
+    <p>DataBus has been designed to store and retrieve large amounts of data.  In order for DataBus to work with your data, it must be provisioned so that it knows the type of data it will be working with.</p>
+    <p>To learn more about the components and data storage in DataBus, visit the <a href="../DataModel">Data Model</a> section before proceeding.</p>
+<br>
+<h3>Creating a Database</h3>
+    <p>To create a Database, it is recommended that you use the DataBus User Interface.  Log into the application and navigate to the <a href="https://databus.hpc.nrel.gov/databases"><b>My Databases</b></a> section.  Click the Add Database button and complete the form.  The corporate user account that creates the Database will automatically become the administrator of the Database.</p>
+    <p>A database can also be created in a "POST" payload while creating a table using the DataBus API.  Add this name/value pair to the JSON object you are using to create the table: <code>"createschema":true,</code></p>
+    <p>See the following section, Creating a Table, for details about using the DataBus API to attach a "POST" payload.</p>
+    <br>
+<h3>Creating a Table</h3>
+    <p>To create a table, or insert data, you must use the DataBus API.  The DataBus API uses the HTTP protocol so any application that can access a server while attaching a "POST" payload can be used.  The provided examples use <a href="../DataBus Installation#Ancillary Tool">curl</a>.</p>
+        <p>There are 3 main steps for interacting with the DataBus API in order to create a Table:</p>
+        <ol>
+            <li><a href="../DataModel">Define the Table</a> using JSON.</li>
+            <li>Save the Table definition to a file.</li>
+            <li>Use an application such as <a href="../DataBus Installation#Ancillary Tool">curl</a> to upload that file to the DataBus Server.</li>
+        </ol>
+<h3>DataBus API Specification</h3>
+    <p>JSON is the mechanism for transferring data to and from the DataBus system.  All API calls require the POST payload of a request to be in the JSON format.  The following information is relevant to making DataBus API calls.</p>
+    <h4>Header</h4>
+      The POST request method header should always specify a Content-Type of JSON:</p>
+    <code style="margin-top:10px; margin-left: 70px;">Header:	Content-Type:application/json</code>
+    <h4>Authentication</h4>
+<p>We will use your DataBus User account and API Key to authenticate with the DataBus Server:</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+		<table width="50%" cellspacing="0">
+			<tbody><tr style="border-bottom: 0;">
+				<td width="20%" style="color: #01355e;"><b> User Name: </b></td>
+				<td>nlangle</td>
+                </tr><tr>
+				<td width="25%" style="color: #01355e;"><b> DataBus API
+						Key: </b></td>
+				<td>84PAVWQJ6O.B1.E0GXEKS1TNXK</td>
+			</tr>
+		</tbody></table>
+	</div>
+<h4>URL</h4>
+<p>The URL of the DataBus Server is: <i style="color:#01355e;">https://databus.nrel.gov</i>.  But for each type of request, there is a different path associated with it.  The full URL and path associated for registering (creating) a table is:</p>
+    <div class="subdefine" style="margin-top:10px; margin-left: 70px;">
+        <b style="display:inline-block;width:150px;color:#01355e;">URL:</b> <b style="color:#01355e;">https://databus.nrel.gov/api/registerV1</b>
+    </div>
+<h4>POST Request</h4>
+    <p>Here is an example of how a POST request to DataBus should be constructed:</p>
+    <code>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleTableDefinition.txt https://databus.nrel.gov/api/registerV1</code>
+    <p>An alternative way to structure the request that is not dependent on the curl command is to put the credentials within the url itself:</p>
+    <code>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" -d @ExampleTableDefinition.txt http://your_username:your_api_key@databus.nrel.gov/api/registerV1</code>
+<h4>HTTP Response</h4>
+    <p>The DataBus server will respond to your request.  If your request was successful, you will receive a RESULT CODE of 200:</p>
+    <code>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleTableDefinition.txt https://databus.nrel.gov/api/registerV1<br>{"modelName":"ExampleTable","groups":[]}<br>RESULT CODE:200</code>
+    <p>If your request was unsuccessful, the response message and RESULT CODE from the server will provide you with information describing what the error was:</p>
+<code>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleTableDefinition.txt https://databus.nrel.gov/api/registerV1<br>Sorry, table with tablename='ExampleTable' is already in use<br>RESULT CODE:400</code>
+<br>
+<h3>Create an Example Table</h3>
+    <p>This example steps through the procedure of creating a table using the DataBus API, it uses the <a href="../DataBus Installation#Ancillary Tool">curl</a> application to send information to the DataBus server following the primary steps mentioned above.  This example assumes that a Database called "ExampleDatabase" has already been created.</p>
+    <h4>#1: Define the Table</h4>
+<p>In this step you will define your table according to the JSON syntax described in the <a href="../DataModel#Table Definition Specifics">Table Definition Specifics</a> section.</p>
+    <p>Let's create a table with the name "ExampleTable".  First, determine what type of table you need to create, then using a text editor, define your table as a JSON object.</p>
+    <p>Choose <i>one</i> of the following that is the appropriate type of table for your data from:</p>
+    <ul>
+        <li>RELATIONAL_TABLE</li>
+        <pre class="prettyprint prettyprinted" style="width: 90%; margin-top: 2px;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"RELATIONAL_TABLE"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"ExampleTable"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"ExampleDatabase"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"time"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigInteger"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"color"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"string"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"volume"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">}</span><span class="pln"> 
+            </span><span class="pun">]</span><span class="pln"> 
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+        <li>TIME_SERIES</li>
+        <p>Remember, with a time series there are only two allowed columns, one TIME column and one VALUE column.</p>
+        <pre class="prettyprint prettyprinted" style="width: 90%; margin-top: 2px;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"TIME_SERIES"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"ExampleTable"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"ExampleDatabase"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"time"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigInteger"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"value"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">]</span><span class="pln"> 
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+        <li>RELATIONAL_TIME_SERIES</li>
+        <pre class="prettyprint lang-cyc prettyprinted" style="width: 90%; word-wrap:break-word;"><div class="code"><span class="pln">
+</span><span class="pun">{</span><span class="str">"datasetType"</span><span class="pun">:</span><span class="str">"RELATIONAL_TIME_SERIES"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"modelName"</span><span class="pun">:</span><span class="str">"ExampleTable"</span><span class="pun">,</span><span class="pln"> 
+  </span><span class="str">"schema"</span><span class="pun">:</span><span class="str">"ExampleDatabase"</span><span class="pun">,</span><span class="pln">
+  </span><span class="str">"columns"</span><span class="pun">:[</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"time"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigInteger"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">true</span><span class="pun">},</span><span class="pln">
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"volume"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"description"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"string"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"temp"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">},</span><span class="pln"> 
+            </span><span class="pun">{</span><span class="str">"name"</span><span class="pun">:</span><span class="str">"value"</span><span class="pun">,</span><span class="str">"dataType"</span><span class="pun">:</span><span class="str">"BigDecimal"</span><span class="pun">,</span><span class="str">"isIndex"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">,</span><span class="str">"isPrimaryKey"</span><span class="pun">:</span><span class="kwd">false</span><span class="pun">}</span><span class="pln">
+            </span><span class="pun">]</span><span class="pln"> 
+</span><span class="pun">}</span><span class="pln">
+</span></div>
+</pre>
+    </ul>
+    <h4>#2: Save your file</h4>
+    <p>Save your JSON object as a file.  For this example, let's name the file:<br><code>ExampleTableDefinition.txt</code></p>
+    <h4>#3: Upload your file to the DataBus Server</h4>
+    <p>Using the POST method described above, send your request to DataBus in order to insert your new table:</p>
+    <code>$ curl -X POST -w "\nRESULT CODE:%{http_code}\n" --insecure --header "Content-Type:application/json" --user your_username:your_api_key -d @ExampleTableDefinition.txt https://databus.nrel.gov/api/registerV1</code>
+    <p>Here is the fully constructed example POST request using your DataBus credentials:</p>
+    <pre class="prettyprint lang-cyc prettyprinted" style="width: 90%; word-wrap:break-word;"><div class="code"><span class="pln">
+$ curl </span><span class="pun">-</span><span class="pln">X POST </span><span class="pun">-</span><span class="pln">w </span><span class="str">"\nRESULT CODE:%{http_code}\n"</span><span class="pln"> </span><span class="pun">--</span><span class="pln">insecure </span><span class="pun">--</span><span class="pln">header </span><span class="str">"Content-Type:application/json"</span><span class="pln"> </span><span class="pun">--</span><span class="pln">user nlangle</span><span class="pun">:</span><span class="lit">84PAVWQJ6O</span><span class="pun">.</span><span class="pln">B1</span><span class="pun">.</span><span class="pln">E0GXEKS1TNXK </span><span class="pun">-</span><span class="pln">d </span><span class="lit">@ExampleTableDefinition</span><span class="pun">.</span><span class="pln">txt https</span><span class="pun">:</span><span class="com">//databus.nrel.gov/api/registerV1</span></div>
+    </pre>
+    <h4>#4: Verify Results</h4>
+    <p>Verify the DataBus server response to your POST.  When you receive <code>RESULT CODE:200</code>, your table has been created and is now ready to accept data.</p>
+<h3>Next Steps</h3>
+    <p>Now that you have created a database and table, it is time to upload your data to DataBus.  Start uploading data to your table by accessing it via the User Interface and using the Upload options , or insert data directly using the DataBus API.</p>
+    <ul>
+        <li><a href="../DataBus UI">Visit DataBus UI Section</a></li>
+        <br>
+        <li><a href="../DataBus API">Visit DataBus API Section</a></li>
+    </ul>
+</body>

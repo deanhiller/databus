@@ -1,0 +1,66 @@
+.panel-heading h5 {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+h5.mod-title {
+  float: left;
+  margin-top: 0.5em;
+  margin-right: 10px;
+}
+.mod-code {
+  padding:10px 5px;
+}
+.well.spec {
+  margin: 0 80px 15px;
+  background: #fff;
+  border: solid 1px #eee;
+  border-left: solid 3px #5bc0de;
+}
+.well.param {
+  margin: 0 80px 15px;
+  background: #fff;
+  border: solid 1px #eee;
+  border-left: solid 3px #6f5499;
+}
+p.shift {
+  margin:10px 80px;
+}
+pre {
+  margin: 0 80px;    
+}
+.panel-footer pre {
+  color: #535353;
+  background-color: #f8f8f8;
+}
+.prettyprint {
+  color: #535353;
+  background-color: #f8f8f8;
+}
+.pln,
+.typ,
+.pun,
+.opn,
+.clo {
+  color: #535353;
+}
+.str,
+.atv {
+  color: #f18900;
+}
+.kwd,
+.tag {
+  color: #446fb0;
+}
+.com,
+.dec,
+.var,
+.linenums {
+  color: #a2a2a2;
+}
+.lit,
+.atn {
+  color: #738d00;
+}
+.fun {
+  color: #8757ad;
+}
