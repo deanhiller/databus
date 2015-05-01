@@ -56,10 +56,8 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 		super.initModule(options, start, end);
 		String minStr = options.get(MIN_KEY);
 		String maxStr = options.get(MAX_KEY);
-		long min = parseLong(minStr, "error");
-		long max = parseLong(maxStr, "error");
-		this.min = new BigDecimal(min);
-		this.max = new BigDecimal(max);		
+		this.min = parseBigDecimal(minStr, "error");
+		this.max = parseBigDecimal(maxStr, "error");	
 	}
 
 	@Override
@@ -67,11 +65,9 @@ public class RangeCleanProcessor extends PushOrPullProcessor {
 		String newPath = super.init(pathStr, nextInChain, visitor, options);
 		String minStr = params.getParams().get(0);
 		String maxStr = params.getParams().get(1);
-		String msg = "module url /rangeclean/{min}/{max} must be passed a long for min and max and was not passed that";
-		long min = parseLong(minStr, msg);
-		long max = parseLong(maxStr, msg);
-		this.min = new BigDecimal(min);
-		this.max = new BigDecimal(max);
+		String msg = "module url /rangeclean/{min}/{max} must be parsable as a BigDecimal for min and max and was not in the proper format";
+		this.min = parseBigDecimal(minStr, msg);
+		this.max = parseBigDecimal(maxStr, msg);
 		return newPath;
 	}
 	
