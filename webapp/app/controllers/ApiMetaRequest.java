@@ -1,39 +1,29 @@
 package controllers;
 
+import com.alvazan.orm.api.base.NoSqlEntityManager;
+import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
+import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
+import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
+import com.alvazan.play.NoSql;
+import controllers.impl.RawTimeSeriesImpl;
+import controllers.modules2.framework.procs.RowMeta;
 import gov.nrel.util.SearchUtils;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import javax.xml.parsers.ParserConfigurationException;
-
 import models.PermissionType;
 import models.SdiColumn;
 import models.SecureTable;
 import models.message.DatasetColumnModel;
 import models.message.DatasetType;
 import models.message.RegisterMessage;
-
-import org.apache.solr.client.solrj.SolrServerException;
 import org.codehaus.jackson.JsonGenerationException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
-
 import play.mvc.Controller;
-
-import com.alvazan.orm.api.base.NoSqlEntityManager;
-import com.alvazan.orm.api.z8spi.meta.DboColumnIdMeta;
-import com.alvazan.orm.api.z8spi.meta.DboColumnMeta;
-import com.alvazan.orm.api.z8spi.meta.DboTableMeta;
-import com.alvazan.play.NoSql;
-
-import controllers.impl.RawTimeSeriesImpl;
-import controllers.modules2.framework.procs.RowMeta;
 
 public class ApiMetaRequest extends Controller {
 
@@ -117,7 +107,10 @@ public class ApiMetaRequest extends Controller {
 		
 		impl.init(targetTable.getTableMeta(), null, null, rowMeta, mgr);
 		impl.deleteAll();
+                //delaetion of Metadata
+                DboTableMeta meta = targetTable.getTableMeta();
 		mgr.remove(targetTable);
+                mgr.remove(meta);
 		
 		try {
 			SearchUtils.unindexTable(targetTable);
