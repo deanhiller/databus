@@ -1,23 +1,5 @@
 package controllers.modules2.framework.chain;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.io.JsonStringEncoder;
-import org.codehaus.jackson.map.JsonMappingException;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import play.Play;
-import play.mvc.Http.Response;
 import controllers.modules2.framework.Direction;
 import controllers.modules2.framework.ProcessedFlag;
 import controllers.modules2.framework.SuccessfulAbort;
@@ -25,6 +7,19 @@ import controllers.modules2.framework.TSRelational;
 import controllers.modules2.framework.http.HttpStatus;
 import controllers.modules2.framework.procs.OutputProcessor;
 import controllers.modules2.framework.procs.PushProcessorAbstract;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import javax.inject.Inject;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.codehaus.jackson.JsonGenerationException;
+import org.codehaus.jackson.io.JsonStringEncoder;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import play.Play;
+import play.mvc.Http.Response;
 
 public class FTranslatorValuesToJson extends PushProcessorAbstract implements OutputProcessor {
 
@@ -50,7 +45,7 @@ public class FTranslatorValuesToJson extends PushProcessorAbstract implements Ou
 	@Override
 	public void onStart(String url, HttpStatus status) {
 		Response response = Response.current();
-		response.contentType = "text/plain";
+		response.contentType = "application/json";
 		String header = formHeader(response);
 
 		response.status = status.getHttpCode();
