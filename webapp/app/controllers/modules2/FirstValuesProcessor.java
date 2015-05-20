@@ -33,8 +33,10 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 		super.init(pathStr, nextInChain, visitor, options);
 		//params = parsePath(pathStr, visitor);
 		//first values may have no start and end times here
+		long oneHundredYearsInMillis = 3153600000000L;
+		long customEnd = System.currentTimeMillis() + oneHundredYearsInMillis;
 		if(params.getOriginalStart() == null && params.getOriginalEnd() == null) {
-			long end= System.currentTimeMillis();
+			long end= customEnd;
 			Long start  = null;
 			String previousPath = params.getPreviousPath()+"/"+start+"/"+end;
 			String leftOver = params.getLeftOverPath()+"/"+start+"/"+end;
@@ -48,7 +50,7 @@ public class FirstValuesProcessor extends PushProcessorAbstract {
 			//in this case, there is only one time in the url which was put at the end parameter :( which is confusing
 			//and to add to the confusion if reverse=true, end actually means end but reverse=false end means start instead
 			if(!visitor.isReversed()) {
-				long end = System.currentTimeMillis();
+				long end = customEnd;
 				previousPath = previousPath+"/"+params.getOriginalEnd()+"/"+end;
 				leftOver = leftOver+"/"+params.getOriginalEnd()+"/"+end;
 				params = new Path(params.getParams(), previousPath, leftOver, params.getOriginalEnd(), end, visitor.isReversed());
